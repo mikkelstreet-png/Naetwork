@@ -2,14 +2,14 @@ import { ArrowRight, CheckCircle2, Lock, Unlock } from 'lucide-react'
 
 const alwaysFree = [
   'Personlig profil og søgning',
-  'Direkte kontakt til mægler',
+  'Book session med professionelle',
   'Notifikationer på nye matches',
 ]
 
 const premiumFeatures = [
-  'AI lead-scoring og prioritering',
-  'Fuld kartoteksadgang for mæglere',
-  'Team-seats og API-adgang for bureauer',
+  'AI-matching og prioritering',
+  'Ubegrænset sessions pr. måned',
+  'Team-seats og API-adgang',
 ]
 
 export function CommercialReadiness() {
@@ -27,8 +27,8 @@ export function CommercialReadiness() {
           </h2>
           <p className="lead mt-5 text-white/50">
             Naetwork starter som et bidrag til branchen. Efter founding-perioden
-            tilbyder vi fleksible planer der passer alle — fra den selvstændige
-            mægler til det store bureau.
+            tilbyder vi fleksible planer der passer alle — fra den individuelle
+            kandidat til den store virksomhed.
           </p>
         </div>
 

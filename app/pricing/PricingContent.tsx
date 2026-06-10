@@ -13,7 +13,7 @@ const tiers = [
     id: 'starter',
     icon: User,
     name: 'Starter',
-    audience: 'Køber / Sælger',
+    audience: 'Kandidat',
     monthlyPrice: 0,
     annualPrice: 0,
     alwaysFree: true,
@@ -23,17 +23,17 @@ const tiers = [
       'Personlig profil',
       'Intelligent match-forslag',
       'Push-notifikationer',
-      'Direkte kontakt til mægler',
+      'Book session med professionelle',
       'Gemt søgning (5 stk.)',
     ],
     cta: 'Opret gratis konto',
     popular: false,
   },
   {
-    id: 'maegler',
+    id: 'professionel',
     icon: Zap,
-    name: 'Mægler',
-    audience: 'Professionel',
+    name: 'Professionel',
+    audience: 'Mentor / Ekspert',
     monthlyPrice: 499,
     annualPrice: 4499,
     alwaysFree: false,
@@ -41,19 +41,19 @@ const tiers = [
     commercialBadge: `${FOUNDING_DISCOUNT}% rabat · Early bird`,
     features: [
       'Alt i Starter',
-      'Fuld kartoteksadgang',
-      'AI lead-scoring',
-      '10 matches / måned',
+      'Udvidet profil og synlighed',
+      'AI-matching og prioritering',
+      '10 sessions / måned',
       'Prioriteret visning',
       'Statistik & indsigt',
     ],
-    cta: 'Start som mægler',
+    cta: 'Start som professionel',
     popular: true,
   },
   {
-    id: 'bureau',
+    id: 'virksomhed',
     icon: Building2,
-    name: 'Bureau',
+    name: 'Virksomhed',
     audience: 'Team',
     monthlyPrice: 1499,
     annualPrice: 12999,
@@ -61,8 +61,8 @@ const tiers = [
     charityBadge: 'Gratis · Founding Member',
     commercialBadge: `${FOUNDING_DISCOUNT}% rabat · Early bird`,
     features: [
-      'Alt i Mægler',
-      'Ubegrænset matches',
+      'Alt i Professionel',
+      'Ubegrænset sessions',
       'API-adgang',
       'Op til 10 team-seats',
       'Dedikeret onboarding',
@@ -90,14 +90,14 @@ const faqs = [
   },
   {
     q: 'Hvad sker der efter founding-perioden?',
-    a: 'Starter-planen er altid gratis. Mægler og Bureau aktiveres til den founding member-pris du låste ved oprettelse — ingen overraskelser.',
+    a: 'Starter-planen er altid gratis. Professionel og Virksomhed aktiveres til den founding member-pris du låste ved oprettelse — ingen overraskelser.',
   },
   {
     q: 'Er der refusion?',
     a: 'Ja. Hvis du ikke er tilfreds inden for de første 14 dage refunderer vi fuldt ud — ingen spørgsmål stillet.',
   },
   {
-    q: 'Hvad med fakturering for bureauer?',
+    q: 'Hvad med fakturering for virksomheder?',
     a: 'Vi udsteder fakturaer til CVR-nummer. Årsplaner faktureres én gang; månedlige planer den 1. i måneden.',
   },
 ]
@@ -191,10 +191,10 @@ export function PricingContent() {
             <>
               <h1 className="h2 text-white">
                 Fleksible planer —{' '}
-                <span className="gradient-text">til alle i branchen</span>
+                <span className="gradient-text">til alle på platformen</span>
               </h1>
               <p className="lead mt-5 text-white/50">
-                Fra den selvstændige mægler til det store bureau. Founding
+                Fra den individuelle kandidat til den store virksomhed. Founding
                 members beholder {FOUNDING_DISCOUNT}% rabat for altid.
               </p>
             </>
@@ -398,14 +398,14 @@ export function PricingContent() {
                   bg: 'bg-green-500/10',
                 },
                 {
-                  tier: 'Mægler',
+                  tier: 'Professionel',
                   after: `${formatDKK(fmPrice(499))}/md (founding)`,
                   note: `vs. 499 kr/md listepris`,
                   color: 'text-blue-400',
                   bg: 'bg-blue-500/10',
                 },
                 {
-                  tier: 'Bureau',
+                  tier: 'Virksomhed',
                   after: `${formatDKK(fmPrice(1499))}/md (founding)`,
                   note: `vs. 1.499 kr/md listepris`,
                   color: 'text-indigo-400',
