@@ -4,18 +4,45 @@ import { Reveal } from "./Reveal";
 
 export function FounderNote({ t }: { t: Dict["founder"] }) {
   return (
-    <section className="section bg-paper pt-0">
+    <section className="section bg-[#050810] text-white relative overflow-hidden pt-0">
       <div className="wrap">
         <Reveal>
-          <figure className="rounded-card border border-line bg-sage p-8 sm:p-14">
-            <figcaption className="eyebrow">{t.eyebrow}</figcaption>
-            <blockquote className="mt-6 max-w-3xl font-display text-2xl font-normal italic leading-[1.3] sm:text-[2rem]">
-              <span className="emph text-pine">&ldquo;</span>{t.quote}<span className="emph text-pine">&rdquo;</span>
+          <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] p-8 sm:p-14"
+            style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(99,102,241,0.06) 100%)" }}
+          >
+            {/* Glow */}
+            <div
+              aria-hidden="true"
+              className="absolute -top-20 -right-20 h-64 w-64 rounded-full blur-3xl opacity-20"
+              style={{ background: "rgba(99,102,241,1)" }}
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full blur-3xl opacity-15"
+              style={{ background: "rgba(59,130,246,1)" }}
+            />
+
+            <figcaption className="relative eyebrow">{t.eyebrow}</figcaption>
+            <blockquote className="relative mt-6 max-w-3xl text-2xl font-normal leading-[1.4] text-white/80 sm:text-[2rem]">
+              <span
+                className="text-4xl font-bold bg-clip-text text-transparent"
+                style={{ backgroundImage: "linear-gradient(135deg, #60a5fa, #818cf8)" }}
+              >
+                &ldquo;
+              </span>
+              {t.quote}
+              <span
+                className="text-4xl font-bold bg-clip-text text-transparent"
+                style={{ backgroundImage: "linear-gradient(135deg, #60a5fa, #818cf8)" }}
+              >
+                &rdquo;
+              </span>
             </blockquote>
-            <div className="mt-8 flex items-center gap-3">
-              <Logo /><span className="ml-1 text-sm text-muted">· {t.meta}</span>
+            <div className="relative mt-8 flex items-center gap-3">
+              <Logo tone="paper" />
+              <span className="ml-1 text-sm text-white/30">· {t.meta}</span>
             </div>
-          </figure>
+          </div>
         </Reveal>
       </div>
     </section>

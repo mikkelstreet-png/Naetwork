@@ -1,11 +1,10 @@
 export function Logo({ tone = "ink" }: { tone?: "ink" | "paper" }) {
-  const color = tone === "paper" ? "text-paper" : "text-ink";
   return (
-    <span className={color} aria-label="Naetwork">
+    <span aria-label="Naetwork" className="inline-block">
       <span
         aria-hidden="true"
-        className="text-[15px] font-normal uppercase sm:text-base"
-        style={{ fontFamily: '"GFS Didot", Georgia, serif', letterSpacing: "0.28em" }}
+        className="text-[15px] font-semibold uppercase tracking-[0.28em] text-white sm:text-base"
+        style={{ fontFamily: "Inter, system-ui, sans-serif" }}
       >
         N&#x39B;ETWORK
       </span>
