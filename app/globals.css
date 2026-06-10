@@ -76,7 +76,7 @@ body {
   .field {
     @apply w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px]
     text-white outline-none transition-all backdrop-blur-sm
-    placeholder:text-white/30 focus:border-blue-500/60 focus:bg-white/8;
+    placeholder:text-white/30 focus:border-blue-500/60 focus:bg-white/[8%];
   }
   .link-arrow { @apply inline-flex items-center gap-2 text-[15px] font-medium text-blue-400 hover:text-blue-300; }
 
