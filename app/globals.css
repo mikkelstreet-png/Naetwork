@@ -42,6 +42,17 @@ body {
   .link-arrow { @apply inline-flex items-center gap-2 text-[15px] font-medium; }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
 .reveal { opacity: 1; }
 .js .reveal { opacity: 0; transform: translateY(18px); }
 .js .reveal.is-in { animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
