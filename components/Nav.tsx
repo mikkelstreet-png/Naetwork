@@ -6,11 +6,16 @@ import { Logo } from "./Logo";
 import { LangSwitch } from "./LangSwitch";
 import type { Dict, Lang } from "@/lib/content";
 import { openModal } from "@/lib/modalStore";
+import { PHASE } from "@/lib/phase";
 
 export function Nav({ t, lang }: { t: Dict["nav"]; lang: Lang }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const home = lang === "da" ? "/da" : "/";
+
+  // PHASE-conditional copy
+  const bookCta = PHASE === "charity" ? "Gratis adgang" : "Prøv gratis";
+  const pricingLabel = "Priser";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -44,6 +49,13 @@ export function Nav({ t, lang }: { t: Dict["nav"]; lang: Lang }) {
               {l.label}
             </a>
           ))}
+          {/* Pricing link — both phases */}
+          <a
+            href="/pricing"
+            className="rounded-full px-4 py-2 text-[13px] font-medium text-white/50 transition-all duration-150 hover:bg-white/[0.06] hover:text-white/90"
+          >
+            {pricingLabel}
+          </a>
         </div>
 
         {/* Right actions */}
@@ -59,7 +71,7 @@ export function Nav({ t, lang }: { t: Dict["nav"]; lang: Lang }) {
             onClick={() => openModal("candidate")}
             className="btn-pine !px-5 !py-2 !text-[13px]"
           >
-            {t.book}
+            {bookCta}
           </button>
         </div>
 
@@ -92,11 +104,18 @@ export function Nav({ t, lang }: { t: Dict["nav"]; lang: Lang }) {
                 {l.label}
               </a>
             ))}
+            <a
+              href="/pricing"
+              onClick={() => setOpen(false)}
+              className="rounded-xl px-4 py-3 text-[14px] font-medium text-white/60 transition hover:bg-white/[0.06] hover:text-white"
+            >
+              {pricingLabel}
+            </a>
             <button
               onClick={() => { setOpen(false); openModal("candidate"); }}
               className="btn-pine mt-3 w-full"
             >
-              {t.book}
+              {bookCta}
             </button>
           </div>
         </div>
