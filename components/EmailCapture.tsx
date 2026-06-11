@@ -22,8 +22,8 @@ export function EmailCapture() {
 
   const headline =
     PHASE === 'charity'
-      ? 'Lås din founding member-pris — gratis for altid eller 40% rabat'
-      : 'Hold dig opdateret — bliv founding member'
+      ? 'Vær med fra starten — gratis adgang de første 6 måneder'
+      : 'Hold dig opdateret'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,8 +63,6 @@ export function EmailCapture() {
           />
 
           <div className="relative z-10">
-            <span className="eyebrow mb-4 block">Founding member</span>
-
             {state === 'success' ? (
               <div className="py-4">
                 <CheckCircle2
@@ -75,7 +73,7 @@ export function EmailCapture() {
                   Du er på listen 🎉
                 </h2>
                 <p className="mt-2 text-[14px] text-white/50">
-                  Vi vender tilbage, inden founding-perioden udløber.
+                  Vi vender tilbage snart.
                 </p>
               </div>
             ) : (
@@ -84,8 +82,7 @@ export function EmailCapture() {
                   {headline}
                 </h2>
                 <p className="mt-3 text-[14px] leading-relaxed text-white/45">
-                  Indtast din email og vi sørger for at du ikke går glip af
-                  founding-prisen.
+                  Indtast din email og vi holder dig opdateret.
                 </p>
 
                 <form
@@ -127,7 +124,7 @@ export function EmailCapture() {
                 )}
 
                 <p className="mt-4 text-[11px] text-white/25">
-                  Ingen spam · Opsig når som helst · 0 kr under founding-perioden
+                  Ingen spam · Opsig når som helst · 0 kr at starte
                 </p>
               </>
             )}

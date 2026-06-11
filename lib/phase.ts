@@ -7,8 +7,8 @@
 export type Phase = 'charity' | 'commercial'
 export const PHASE: Phase = 'charity'
 
-// End date of the charity / founding-member period
+// End date of the charity / early-access period
 export const CHARITY_END_DATE = new Date('2026-12-10')
 
-// Founding-member discount (shown in commercial phase)
+// Early-access discount (shown in commercial phase)
 export const FOUNDING_DISCOUNT = 40 // percent

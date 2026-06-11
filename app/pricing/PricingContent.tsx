@@ -37,7 +37,7 @@ const tiers = [
     monthlyPrice: 499,
     annualPrice: 4499,
     alwaysFree: false,
-    charityBadge: 'Gratis · Founding Member',
+    charityBadge: 'Gratis · Tidlig adgang',
     commercialBadge: `${FOUNDING_DISCOUNT}% rabat · Early bird`,
     features: [
       'Alt i Starter',
@@ -58,7 +58,7 @@ const tiers = [
     monthlyPrice: 1499,
     annualPrice: 12999,
     alwaysFree: false,
-    charityBadge: 'Gratis · Founding Member',
+    charityBadge: 'Gratis · Tidlig adgang',
     commercialBadge: `${FOUNDING_DISCOUNT}% rabat · Early bird`,
     features: [
       'Alt i Professionel',
@@ -80,17 +80,14 @@ const faqs = [
     q: 'Hvornår skal jeg betale?',
     a: 'I founding-perioden er alle planer gratis. Vi notificerer dig minimum 30 dage inden vi aktiverer betaling — og du kan altid opsige før da.',
   },
-  {
-    q: 'Hvad er en "founding member-pris"?',
-    a: `Alle der opretter konto i founding-perioden låser ${FOUNDING_DISCOUNT}% rabat på betalte planer — for altid. Det er vores tak for at være med fra starten.`,
-  },
+
   {
     q: 'Kan jeg skifte plan?',
     a: 'Ja. Du kan opgradere eller nedgradere når som helst. Ændringer træder i kraft med det samme, og du betaler kun for brugt tid.',
   },
   {
     q: 'Hvad sker der efter founding-perioden?',
-    a: 'Starter-planen er altid gratis. Professionel og Virksomhed aktiveres til den founding member-pris du låste ved oprettelse — ingen overraskelser.',
+    a: 'Starter-planen er altid gratis. Professionel og Virksomhed aktiveres til den pris du låste ved oprettelse — ingen overraskelser.',
   },
   {
     q: 'Er der refusion?',
@@ -179,7 +176,7 @@ export function PricingContent() {
             <>
               <h1 className="h2 text-white">
                 Gratis i 6 måneder —{' '}
-                <span className="gradient-text">Founding Member Adgang</span>
+                <span className="gradient-text">Tidlig Adgang</span>
               </h1>
               <p className="lead mt-5 text-white/50">
                 Vi tror på Naetwork. Så meget at vi giver dig adgang gratis de
@@ -195,7 +192,7 @@ export function PricingContent() {
               </h1>
               <p className="lead mt-5 text-white/50">
                 Fra den individuelle kandidat til den store virksomhed. Founding
-                members beholder {FOUNDING_DISCOUNT}% rabat for altid.
+                tidlige brugere beholder {FOUNDING_DISCOUNT}% rabat for altid.
               </p>
             </>
           )}
@@ -310,7 +307,7 @@ export function PricingContent() {
                       </span>
                       {isCharity && !tier.alwaysFree && (
                         <p className="mt-1.5 text-[12px] text-white/35">
-                          Founding member-pris låst ved oprettelse
+                          Pris låst ved oprettelse
                         </p>
                       )}
                     </div>
@@ -327,7 +324,7 @@ export function PricingContent() {
                           <span className="line-through">
                             {formatDKK(originalPrice)}/md
                           </span>{' '}
-                          · founding member pris
+                          · tidlig adgang-pris
                         </p>
                       )}
                       {billing === 'annual' && !tier.alwaysFree && (
@@ -382,7 +379,7 @@ export function PricingContent() {
               </h2>
               <p className="mt-3 text-[15px] leading-relaxed text-white/50">
                 Vi skjuler ikke, at Naetwork på sigt bliver en kommerciel
-                platform. Founding members låser deres pris ved oprettelse —
+                platform. Du låser din pris ved oprettelse —
                 {' '}{FOUNDING_DISCOUNT}% rabat for altid. Starter-planen er og
                 forbliver gratis.
               </p>
@@ -431,14 +428,14 @@ export function PricingContent() {
         <div className="mt-16 text-center">
           <p className="mb-2 text-[13px] text-white/35">
             {isCharity
-              ? 'Gratis under founding-perioden · Lås din founding member-pris'
-              : 'Founding members beholder rabatten for altid'}
+              ? 'Gratis nu · Lås din pris'
+              : 'Tidlige brugere beholder rabatten for altid'}
           </p>
           <a
             href="#"
             className="btn-pine inline-flex items-center gap-2"
           >
-            Opret gratis konto → Lås din founding member-pris
+            Opret gratis konto
             <ArrowRight size={14} />
           </a>
           <p className="mt-3 text-[12px] text-white/25">
@@ -465,7 +462,7 @@ export function PricingContent() {
       {/* Minimal footer */}
       <footer className="border-t border-white/[0.07] py-8">
         <div className="wrap text-center text-[13px] text-white/25">
-          Naetwork · Gratis under founding-perioden ·{' '}
+          Naetwork · Gratis under opstartsfasen ·{' '}
           <Link href="/" className="hover:text-white/50 transition-colors">
             Tilbage til forsiden
           </Link>
