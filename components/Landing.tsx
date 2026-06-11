@@ -3,6 +3,8 @@ import { Nav } from "./Nav";
 import { Hero } from "./Hero";
 import { Ledger } from "./Ledger";
 import { TwoWays } from "./TwoWays";
+import { WhyOneYear } from "./WhyOneYear";
+import { ImpactTracker } from "./ImpactTracker";
 import { Marketplace } from "./Marketplace";
 import { Companies } from "./Companies";
 import { Journey } from "./Journey";
@@ -24,6 +26,8 @@ export function Landing({ dict, lang }: { dict: Dict; lang: Lang }) {
         <Hero t={dict.hero} how={dict.how} />
         <Ledger t={dict.ledger} lang={lang} />
         <TwoWays t={dict.twoWays} />
+        <WhyOneYear t={dict.whyOneYear} />
+        <ImpactTracker t={dict.impactTracker} />
         <Marketplace t={dict.marketplace} />
         <Companies t={dict.companies} />
         <Journey t={dict.journey} />

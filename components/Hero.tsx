@@ -2,6 +2,7 @@ import { ArrowRight, Sparkles, Shield, Zap } from "lucide-react";
 import type { Dict } from "@/lib/content";
 import { CTA } from "./CTA";
 import { Reveal } from "./Reveal";
+import { Countdown } from "./Countdown";
 
 const badgeIcons = [Sparkles, Shield, Zap];
 
@@ -71,11 +72,15 @@ export function Hero({ t, how }: { t: Dict["hero"]; how: Dict["how"] }) {
               <Reveal delay={180}>
                 <div className="mt-9 flex flex-wrap gap-3">
                   <CTA intent="candidate" className="btn-pine" arrow>{t.primary}</CTA>
-                  <CTA href="#marketplace" className="btn-ghost">{t.browse}</CTA>
+                  <CTA href="#how" className="btn-ghost">{t.browse}</CTA>
                 </div>
               </Reveal>
 
-              <Reveal delay={260}>
+              <Reveal delay={240}>
+                <Countdown units={t.countdownUnits} />
+              </Reveal>
+
+              <Reveal delay={320}>
                 <ul className="mt-10 flex flex-wrap gap-x-7 gap-y-3">
                   {t.badges.map((b, i) => {
                     const Icon = badgeIcons[i] ?? Sparkles;
