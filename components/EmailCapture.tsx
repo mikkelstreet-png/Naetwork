@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
-import { PHASE } from '@/lib/phase'
 
 function saveEmail(email: string) {
   try {
@@ -20,11 +19,6 @@ export function EmailCapture() {
   const [errorMsg, setErrorMsg] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const headline =
-    PHASE === 'charity'
-      ? 'Lås din founding member-pris — gratis for altid eller 40% rabat'
-      : 'Hold dig opdateret — bliv founding member'
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg('')
@@ -36,7 +30,6 @@ export function EmailCapture() {
     }
 
     setState('loading')
-    // Mock: save locally and simulate a short delay
     await new Promise((r) => setTimeout(r, 700))
     saveEmail(email)
     setState('success')
@@ -63,29 +56,25 @@ export function EmailCapture() {
           />
 
           <div className="relative z-10">
-            <span className="eyebrow mb-4 block">Founding member</span>
+            <span className="eyebrow mb-4 block">Tidlig adgang</span>
 
             {state === 'success' ? (
               <div className="py-4">
-                <CheckCircle2
-                  size={44}
-                  className="mx-auto mb-4 text-green-400"
-                />
+                <CheckCircle2 size={44} className="mx-auto mb-4 text-green-400" />
                 <h2 className="text-[1.5rem] font-bold text-white">
-                  Du er på listen 🎉
+                  Du er på listen
                 </h2>
                 <p className="mt-2 text-[14px] text-white/50">
-                  Vi vender tilbage, inden founding-perioden udløber.
+                  Vi rækker ud, efterhånden som vi åbner adgang.
                 </p>
               </div>
             ) : (
               <>
                 <h2 className="text-[1.6rem] font-bold leading-tight text-white lg:text-[2rem]">
-                  {headline}
+                  Bliv en af de første på Naetwork
                 </h2>
                 <p className="mt-3 text-[14px] leading-relaxed text-white/45">
-                  Indtast din email og vi sørger for at du ikke går glip af
-                  founding-prisen.
+                  Indtast din email og få besked, når vi åbner adgang. Gratis at starte.
                 </p>
 
                 <form
@@ -115,7 +104,7 @@ export function EmailCapture() {
                       </>
                     ) : (
                       <>
-                        Lås min pris
+                        Få tidlig adgang
                         <ArrowRight size={14} />
                       </>
                     )}
@@ -127,7 +116,7 @@ export function EmailCapture() {
                 )}
 
                 <p className="mt-4 text-[11px] text-white/25">
-                  Ingen spam · Opsig når som helst · 0 kr under founding-perioden
+                  Ingen spam · Gratis at starte · Opsig når som helst
                 </p>
               </>
             )}

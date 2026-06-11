@@ -3,7 +3,6 @@ import { Reveal } from "./Reveal";
 import { CountUp } from "./CountUp";
 
 export function Ledger({ t, lang }: { t: Dict["ledger"]; lang: Lang }) {
-  const suffix = lang === "da" ? " kr." : " DKK";
   return (
     <section id="impact" className="section bg-[#050810] text-white relative overflow-hidden">
       {/* Subtle top gradient */}
@@ -53,7 +52,7 @@ export function Ledger({ t, lang }: { t: Dict["ledger"]; lang: Lang }) {
                     className="font-sans text-3xl font-bold tracking-tight bg-clip-text text-transparent sm:text-4xl"
                     style={{ backgroundImage: "linear-gradient(135deg, #60a5fa, #818cf8)" }}
                   >
-                    <CountUp to={300} suffix={suffix} />
+                    <CountUp to={t.countTo} suffix={t.countSuffix} />
                   </span>
                 </div>
                 <p className="mt-2 text-right text-[13px] text-white/30">{t.caption}</p>

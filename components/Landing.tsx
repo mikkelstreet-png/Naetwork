@@ -12,17 +12,11 @@ import { FAQ } from "./FAQ";
 import { FinalCTA } from "./FinalCTA";
 import { Footer } from "./Footer";
 import { BookingModal } from "./BookingModal";
-import { FoundingMemberBanner } from "./FoundingMemberBanner";
-import { CommercialReadiness } from "./CommercialReadiness";
-import { WhyFree } from "./WhyFree";
 import { EmailCapture } from "./EmailCapture";
 
 export function Landing({ dict, lang }: { dict: Dict; lang: Lang }) {
   return (
     <div lang={lang}>
-      {/* Founding member banner — only visible in charity phase */}
-      <FoundingMemberBanner />
-
       <Nav t={dict.nav} lang={lang} />
 
       <main id="main">
@@ -33,12 +27,7 @@ export function Landing({ dict, lang }: { dict: Dict; lang: Lang }) {
         <Companies t={dict.companies} />
         <Journey t={dict.journey} />
         <Trust t={dict.trust} />
-
-        {/* ── Phase-aware sections ── */}
-        <WhyFree />
-        <CommercialReadiness />
         <EmailCapture />
-
         <FounderNote t={dict.founder} />
         <FAQ t={dict.faq} />
         <FinalCTA t={dict.finalCta} />
