@@ -1,25 +1,18 @@
-# Naetwork Consumer-First Demo
+# Naetwork Early Access
 
-**Positionering:** Få styr på din digitale opgave — før du hyrer nogen.
+**Positionering:** Beskriv din digitale opgave — få en klar brief og relevante specialister.
 
-Naetwork er sat op som en high-fidelity demo med consumeren som primær kunde. Forsiden fokuserer nu på den vigtigste værdi: at brugeren kan beskrive et uklart digitalt behov og få det omsat til en klar projektbrief, før de skal vælge specialist.
+Naetwork er en consumer-first early access-platform. Forsiden fokuserer på, at brugeren kan beskrive et uklart digitalt behov og få det omsat til en klar projektbrief, før de skal vælge specialist.
 
-## Primær værdi for consumers
+## Primær værdi
 
-Naetwork hjælper brugeren med at undgå tre klassiske problemer:
+Naetwork hjælper brugeren med:
 
-- De ved ikke præcis, hvad de skal bede om
-- Tilbud er svære at sammenligne
-- De risikerer at vælge forkert specialist
-
-Naetwork løser det ved at give:
-
-- Klar projektbrief
-- Scope og fravalg
-- Acceptkriterier
-- Anbefalet specialisttype
-- Få relevante matches
-- Sammenlignelige tilbud
+- At forstå hvad opgaven egentlig kræver
+- At få scope og fravalg på plads
+- At få acceptkriterier for leverancen
+- At se hvilken type specialist der passer
+- At sammenligne tilbud mere trygt
 
 ## Produktprincip
 
@@ -30,30 +23,23 @@ Resten af platformen kører struktureret og regelbaseret:
 - Kategori og tags
 - Match-score
 - Budgetniveau
-- Provider-kapacitet
+- Specialist-kapacitet
 - Tilbudsflow
 - Projektstatus
 - Handover og godkendelse
 
-## Hvad demoen viser
+## Hvad siden viser
 
 - Consumer-first landing page
-- Hurtig startboks direkte på forsiden
-- CTA: “Lav min gratis brief”
-- Før/efter-sektion: før Naetwork vs. med Naetwork
-- AI-assisteret brief preview
+- Hurtig startboks på forsiden
+- CTA: “Gør opgaven konkret”
+- Early access-framing
+- Før/efter-sektion
+- AI-assisteret projektbrief
 - Scope, fravalg og acceptkriterier
-- Provider-matches med score, pris og leveringstid
-- Provider-valg
-- Projektstatus/timeline
-- Sekundær provider-side
-- Sekundært platform dashboard
-
-## Strategisk retning
-
-Forsiden skal først sælge consumer-værdien: klarhed, tryghed og bedre valg.
-
-Provider- og platform-delen er stadig vigtig, men sekundær i demoen.
+- Relevante specialisttyper
+- Næste trin i projektflowet
+- Sekundær side for specialister
 
 ## Tech stack
 
