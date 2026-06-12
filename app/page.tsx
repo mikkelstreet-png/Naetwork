@@ -1,5 +1,5 @@
-import { NaetworkFinalV2 } from "@/components/NaetworkFinalV2";
+import { NaetworkTrafficOptimized } from "@/components/NaetworkTrafficOptimized";
 
 export default function Home() {
-  return <NaetworkFinalV2 />;
+  return <NaetworkTrafficOptimized />;
 }
