@@ -1,82 +1,55 @@
-# Naetwork Sprint 1
+# Naetwork Full Demo v1
 
 **Positionering:** Beskriv dit behov. Få en skarp brief. Bliv matchet med den rette pro.
 
-Naetwork er nu sat op som en dansk, regelbaseret Sprint 1-platform uden AI-drift. Kunder beskriver et digitalt behov, vælger kategori, får en automatisk projektbrief via skabeloner/regler, og providers kan ansøge via et selvstændigt signup-flow.
+Naetwork er nu sat op som en high-fidelity produktdemo, der viser den fulde platformoplevelse: kunde-flow, AI-assisteret brief, provider-matches, tilbud, projektstatus, provider portal og platform dashboard.
 
-## Beslutning for Sprint 1
+## Produktprincip
 
-Sprint 1 kører uden AI.
+Naetwork bruger AI dér, hvor det fjerner friktion: at omsætte et uklart behov til en klar projektbrief.
 
-Det betyder:
+Resten af platformen kører struktureret og regelbaseret:
 
-- Ingen AI API-key
-- Ingen AI-driftsomkostninger
-- Brief bygges med kategorier, regler og faste skabeloner
-- Matching kan senere bygges regelbaseret på tags, budget, kategori og kapacitet
-- Platformen kan køre gratis i starten med Vercel, Supabase Free og Resend Free
+- Kategori og tags
+- Match-score
+- Budgetniveau
+- Provider-kapacitet
+- Tilbudsflow
+- Projektstatus
+- Handover og godkendelse
 
-## Hvad er bygget
+## Hvad demoen viser
 
-- Guidet consumer intake
-- Kategori-valg: Hjemmeside, Dashboard, Automation, Webapp, Pitch deck
-- Automatisk brief uden AI
-- Brief med kategori, tags, scope, ikke inkluderet, acceptkriterier og match-regler
-- Consumer submit til `/api/consumer-intake`
-- Provider signup til `/api/provider-signup`
-- Supabase integration helper
-- Resend email helper
-- Supabase schema i `supabase/schema.sql`
-- `.env.example` med nødvendige miljøvariabler
-- Frontend virker også i demo-mode uden env vars
+- Premium landing page
+- Komplet kunde-flow
+- AI-brief preview
+- Scope, fravalg og acceptkriterier
+- 3 provider-matches med score, pris og leveringstid
+- Provider-valg
+- Projektstatus/timeline
+- Provider portal med relevante opgaver
+- Platform dashboard med pipeline og demo-metrics
+- Klar positioning som kurateret projektmotor, ikke åben freelancer-børs
 
-## Gratis stack
+## Demoens formål
 
-| Del | Tool | Startpris |
-|---|---|---:|
-| Hosting | Vercel Hobby | 0 kr. |
-| Database | Supabase Free | 0 kr. |
-| Email | Resend Free | 0 kr. |
-| AI | Ingen i Sprint 1 | 0 kr. |
+Demoen er lavet til at kunne vise værdien hurtigt:
 
-## Opsætning for rigtig lagring og emails
+> Kunden skal ikke browse 200 profiler. Naetwork hjælper først med at formulere et godt scope — og matcher derefter på data.
 
-1. Opret et gratis Supabase-projekt.
-2. Kør SQL fra `supabase/schema.sql` i Supabase SQL editor.
-3. Opret en gratis Resend API-key.
-4. Sæt miljøvariabler i Vercel:
+Det gør produktet nemmere at forstå, teste og sælge, før der bygges tung backend, betaling og fuld AI-integration.
 
-```text
-SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-RESEND_API_KEY=
-RESEND_FROM_EMAIL="Naetwork <onboarding@resend.dev>"
-ADMIN_EMAIL=
-```
+## Næste mulige sprint
 
-5. Redeploy projektet i Vercel.
-6. Test både consumer intake og provider signup.
+Når demoen er valideret, kan næste sprint være:
 
-## Hovedflow
-
-1. Kunden vælger kategori.
-2. Kunden beskriver behov, målgruppe, scope, budget og deadline.
-3. Naetwork bygger en standardiseret brief uden AI.
-4. Lead sendes til API-route.
-5. Hvis Supabase env vars er sat, gemmes leadet i databasen.
-6. Hvis Resend env vars er sat, sendes email-notifikation til admin.
-7. Provider kan ansøge via separat signup-flow.
-
-## Næste sprint
-
-Sprint 2 bør være regelbaseret matching:
-
-- Provider skills gemmes struktureret
-- Brief-tags matches mod provider skills
-- Budgetniveau matches mod provider prisniveau
-- Kapacitet/deadline matches
-- Top 3 providers vises
-- Provider kan sige interesseret / ikke interesseret
+1. Rigtig database
+2. Rigtig AI-brief endpoint
+3. Email-notifikationer
+4. Provider signup med data
+5. Simpel login
+6. Regelbaseret matching baseret på rigtige provider-profiler
+7. Betaling og platform fee senere
 
 ## Tech stack
 
@@ -84,8 +57,6 @@ Sprint 2 bør være regelbaseret matching:
 - React 19
 - TypeScript
 - Tailwind CSS
-- Supabase REST API
-- Resend email API
 - Vercel deployment
 
 ## Kør lokalt
