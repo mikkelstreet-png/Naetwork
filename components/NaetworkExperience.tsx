@@ -213,7 +213,7 @@ export function NaetworkExperience() {
       {view === "home" && <>
         <section className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-10 lg:grid-cols-[1.04fr_.96fr] lg:py-20">
           <div>
-            <div className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">Early access · specialist-hjælp uden tungt bureau-setup · gratis at starte</div>
+            <div className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">Specialister uden tungt bureau set-up</div>
             <h1 className="max-w-5xl text-4xl font-black leading-[.96] tracking-[-0.05em] text-[#071527] md:text-7xl">Få gjort din digitale opgave konkret — og find specialisten, der kan løse den.</h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Naetwork er til de opgaver, der er for vigtige til at blive liggende, men ikke kræver et stort konsulentbureau. Vi hjælper dig fra uklart behov til klar brief, relevant specialist og et mere overskueligt projektforløb.</p>
             <div className="mt-8 rounded-[30px] border border-slate-200 bg-white p-4 shadow-sm md:p-5">
