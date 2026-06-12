@@ -14,6 +14,12 @@ type Intake = {
   deadline: string;
 };
 
+type ProblemCard = {
+  title: string;
+  text: string;
+  category: Category;
+};
+
 const initialIntake: Intake = {
   category: "Ikke sikker",
   need: "Jeg har en digital opgave, som ikke kræver et stort konsulentbureau, men jeg har brug for en dygtig specialist til at få den løst rigtigt.",
@@ -117,7 +123,39 @@ const matches = [
   }
 ];
 
-const useCases: Category[] = ["Hjemmeside", "Webapp / MVP", "Dashboard", "Automation", "Pitch deck"];
+const problemCards: ProblemCard[] = [
+  {
+    title: "Få flere henvendelser fra din hjemmeside",
+    text: "Din hjemmeside findes — men den skaber ikke nok kunder, bookinger eller konkrete leads. Få hjælp til struktur, tekst, design og kontaktflow, så siden faktisk arbejder for dig.",
+    category: "Hjemmeside"
+  },
+  {
+    title: "Slip for gentaget manuelt arbejde",
+    text: "Du bruger tid på mails, Excel, opfølgning, rapportering eller kopiering mellem systemer. Få sat et simpelt workflow op, der sparer tid hver uge.",
+    category: "Automation"
+  },
+  {
+    title: "Gør AI praktisk i din virksomhed",
+    text: "Du bruger måske ChatGPT eller Gemini, men mangler at få det omsat til noget, der virker i hverdagen. Få en specialist til at bygge et konkret AI-flow, promptsystem eller automation.",
+    category: "Automation"
+  },
+  {
+    title: "Få første version af din idé bygget rigtigt",
+    text: "Du har en idé til en platform, app, portal eller intern løsning — men ved ikke, hvad der skal bygges først. Få scope, prioritering og MVP på plads.",
+    category: "Webapp / MVP"
+  },
+  {
+    title: "Få styr på kunder, salg og overblik",
+    text: "Leads, kunder, opgaver eller tal ligger spredt i mails, Excel, CRM eller forskellige tools. Få ét klart overblik, så du kan følge op og træffe bedre beslutninger.",
+    category: "Dashboard"
+  },
+  {
+    title: "Se professionel ud, når det gælder",
+    text: "Du skal præsentere din virksomhed, idé eller løsning for kunder, investorer eller partnere. Få et skarpt pitch deck, salgsdeck eller kundemateriale, der føles professionelt.",
+    category: "Pitch deck"
+  }
+];
+
 const outcomes = ["Klar projektbrief", "Afgrænset scope", "Anbefalet specialisttype", "Mere overskueligt projektforløb", "Sammenlignelige tilbud"];
 const fitCards = [
   ["For vigtigt til at ligge", "Opgaver der skaber fremdrift, men ofte bliver udskudt fordi scope og ejer er uklart."],
@@ -239,8 +277,23 @@ export function NaetworkExperience() {
         <section className="mx-auto max-w-7xl px-5 py-12"><Panel className="grid gap-6 lg:grid-cols-[.85fr_1.15fr]"><div><Eyebrow>Hvor Naetwork passer ind</Eyebrow><h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Når opgaven er for konkret til strategi — men for vigtig til at improvisere.</h2><p className="mt-4 leading-7 text-slate-600">Mange digitale opgaver kræver ikke et stort konsulentbureau. De kræver en skarp brief, en dygtig specialist og et afgrænset scope.</p></div><div className="grid gap-3 md:grid-cols-2">{fitCards.map(([title, text]) => <div key={title} className="rounded-2xl bg-slate-50 p-4"><p className="font-black text-[#071527]">{title}</p><p className="mt-2 text-sm leading-6 text-slate-600">{text}</p></div>)}</div></Panel></section>
 
         <section className="mx-auto max-w-7xl px-5 py-12">
-          <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><Eyebrow>Eksempler</Eyebrow><h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Hvad kan du få hjælp til?</h2></div><Button secondary onClick={() => open("brief")}>Start med dit behov</Button></div>
-          <div className="grid gap-4 md:grid-cols-5">{useCases.map((item) => <button type="button" key={item} onClick={() => chooseCategory(item)} className="rounded-[24px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-[#3f8f83]/40 hover:shadow-md"><p className="font-black text-[#071527]">{item}</p><p className="mt-3 text-sm leading-6 text-slate-600">Få scope, specialisttype og match-grundlag.</p></button>)}</div>
+          <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <Eyebrow>Eksempler</Eyebrow>
+              <h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">De ting du ved, burde fungere bedre</h2>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">Mange virksomheder har opgaver, der bliver udskudt, fordi de er for små til et stort bureau — men for vigtige til at blive løst halvt.</p>
+            </div>
+            <Button secondary onClick={() => open("brief")}>Start med dit behov</Button>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {problemCards.map((item) => (
+              <button type="button" key={item.title} onClick={() => chooseCategory(item.category)} className="rounded-[24px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-[#3f8f83]/40 hover:shadow-md">
+                <p className="font-black text-[#071527]">{item.title}</p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{item.text}</p>
+              </button>
+            ))}
+          </div>
+          <div className="mt-5 rounded-[24px] border border-slate-200 bg-white px-5 py-4 text-sm font-black leading-6 text-[#071527] shadow-sm">Ikke et stort bureauprojekt. Ikke en tilfældig freelancer. En klar opgave, en relevant specialist og et afgrænset forløb.</div>
         </section>
 
         <section className="mx-auto max-w-7xl px-5 py-12"><Panel className="grid gap-6 lg:grid-cols-[.85fr_1.15fr]"><div><Eyebrow>Early access</Eyebrow><h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Vi åbner gradvist for de første opgaver.</h2><p className="mt-4 leading-7 text-slate-600">Formålet er at holde kvaliteten høj i briefs, matches og leverancer. Du kan starte med at få gjort din opgave konkret uden binding.</p></div><div><div className="grid gap-3 md:grid-cols-2">{["Scope før tilbud", "Få relevante matches", "Ingen endeløs profil-børs", "Mere tryg beslutning"].map((item) => <div key={item} className="rounded-2xl bg-slate-50 p-4 text-sm font-black text-slate-700">{item}</div>)}</div><div className="mt-5 flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 sm:flex-row"><input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Din email" className="min-w-0 flex-1 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" /><Button onClick={() => setInterestStatus("sent")}>{interestStatus === "sent" ? "Du er skrevet op" : "Skriv mig op"}</Button></div></div></Panel></section>
