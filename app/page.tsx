@@ -1,5 +1,5 @@
-import { NaetworkTrafficOptimized } from "@/components/NaetworkTrafficOptimized";
+import { NaetworkTrafficSpecialistCopy } from "@/components/NaetworkTrafficSpecialistCopy";
 
 export default function Home() {
-  return <NaetworkTrafficOptimized />;
+  return <NaetworkTrafficSpecialistCopy />;
 }
