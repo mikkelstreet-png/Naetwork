@@ -1,5 +1,5 @@
 {
-  "name": "cases-fighting-cancer",
+  "name": "naetwork",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -18,10 +18,12 @@
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/lora": "^5.2.8",
     "@fontsource/space-grotesk": "^5.2.10",
+    "@supabase/supabase-js": "^2.49.1",
     "lucide-react": "0.469.0",
     "next": "^15.5.19",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "resend": "^4.1.2"
   },
   "devDependencies": {
     "@types/node": "22.10.7",
