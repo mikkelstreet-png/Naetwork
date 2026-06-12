@@ -25,11 +25,11 @@ export default function Home() {
           width: 100% !important;
           max-width: none !important;
           min-width: 100% !important;
-          min-height: 320px !important;
-          height: 320px !important;
+          min-height: 155px !important;
+          height: 155px !important;
           padding: 1.25rem !important;
           font-size: 1rem !important;
-          line-height: 1.75 !important;
+          line-height: 1.65 !important;
           border-radius: 1.5rem !important;
         }
 
@@ -39,8 +39,8 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .naetwork-copy-polish main > section:first-of-type textarea {
-            min-height: 260px !important;
-            height: 260px !important;
+            min-height: 145px !important;
+            height: 145px !important;
           }
         }
       `}</style>
