@@ -11,9 +11,13 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as RequestBody;
     const intake = body.intake || {};
+    const brief = body.brief || {};
     const contact = toText(body.email).toLowerCase();
     const need = toText(intake.need);
     const category = toText(intake.category) || "Ikke sikker";
+    const outcome = toText(intake.outcome);
+    const briefTitle = toText(brief.title);
+    const specialist = toText(brief.specialist);
 
     if (need.length < 30) return NextResponse.json({ error: "Skriv lidt mere om opgaven." }, { status: 400 });
     if (!emailLooksValid(contact)) return NextResponse.json({ error: "Indtast en gyldig email." }, { status: 400 });
@@ -25,14 +29,22 @@ export async function POST(request: Request) {
       audience: toText(intake.audience) || null,
       budget: toText(intake.budget) || null,
       deadline: toText(intake.deadline) || null,
-      brief: body.brief || {},
+      brief,
       status: "new",
       source: "website"
     }).select("id").single();
 
     if (error) throw new Error(error.message);
 
-    await notifyTaskCreated({ id: data?.id, email: contact, category, need });
+    await notifyTaskCreated({
+      id: data?.id,
+      email: contact,
+      category,
+      need,
+      briefTitle,
+      specialist,
+      outcome
+    });
 
     return NextResponse.json({ ok: true, id: data?.id });
   } catch (error) {
