@@ -13,7 +13,6 @@ export default function Home() {
           line-height: 1.25rem;
         }
 
-        /* Hero task box: make it unmistakably larger and more premium */
         .naetwork-copy-polish main > section:first-of-type > div:first-child > div:nth-of-type(2) {
           padding: 1.75rem !important;
           border-radius: 2rem !important;
@@ -21,6 +20,11 @@ export default function Home() {
         }
 
         .naetwork-copy-polish main > section:first-of-type textarea {
+          display: block !important;
+          box-sizing: border-box !important;
+          width: 100% !important;
+          max-width: none !important;
+          min-width: 100% !important;
           min-height: 320px !important;
           height: 320px !important;
           padding: 1.25rem !important;
