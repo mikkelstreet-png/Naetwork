@@ -1,11 +1,5 @@
-import { LegalLayer } from "@/components/LegalLayer";
-import { NaetworkSprintFour } from "@/components/NaetworkSprintFour";
+import { NaetworkFinal } from "@/components/NaetworkFinal";
 
 export default function Home() {
-  return (
-    <>
-      <NaetworkSprintFour />
-      <LegalLayer />
-    </>
-  );
+  return <NaetworkFinal />;
 }
