@@ -17,7 +17,6 @@ body {
 
 ::selection { background: rgba(59,130,246,0.4); color: #ffffff; }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #050810; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
@@ -26,7 +25,6 @@ body {
 @layer components {
   .wrap { @apply mx-auto w-full max-w-[78rem] px-5 sm:px-8; }
 
-  /* Typography */
   .eyebrow {
     @apply font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-blue-400/70;
   }
@@ -45,13 +43,11 @@ body {
   .lead { @apply text-lg leading-relaxed text-white/60 sm:text-xl; }
   .emph { @apply italic font-normal; }
 
-  /* Gradient text */
   .gradient-text {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
   }
 
-  /* Buttons */
   .btn {
     @apply inline-flex items-center justify-center gap-2.5 rounded-full px-7 py-[14px]
     text-[13px] font-semibold tracking-tight transition-all duration-200
@@ -80,7 +76,6 @@ body {
   }
   .link-arrow { @apply inline-flex items-center gap-2 text-[15px] font-medium text-blue-400 hover:text-blue-300; }
 
-  /* Glass card */
   .glass {
     @apply bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-xl;
   }
@@ -90,11 +85,9 @@ body {
     hover:shadow-[0_0_30px_rgba(59,130,246,0.08)];
   }
 
-  /* Section spacing */
   .section { padding-block: clamp(5rem, 10vw, 9rem); }
 }
 
-/* Reveal animations */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0px); }
@@ -137,11 +130,7 @@ body {
 .js .reveal { opacity: 0; transform: translateY(18px); }
 .js .reveal.is-in { animation: fade-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
-/* Gradient border card */
-.gradient-border {
-  position: relative;
-  border-radius: 0.75rem;
-}
+.gradient-border { position: relative; border-radius: 0.75rem; }
 .gradient-border::before {
   content: '';
   position: absolute;
@@ -156,7 +145,6 @@ body {
 }
 .gradient-border:hover::before { opacity: 1; }
 
-/* Noise texture overlay */
 .noise::after {
   content: '';
   position: absolute;
@@ -166,17 +154,68 @@ body {
   opacity: 0.4;
 }
 
-/* Dot grid pattern */
 .dot-grid {
   background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-/* Shimmer effect */
 .shimmer {
   background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 3s ease infinite;
+}
+
+/* Naetwork polish layer */
+main textarea {
+  min-height: 180px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+main textarea[rows="4"] {
+  min-height: 230px;
+}
+
+main textarea[rows="5"] {
+  min-height: 260px;
+}
+
+main textarea[rows="3"] {
+  min-height: 130px;
+}
+
+main input,
+main textarea {
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+main input:focus,
+main textarea:focus {
+  transform: translateY(-1px);
+}
+
+main button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+main section {
+  scroll-margin-top: 96px;
+}
+
+main .shadow-sm {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 55px rgba(15, 23, 42, 0.035);
+}
+
+@media (max-width: 768px) {
+  main textarea,
+  main textarea[rows="4"],
+  main textarea[rows="5"] {
+    min-height: 190px;
+  }
+
+  main h1 {
+    word-break: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -185,10 +224,8 @@ body {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
-/* Ensure bold headings render correctly with available font weights */
 .h1, .h2 { font-weight: 600; }
 
-/* ── Countdown widget ── */
 .countdown-widget {
   display: inline-block;
   margin-top: 28px;
@@ -197,49 +234,4 @@ body {
   border-radius: 12px;
   background: rgba(59,130,246,0.05);
   backdrop-filter: blur(8px);
-}
-.countdown-label {
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 12px;
-  font-family: var(--font-geist-mono, monospace);
-}
-.countdown-numbers {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-}
-.countdown-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 56px;
-}
-.countdown-sep {
-  color: rgba(59,130,246,0.4);
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1;
-  padding-bottom: 18px;
-}
-.countdown-num {
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: #3B82F6;
-  line-height: 1;
-  display: block;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-.countdown-unit {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  color: rgba(255,255,255,0.35);
-  display: block;
-  margin-top: 5px;
-  font-family: var(--font-geist-mono, monospace);
 }
