@@ -1,0 +1,317 @@
+'use client';
+
+import { type ReactNode, useMemo, useState } from "react";
+
+type View = "home" | "task" | "how" | "provider" | "submitted";
+type Category = "Ikke sikker" | "Hjemmeside" | "Webapp / MVP" | "Dashboard" | "Automation" | "Pitch deck" | "AI i virksomheden";
+
+type Intake = {
+  category: Category;
+  need: string;
+  situation: string;
+  outcome: string;
+  audience: string;
+  budget: string;
+  deadline: string;
+};
+
+const exampleNeed = "Min hjemmeside får besøg, men for få henvendelser. Jeg vil gerne forstå, hvad der skal ændres, og hvilken type specialist der kan hjælpe.";
+
+const initialIntake: Intake = {
+  category: "Ikke sikker",
+  need: exampleNeed,
+  situation: "Jeg har en løsning eller proces i dag, men den fungerer ikke godt nok.",
+  outcome: "Jeg vil have en klarere løsning, bedre flow og et konkret næste skridt.",
+  audience: "Kunder, brugere eller mit interne team.",
+  budget: "Afklares",
+  deadline: "Afklares"
+};
+
+const categoryMeta: Record<Category, { title: string; specialist: string; tags: string[]; scope: string[]; questions: string[] }> = {
+  "Ikke sikker": {
+    title: "Digital opgave gjort klar før du vælger specialist",
+    specialist: "Digital produkt specialist",
+    tags: ["Afklaring", "Brief", "Specialistretning"],
+    scope: ["Afklare hvad der faktisk skal laves", "Skelne mellem første version og senere ønsker", "Finde den mest relevante specialistretning"],
+    questions: ["Hvad skal opgaven hjælpe dig med at opnå?", "Hvad er vigtigst i første version?", "Hvad må gerne vente?"]
+  },
+  Hjemmeside: {
+    title: "Hjemmeside der skaber flere relevante henvendelser",
+    specialist: "Webdesigner eller frontend specialist",
+    tags: ["Hjemmeside", "Leads", "Kontaktflow"],
+    scope: ["Forbedre struktur og vigtigste sider", "Gøre kontaktflow tydeligere", "Stramme tekst, knapper og førstehåndsindtryk op"],
+    questions: ["Hvad skal besøgende gøre på siden?", "Hvor kommer trafikken fra?", "Hvilke henvendelser er mest værdifulde?"]
+  },
+  "Webapp / MVP": {
+    title: "Første version af digital idé med klart kerneflow",
+    specialist: "Produktbygger",
+    tags: ["MVP", "Webapp", "Launch"],
+    scope: ["Definere kerneflow", "Prioritere første version", "Gøre løsningen klar til test eller lancering"],
+    questions: ["Hvad er vigtigste brugerflow?", "Hvad skal absolut med først?", "Hvad kan vente?"]
+  },
+  Dashboard: {
+    title: "Dashboard med overblik over centrale nøgletal",
+    specialist: "Data specialist",
+    tags: ["Dashboard", "Data", "Rapportering"],
+    scope: ["Kortlægge datakilder", "Definere nøgletal", "Samle overblik i én visning"],
+    questions: ["Hvor ligger data i dag?", "Hvilke tal styrer du efter?", "Hvem skal bruge dashboardet?"]
+  },
+  Automation: {
+    title: "Automation der fjerner manuelt dobbeltarbejde",
+    specialist: "Automation specialist",
+    tags: ["Automation", "Workflow", "Proces"],
+    scope: ["Kortlægge manuelt flow", "Opsætte simpelt workflow", "Test og dokumentere hvordan det bruges"],
+    questions: ["Hvad starter flowet?", "Hvor skal data ende?", "Hvad sker der, hvis noget fejler?"]
+  },
+  "Pitch deck": {
+    title: "Pitch eller salgsdeck med klar fortælling",
+    specialist: "Præsentationsdesigner",
+    tags: ["Slides", "Storyline", "Design"],
+    scope: ["Stramme storyline op", "Bygge slide-struktur", "Gøre materialet klar til møder"],
+    questions: ["Hvem skal se materialet?", "Hvilken beslutning skal det drive?", "Har du tal og input klar?"]
+  },
+  "AI i virksomheden": {
+    title: "Praktisk AI eller automation brugt rigtigt i virksomheden",
+    specialist: "AI workflow specialist",
+    tags: ["AI", "Workflow", "Output"],
+    scope: ["Finde relevante AI-brugsscenarier", "Afgrænse første praktiske workflow", "Gøre løsningen enkel at bruge"],
+    questions: ["Hvor bruger du mest tid i dag?", "Hvilket output skal forbedres?", "Hvem skal bruge flowet?"]
+  }
+};
+
+const useCases: Array<{ title: string; text: string; category: Category; signal: string }> = [
+  { title: "Hjemmeside der ikke skaber nok henvendelser", text: "Du har en side, men den skaber ikke nok kvalificerede leads.", category: "Hjemmeside", signal: "Typisk webdesign eller frontend" },
+  { title: "Manuelt arbejde i mails eller Excel", text: "Du gentager de samme handlinger og mister tid på opfølgning.", category: "Automation", signal: "Typisk automation" },
+  { title: "Første version af en digital idé", text: "Du har idéen, men mangler at få første version afgrænset.", category: "Webapp / MVP", signal: "Typisk MVP bygger" },
+  { title: "Dashboard og overblik", text: "Tal, kunder eller opgaver ligger spredt flere steder.", category: "Dashboard", signal: "Typisk data specialist" },
+  { title: "Pitch deck eller kundemateriale", text: "Du skal fremstå skarpt over for kunder, partnere eller investorer.", category: "Pitch deck", signal: "Typisk præsentationsdesign" },
+  { title: "Praktisk AI i virksomheden", text: "Du ved, AI kan hjælpe, men ikke hvor det giver mest værdi.", category: "AI i virksomheden", signal: "Typisk AI workflow" }
+];
+
+const process = [
+  ["01", "Du beskriver opgaven", "Skriv problemet med egne ord. Du behøver ikke kende løsningen."],
+  ["02", "Naetwork gør opgaven klarere", "Behov, ønsket resultat, scope, fravalg og spørgsmål samles i en tydelig struktur."],
+  ["03", "Du ser en foreløbig brief", "Briefen gør opgaven lettere at forstå, vurdere og sende videre."],
+  ["04", "Specialistretningen identificeres", "Det handler først om den rigtige type specialist, ikke en tilfældig profil."],
+  ["05", "Du vælger om du vil videre", "Første trin er uden betaling og uden binding."],
+  ["06", "Aftaler ligger mellem kunde og specialist", "Pris, levering, rettigheder og tidsplan aftales direkte, medmindre andet er aftalt skriftligt."],
+  ["07", "Du får et bedre beslutningsgrundlag", "Du starter ikke med en uklar opgave og et tilfældigt valg." ]
+];
+
+const taskSteps = [
+  { title: "Opgavetype", text: "Vælg hvad opgaven minder mest om." },
+  { title: "Behov", text: "Skriv hvad du gerne vil have hjælp til." },
+  { title: "Situation", text: "Fortæl hvad der ikke fungerer i dag." },
+  { title: "Ønsket resultat", text: "Beskriv hvad der skal være anderledes." },
+  { title: "Detaljer", text: "Tilføj målgruppe, budget, deadline og email." },
+  { title: "Foreløbig brief", text: "Gennemgå og send opgaven." }
+];
+
+const trustPoints = ["Ingen betaling på første trin", "Du behøver ikke være teknisk", "Opgaven kan justeres senere"];
+
+function cn(...classes: Array<string | false | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function validEmail(email: string) {
+  return /^\S+@\S+\.\S+$/.test(email.trim());
+}
+
+function Button({ children, onClick, secondary, disabled }: { children: ReactNode; onClick?: () => void; secondary?: boolean; disabled?: boolean }) {
+  return (
+    <button type="button" disabled={disabled} onClick={onClick} className={cn("inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-black transition focus:outline-none focus:ring-4 focus:ring-[#3f8f83]/20", disabled && "cursor-not-allowed opacity-60", secondary ? "border border-slate-300 bg-white text-slate-800 hover:border-slate-400" : "bg-[#071527] text-white hover:bg-[#0b203a]")}>{children}</button>
+  );
+}
+
+function Card({ children, dark, className = "" }: { children: ReactNode; dark?: boolean; className?: string }) {
+  return <div className={cn("rounded-[30px] border p-6 shadow-sm", dark ? "border-slate-800 bg-[#071527] text-white" : "border-slate-200 bg-white text-slate-950", className)}>{children}</div>;
+}
+
+function Eyebrow({ children }: { children: ReactNode }) {
+  return <p className="text-sm font-black uppercase tracking-[.22em] text-[#3f8f83]">{children}</p>;
+}
+
+function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return <textarea {...props} className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-950 outline-none focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" />;
+}
+
+function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return <input {...props} className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" />;
+}
+
+export function NaetworkSprintThree() {
+  const [view, setView] = useState<View>("home");
+  const [taskStep, setTaskStep] = useState(0);
+  const [intake, setIntake] = useState<Intake>(initialIntake);
+  const [email, setEmail] = useState("");
+  const [taskError, setTaskError] = useState("");
+  const [taskLoading, setTaskLoading] = useState(false);
+  const [taskId, setTaskId] = useState("");
+  const [providerName, setProviderName] = useState("");
+  const [providerEmail, setProviderEmail] = useState("");
+  const [providerSkills, setProviderSkills] = useState("");
+  const [providerLinks, setProviderLinks] = useState("");
+  const [providerError, setProviderError] = useState("");
+  const [providerLoading, setProviderLoading] = useState(false);
+  const [providerSent, setProviderSent] = useState(false);
+
+  const meta = categoryMeta[intake.category];
+  const brief = useMemo(() => ({
+    title: meta.title,
+    specialist: meta.specialist,
+    tags: meta.tags,
+    scope: meta.scope,
+    questions: meta.questions,
+    budget: intake.budget,
+    deadline: intake.deadline
+  }), [intake.budget, intake.deadline, meta]);
+
+  const open = (next: View) => {
+    setView(next);
+    setTaskError("");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const chooseUseCase = (category: Category) => {
+    setIntake({ ...initialIntake, category, need: categoryMeta[category].title });
+    setTaskStep(1);
+    open("task");
+  };
+
+  const nextTaskStep = () => {
+    setTaskError("");
+    if (taskStep === 1 && intake.need.trim().length < 25) {
+      setTaskError("Skriv lidt mere om, hvad du gerne vil have hjælp til.");
+      return;
+    }
+    if (taskStep === 2 && intake.situation.trim().length < 15) {
+      setTaskError("Skriv kort hvad der ikke fungerer i dag.");
+      return;
+    }
+    if (taskStep === 3 && intake.outcome.trim().length < 15) {
+      setTaskError("Skriv kort hvad der skal være anderledes.");
+      return;
+    }
+    if (taskStep === 4 && !validEmail(email)) {
+      setTaskError("Indtast en gyldig email, så vi kan sende kvittering og vende tilbage.");
+      return;
+    }
+    setTaskStep((current) => Math.min(current + 1, taskSteps.length - 1));
+  };
+
+  const submitTask = async () => {
+    if (intake.need.trim().length < 25) {
+      setTaskError("Skriv lidt mere om opgaven, så briefen bliver brugbar.");
+      return;
+    }
+    if (!validEmail(email)) {
+      setTaskError("Indtast en gyldig email.");
+      return;
+    }
+
+    setTaskLoading(true);
+    setTaskError("");
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ intake, email, brief })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Opgaven kunne ikke sendes lige nu.");
+      setTaskId(result.id || "");
+      open("submitted");
+    } catch (error) {
+      setTaskError(error instanceof Error ? error.message : "Opgaven kunne ikke sendes lige nu.");
+    } finally {
+      setTaskLoading(false);
+    }
+  };
+
+  const submitProvider = async () => {
+    if (providerName.trim().length < 2) {
+      setProviderError("Skriv dit navn eller firmanavn.");
+      return;
+    }
+    if (!validEmail(providerEmail)) {
+      setProviderError("Indtast en gyldig email.");
+      return;
+    }
+    if (providerSkills.trim().length < 20) {
+      setProviderError("Skriv lidt mere om dine kompetencer og opgavetyper.");
+      return;
+    }
+
+    setProviderLoading(true);
+    setProviderError("");
+    try {
+      const response = await fetch("/api/providers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: providerName, email: providerEmail, skills: providerSkills, links: providerLinks })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Ansøgningen kunne ikke sendes lige nu.");
+      setProviderSent(true);
+    } catch (error) {
+      setProviderError(error instanceof Error ? error.message : "Ansøgningen kunne ikke sendes lige nu.");
+    } finally {
+      setProviderLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#e8f4ef_0,#f7f8fb_34%,#f7f8fb_100%)] text-slate-950">
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
+          <button type="button" onClick={() => open("home")} className="flex items-center gap-3 text-left"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#071527] text-sm font-black text-white">N</span><span><span className="block text-lg font-black tracking-tight">Naetwork</span><span className="block text-xs text-slate-500">Få opgaven gjort klar</span></span></button>
+          <nav className="hidden items-center gap-2 lg:flex">{[["home", "Forside"], ["task", "Opret opgave"], ["how", "Sådan virker det"], ["provider", "For specialister"]].map(([target, label]) => <button key={target} type="button" onClick={() => open(target as View)} className={cn("rounded-full px-4 py-2 text-sm font-bold transition", view === target ? "bg-[#071527] text-white" : "text-slate-600 hover:bg-slate-100")}>{label}</button>)}</nav>
+          <Button onClick={() => { setTaskStep(0); open("task"); }}>Opret opgave</Button>
+        </div>
+      </header>
+
+      {view === "home" && <>
+        <section className="mx-auto grid max-w-7xl items-start gap-8 px-5 py-12 lg:grid-cols-[1.02fr_.98fr] lg:py-20">
+          <div><div className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">For små virksomheder, founders og selvstændige</div><h1 className="max-w-5xl text-4xl font-black leading-[.96] tracking-[-0.05em] text-[#071527] md:text-7xl">Gør din digitale opgave klar, før du vælger specialist.</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Naetwork hjælper dig med at oversætte et uklart digitalt behov til en klarere opgave, en foreløbig brief og en relevant specialistretning.</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button onClick={() => { setTaskStep(0); open("task"); }}>Opret opgave</Button><Button secondary onClick={() => open("how")}>Se hvordan det virker</Button></div><div className="mt-6 flex flex-wrap gap-2">{trustPoints.map((item) => <span key={item} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700">{item}</span>)}</div></div>
+          <Card className="p-5 md:p-7"><div className="mb-4 flex items-start justify-between gap-4"><div><p className="text-lg font-black text-[#071527]">Så simpelt kan du starte</p><p className="mt-1 text-sm leading-6 text-slate-500">Du skriver ikke en kravspecifikation. Du beskriver bare opgaven, som du ser den.</p></div><span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-800">Eksempel</span></div><div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-700">{exampleNeed}</div><div className="mt-5 rounded-2xl bg-[#071527] p-5 text-white"><p className="text-xs font-black uppercase tracking-[.18em] text-emerald-200">Naetwork gør det klarere</p><p className="mt-3 text-sm leading-6 text-white/75">Opgaven peger mod hjemmeside, kontaktflow, tekst og struktur. Den relevante specialistretning er sandsynligvis webdesign eller frontend.</p></div></Card>
+        </section>
+        <section className="mx-auto max-w-7xl px-5 py-10"><div className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><Eyebrow>Opgaver Naetwork passer til</Eyebrow><h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">De ting du ved, burde fungere bedre</h2><p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">Klik på en opgavetype for at starte med et mere relevant udgangspunkt.</p></div><Button secondary onClick={() => { setTaskStep(0); open("task"); }}>Start med egen opgave</Button></div><div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{useCases.map((item) => <button key={item.title} type="button" onClick={() => chooseUseCase(item.category)} className="group rounded-[24px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-[#3f8f83]/50 hover:shadow-md"><div className="mb-5 flex items-start justify-between gap-4"><span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-black text-slate-500">{item.signal}</span><span className="text-lg font-black text-slate-300 transition group-hover:text-[#3f8f83]">→</span></div><p className="font-black text-[#071527]">{item.title}</p><p className="mt-3 text-sm leading-6 text-slate-600">{item.text}</p></button>)}</div></section>
+        <section className="mx-auto max-w-7xl px-5 py-10"><Card className="grid gap-6 lg:grid-cols-[.85fr_1.15fr]"><div><Eyebrow>Hvorfor det virker</Eyebrow><h2 className="mt-3 text-3xl font-black tracking-tight text-[#071527]">En bedre opgave giver et bedre match.</h2><p className="mt-4 text-sm leading-7 text-slate-600">Naetwork starter ikke med at vise dig profiler. Først gøres opgaven klarere, så det bliver nemmere at vælge den rigtige specialistretning.</p></div><div className="grid gap-4 md:grid-cols-3">{process.slice(0, 3).map(([number, title, text]) => <div key={number} className="rounded-2xl bg-slate-50 p-4"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#071527] text-xs font-black text-white">{number}</span><p className="mt-4 font-black text-[#071527]">{title}</p><p className="mt-2 text-sm leading-6 text-slate-600">{text}</p></div>)}</div></Card></section>
+      </>}
+
+      {view === "task" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-12 lg:grid-cols-[.9fr_1.1fr]">
+        <Card>
+          <div className="mb-6"><Eyebrow>Opret opgave</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Fortæl én ting ad gangen.</h1><p className="mt-3 text-sm leading-6 text-slate-600">Du skal ikke kende løsningen. Flowet hjælper dig med at gøre opgaven klar nok til næste skridt.</p></div>
+          <div className="mb-6 grid gap-2 sm:grid-cols-6">{taskSteps.map((step, index) => <button key={step.title} type="button" onClick={() => { setTaskStep(index); setTaskError(""); }} className={cn("rounded-2xl border p-3 text-left transition", taskStep === index ? "border-[#071527] bg-[#071527] text-white" : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300")}><span className="text-xs font-black">{index + 1}</span><span className="mt-1 block text-xs font-black leading-4">{step.title}</span></button>)}</div>
+          <div className="rounded-[24px] border border-slate-200 bg-white p-5">
+            <p className="text-xs font-black uppercase tracking-[.18em] text-[#3f8f83]">Trin {taskStep + 1} af {taskSteps.length}</p>
+            <h2 className="mt-2 text-2xl font-black text-[#071527]">{taskSteps[taskStep].title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">{taskSteps[taskStep].text}</p>
+            <div className="mt-5">
+              {taskStep === 0 && <div className="grid gap-2">{(Object.keys(categoryMeta) as Category[]).map((item) => <button key={item} type="button" onClick={() => setIntake({ ...intake, category: item })} className={cn("rounded-2xl border p-4 text-left text-sm font-black transition", intake.category === item ? "border-[#071527] bg-[#071527] text-white" : "border-slate-200 bg-slate-50 text-slate-700 hover:border-[#3f8f83]/50")}>{item}</button>)}</div>}
+              {taskStep === 1 && <TextArea rows={6} value={intake.need} onChange={(event) => setIntake({ ...intake, need: event.target.value })} placeholder="Fx: Min hjemmeside får besøg, men for få henvendelser." />}
+              {taskStep === 2 && <TextArea rows={5} value={intake.situation} onChange={(event) => setIntake({ ...intake, situation: event.target.value })} placeholder="Fx: Folk besøger siden, men kontakter mig sjældent." />}
+              {taskStep === 3 && <TextArea rows={5} value={intake.outcome} onChange={(event) => setIntake({ ...intake, outcome: event.target.value })} placeholder="Fx: Jeg vil have flere kvalificerede henvendelser." />}
+              {taskStep === 4 && <div className="grid gap-4"><label className="grid gap-2 text-sm font-bold text-slate-700">Hvem skal bruge løsningen?<Input value={intake.audience} onChange={(event) => setIntake({ ...intake, audience: event.target.value })} /></label><div className="grid gap-4 md:grid-cols-2"><label className="grid gap-2 text-sm font-bold text-slate-700">Budget<Input value={intake.budget} onChange={(event) => setIntake({ ...intake, budget: event.target.value })} /></label><label className="grid gap-2 text-sm font-bold text-slate-700">Deadline<Input value={intake.deadline} onChange={(event) => setIntake({ ...intake, deadline: event.target.value })} /></label></div><label className="grid gap-2 text-sm font-bold text-slate-700">Email til svar<Input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="din@email.dk" /></label></div>}
+              {taskStep === 5 && <div className="grid gap-4"><div className="rounded-2xl bg-slate-50 p-4"><p className="text-sm font-black text-[#071527]">{brief.title}</p><p className="mt-2 text-sm leading-6 text-slate-600">Specialistretning: {brief.specialist}</p></div><p className="text-sm leading-6 text-slate-600">Dette er stadig en foreløbig brief. Du sender ikke en færdig kravspecifikation, men en opgave som kan gøres klarere.</p></div>}
+            </div>
+          </div>
+          {taskError && <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-black text-rose-700">{taskError}</div>}
+          <div className="mt-5 flex flex-col justify-between gap-3 sm:flex-row"><Button secondary disabled={taskStep === 0} onClick={() => setTaskStep((current) => Math.max(0, current - 1))}>Tilbage</Button>{taskStep < taskSteps.length - 1 ? <Button onClick={nextTaskStep}>Næste</Button> : <Button onClick={submitTask} disabled={taskLoading}>{taskLoading ? "Sender opgave" : "Send opgaven"}</Button>}</div>
+          <p className="mt-4 text-xs font-bold text-slate-500">Ingen betaling. Ingen binding. Du får en kvittering på mail.</p>
+        </Card>
+        <Card>
+          <Eyebrow>Foreløbig brief</Eyebrow><h2 className="mt-3 text-3xl font-black tracking-tight text-[#071527]">{brief.title}</h2><p className="mt-3 text-sm leading-6 text-slate-600">Briefen opdateres baseret på dine svar. Den er ikke endelig, men gør opgaven lettere at forstå.</p><div className="mt-5 flex flex-wrap gap-2">{brief.tags.map((tag) => <span key={tag} className="rounded-full border border-slate-200 px-3 py-2 text-xs font-black text-slate-700">{tag}</span>)}</div><div className="mt-6 grid gap-5 md:grid-cols-2"><div><p className="font-black text-[#071527]">Scope</p><ul className="mt-3 grid gap-2">{brief.scope.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul></div><div><p className="font-black text-[#071527]">Spørgsmål</p><ul className="mt-3 grid gap-2">{brief.questions.map((item) => <li key={item} className="rounded-2xl bg-emerald-50 p-3 text-sm leading-6 text-emerald-900">{item}</li>)}</ul></div></div><div className="mt-6 rounded-2xl bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[.18em] text-slate-400">Dine input</p><p className="mt-3 text-sm leading-6 text-slate-700"><strong>Behov:</strong> {intake.need}</p><p className="mt-2 text-sm leading-6 text-slate-700"><strong>Ønsket resultat:</strong> {intake.outcome}</p></div>
+        </Card>
+      </section>}
+
+      {view === "how" && <section className="mx-auto max-w-7xl px-5 py-12"><div className="mb-8 max-w-4xl"><Eyebrow>Sådan virker det</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527] md:text-6xl">Fra uklar digital opgave til klar specialistretning.</h1><p className="mt-5 text-lg leading-8 text-slate-600">Processen handler ikke om at vælge en tilfældig profil. Den handler om at gøre opgaven klar nok til, at den rigtige type specialist kan hjælpe.</p></div><div className="grid gap-4 lg:grid-cols-2">{process.map(([number, title, text]) => <Card key={number} className="grid gap-4 sm:grid-cols-[54px_1fr]"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#071527] text-xs font-black text-white">{number}</span><div><p className="text-xl font-black text-[#071527]">{title}</p><p className="mt-2 text-sm leading-6 text-slate-600">{text}</p></div></Card>)}</div><div className="mt-8 grid gap-4 lg:grid-cols-2"><Card><Eyebrow>Før</Eyebrow><p className="mt-4 text-2xl font-black text-[#071527]">“Jeg skal bruge hjælp til min hjemmeside.”</p><p className="mt-3 text-sm leading-6 text-slate-600">For uklar til at prissætte, vælge specialist eller vurdere næste skridt.</p></Card><Card><Eyebrow>Efter</Eyebrow><p className="mt-4 text-2xl font-black text-[#071527]">“Opgaven handler om at forbedre kontaktflow, tekst og struktur, så flere relevante besøgende sender en henvendelse.”</p><p className="mt-3 text-sm leading-6 text-slate-600">Klarere opgave. Bedre specialistretning. Mindre spildtid.</p></Card></div></section>}
+
+      {view === "submitted" && <section className="mx-auto max-w-5xl px-5 py-12"><Card dark><div className="grid h-14 w-14 place-items-center rounded-2xl bg-emerald-300/15 text-2xl">✓</div><Eyebrow>Opgaven er sendt</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight md:text-6xl">Din opgave er modtaget.</h1><p className="mt-5 text-lg leading-8 text-white/70">Briefen er gemt, og du får en kvittering på mail. Der er ingen betaling og ingen binding på dette trin.</p><p className="mt-5 rounded-2xl bg-white/10 p-4 text-sm text-white/70">ID: {taskId || "Modtaget"}</p></Card></section>}
+
+      {view === "provider" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-12 lg:grid-cols-[.85fr_1.15fr]"><Card><Eyebrow>For specialister</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Bedre opgaver starter med bedre briefs.</h1><p className="mt-4 text-slate-600">Naetwork er for specialister, der vil bruge mindre tid på uklare henvendelser og mere tid på opgaver, hvor behovet allerede er gjort tydeligere.</p></Card><Card dark><h2 className="text-3xl font-black tracking-tight">Bliv en del af specialistnetværket</h2><div className="mt-6 grid gap-3"><input value={providerName} onChange={(event) => setProviderName(event.target.value)} placeholder="Navn eller firma" className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none" /><input value={providerEmail} onChange={(event) => setProviderEmail(event.target.value)} placeholder="Email" className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none" /><textarea value={providerSkills} onChange={(event) => setProviderSkills(event.target.value)} rows={4} placeholder="Kompetencer og opgavetyper" className="resize-none rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none" /><input value={providerLinks} onChange={(event) => setProviderLinks(event.target.value)} placeholder="Link til cases eller LinkedIn" className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/45 outline-none" /></div>{providerError && <div className="mt-4 rounded-2xl bg-rose-400/15 p-4 text-sm font-black text-rose-100">{providerError}</div>}{providerSent && <div className="mt-4 rounded-2xl bg-emerald-300/15 p-4 text-sm font-black text-emerald-100">Tak. Din interesse er modtaget.</div>}<div className="mt-6"><Button secondary onClick={submitProvider} disabled={providerLoading}>{providerLoading ? "Sender" : "Ansøg som specialist"}</Button></div></Card></section>}
+
+      <footer className="mx-auto max-w-7xl px-5 py-10 text-sm text-slate-500"><div className="flex flex-col justify-between gap-4 border-t border-slate-200 pt-6 md:flex-row"><span>Naetwork · Få opgaven gjort klar.</span><button type="button" onClick={() => open("provider")} className="font-black text-[#071527]">For specialister</button></div></footer>
+    </main>
+  );
+}
