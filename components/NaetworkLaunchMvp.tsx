@@ -1,146 +1,161 @@
 'use client';
 
-import { type ChangeEvent, type FormEvent, type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
-type View = "home" | "intake" | "provider" | "setup";
-type Status = "idle" | "sending" | "success" | "error";
+type View = "home" | "consumer" | "matches" | "project" | "provider" | "platform";
+type Category = "Hjemmeside" | "Dashboard" | "Automation" | "Webapp" | "Pitch deck";
 
 type Intake = {
-  category: string;
+  category: Category;
   need: string;
   audience: string;
-  mustHave: string;
-  inspiration: string;
   budget: string;
   deadline: string;
-  name: string;
-  email: string;
 };
 
-type ProviderForm = {
-  name: string;
-  email: string;
-  company: string;
-  skills: string;
-  priceLevel: string;
-  capacity: string;
-  portfolio: string;
+const initialIntake: Intake = {
+  category: "Webapp",
+  need: "Jeg vil have bygget en simpel platform, hvor brugere kan beskrive et behov, få en klar projektbrief og blive matchet med relevante digitale specialister.",
+  audience: "Founders, små virksomheder og private, der har et digitalt behov, men ikke ved præcis hvem de skal hyre.",
+  budget: "25.000-50.000 kr.",
+  deadline: "4-6 uger"
 };
 
-const categories = [
-  { name: "Hjemmeside", tags: ["Hjemmeside", "Kontaktformular", "SEO", "UX/UI"], scope: ["Forside", "Ydelsessektion", "Kontaktflow", "Mobilvisning", "Basal SEO"], title: "Simpel hjemmeside med tydeligt kontaktflow" },
-  { name: "Dashboard", tags: ["Dashboard", "Rapportering", "Excel/Sheets", "KPI"], scope: ["Datagrundlag", "KPI-overblik", "Rapportvisning", "Opdateringsflow", "Kort handover"], title: "Let dashboard med tydelige KPI’er" },
-  { name: "Automation", tags: ["Automation", "Make/Zapier", "Google Sheets", "Workflow"], scope: ["Trigger", "Dataudtræk", "Automatisk log", "Fejlhåndtering", "Dokumenteret flow"], title: "Automation der reducerer manuelt arbejde" },
-  { name: "Webapp", tags: ["Webapp", "MVP", "Frontend", "Backend light"], scope: ["Kerneflow", "Brugerinput", "Admin light", "Statusvisning", "Deploy"], title: "Afgrænset webapp/MVP med klart første scope" },
-  { name: "Pitch deck", tags: ["Pitch deck", "Storyline", "Design", "Investor material"], scope: ["Storyline", "Slide-struktur", "Designretning", "Final deck", "Kort feedbackrunde"], title: "Professionelt pitch deck med klar storyline" }
+const categoryConfig: Record<Category, { title: string; tags: string[]; scope: string[]; questions: string[] }> = {
+  Hjemmeside: {
+    title: "Professionel hjemmeside med tydeligt kontaktflow",
+    tags: ["Webdesign", "Kontaktformular", "SEO", "CMS", "Mobil"],
+    scope: ["Forside og 3-5 undersider", "Kontaktformular og bookinglink", "Responsivt design", "Basal SEO og performance", "Kort handover og redigeringsguide"],
+    questions: ["Skal siden kunne redigeres af jer selv?", "Har I eksisterende brand, billeder og tekst?", "Hvad er vigtigste konvertering: opkald, booking eller formular?"]
+  },
+  Dashboard: {
+    title: "Overskueligt dashboard med centrale KPI’er",
+    tags: ["Dashboard", "Excel", "KPI", "Rapportering", "Data"],
+    scope: ["Datakilder og oprydning", "5-7 centrale KPI’er", "Ledelsesvenlig visning", "Månedlig opdateringslogik", "Dokumenteret handover"],
+    questions: ["Hvor ligger data i dag?", "Hvilke KPI’er træffes der beslutninger på?", "Skal dashboardet opdateres manuelt eller automatisk?"]
+  },
+  Automation: {
+    title: "Automation der fjerner manuelt dobbeltarbejde",
+    tags: ["Automation", "Make", "Zapier", "Sheets", "Workflow"],
+    scope: ["Trigger og datakilde", "Automatisk logning", "Fejlhåndtering", "Notifikationer", "Test og dokumentation"],
+    questions: ["Hvad starter flowet?", "Hvor skal data ende?", "Hvad sker der, hvis automationen fejler?"]
+  },
+  Webapp: {
+    title: "Afgrænset webapp/MVP med klart kerneflow",
+    tags: ["Webapp", "MVP", "Frontend", "Backend", "Vercel"],
+    scope: ["Landing page og intake-flow", "AI-assisteret brief preview", "Provider match preview", "Projektstatus og tilbudsflow", "Deploy-klar demo"],
+    questions: ["Hvad er det vigtigste kerneflow?", "Skal brugere kunne logge ind i første version?", "Hvilken handling skal brugeren kunne gennemføre uden hjælp?"]
+  },
+  "Pitch deck": {
+    title: "Pitch deck med klar fortælling og premium design",
+    tags: ["Pitch deck", "Storyline", "Design", "Investor", "Slides"],
+    scope: ["Narrativ og storyline", "Slide-struktur", "Designretning", "Finpudsning af key slides", "Eksportklar præsentation"],
+    questions: ["Hvem er modtageren?", "Hvilken beslutning skal decket drive?", "Har I tal og traction klar?"]
+  }
+};
+
+const providers = [
+  { name: "North Studio", type: "Webapp & MVP", score: 96, price: "38.000 kr.", time: "5 uger", tags: ["Next.js", "Vercel", "UX", "Dashboard"], note: "Stærk match på MVP, premium frontend og hurtigt demo-flow." },
+  { name: "Flow Builders", type: "Automation & tools", score: 91, price: "29.000 kr.", time: "3 uger", tags: ["Make", "Sheets", "Admin", "Workflow"], note: "God til strukturerede interne værktøjer og simple workflows." },
+  { name: "Copenhagen Digital", type: "Design & launch", score: 87, price: "45.000 kr.", time: "6 uger", tags: ["Brand", "Landing", "UI", "Launch"], note: "Stærk visuel eksekvering og launch-klar polish." }
 ];
 
-const examples: Intake[] = [
-  { category: "Hjemmeside", need: "Jeg er selvstændig konsulent og skal bruge en professionel hjemmeside med ydelser, priser, kontaktformular og bookinglink.", audience: "Potentielle B2B-kunder, der skal forstå ydelsen hurtigt og nemt kunne tage kontakt.", mustHave: "Forside, ydelser/priser, kontaktformular, bookinglink, mobilvisning, basal SEO og kort handover.", inspiration: "Nordisk, roligt og professionelt. Ikke for techy.", budget: "10.000-25.000 kr.", deadline: "3-4 uger", name: "", email: "" },
-  { category: "Dashboard", need: "Vi har salgstal i Excel og ønsker et simpelt dashboard med omsætning, pipeline og performance pr. måned.", audience: "Ledelsen og to team leads, der ikke er tekniske.", mustHave: "Oprydning af Excel-data, 5-6 KPI’er, enkel rapportvisning og dokumenteret opdateringsflow.", inspiration: "Rent dashboard med få grafer og tydelige nøgletal.", budget: "25.000-50.000 kr.", deadline: "2-3 uger", name: "", email: "" },
-  { category: "Automation", need: "Vi modtager leads på mail og vil gerne samle dem automatisk i Google Sheets med kategori og kort resumé.", audience: "Founder og salgsteam, der skal følge op hurtigere.", mustHave: "Gmail-trigger, udtræk af navn/email/besked, kategori, Sheets-log og simpel fejlmarkering.", inspiration: "Let at forstå og ikke et stort CRM-system.", budget: "10.000-25.000 kr.", deadline: "1-2 uger", name: "", email: "" }
+const pipeline = [
+  { title: "AI-assisteret brief", status: "Klar", owner: "Naetwork", value: "0 kr." },
+  { title: "Provider shortlist", status: "3 matches", owner: "System", value: "Automatisk" },
+  { title: "Tilbud modtaget", status: "2 aktive", owner: "Providers", value: "29-45k" },
+  { title: "Projektstart", status: "Afventer valg", owner: "Kunde", value: "Denne uge" }
 ];
 
-const initialIntake: Intake = examples[0];
-const initialProvider: ProviderForm = { name: "", email: "", company: "", skills: "", priceLevel: "", capacity: "", portfolio: "" };
-const quality = ["Ingen AI-drift i Sprint 1", "Data gemmes i Supabase Free", "Emails sendes via Resend Free", "Brief bygges med regler og skabeloner"];
+const providerProjects = [
+  { title: "MVP til digital matching-platform", budget: "25-50k", score: "96%", deadline: "4-6 uger" },
+  { title: "Automatisering af lead-flow", budget: "10-25k", score: "88%", deadline: "2-3 uger" },
+  { title: "Dashboard til månedlig rapportering", budget: "25-50k", score: "83%", deadline: "3-4 uger" }
+];
 
 function cx(...classes: Array<string | false | undefined>) { return classes.filter(Boolean).join(" "); }
-function selectedCategory(name: string) { return categories.find((item) => item.name === name) || categories[0]; }
-function splitList(value: string) { return value.split(/,|\n/).map((item) => item.trim()).filter(Boolean); }
-
-function buildBrief(intake: Intake) {
-  const config = selectedCategory(intake.category);
-  const customScope = splitList(intake.mustHave);
-  const extraTags = splitList(`${intake.need},${intake.mustHave}`).filter((item) => item.length < 28).slice(0, 3);
-  return {
-    title: config.title,
-    category: config.name,
-    tags: Array.from(new Set([...config.tags, ...extraTags])).slice(0, 8),
-    scope: customScope.length ? customScope.slice(0, 7) : config.scope,
-    notIncluded: ["Løbende drift/support uden særskilt aftale", "Større specialudvikling uden for scope", "Betalingsintegration uden særskilt aftale", "Ubegrænsede revisionsrunder"],
-    acceptance: ["Løsningen matcher godkendt brief", "Kerneflowet virker på mobil og desktop", "Leverancen afleveres med kort handover", "Ændringer samles i én feedbackrunde"],
-    budget: intake.budget || "Afklares",
-    deadline: intake.deadline || "Afklares",
-    matchRules: ["Kategori matcher providerens opgavetyper", "Budgetniveau ligger inden for providerens prisniveau", "Provider har relevant kapacitet", "Providerens kompetencer matcher tags"]
-  };
-}
 
 function Panel({ children, dark = false, className = "" }: { children: ReactNode; dark?: boolean; className?: string }) {
-  return <div className={cx("rounded-[28px] border p-6 shadow-sm", dark ? "border-slate-800 bg-[#071527] text-white" : "border-slate-200 bg-white text-slate-950", className)}>{children}</div>;
+  return <div className={cx("rounded-[30px] border p-6 shadow-sm", dark ? "border-slate-800 bg-[#071527] text-white" : "border-slate-200 bg-white text-slate-950", className)}>{children}</div>;
 }
-function Button({ children, onClick, type = "button", secondary = false, disabled = false }: { children: ReactNode; onClick?: () => void; type?: "button" | "submit"; secondary?: boolean; disabled?: boolean }) {
-  return <button type={type} onClick={onClick} disabled={disabled} className={cx("rounded-full px-6 py-3 text-sm font-black transition", disabled && "cursor-not-allowed opacity-60", secondary ? "border border-slate-300 bg-white text-slate-800" : "bg-[#071527] text-white shadow-lg shadow-slate-900/10", !disabled && "hover:-translate-y-0.5")}>{children}</button>;
+
+function Button({ children, onClick, secondary = false, className = "" }: { children: ReactNode; onClick?: () => void; secondary?: boolean; className?: string }) {
+  return <button onClick={onClick} className={cx("rounded-full px-6 py-3 text-sm font-black transition hover:-translate-y-0.5", secondary ? "border border-slate-300 bg-white text-slate-800" : "bg-[#071527] text-white shadow-lg shadow-slate-900/10", className)}>{children}</button>;
 }
-function Badge({ children }: { children: ReactNode }) { return <span className="inline-flex h-9 w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-slate-200 bg-white px-4 text-xs font-bold leading-none text-slate-700">{children}</span>; }
+
 function Eyebrow({ children }: { children: ReactNode }) { return <p className="text-sm font-black uppercase tracking-[.22em] text-[#3f8f83]">{children}</p>; }
-function Field({ label, children }: { label: string; children: ReactNode }) { return <label className="grid gap-2 text-sm font-bold text-slate-700">{label}{children}</label>; }
-function Input({ name, value, onChange, type = "text", placeholder = "" }: { name: string; value: string; onChange: (event: ChangeEvent<HTMLInputElement>) => void; type?: string; placeholder?: string }) { return <input name={name} value={value} onChange={onChange} type={type} placeholder={placeholder} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" />; }
-function Textarea({ name, value, onChange, rows = 4, placeholder = "" }: { name: string; value: string; onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void; rows?: number; placeholder?: string }) { return <textarea name={name} value={value} onChange={onChange} rows={rows} placeholder={placeholder} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" />; }
+function Badge({ children, dark = false }: { children: ReactNode; dark?: boolean }) { return <span className={cx("inline-flex h-9 w-fit shrink-0 items-center rounded-full px-4 text-xs font-black", dark ? "bg-white/10 text-white ring-1 ring-white/10" : "border border-slate-200 bg-white text-slate-700")}>{children}</span>; }
+function Stat({ label, value }: { label: string; value: string }) { return <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[.16em] text-slate-400">{label}</p><p className="mt-2 text-2xl font-black tracking-tight text-[#071527]">{value}</p></div>; }
 
 export function NaetworkLaunchMvp() {
   const [view, setView] = useState<View>("home");
   const [menu, setMenu] = useState(false);
   const [intake, setIntake] = useState<Intake>(initialIntake);
-  const [provider, setProvider] = useState<ProviderForm>(initialProvider);
-  const [leadStatus, setLeadStatus] = useState<Status>("idle");
-  const [providerStatus, setProviderStatus] = useState<Status>("idle");
-  const brief = useMemo(() => buildBrief(intake), [intake]);
+  const [briefMode, setBriefMode] = useState<"draft" | "enhanced">("enhanced");
+  const [selectedProvider, setSelectedProvider] = useState(providers[0]);
+
+  const brief = useMemo(() => {
+    const config = categoryConfig[intake.category];
+    return {
+      title: briefMode === "enhanced" ? `AI-forbedret brief: ${config.title}` : config.title,
+      category: intake.category,
+      tags: config.tags,
+      scope: config.scope,
+      questions: config.questions,
+      summary: briefMode === "enhanced"
+        ? "Naetwork har omsat behovet til et mere afgrænset projekt med tydelige leverancer, fravalg og match-tags. Matching sker efterfølgende struktureret og regelbaseret."
+        : "Regelbaseret brief baseret på kategori, budget, deadline og scope.",
+      notIncluded: ["Ubegrænsede revisionsrunder", "Betalingsintegration uden særskilt scope", "Løbende drift og support uden særskilt aftale"],
+      acceptance: ["Kerneflow virker på desktop og mobil", "Leverancen matcher godkendt brief", "Provider afleverer kort handover", "Kunde kan godkende eller bede om én samlet feedbackrunde"]
+    };
+  }, [briefMode, intake.category]);
 
   const open = (target: View) => { setView(target); setMenu(false); if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" }); };
   const nav = (target: View, label: string) => <button onClick={() => open(target)} className={cx("rounded-full px-4 py-2 text-sm font-bold transition", view === target ? "bg-[#071527] text-white" : "text-slate-600 hover:bg-slate-100")}>{label}</button>;
-  const updateIntake = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setIntake({ ...intake, [event.target.name]: event.target.value });
-  const updateProvider = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setProvider({ ...provider, [event.target.name]: event.target.value });
-
-  async function submitLead(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLeadStatus("sending");
-    try {
-      const response = await fetch("/api/consumer-intake", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ intake, brief }) });
-      setLeadStatus(response.ok ? "success" : "error");
-    } catch { setLeadStatus("error"); }
-  }
-
-  async function submitProvider(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setProviderStatus("sending");
-    try {
-      const response = await fetch("/api/provider-signup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(provider) });
-      setProviderStatus(response.ok ? "success" : "error");
-    } catch { setProviderStatus("error"); }
-  }
 
   return <main className="min-h-screen bg-[#f7f8fb] text-slate-950">
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
-        <button onClick={() => open("home")} className="flex items-center gap-3 text-left"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#071527] text-sm font-black text-white">N</span><span><span className="block text-lg font-black tracking-tight">Naetwork</span><span className="block text-xs text-slate-500">Sprint 1 uden AI</span></span></button>
-        <nav className="hidden items-center gap-2 lg:flex">{nav("home", "Forside")}{nav("intake", "Beskriv behov")}{nav("provider", "Bliv provider")}{nav("setup", "Setup")}</nav>
-        <div className="hidden gap-2 md:flex"><Button secondary onClick={() => open("provider")}>Ansøg som provider</Button><Button onClick={() => open("intake")}>Beskriv dit behov</Button></div>
+        <button onClick={() => open("home")} className="flex items-center gap-3 text-left"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#071527] text-sm font-black text-white">N</span><span><span className="block text-lg font-black tracking-tight">Naetwork</span><span className="block text-xs text-slate-500">AI brief · regelbaseret matching</span></span></button>
+        <nav className="hidden items-center gap-2 lg:flex">{nav("home", "Forside")}{nav("consumer", "Kunde-flow")}{nav("matches", "Matches")}{nav("provider", "Provider")}{nav("platform", "Platform")}</nav>
+        <div className="hidden gap-2 md:flex"><Button secondary onClick={() => open("provider")}>Provider demo</Button><Button onClick={() => open("consumer")}>Prøv kunde-flow</Button></div>
         <button onClick={() => setMenu(!menu)} className="rounded-full border border-slate-200 px-4 py-2 text-sm font-black lg:hidden">Menu</button>
       </div>
-      {menu && <div className="border-t border-slate-200 bg-white px-5 py-4 lg:hidden"><div className="grid gap-2">{nav("home", "Forside")}{nav("intake", "Beskriv behov")}{nav("provider", "Bliv provider")}{nav("setup", "Setup")}</div></div>}
+      {menu && <div className="border-t border-slate-200 bg-white px-5 py-4 lg:hidden"><div className="grid gap-2">{nav("home", "Forside")}{nav("consumer", "Kunde-flow")}{nav("matches", "Matches")}{nav("provider", "Provider")}{nav("platform", "Platform")}</div></div>}
     </header>
 
     {view === "home" && <>
-      <section className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 lg:grid-cols-[1.04fr_.96fr] lg:py-24">
-        <div><div className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">Gratis stack · ingen AI-drift · regelbaseret matching</div><h1 className="max-w-4xl text-4xl font-black leading-[.98] tracking-[-0.045em] text-[#071527] md:text-7xl">Fra uklart behov til konkret digital brief.</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Naetwork starter som en selvkørende, guidet platform uden AI. Kunden beskriver sit behov, platformen bygger en standardiseret brief, og opgaven kan matches med relevante providers via regler.</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button onClick={() => open("intake")}>Beskriv dit behov</Button><Button secondary onClick={() => open("provider")}>Ansøg som provider</Button></div></div>
-        <Panel dark className="lg:p-8"><p className="text-sm font-black uppercase tracking-[.2em] text-emerald-200">Sprint 1 flow</p><h2 className="mt-3 text-3xl font-black tracking-tight">Guidet intake → brief → gemt lead → email</h2><div className="mt-6 grid gap-3">{["Ingen AI-kald og ingen AI-omkostning", "Brief bygges med kategori, skabeloner og regler", "Submissions gemmes i Supabase, når env vars er sat", "Du får email via Resend, når der kommer leads"].map((item) => <div key={item} className="rounded-2xl bg-white/10 p-4 text-sm font-semibold leading-6 text-white/85 ring-1 ring-white/10">{item}</div>)}</div></Panel>
+      <section className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 lg:grid-cols-[1.02fr_.98fr] lg:py-24">
+        <div>
+          <div className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">Fuld produktdemo · AI hvor det skaber værdi · struktureret platform</div>
+          <h1 className="max-w-5xl text-4xl font-black leading-[.96] tracking-[-0.05em] text-[#071527] md:text-7xl">Fra uklart behov til konkret digital løsning.</h1>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Naetwork bruger AI dér, hvor det fjerner friktion: at omsætte et uklart behov til en klar projektbrief. Resten af platformen kører struktureret og regelbaseret.</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button onClick={() => open("consumer")}>Prøv kunde-flow</Button><Button secondary onClick={() => open("platform")}>Se platform demo</Button></div>
+          <div className="mt-8 flex flex-wrap gap-2"><Badge>AI-assisteret brief</Badge><Badge>Regelbaseret matching</Badge><Badge>Provider-tilbud</Badge><Badge>Projektstatus</Badge></div>
+        </div>
+        <Panel dark className="overflow-hidden lg:p-8">
+          <div className="flex items-start justify-between gap-6"><div><p className="text-sm font-black uppercase tracking-[.2em] text-emerald-200">Naetwork platform</p><h2 className="mt-3 text-3xl font-black tracking-tight">Pipeline overview</h2></div><Badge dark>Demo-data</Badge></div>
+          <div className="mt-8 grid gap-3">{pipeline.map((item) => <div key={item.title} className="grid gap-3 rounded-2xl bg-white/10 p-4 ring-1 ring-white/10 sm:grid-cols-[1fr_auto]"><div><p className="font-black text-white">{item.title}</p><p className="mt-1 text-sm text-white/60">{item.owner}</p></div><div className="text-left sm:text-right"><p className="text-sm font-black text-emerald-200">{item.status}</p><p className="mt-1 text-sm text-white/60">{item.value}</p></div></div>)}</div>
+          <div className="mt-8 grid grid-cols-3 gap-3"><div className="rounded-2xl bg-white/10 p-4"><p className="text-2xl font-black">18</p><p className="text-xs text-white/60">briefs</p></div><div className="rounded-2xl bg-white/10 p-4"><p className="text-2xl font-black">42</p><p className="text-xs text-white/60">providers</p></div><div className="rounded-2xl bg-white/10 p-4"><p className="text-2xl font-black">12%</p><p className="text-xs text-white/60">platform fee</p></div></div>
+        </Panel>
       </section>
-      <section className="mx-auto max-w-7xl px-5 py-8"><div className="grid gap-4 md:grid-cols-4">{quality.map((item) => <Panel key={item} className="min-h-[104px]"><p className="text-sm font-bold leading-6 text-slate-700">{item}</p></Panel>)}</div></section>
-      <section className="mx-auto max-w-7xl px-5 py-14"><div className="grid gap-8 lg:grid-cols-[.76fr_1.24fr]"><div><Eyebrow>Prøv et eksempel</Eyebrow><h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Se hvordan behov bliver til brief.</h2><p className="mt-4 text-slate-600">Eksemplerne bruger faste regler — ikke AI.</p></div><div className="grid gap-4 md:grid-cols-3">{examples.map((example, index) => <button key={example.need} onClick={() => { setIntake(example); open("intake"); }} className="flex min-h-[280px] flex-col justify-between rounded-[24px] border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#3f8f83]">Eksempel {index + 1}</p><h3 className="mt-3 font-black text-[#071527]">{example.category}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{example.need}</p></div><span className="mt-5 inline-flex w-fit rounded-full bg-[#071527] px-4 py-2 text-xs font-black text-white">Se brief</span></button>)}</div></div></section>
+      <section className="mx-auto max-w-7xl px-5 py-8"><div className="grid gap-4 md:grid-cols-4">{["1. Beskriv behov", "2. AI skærper brief", "3. System matcher", "4. Projekt styres"].map((item) => <Panel key={item}><p className="text-lg font-black text-[#071527]">{item}</p><p className="mt-3 text-sm leading-6 text-slate-600">Demoen viser det fulde flow fra første input til valg af provider og projektstatus.</p></Panel>)}</div></section>
+      <section className="mx-auto max-w-7xl px-5 py-14"><Panel className="grid gap-8 lg:grid-cols-[.8fr_1.2fr]"><div><Eyebrow>Hvad demoen beviser</Eyebrow><h2 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Ikke en freelancer-børs. En struktureret projektmotor.</h2><p className="mt-4 text-slate-600">Kunden skal ikke browse 200 profiler. Platformen hjælper først med at formulere et godt scope — og matcher derefter på data.</p></div><div className="grid gap-4 md:grid-cols-2">{["Brief før match", "Få relevante providers", "Tilbud kan sammenlignes", "Status og handover", "Provider pipeline", "Platform fee logic"].map((item) => <div key={item} className="rounded-2xl bg-slate-50 p-5"><p className="font-black text-[#071527]">{item}</p><p className="mt-2 text-sm leading-6 text-slate-600">Indbygget i demo-flowet, så produktet føles konkret og salgbart.</p></div>)}</div></Panel></section>
     </>}
 
-    {view === "intake" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-10 lg:grid-cols-[.9fr_1.1fr]">
-      <Panel><Eyebrow>Guidet intake</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Beskriv behovet</h1><p className="mt-3 text-sm leading-6 text-slate-600">Platformen bygger briefen automatisk ud fra kategori, scope og faste regler.</p><form onSubmit={submitLead} className="mt-6 grid gap-4"><div className="grid gap-2"><p className="text-sm font-bold text-slate-700">Kategori</p><div className="flex flex-wrap gap-2">{categories.map((item) => <button key={item.name} type="button" onClick={() => setIntake({ ...intake, category: item.name })} className={cx("rounded-full border px-4 py-2 text-sm font-black", intake.category === item.name ? "border-[#071527] bg-[#071527] text-white" : "border-slate-200 bg-white text-slate-700")}>{item.name}</button>)}</div></div><Field label="Hvad har du brug for hjælp til?"><Textarea name="need" value={intake.need} onChange={updateIntake} rows={5} /></Field><Field label="Hvem skal bruge løsningen?"><Textarea name="audience" value={intake.audience} onChange={updateIntake} rows={3} /></Field><Field label="Hvad skal første version kunne?"><Textarea name="mustHave" value={intake.mustHave} onChange={updateIntake} rows={4} /></Field><Field label="Eksempler eller ønsket stil"><Textarea name="inspiration" value={intake.inspiration} onChange={updateIntake} rows={3} /></Field><div className="grid gap-4 md:grid-cols-2"><Field label="Budgetniveau"><Input name="budget" value={intake.budget} onChange={updateIntake} /></Field><Field label="Ønsket deadline"><Input name="deadline" value={intake.deadline} onChange={updateIntake} /></Field></div><div className="grid gap-4 md:grid-cols-2"><Field label="Navn"><Input name="name" value={intake.name} onChange={updateIntake} /></Field><Field label="Email"><Input name="email" value={intake.email} onChange={updateIntake} type="email" /></Field></div><Button type="submit" disabled={leadStatus === "sending"}>{leadStatus === "sending" ? "Sender..." : "Send behov"}</Button>{leadStatus === "success" && <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-black text-emerald-800">Behov modtaget. Uden env vars kører det i demo-mode; med Supabase/Resend gemmes og sendes det live.</p>}{leadStatus === "error" && <p className="rounded-2xl bg-red-50 p-4 text-sm font-black text-red-800">Noget gik galt. Tjek at felterne er udfyldt.</p>}</form></Panel>
-      <Panel><div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5"><div><Eyebrow>Automatisk brief</Eyebrow><h2 className="mt-3 text-3xl font-black tracking-tight text-[#071527]">{brief.title}</h2></div><span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">Uden AI</span></div><div className="mt-6 grid gap-4 md:grid-cols-3">{[["Kategori", brief.category], ["Budget", brief.budget], ["Deadline", brief.deadline]].map(([label, value]) => <div key={label} className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-black uppercase tracking-[.18em] text-slate-400">{label}</p><p className="mt-2 text-sm font-black text-slate-900">{value}</p></div>)}</div><div className="mt-5 flex flex-wrap items-start content-start gap-2">{brief.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}</div><div className="mt-6 grid gap-6 md:grid-cols-2"><div><h3 className="font-black">Scope</h3><ul className="mt-3 grid gap-2">{brief.scope.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul><h3 className="mt-6 font-black">Ikke inkluderet</h3><ul className="mt-3 grid gap-2">{brief.notIncluded.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul></div><div><h3 className="font-black">Acceptkriterier</h3><ul className="mt-3 grid gap-2">{brief.acceptance.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul><h3 className="mt-6 font-black">Match-regler</h3><ul className="mt-3 grid gap-2">{brief.matchRules.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul></div></div></Panel>
+    {view === "consumer" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-10 lg:grid-cols-[.82fr_1.18fr]">
+      <Panel><Eyebrow>Kunde-flow</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Beskriv dit behov</h1><p className="mt-3 text-sm leading-6 text-slate-600">Dette er demoens startpunkt. AI bruges kun til at skærpe briefen — ikke til hele platformen.</p><div className="mt-6 grid gap-4"><div><p className="mb-2 text-sm font-bold text-slate-700">Kategori</p><div className="flex flex-wrap gap-2">{(Object.keys(categoryConfig) as Category[]).map((item) => <button key={item} onClick={() => setIntake({ ...intake, category: item })} className={cx("rounded-full border px-4 py-2 text-sm font-black", intake.category === item ? "border-[#071527] bg-[#071527] text-white" : "border-slate-200 bg-white text-slate-700")}>{item}</button>)}</div></div>{[["need", "Hvad skal bygges?"], ["audience", "Hvem skal bruge det?"], ["budget", "Budgetniveau"], ["deadline", "Deadline"]].map(([key, label]) => <label key={key} className="grid gap-2 text-sm font-bold text-slate-700">{label}{key === "need" || key === "audience" ? <textarea value={intake[key as keyof Intake]} onChange={(event) => setIntake({ ...intake, [key]: event.target.value })} rows={key === "need" ? 5 : 3} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 font-normal text-slate-950 outline-none focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" /> : <input value={intake[key as keyof Intake]} onChange={(event) => setIntake({ ...intake, [key]: event.target.value })} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 font-normal text-slate-950 outline-none focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" />}</label>)}<div className="flex flex-col gap-3 sm:flex-row"><Button onClick={() => setBriefMode("enhanced")}>Generér AI-brief</Button><Button secondary onClick={() => open("matches")}>Se matches</Button></div></div></Panel>
+      <Panel><div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5"><div><Eyebrow>{briefMode === "enhanced" ? "AI-assisteret brief" : "Regelbaseret brief"}</Eyebrow><h2 className="mt-3 text-3xl font-black tracking-tight text-[#071527]">{brief.title}</h2></div><Badge>{briefMode === "enhanced" ? "AI preview" : "Rules"}</Badge></div><p className="mt-5 text-sm leading-6 text-slate-600">{brief.summary}</p><div className="mt-5 flex flex-wrap gap-2">{brief.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}</div><div className="mt-6 grid gap-6 md:grid-cols-2"><div><h3 className="font-black">Scope</h3><ul className="mt-3 grid gap-2">{brief.scope.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul><h3 className="mt-6 font-black">AI-afklaringer</h3><ul className="mt-3 grid gap-2">{brief.questions.map((item) => <li key={item} className="rounded-2xl bg-emerald-50 p-3 text-sm leading-6 text-emerald-900">{item}</li>)}</ul></div><div><h3 className="font-black">Acceptkriterier</h3><ul className="mt-3 grid gap-2">{brief.acceptance.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul><h3 className="mt-6 font-black">Ikke inkluderet</h3><ul className="mt-3 grid gap-2">{brief.notIncluded.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-3 text-sm leading-6 text-slate-700">{item}</li>)}</ul></div></div><div className="mt-6"><Button onClick={() => open("matches")}>Godkend brief og find providers</Button></div></Panel>
     </section>}
 
-    {view === "provider" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-10 lg:grid-cols-[.9fr_1.1fr]">
-      <Panel><Eyebrow>Provider signup</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Ansøg som provider</h1><p className="mt-3 text-sm leading-6 text-slate-600">Provider-data gemmes i Supabase, når env vars er sat.</p><form onSubmit={submitProvider} className="mt-6 grid gap-4"><Input name="name" value={provider.name} onChange={updateProvider} placeholder="Navn" /><Input name="email" value={provider.email} onChange={updateProvider} type="email" placeholder="Email" /><Input name="company" value={provider.company} onChange={updateProvider} placeholder="Firma" /><Textarea name="skills" value={provider.skills} onChange={updateProvider} rows={4} placeholder="Kompetencer" /><Input name="priceLevel" value={provider.priceLevel} onChange={updateProvider} placeholder="Prisniveau" /><Input name="capacity" value={provider.capacity} onChange={updateProvider} placeholder="Kapacitet pr. måned" /><Textarea name="portfolio" value={provider.portfolio} onChange={updateProvider} rows={3} placeholder="Cases/links" /><Button type="submit" disabled={providerStatus === "sending"}>{providerStatus === "sending" ? "Sender..." : "Send ansøgning"}</Button>{providerStatus === "success" && <p className="rounded-2xl bg-emerald-50 p-4 text-sm font-black text-emerald-800">Provider-ansøgning modtaget.</p>}{providerStatus === "error" && <p className="rounded-2xl bg-red-50 p-4 text-sm font-black text-red-800">Noget gik galt. Tjek navn, email og kompetencer.</p>}</form></Panel>
-      <Panel><h2 className="text-2xl font-black text-[#071527]">Regelbaseret matching senere</h2><div className="mt-5 grid gap-3">{["Provider skills matcher brief-tags", "Prisniveau matcher kundens budget", "Kapacitet matcher deadline", "Kategori matcher providerens opgavetyper"].map((item) => <div key={item} className="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-700">{item}</div>)}</div></Panel>
-    </section>}
+    {view === "matches" && <section className="mx-auto max-w-7xl px-5 py-10"><div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><Eyebrow>Provider matches</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">3 relevante matches baseret på briefen</h1><p className="mt-3 max-w-2xl text-slate-600">Matching føles intelligent, men logikken er struktureret: kategori, tags, budget, kapacitet og relevant erfaring.</p></div><Button secondary onClick={() => open("consumer")}>Tilbage til brief</Button></div><div className="grid gap-5 lg:grid-cols-3">{providers.map((provider) => <Panel key={provider.name} className="flex min-h-[430px] flex-col justify-between"><div><div className="flex items-start justify-between gap-4"><div><p className="text-2xl font-black text-[#071527]">{provider.name}</p><p className="mt-1 text-sm font-bold text-slate-500">{provider.type}</p></div><span className="rounded-full bg-emerald-50 px-3 py-2 text-sm font-black text-emerald-800">{provider.score}%</span></div><p className="mt-5 text-sm leading-6 text-slate-600">{provider.note}</p><div className="mt-5 flex flex-wrap gap-2">{provider.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}</div><div className="mt-6 grid grid-cols-2 gap-3"><Stat label="Tilbud" value={provider.price} /><Stat label="Tid" value={provider.time} /></div></div><Button onClick={() => { setSelectedProvider(provider); open("project"); }}>Vælg provider</Button></Panel>)}</div></section>}
 
-    {view === "setup" && <section className="mx-auto max-w-7xl px-5 py-10"><Eyebrow>Gratis Sprint 1 setup</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Hvad er klar nu?</h1><p className="mt-3 max-w-3xl text-slate-600">Koden er klar til at køre uden AI. For rigtig lagring og emails skal gratis Supabase/Resend keys sættes i Vercel.</p><div className="mt-8 grid gap-4 md:grid-cols-4">{quality.map((item) => <Panel key={item}><p className="text-sm font-bold leading-6 text-slate-700">{item}</p></Panel>)}</div><Panel className="mt-6"><h2 className="text-2xl font-black text-[#071527]">Næste manuelle opsætning én gang</h2><div className="mt-5 grid gap-3 md:grid-cols-2">{["Opret Supabase Free project", "Kør supabase/schema.sql", "Opret Resend Free API key", "Sæt env vars i Vercel", "Redeploy projektet", "Test consumer og provider forms"].map((item) => <div key={item} className="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-700">{item}</div>)}</div></Panel></section>}
-    <footer className="mx-auto max-w-7xl px-5 py-10 text-sm text-slate-500"><div className="border-t border-slate-200 pt-6">Naetwork · Sprint 1 uden AI · Gratis stack med Vercel, Supabase og Resend.</div></footer>
+    {view === "project" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-10 lg:grid-cols-[.85fr_1.15fr]"><Panel dark><Eyebrow>Valgt provider</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight">{selectedProvider.name}</h1><p className="mt-4 text-white/70">{selectedProvider.note}</p><div className="mt-6 grid gap-3 sm:grid-cols-2"><div className="rounded-2xl bg-white/10 p-4"><p className="text-sm text-white/60">Pris</p><p className="mt-1 text-2xl font-black">{selectedProvider.price}</p></div><div className="rounded-2xl bg-white/10 p-4"><p className="text-sm text-white/60">Levering</p><p className="mt-1 text-2xl font-black">{selectedProvider.time}</p></div></div><div className="mt-6"><Button secondary onClick={() => open("platform")}>Se platform status</Button></div></Panel><Panel><Eyebrow>Projektstatus</Eyebrow><h2 className="mt-3 text-3xl font-black tracking-tight text-[#071527]">MVP til digital matching-platform</h2><div className="mt-6 grid gap-3">{["Brief godkendt", "Provider valgt", "Tilbud accepteret", "Projekt kickoff", "Første leverance", "Feedbackrunde", "Afsluttet og handover"].map((step, index) => <div key={step} className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4"><span className={cx("grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-black", index < 3 ? "bg-[#071527] text-white" : "bg-white text-slate-400 ring-1 ring-slate-200")}>{index + 1}</span><div><p className="font-black text-[#071527]">{step}</p><p className="text-sm text-slate-500">{index < 3 ? "Fuldført i demo-flow" : "Næste trin i projektet"}</p></div></div>)}</div></Panel></section>}
+
+    {view === "provider" && <section className="mx-auto grid max-w-7xl gap-6 px-5 py-10 lg:grid-cols-[.85fr_1.15fr]"><Panel><Eyebrow>Provider portal</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Relevante opgaver — ikke åbent kaos.</h1><p className="mt-4 text-slate-600">Providers ser kun opgaver, hvor deres profil matcher kategori, tags, budget og kapacitet. Det gør platformen mere premium end en traditionel freelancer-børs.</p><div className="mt-6 grid gap-3">{["Profil og kompetencer", "Match-score pr. opgave", "Send tilbud", "Aktive projekter", "Handover og rating"].map((item) => <div key={item} className="rounded-2xl bg-slate-50 p-4 text-sm font-black text-slate-700">{item}</div>)}</div></Panel><div className="grid gap-4">{providerProjects.map((project) => <Panel key={project.title}><div className="grid gap-4 md:grid-cols-[1fr_auto]"><div><p className="text-xl font-black text-[#071527]">{project.title}</p><p className="mt-2 text-sm text-slate-500">Budget {project.budget} · Deadline {project.deadline}</p></div><div className="text-left md:text-right"><p className="text-sm font-black text-emerald-700">Match {project.score}</p><button className="mt-2 rounded-full bg-[#071527] px-4 py-2 text-xs font-black text-white">Send tilbud</button></div></div></Panel>)}</div></section>}
+
+    {view === "platform" && <section className="mx-auto max-w-7xl px-5 py-10"><div className="mb-8"><Eyebrow>Platform dashboard</Eyebrow><h1 className="mt-3 text-4xl font-black tracking-tight text-[#071527]">Naetwork som ægte produktoplevelse</h1><p className="mt-3 max-w-3xl text-slate-600">Denne demo viser, hvordan platformen kan føles live: pipeline, matches, tilbud, status og potentiel platformøkonomi — uden at bygge fuld backend først.</p></div><div className="grid gap-4 md:grid-cols-4"><Stat label="Aktive briefs" value="18" /><Stat label="Provider pool" value="42" /><Stat label="Pipeline value" value="842k" /><Stat label="Est. fee" value="101k" /></div><div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_.95fr]"><Panel><h2 className="text-2xl font-black text-[#071527]">Live pipeline preview</h2><div className="mt-5 grid gap-3">{pipeline.map((item) => <div key={item.title} className="grid gap-3 rounded-2xl bg-slate-50 p-4 md:grid-cols-[1fr_auto_auto]"><p className="font-black text-[#071527]">{item.title}</p><p className="text-sm font-bold text-slate-500">{item.owner}</p><p className="text-sm font-black text-emerald-700">{item.status}</p></div>)}</div></Panel><Panel dark><h2 className="text-2xl font-black">Strategisk princip</h2><p className="mt-4 leading-7 text-white/70">Naetwork skal ikke ligne Fiverr. Produktet skal føles som en kurateret projektmotor: AI hjælper med briefen, mens resten styres af struktur, statusser, tilbud og klare leverancekrav.</p><div className="mt-6 grid gap-3">{["Brief før browse", "Få matches", "Scope låses", "Tilbud sammenlignes", "Projektstatus styres"].map((item) => <div key={item} className="rounded-2xl bg-white/10 p-4 text-sm font-black text-white/80 ring-1 ring-white/10">{item}</div>)}</div></Panel></div></section>}
+
+    <footer className="mx-auto max-w-7xl px-5 py-10 text-sm text-slate-500"><div className="border-t border-slate-200 pt-6">Naetwork · Full Demo v1 · AI-assisteret brief og regelbaseret platform-flow.</div></footer>
   </main>;
 }
