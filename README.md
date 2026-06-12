@@ -1,8 +1,25 @@
-# Naetwork Full Demo v1
+# Naetwork Consumer-First Demo
 
-**Positionering:** Beskriv dit behov. Få en skarp brief. Bliv matchet med den rette pro.
+**Positionering:** Få styr på din digitale opgave — før du hyrer nogen.
 
-Naetwork er nu sat op som en high-fidelity produktdemo, der viser den fulde platformoplevelse: kunde-flow, AI-assisteret brief, provider-matches, tilbud, projektstatus, provider portal og platform dashboard.
+Naetwork er sat op som en high-fidelity demo med consumeren som primær kunde. Forsiden fokuserer nu på den vigtigste værdi: at brugeren kan beskrive et uklart digitalt behov og få det omsat til en klar projektbrief, før de skal vælge specialist.
+
+## Primær værdi for consumers
+
+Naetwork hjælper brugeren med at undgå tre klassiske problemer:
+
+- De ved ikke præcis, hvad de skal bede om
+- Tilbud er svære at sammenligne
+- De risikerer at vælge forkert specialist
+
+Naetwork løser det ved at give:
+
+- Klar projektbrief
+- Scope og fravalg
+- Acceptkriterier
+- Anbefalet specialisttype
+- Få relevante matches
+- Sammenlignelige tilbud
 
 ## Produktprincip
 
@@ -20,36 +37,23 @@ Resten af platformen kører struktureret og regelbaseret:
 
 ## Hvad demoen viser
 
-- Premium landing page
-- Komplet kunde-flow
-- AI-brief preview
+- Consumer-first landing page
+- Hurtig startboks direkte på forsiden
+- CTA: “Lav min gratis brief”
+- Før/efter-sektion: før Naetwork vs. med Naetwork
+- AI-assisteret brief preview
 - Scope, fravalg og acceptkriterier
-- 3 provider-matches med score, pris og leveringstid
+- Provider-matches med score, pris og leveringstid
 - Provider-valg
 - Projektstatus/timeline
-- Provider portal med relevante opgaver
-- Platform dashboard med pipeline og demo-metrics
-- Klar positioning som kurateret projektmotor, ikke åben freelancer-børs
+- Sekundær provider-side
+- Sekundært platform dashboard
 
-## Demoens formål
+## Strategisk retning
 
-Demoen er lavet til at kunne vise værdien hurtigt:
+Forsiden skal først sælge consumer-værdien: klarhed, tryghed og bedre valg.
 
-> Kunden skal ikke browse 200 profiler. Naetwork hjælper først med at formulere et godt scope — og matcher derefter på data.
-
-Det gør produktet nemmere at forstå, teste og sælge, før der bygges tung backend, betaling og fuld AI-integration.
-
-## Næste mulige sprint
-
-Når demoen er valideret, kan næste sprint være:
-
-1. Rigtig database
-2. Rigtig AI-brief endpoint
-3. Email-notifikationer
-4. Provider signup med data
-5. Simpel login
-6. Regelbaseret matching baseret på rigtige provider-profiler
-7. Betaling og platform fee senere
+Provider- og platform-delen er stadig vigtig, men sekundær i demoen.
 
 ## Tech stack
 
