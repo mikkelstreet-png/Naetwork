@@ -1,5 +1,5 @@
-import { NaetworkLaunchMvp } from "@/components/NaetworkLaunchMvp";
+import { NaetworkExperience } from "@/components/NaetworkExperience";
 
 export default function Home() {
-  return <NaetworkLaunchMvp />;
+  return <NaetworkExperience />;
 }
