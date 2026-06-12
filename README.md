@@ -4,6 +4,16 @@
 
 Naetwork er en dansk, moderne MVP-webapp for en kurateret platform, hvor private og virksomheder beskriver et digitalt behov, får det omsat til en professionel AI-genereret projektbrief og matches med relevante digitale pro’s.
 
+## Seneste forbedringer
+
+- AI-intake er bygget om til en step-by-step wizard
+- Forsiden er gjort mere premium og problemorienteret
+- Projektbriefen er gjort mere professionel med første version, scope, ikke inkluderet, acceptkriterier og provider-opsummering
+- Matching er gjort mere troværdig med match-score, forklaring, availability, svartid, prisniveau, rating og relevante cases
+- Der er tilføjet realistiske demo-cases, så Naetwork kan vises hurtigt uden manuel indtastning
+- Mobilnavigationen er forbedret
+- Admin-dashboardet viser manuel matching, betalingsstatus, pipeline og potentiel kommission
+
 ## Hvad er bygget
 
 - Dansk forside med premium, nordisk B2B/SaaS-udtryk
