@@ -1,5 +1,5 @@
-import { NaetworkSprintTwo } from "@/components/NaetworkSprintTwo";
+import { NaetworkSprintThree } from "@/components/NaetworkSprintThree";
 
 export default function Home() {
-  return <NaetworkSprintTwo />;
+  return <NaetworkSprintThree />;
 }
