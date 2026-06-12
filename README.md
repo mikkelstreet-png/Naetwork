@@ -1,51 +1,82 @@
-# Naetwork MVP
+# Naetwork Sprint 1
 
 **Positionering:** Beskriv dit behov. Få en skarp brief. Bliv matchet med den rette pro.
 
-Naetwork er en dansk early access MVP for en kurateret platform, hvor private, founders og små virksomheder beskriver et digitalt behov, får det omsat til en professionel projektbrief og kan matches med relevante digitale specialister.
+Naetwork er nu sat op som en dansk, regelbaseret Sprint 1-platform uden AI-drift. Kunder beskriver et digitalt behov, vælger kategori, får en automatisk projektbrief via skabeloner/regler, og providers kan ansøge via et selvstændigt signup-flow.
 
-## Kvalitetssikringslinje
+## Beslutning for Sprint 1
 
-Den nuværende version er ryddet op, så den er mere launch-parat:
+Sprint 1 kører uden AI.
 
-- Ingen falske brugertal, ratings, testimonials eller cases
-- Demo-eksempler er tydeligt markeret som demo
-- Forsiden forklarer værdien mere klart og professionelt
-- Det tidligere uklare “live demo flow” er fjernet som primær framing
-- Consumer-flowet fokuserer på behov → brief → kvalitetssikring
-- Provider-flowet er gjort til en ansøgning, ikke en åben profil-børs
-- Admin-delen er positioneret som quality gate for manuel matching
-- Begge routes (`/` og `/da`) peger på den kvalitetssikrede MVP-komponent
+Det betyder:
+
+- Ingen AI API-key
+- Ingen AI-driftsomkostninger
+- Brief bygges med kategorier, regler og faste skabeloner
+- Matching kan senere bygges regelbaseret på tags, budget, kategori og kapacitet
+- Platformen kan køre gratis i starten med Vercel, Supabase Free og Resend Free
 
 ## Hvad er bygget
 
-- Dansk forside med premium, nordisk B2B/SaaS-udtryk
-- AI-intake for consumers
-- AI-genereret projektbrief med kategori, scope, ikke inkluderet, acceptkriterier, budgetniveau og leveringstid
-- Provider early access-ansøgning
-- Admin quality gate med næste tekniske launch-skridt
-- Mock matching-note baseret på opgavetags
-- Early access-framing uden overdrevne claims
+- Guidet consumer intake
+- Kategori-valg: Hjemmeside, Dashboard, Automation, Webapp, Pitch deck
+- Automatisk brief uden AI
+- Brief med kategori, tags, scope, ikke inkluderet, acceptkriterier og match-regler
+- Consumer submit til `/api/consumer-intake`
+- Provider signup til `/api/provider-signup`
+- Supabase integration helper
+- Resend email helper
+- Supabase schema i `supabase/schema.sql`
+- `.env.example` med nødvendige miljøvariabler
+- Frontend virker også i demo-mode uden env vars
+
+## Gratis stack
+
+| Del | Tool | Startpris |
+|---|---|---:|
+| Hosting | Vercel Hobby | 0 kr. |
+| Database | Supabase Free | 0 kr. |
+| Email | Resend Free | 0 kr. |
+| AI | Ingen i Sprint 1 | 0 kr. |
+
+## Opsætning for rigtig lagring og emails
+
+1. Opret et gratis Supabase-projekt.
+2. Kør SQL fra `supabase/schema.sql` i Supabase SQL editor.
+3. Opret en gratis Resend API-key.
+4. Sæt miljøvariabler i Vercel:
+
+```text
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+RESEND_FROM_EMAIL="Naetwork <onboarding@resend.dev>"
+ADMIN_EMAIL=
+```
+
+5. Redeploy projektet i Vercel.
+6. Test både consumer intake og provider signup.
 
 ## Hovedflow
 
-1. Kunden beskriver sit behov i fri tekst.
-2. Naetwork omsætter behovet til en professionel brief.
-3. Scope, fravalg og acceptkriterier bliver tydelige.
-4. Opgaven sendes til kvalitetssikring.
-5. Admin kan manuelt matche opgaven med 1-3 relevante pro’s.
-6. Provider-ansøgninger godkendes manuelt.
+1. Kunden vælger kategori.
+2. Kunden beskriver behov, målgruppe, scope, budget og deadline.
+3. Naetwork bygger en standardiseret brief uden AI.
+4. Lead sendes til API-route.
+5. Hvis Supabase env vars er sat, gemmes leadet i databasen.
+6. Hvis Resend env vars er sat, sendes email-notifikation til admin.
+7. Provider kan ansøge via separat signup-flow.
 
-## Mangler før reel launch
+## Næste sprint
 
-- Gem consumer-intakes i database
-- Gem provider-ansøgninger i database
-- Send email-notifikation til admin ved nye leads
-- Skjul admin bag login
-- Tilføj privatlivspolitik og vilkår
-- Tilføj basal cookie-/datatekst
-- Tilføj rigtig status på opgaver og provider-ansøgninger
-- Tilføj betalingsstatus uden fuld betalingsintegration først
+Sprint 2 bør være regelbaseret matching:
+
+- Provider skills gemmes struktureret
+- Brief-tags matches mod provider skills
+- Budgetniveau matches mod provider prisniveau
+- Kapacitet/deadline matches
+- Top 3 providers vises
+- Provider kan sige interesseret / ikke interesseret
 
 ## Tech stack
 
@@ -53,8 +84,9 @@ Den nuværende version er ryddet op, så den er mere launch-parat:
 - React 19
 - TypeScript
 - Tailwind CSS
-- Mock data og frontend-state
-- Klar til Vercel deployment
+- Supabase REST API
+- Resend email API
+- Vercel deployment
 
 ## Kør lokalt
 
