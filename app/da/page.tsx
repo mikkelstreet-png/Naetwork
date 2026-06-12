@@ -1,5 +1,5 @@
-import { NaetworkMvp } from "@/components/NaetworkMvp";
+import { NaetworkQualityMvp } from "@/components/NaetworkQualityMvp";
 
 export default function HomeDa() {
-  return <NaetworkMvp />;
+  return <NaetworkQualityMvp />;
 }
