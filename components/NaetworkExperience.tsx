@@ -5,7 +5,6 @@ import { type ReactNode, useMemo, useState } from "react";
 type View = "home" | "brief" | "matches" | "project" | "provider" | "how";
 type Category = "Ikke sikker" | "Hjemmeside" | "Webapp / MVP" | "Dashboard" | "Automation" | "Pitch deck";
 type Status = "idle" | "sent";
-
 type Intake = { category: Category; need: string; audience: string; budget: string; deadline: string };
 type ProblemCard = { title: string; summary: string; detail: string; action: string; category: Category };
 
@@ -18,12 +17,60 @@ const initialIntake: Intake = {
 };
 
 const categories: Record<Category, { title: string; specialist: string; budget: string; example: string; tags: string[]; scope: string[]; questions: string[] }> = {
-  "Ikke sikker": { title: "Digital opgave gjort konkret før du hyrer nogen", specialist: "Digital product specialist", budget: "Afklares efter scope", example: "Jeg har en digital opgave, men ved ikke om jeg skal bruge hjemmeside, automation, dashboard eller webapp.", tags: ["Behovsafklaring", "Scope", "Projektbrief", "Specialist-match"], scope: ["Afklare hvad der faktisk skal bygges", "Definere første version", "Skelne mellem must-have og nice-to-have", "Anbefale specialisttype"], questions: ["Hvad skal opgaven hjælpe dig med at opnå?", "Hvad er vigtigst i første version?", "Hvad må gerne vente til senere?"] },
-  Hjemmeside: { title: "Professionel hjemmeside med tydeligt kontaktflow", specialist: "Webdesigner / frontend specialist", budget: "10.000-35.000 kr.", example: "Min hjemmeside findes, men skaber ikke nok henvendelser. Jeg vil have hjælp til struktur, tekst, design og kontaktflow.", tags: ["Webdesign", "Kontakt", "SEO", "Leads"], scope: ["Struktur og vigtigste sider", "Kontaktformular eller bookingflow", "Tydeligere tekst og CTA’er", "Responsivt design og basal SEO"], questions: ["Hvad skal besøgende gøre på siden?", "Hvor kommer trafikken fra i dag?", "Hvilke henvendelser er mest værdifulde?"] },
-  "Webapp / MVP": { title: "Afgrænset MVP med klart kerneflow", specialist: "Full-stack developer / product builder", budget: "25.000-75.000 kr.", example: "Jeg har en idé til en platform, app eller portal, men skal have første version afgrænset og bygget rigtigt.", tags: ["MVP", "Webapp", "Produktflow", "Launch"], scope: ["Kerneflow og første version", "Prioritering af must-have features", "Deploy-klar løsning", "Kort handover"], questions: ["Hvad er det vigtigste brugerflow?", "Hvad skal absolut med i første version?", "Hvad kan vente til senere?"] },
-  Dashboard: { title: "Overskueligt dashboard med centrale nøgletal", specialist: "Data / BI specialist", budget: "15.000-50.000 kr.", example: "Leads, kunder, opgaver eller tal ligger spredt i mails, Excel, CRM eller forskellige tools. Jeg vil have ét klart overblik.", tags: ["Dashboard", "Excel", "CRM", "Rapportering"], scope: ["Kortlægge datakilder", "Definere vigtigste nøgletal", "Samlet overblik", "Opdateringslogik"], questions: ["Hvor ligger data i dag?", "Hvilke tal styrer du efter?", "Hvem skal bruge overblikket?"] },
-  Automation: { title: "Automation der fjerner manuelt dobbeltarbejde", specialist: "Automation specialist", budget: "10.000-40.000 kr.", example: "Jeg bruger for meget tid på mails, Excel, opfølgning eller gentagne processer og vil have et simpelt workflow, der sparer tid.", tags: ["Automation", "AI-flow", "No-code", "Workflow"], scope: ["Kortlægge manuelt flow", "Opsætte automation", "Fejlhåndtering", "Test og dokumentation"], questions: ["Hvad starter flowet?", "Hvor skal data ende?", "Hvad sker der, hvis noget fejler?"] },
-  "Pitch deck": { title: "Pitch deck med klar fortælling og premium design", specialist: "Presentation designer / strategy consultant", budget: "8.000-30.000 kr.", example: "Jeg skal præsentere min virksomhed, idé eller løsning professionelt for kunder, investorer eller partnere.", tags: ["Pitch deck", "Storyline", "Design", "Slides"], scope: ["Storyline", "Slide-struktur", "Designretning", "Finpudsning af key slides"], questions: ["Hvem skal se materialet?", "Hvilken beslutning skal det drive?", "Har du tal og input klar?"] }
+  "Ikke sikker": {
+    title: "Digital opgave gjort konkret før du hyrer nogen",
+    specialist: "Digital product specialist",
+    budget: "Afklares efter scope",
+    example: "Jeg har en digital opgave, men ved ikke om jeg skal bruge hjemmeside, automation, dashboard eller webapp.",
+    tags: ["Behovsafklaring", "Scope", "Projektbrief", "Specialist-match"],
+    scope: ["Afklare hvad der faktisk skal bygges", "Definere første version", "Skelne mellem must-have og nice-to-have", "Anbefale specialisttype"],
+    questions: ["Hvad skal opgaven hjælpe dig med at opnå?", "Hvad er vigtigst i første version?", "Hvad må gerne vente til senere?"]
+  },
+  Hjemmeside: {
+    title: "Professionel hjemmeside med tydeligt kontaktflow",
+    specialist: "Webdesigner / frontend specialist",
+    budget: "10.000-35.000 kr.",
+    example: "Min hjemmeside findes, men skaber ikke nok henvendelser. Jeg vil have hjælp til struktur, tekst, design og kontaktflow.",
+    tags: ["Webdesign", "Kontakt", "SEO", "Leads"],
+    scope: ["Struktur og vigtigste sider", "Kontaktformular eller bookingflow", "Tydeligere tekst og CTA’er", "Responsivt design og basal SEO"],
+    questions: ["Hvad skal besøgende gøre på siden?", "Hvor kommer trafikken fra i dag?", "Hvilke henvendelser er mest værdifulde?"]
+  },
+  "Webapp / MVP": {
+    title: "Afgrænset MVP med klart kerneflow",
+    specialist: "Full-stack developer / product builder",
+    budget: "25.000-75.000 kr.",
+    example: "Jeg har en idé til en platform, app eller portal, men skal have første version afgrænset og bygget rigtigt.",
+    tags: ["MVP", "Webapp", "Produktflow", "Launch"],
+    scope: ["Kerneflow og første version", "Prioritering af must-have features", "Deploy-klar løsning", "Kort handover"],
+    questions: ["Hvad er det vigtigste brugerflow?", "Hvad skal absolut med i første version?", "Hvad kan vente til senere?"]
+  },
+  Dashboard: {
+    title: "Overskueligt dashboard med centrale nøgletal",
+    specialist: "Data / BI specialist",
+    budget: "15.000-50.000 kr.",
+    example: "Leads, kunder, opgaver eller tal ligger spredt i mails, Excel, CRM eller forskellige tools. Jeg vil have ét klart overblik.",
+    tags: ["Dashboard", "Excel", "CRM", "Rapportering"],
+    scope: ["Kortlægge datakilder", "Definere vigtigste nøgletal", "Samlet overblik", "Opdateringslogik"],
+    questions: ["Hvor ligger data i dag?", "Hvilke tal styrer du efter?", "Hvem skal bruge overblikket?"]
+  },
+  Automation: {
+    title: "Automation der fjerner manuelt dobbeltarbejde",
+    specialist: "Automation specialist",
+    budget: "10.000-40.000 kr.",
+    example: "Jeg bruger for meget tid på mails, Excel, opfølgning eller gentagne processer og vil have et simpelt workflow, der sparer tid.",
+    tags: ["Automation", "AI-flow", "No-code", "Workflow"],
+    scope: ["Kortlægge manuelt flow", "Opsætte automation", "Fejlhåndtering", "Test og dokumentation"],
+    questions: ["Hvad starter flowet?", "Hvor skal data ende?", "Hvad sker der, hvis noget fejler?"]
+  },
+  "Pitch deck": {
+    title: "Pitch deck med klar fortælling og premium design",
+    specialist: "Presentation designer / strategy consultant",
+    budget: "8.000-30.000 kr.",
+    example: "Jeg skal præsentere min virksomhed, idé eller løsning professionelt for kunder, investorer eller partnere.",
+    tags: ["Pitch deck", "Storyline", "Design", "Slides"],
+    scope: ["Storyline", "Slide-struktur", "Designretning", "Finpudsning af key slides"],
+    questions: ["Hvem skal se materialet?", "Hvilken beslutning skal det drive?", "Har du tal og input klar?"]
+  }
 };
 
 const matches = [
@@ -41,7 +88,15 @@ const problemCards: ProblemCard[] = [
   { title: "Se professionel ud, når det gælder", summary: "Pitch, salgsdeck eller kundemateriale skal sidde skarpt.", detail: "Få materialet struktureret og designet, så din virksomhed føles klar og troværdig.", action: "Beskriv materialet", category: "Pitch deck" }
 ];
 
-const outcomes = ["Klar projektbrief", "Afgrænset scope", "Anbefalet specialisttype", "Mere overskueligt forløb", "Sammenlignelige tilbud"];
+const processSteps = [
+  { step: "01", title: "Du beskriver behovet", text: "Start med egne ord — også selvom opgaven stadig er uklar." },
+  { step: "02", title: "AI gør opgaven konkret", text: "Behovet omsættes til scope, krav, fravalg og spørgsmål." },
+  { step: "03", title: "Du får en teknisk brief", text: "Briefen gør det tydeligt, hvad en specialist faktisk skal bygge." },
+  { step: "04", title: "Relevante specialister matches", text: "Du møder ikke en endeløs profil-liste, men relevante retninger." },
+  { step: "05", title: "Tilbud kan sammenlignes", text: "Scope, prisniveau og tid bliver nemmere at forstå på samme grundlag." },
+  { step: "06", title: "Du vælger og accepterer", text: "Når du er tryg ved specialist og tilbud, kan arbejdet gå i gang." }
+];
+
 const fitCards = [["For vigtigt til at ligge", "Opgaver der skaber fremdrift, men ofte bliver udskudt fordi scope og ejer er uklart."], ["Ikke et stort bureauprojekt", "Når du ikke har brug for et stort team, men for en dygtig specialist på den rigtige opgave."], ["AI er ikke nok alene", "AI kan hjælpe med afklaring, men erfaring får arbejdet bygget rigtigt."], ["Specialist i dage eller uger", "Få målrettet hjælp til det konkrete, der skal løses, uden tungt setup."]];
 const whyCards = [["Ikke et bureau", "Ingen tung proces, når opgaven kan løses af en specialist."], ["Ikke en freelancer-børs", "Du skal ikke selv browse profiler og gætte, hvem der passer."], ["Ikke bare AI", "AI hjælper med briefen, men en specialist får arbejdet i mål."], ["Naetwork", "Klar opgave, relevant specialist og et mere overskueligt forløb."]];
 
@@ -86,7 +141,7 @@ export function NaetworkExperience() {
           <div><div className="mb-5 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-sm">Specialister uden tungt bureau set-up</div><h1 className="max-w-5xl text-4xl font-black leading-[.96] tracking-[-0.05em] text-[#071527] md:text-7xl">Få gjort din digitale opgave konkret — og find specialisten, der kan løse den.</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Naetwork er til de opgaver, der er for vigtige til at blive liggende, men ikke kræver et stort konsulentbureau. Vi hjælper dig fra uklart behov til klar brief, relevant specialist og et mere overskueligt projektforløb.</p>
             <div className="mt-8 rounded-[30px] border border-slate-200 bg-white p-4 shadow-sm md:p-5"><div className="mb-3 flex items-center justify-between gap-3"><p className="text-sm font-black text-[#071527]">Hvad skal du have lavet?</p><span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-800">Under 2 min.</span></div><textarea value={intake.need} onChange={(event) => setIntake({ ...intake, need: event.target.value })} rows={4} className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-[#3f8f83] focus:ring-4 focus:ring-[#3f8f83]/10" placeholder="Fx: Jeg skal bruge en hjemmeside, et dashboard eller en automation, men ikke et stort bureauprojekt..." /><div className="mt-4 flex flex-col gap-3 sm:flex-row"><Button onClick={() => open("brief")}>Gør opgaven konkret</Button><Button secondary onClick={() => open("matches")}>Se hvordan det virker</Button></div><p className="mt-3 text-xs font-bold text-slate-500">Ingen binding · Kræver ikke teknisk brief · Start med egne ord</p></div>
             <div className="mt-6 flex flex-wrap gap-2"><Badge>Klar projektbrief</Badge><Badge>Relevant specialist</Badge><Badge>Mindre bureau-overhead</Badge></div></div>
-          <Panel dark className="relative overflow-hidden lg:p-8"><div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-emerald-300/10 blur-2xl" /><div className="relative flex items-start justify-between gap-6"><div><p className="text-sm font-black uppercase tracking-[.2em] text-emerald-200">Det du får</p><h2 className="mt-3 text-3xl font-black tracking-tight">Fra idé til specialist — uden tungt setup</h2></div><Badge dark>Klarhed først</Badge></div><div className="relative mt-7 grid gap-3">{outcomes.map((item) => <div key={item} className="rounded-2xl bg-white/10 p-4 text-sm font-semibold leading-6 text-white/85 ring-1 ring-white/10">{item}</div>)}</div><div className="relative mt-7 rounded-2xl bg-emerald-300/10 p-5 ring-1 ring-emerald-200/20"><p className="text-sm font-black text-emerald-100">AI kan hjælpe dig i gang. Men at få bygget det rigtige kræver stadig erfaring. Naetwork kombinerer AI-assisteret afklaring med relevante specialister, der kan omsætte idéen til noget, der faktisk virker.</p></div></Panel>
+          <Panel dark className="relative overflow-hidden lg:p-8"><div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-emerald-300/10 blur-2xl" /><div className="relative flex items-start justify-between gap-6"><div><p className="text-sm font-black uppercase tracking-[.2em] text-emerald-200">Fra behov til udført arbejde</p><h2 className="mt-3 text-3xl font-black tracking-tight">Hele processen samlet ét sted</h2></div><Badge dark>Klarhed først</Badge></div><div className="relative mt-7 grid gap-3">{processSteps.map((item) => <div key={item.step} className="grid gap-3 rounded-2xl bg-white/10 p-4 ring-1 ring-white/10 sm:grid-cols-[42px_1fr]"><span className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-xs font-black text-emerald-100">{item.step}</span><div><p className="text-sm font-black text-white">{item.title}</p><p className="mt-1 text-sm leading-6 text-white/65">{item.text}</p></div></div>)}</div><div className="relative mt-7 rounded-2xl bg-emerald-300/10 p-5 ring-1 ring-emerald-200/20"><p className="text-sm font-black text-emerald-100">Pointen er ikke bare at få en tekstbrief. Pointen er at gøre en uklar opgave konkret nok til, at relevante specialister kan byde ind — og du kan vælge med mere tryghed.</p></div></Panel>
         </section>
 
         <section className="mx-auto max-w-7xl px-5 py-8"><div className="grid gap-4 md:grid-cols-3">{[["1", "Beskriv med egne ord", "Fortæl hvad du vil opnå, ikke hvilken teknologi du tror, du skal bruge."], ["2", "Få en skarp brief", "Naetwork gør opgaven konkret, så den kan vurderes og prissættes ordentligt."], ["3", "Vælg med mere tryghed", "Få en relevant specialisttype og et afgrænset forløb i stedet for et stort setup."]].map(([number, title, text]) => <Panel key={title} className="transition hover:-translate-y-1 hover:shadow-md"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#071527] text-sm font-black text-white">{number}</span><h3 className="mt-5 text-xl font-black text-[#071527]">{title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{text}</p></Panel>)}</div></section>
