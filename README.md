@@ -1,41 +1,51 @@
 # Naetwork MVP
 
-**Positionering:** Beskriv dit behov. Bliv matchet med den rette specialist.
+**Positionering:** Beskriv dit behov. Få en skarp brief. Bliv matchet med den rette pro.
 
-Naetwork er en dansk, moderne MVP-webapp for en kurateret platform, hvor private og virksomheder beskriver et digitalt behov, får det omsat til en professionel AI-genereret projektbrief og matches med relevante digitale pro’s.
+Naetwork er en dansk early access MVP for en kurateret platform, hvor private, founders og små virksomheder beskriver et digitalt behov, får det omsat til en professionel projektbrief og kan matches med relevante digitale specialister.
 
-## Seneste forbedringer
+## Kvalitetssikringslinje
 
-- AI-intake er bygget om til en step-by-step wizard
-- Forsiden er gjort mere premium og problemorienteret
-- Projektbriefen er gjort mere professionel med første version, scope, ikke inkluderet, acceptkriterier og provider-opsummering
-- Matching er gjort mere troværdig med match-score, forklaring, availability, svartid, prisniveau, rating og relevante cases
-- Der er tilføjet realistiske demo-cases, så Naetwork kan vises hurtigt uden manuel indtastning
-- Mobilnavigationen er forbedret
-- Admin-dashboardet viser manuel matching, betalingsstatus, pipeline og potentiel kommission
+Den nuværende version er ryddet op, så den er mere launch-parat:
+
+- Ingen falske brugertal, ratings, testimonials eller cases
+- Demo-eksempler er tydeligt markeret som demo
+- Forsiden forklarer værdien mere klart og professionelt
+- Det tidligere uklare “live demo flow” er fjernet som primær framing
+- Consumer-flowet fokuserer på behov → brief → kvalitetssikring
+- Provider-flowet er gjort til en ansøgning, ikke en åben profil-børs
+- Admin-delen er positioneret som quality gate for manuel matching
+- Begge routes (`/` og `/da`) peger på den kvalitetssikrede MVP-komponent
 
 ## Hvad er bygget
 
 - Dansk forside med premium, nordisk B2B/SaaS-udtryk
 - AI-intake for consumers
 - AI-genereret projektbrief med kategori, scope, ikke inkluderet, acceptkriterier, budgetniveau og leveringstid
-- Provider onboarding med kompetencer, cases, prisniveau og approval-status
-- Consumer dashboard med opgaver, status, matches, tilbud, beskeder, leverance og rating-flow
-- Provider dashboard med relevante opgaver, match-score, tilbud og aktive projekter
-- Admin dashboard med provider approval, manuel matching, pipeline og potentiel kommission
-- Mock matchinglogik baseret på opgavetags og provider-kompetencer
-- Early access-framing uden falske brugertal, cases eller testimonials
+- Provider early access-ansøgning
+- Admin quality gate med næste tekniske launch-skridt
+- Mock matching-note baseret på opgavetags
+- Early access-framing uden overdrevne claims
 
 ## Hovedflow
 
 1. Kunden beskriver sit behov i fri tekst.
-2. AI stiller få opklarende spørgsmål.
-3. AI laver en professionel projektbrief.
-4. Kunden godkender eller justerer briefen.
-5. Opgaven matches med relevante providers.
-6. Kunden modtager 1-3 tilbud/interessetilkendegivelser.
-7. Kunden vælger provider.
-8. Projektet leveres, godkendes og rates.
+2. Naetwork omsætter behovet til en professionel brief.
+3. Scope, fravalg og acceptkriterier bliver tydelige.
+4. Opgaven sendes til kvalitetssikring.
+5. Admin kan manuelt matche opgaven med 1-3 relevante pro’s.
+6. Provider-ansøgninger godkendes manuelt.
+
+## Mangler før reel launch
+
+- Gem consumer-intakes i database
+- Gem provider-ansøgninger i database
+- Send email-notifikation til admin ved nye leads
+- Skjul admin bag login
+- Tilføj privatlivspolitik og vilkår
+- Tilføj basal cookie-/datatekst
+- Tilføj rigtig status på opgaver og provider-ansøgninger
+- Tilføj betalingsstatus uden fuld betalingsintegration først
 
 ## Tech stack
 
