@@ -35,8 +35,8 @@ const promises = [
 export function NaetworkCommercialV9() {
   return (
     <>
-      <div className="fixed inset-x-0 top-3 z-[85] px-3 pointer-events-none">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur-xl pointer-events-auto">
+      <div className="sticky top-3 z-[85] px-3 py-3">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur-xl">
           <Link href="/" className="flex items-center gap-2 text-sm font-black text-[#071527]">
             <span className="grid h-8 w-8 place-items-center rounded-full bg-[#071527] text-xs text-white">N</span>
             Naetwork
@@ -45,6 +45,7 @@ export function NaetworkCommercialV9() {
             <a href="#hvem" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Hvem</a>
             <a href="#eksempler" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Eksempler</a>
             <Link href="/specialister" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Specialister</Link>
+            <Link href="/pris" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Pris</Link>
             <Link href="/trust" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Trust</Link>
           </div>
           <Link href="/access" className="rounded-full bg-[#071527] px-4 py-2 text-xs font-black text-white">Log ind</Link>
