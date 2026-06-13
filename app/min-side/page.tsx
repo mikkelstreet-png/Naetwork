@@ -1,5 +1,5 @@
-import { AccountDashboard } from "@/components/AccountDashboard";
+import { AccountDashboardV12 } from "@/components/AccountDashboardV12";
 
 export default function MinSidePage() {
-  return <AccountDashboard />;
+  return <AccountDashboardV12 />;
 }
