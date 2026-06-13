@@ -88,7 +88,7 @@ export function AccountTaskCreateV11() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#e8f4ef_0,#f7f8fb_38%,#f7f8fb_100%)] px-4 py-6 text-slate-950 sm:px-5">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#edf7f2_0,#f7f8fb_36%,#f7f8fb_100%)] px-4 py-6 text-slate-950 sm:px-5">
       <header className="mx-auto flex max-w-6xl items-center justify-between py-3">
         <Link href="/" className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#071527] text-sm font-black text-white">N</span><span className="text-lg font-black tracking-tight text-[#071527]">Naetwork</span></Link>
         <Link href="/min-side" className="rounded-full bg-[#071527] px-4 py-2 text-sm font-black text-white shadow-sm">Min profil</Link>
@@ -100,15 +100,15 @@ export function AccountTaskCreateV11() {
           <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-0.05em] text-[#071527] md:text-7xl">Beskriv behovet. Få opgaven klar til den rigtige specialist.</h1>
           <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">Sprint 12A bruger et mock AI-flow uden Supabase og Resend. Oplevelsen viser, hvordan Naetwork gør en uklar opgave til en specialistklar brief og anbefaler den rette specialistretning.</p>
           <div className="mt-6 grid gap-3">
-            {["AI-genereret brief", "Specialistretning", "Naetwork review", "Klar til senere backend"].map((item) => <div key={item} className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm font-black text-slate-700 shadow-sm">{item}</div>)}
+            {["AI-genereret brief", "Specialistretning", "Naetwork review", "Klar til senere backend"].map((item) => <div key={item} className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 text-sm font-black text-slate-700 shadow-sm">{item}</div>)}
           </div>
         </div>
 
         {phase === "form" && (
           <div className="rounded-[34px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
-            <div className="mb-5 rounded-3xl bg-[#071527] p-5 text-white">
-              <p className="text-xs font-black uppercase tracking-[.18em] text-emerald-200">Naetwork AI scope engine</p>
-              <p className="mt-2 text-sm leading-6 text-white/75">Udfyld kort. Naetwork laver derefter en første brief og foreslår hvilken specialisttype, opgaven bør matches med.</p>
+            <div className="mb-5 rounded-3xl border border-emerald-100 bg-emerald-50 p-5 text-[#071527]">
+              <p className="text-xs font-black uppercase tracking-[.18em] text-[#3f8f83]">Naetwork AI scope engine</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Udfyld kort. Naetwork laver derefter en første brief og foreslår hvilken specialisttype, opgaven bør matches med.</p>
             </div>
             <label className="grid gap-2 text-sm font-bold text-slate-700">Opgavetype<select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none">{categories.map((item) => <option key={item}>{item}</option>)}</select></label>
             <label className="mt-4 grid gap-2 text-sm font-bold text-slate-700">Hvad vil du have hjælp til?<textarea value={need} onChange={(event) => setNeed(event.target.value)} rows={4} placeholder="Eksempel: Vi bruger for meget tid på manuelle mails og Excel. Jeg tror processen kan automatiseres, men ved ikke hvad vi skal bygge eller hvem vi skal bruge." className="resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm leading-6 outline-none" /></label>
@@ -128,7 +128,7 @@ export function AccountTaskCreateV11() {
               {generationSteps.map(([title, text], index) => {
                 const done = index < currentStep;
                 const active = index === currentStep;
-                return <div key={title} className={`rounded-2xl border p-4 ${active ? "border-[#3f8f83] bg-emerald-50" : done ? "border-slate-200 bg-slate-50" : "border-slate-200 bg-white"}`}><div className="flex items-start gap-3"><span className={`mt-1 h-3 w-3 rounded-full ${done || active ? "bg-[#3f8f83]" : "bg-slate-200"}`} /><div><p className="text-sm font-black text-[#071527]">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{text}</p></div></div></div>;
+                return <div key={title} className={`rounded-2xl border p-4 ${active ? "border-emerald-200 bg-emerald-50" : done ? "border-slate-200 bg-slate-50" : "border-slate-200 bg-white"}`}><div className="flex items-start gap-3"><span className={`mt-1 h-3 w-3 rounded-full ${done || active ? "bg-[#3f8f83]" : "bg-slate-200"}`} /><div><p className="text-sm font-black text-[#071527]">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{text}</p></div></div></div>;
               })}
             </div>
           </div>
