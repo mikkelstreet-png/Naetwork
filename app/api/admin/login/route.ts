@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { getAdminPassword, setAdminSession } from "@/lib/adminSession";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 type RequestBody = { password?: string };
 
@@ -12,6 +13,9 @@ function safeCompare(left: string, right: string) {
 
 export async function POST(request: Request) {
   try {
+    const limit = checkRateLimit(request, { scope: "admin-login", limit: 5, windowMs: 10 * 60 * 1000 });
+    if (!limit.ok) return rateLimitResponse(limit.resetAt);
+
     const body = (await request.json()) as RequestBody;
     const password = String(body.password || "");
     const expected = getAdminPassword();
