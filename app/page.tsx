@@ -1,5 +1,5 @@
-import { NaetworkGoLiveV11 } from "@/components/NaetworkGoLiveV11";
+import { NaetworkHomepageV12 } from "@/components/NaetworkHomepageV12";
 
 export default function Home() {
-  return <NaetworkGoLiveV11 />;
+  return <NaetworkHomepageV12 />;
 }
