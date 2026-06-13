@@ -1,5 +1,5 @@
-import { NaetworkIntuitiveV2 } from "@/components/NaetworkIntuitiveV2";
+import { NaetworkEndToEndV5 } from "@/components/NaetworkEndToEndV5";
 
 export default function Home() {
-  return <NaetworkIntuitiveV2 />;
+  return <NaetworkEndToEndV5 />;
 }
