@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       taskUrl
     });
 
-    return NextResponse.json({ ok: true, id: data?.id });
+    return NextResponse.json({ ok: true, id: data?.id, taskUrl });
   } catch (error) {
     console.error("Task submission failed", error);
     return NextResponse.json({ error: "Opgaven kunne ikke sendes lige nu. Prøv igen om lidt." }, { status: 500 });
