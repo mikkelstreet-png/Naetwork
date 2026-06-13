@@ -18,26 +18,47 @@ function relabelButtons() {
   });
 }
 
-function addLoginLink() {
+function addHeaderActions() {
   const header = document.querySelector("header");
   if (!header) return;
-  if (header.querySelector('[data-naetwork-login-link="true"]')) return;
 
   const actionArea = header.querySelector("div.flex.shrink-0.items-center.gap-2");
   if (!actionArea) return;
 
-  const link = document.createElement("a");
-  link.href = "/access";
-  link.textContent = "Log ind";
-  link.setAttribute("data-naetwork-login-link", "true");
-  link.className = "inline-flex min-h-[46px] items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-slate-300";
+  const existingPrimary = Array.from(actionArea.querySelectorAll("button")).find((button) => {
+    const text = button.textContent?.trim() || "";
+    return text === "Opret opgave" || text === "Start kort" || text === "Start her";
+  });
 
-  actionArea.insertBefore(link, actionArea.firstChild);
+  if (existingPrimary instanceof HTMLElement) {
+    existingPrimary.style.display = "none";
+    existingPrimary.setAttribute("aria-hidden", "true");
+  }
+
+  if (!header.querySelector('[data-naetwork-login-link="true"]')) {
+    const login = document.createElement("a");
+    login.href = "/access";
+    login.textContent = "Log ind";
+    login.setAttribute("data-naetwork-login-link", "true");
+    login.className = "hidden min-h-[46px] items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-slate-300 sm:inline-flex";
+    actionArea.insertBefore(login, actionArea.firstChild);
+  }
+
+  if (!header.querySelector('[data-naetwork-create-link="true"]')) {
+    const create = document.createElement("a");
+    create.href = "/opret";
+    create.textContent = "Opret bruger";
+    create.setAttribute("data-naetwork-create-link", "true");
+    create.className = "inline-flex min-h-[46px] items-center justify-center rounded-full bg-[#071527] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#0b203a]";
+    const menuButton = Array.from(actionArea.querySelectorAll("button")).find((button) => button.textContent?.trim() === "Menu");
+    if (menuButton) actionArea.insertBefore(create, menuButton);
+    else actionArea.appendChild(create);
+  }
 }
 
 function polishHeader() {
   relabelButtons();
-  addLoginLink();
+  addHeaderActions();
 }
 
 export function NaetworkHeaderClarityFix() {
