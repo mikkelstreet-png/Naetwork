@@ -1,5 +1,5 @@
-import { CreateUserChoice } from "@/components/CreateUserChoice";
+import { AccountRegister } from "@/components/AccountRegister";
 
 export default function OpretPage() {
-  return <CreateUserChoice />;
+  return <AccountRegister />;
 }
