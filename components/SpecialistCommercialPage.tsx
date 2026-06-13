@@ -42,7 +42,7 @@ export function SpecialistCommercialPage() {
           <h1 className="mt-4 text-5xl font-black leading-[.95] tracking-[-0.05em] text-[#071527] md:text-7xl">Få opgaver, der er klarere fra start.</h1>
           <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">Naetwork er for specialister, der hellere vil bruge tid på relevante, kvalificerede opgaver end løse henvendelser uden retning.</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link href="/#start" className="rounded-full bg-[#071527] px-6 py-4 text-center text-sm font-black text-white">Ansøg som specialist</Link>
+            <Link href="/specialist/login" className="rounded-full bg-[#071527] px-6 py-4 text-center text-sm font-black text-white">Send specialist-link</Link>
             <Link href="/trust" className="rounded-full border border-slate-200 bg-white px-6 py-4 text-center text-sm font-black text-slate-700">Se trust-principper</Link>
           </div>
         </div>
