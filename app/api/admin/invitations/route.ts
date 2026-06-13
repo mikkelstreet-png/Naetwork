@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { writeAdminAuditLog } from "@/lib/adminAudit";
 import { isAdminAuthenticated } from "@/lib/adminSession";
 import { escapeHtml, sendEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -54,12 +55,12 @@ export async function POST(request: Request) {
     if (taskError) throw new Error(taskError.message);
     if (!task) return NextResponse.json({ error: "Opgaven findes ikke." }, { status: 404 });
 
-    const { error: invitationError } = await supabase.from("specialist_task_invitations").insert({
+    const { data: invitation, error: invitationError } = await supabase.from("specialist_task_invitations").insert({
       task_id: taskId,
       specialist_email: specialistEmail,
       status: "invited",
       response_note: note || null
-    });
+    }).select("id").single();
 
     if (invitationError) throw new Error(invitationError.message);
 
@@ -94,6 +95,13 @@ export async function POST(request: Request) {
         <p>Venlig hilsen<br />Naetwork</p>
       `,
       text: `Ny opgaveinvitation hos Naetwork\n\nOpgave: ${title}\nRetning: ${specialistDirection}\n\n${task.need}\n\nÅbn specialistområdet: ${link}`
+    });
+
+    await writeAdminAuditLog({
+      action: "specialist_invited",
+      entityType: "task",
+      entityId: taskId,
+      metadata: { invitationId: invitation?.id, specialistEmail }
     });
 
     return NextResponse.json({ ok: true });
