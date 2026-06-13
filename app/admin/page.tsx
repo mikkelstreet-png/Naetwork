@@ -1,5 +1,5 @@
-import { AdminDashboardV8 } from "@/components/AdminDashboardV8";
+import { AdminOperationsV10 } from "@/components/AdminOperationsV10";
 
 export default function AdminPage() {
-  return <AdminDashboardV8 />;
+  return <AdminOperationsV10 />;
 }
