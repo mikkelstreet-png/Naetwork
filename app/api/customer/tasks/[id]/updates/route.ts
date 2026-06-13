@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { resolveCustomerAccessToken } from "@/lib/customerAccess";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { notifyAdminCustomerUpdate } from "@/lib/notifications";
 
 type Context = { params: Promise<{ id: string }> };
 type RequestBody = { token?: string; message?: string };
@@ -39,6 +40,12 @@ export async function POST(request: Request, context: Context) {
     });
 
     if (error) throw new Error(error.message);
+
+    await notifyAdminCustomerUpdate({
+      taskId: id,
+      customerEmail: access.customerEmail,
+      message
+    });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
