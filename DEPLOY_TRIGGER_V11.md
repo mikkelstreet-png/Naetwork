@@ -1,6 +1,6 @@
-# Deploy trigger — V11 homepage
+# Deploy trigger — Sprint 12A
 
-This file exists only to trigger a fresh Vercel production deployment after enabling the V11 go-live homepage in `app/page.tsx`.
+This file exists only to trigger a fresh Vercel production deployment after adding the Sprint 12A mock AI scope and specialist match flow.
 
 Expected production homepage component:
 
@@ -18,3 +18,13 @@ Expected public navigation:
 Expected account-first route:
 
 `/opret-opgave`
+
+Expected Sprint 12A flow:
+
+- User describes a need
+- Mock AI generation runs
+- Scope is generated
+- Specialist direction is suggested
+- User can edit and approve the brief
+
+Deploy trigger time: 2026-06-13 12:58 UTC
