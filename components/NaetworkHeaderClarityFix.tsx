@@ -37,7 +37,7 @@ function addHeaderActions() {
 
   if (!header.querySelector('[data-naetwork-login-link="true"]')) {
     const login = document.createElement("a");
-    login.href = "/access";
+    login.href = "/login";
     login.textContent = "Log ind";
     login.setAttribute("data-naetwork-login-link", "true");
     login.className = "hidden min-h-[46px] items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:border-slate-300 sm:inline-flex";
