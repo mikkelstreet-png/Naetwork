@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { notifyAdminSpecialistResponse } from "@/lib/notifications";
 
 type Context = { params: Promise<{ id: string }> };
 type RequestBody = { token?: string; status?: string; note?: string };
@@ -37,17 +38,28 @@ export async function POST(request: Request, context: Context) {
       return NextResponse.json({ error: "Vælg et gyldigt svar." }, { status: 400 });
     }
 
-    const { error } = await getSupabaseAdmin()
+    const note = String(body.note || "").trim() || null;
+
+    const { data: invitation, error } = await getSupabaseAdmin()
       .from("specialist_task_invitations")
       .update({
         status: nextStatus,
-        response_note: String(body.note || "").trim() || null,
+        response_note: note,
         responded_at: new Date().toISOString()
       })
       .eq("id", id)
-      .eq("specialist_email", email);
+      .eq("specialist_email", email)
+      .select("task_id")
+      .maybeSingle();
 
     if (error) throw new Error(error.message);
+
+    await notifyAdminSpecialistResponse({
+      taskId: String(invitation?.task_id || "Ukendt opgave"),
+      specialistEmail: email,
+      status: nextStatus,
+      note
+    });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
