@@ -11,12 +11,14 @@ const requiredEnv = [
   "EMAIL_FROM",
   "TASK_RECEIVER_EMAIL",
   "ADMIN_PASSWORD",
-  "ADMIN_SESSION_SECRET"
+  "ADMIN_SESSION_SECRET",
+  "ACCOUNT_SESSION_SECRET"
 ];
 
 const requiredTables = [
   "tasks",
   "provider_applications",
+  "user_accounts",
   "customer_access_tokens",
   "specialist_access_tokens",
   "specialist_task_invitations",
