@@ -1,5 +1,5 @@
-import { NaetworkAnalysisProof } from "@/components/NaetworkAnalysisProof";
+import { NaetworkPolished } from "@/components/NaetworkPolished";
 
 export default function Home() {
-  return <NaetworkAnalysisProof />;
+  return <NaetworkPolished />;
 }
