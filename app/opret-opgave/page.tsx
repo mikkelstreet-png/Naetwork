@@ -1,5 +1,5 @@
-import { AccountTaskCreateV11 } from "@/components/AccountTaskCreateV11";
+import { AccountTaskCreateV12 } from "@/components/AccountTaskCreateV12";
 
 export default function OpretOpgavePage() {
-  return <AccountTaskCreateV11 />;
+  return <AccountTaskCreateV12 />;
 }
