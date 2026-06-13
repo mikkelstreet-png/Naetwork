@@ -22,7 +22,7 @@ export function AccountRegister() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Brugeren kunne ikke oprettes.");
-      window.location.href = role === "specialist" ? "/konto" : "/konto";
+      window.location.href = "/min-side";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Brugeren kunne ikke oprettes.");
     } finally {
