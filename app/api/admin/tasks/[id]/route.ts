@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { writeAdminAuditLog } from "@/lib/adminAudit";
 import { isAdminAuthenticated } from "@/lib/adminSession";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
@@ -50,6 +51,13 @@ export async function PATCH(request: Request, context: Context) {
 
     const { error } = await getSupabaseAdmin().from("tasks").update(updates).eq("id", id);
     if (error) throw new Error(error.message);
+
+    await writeAdminAuditLog({
+      action: "task_updated",
+      entityType: "task",
+      entityId: id,
+      metadata: { fields: Object.keys(updates), status: updates.status || undefined }
+    });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
