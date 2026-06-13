@@ -1,5 +1,5 @@
-import { NaetworkEndToEndV5 } from "@/components/NaetworkEndToEndV5";
+import { NaetworkCommercialV9 } from "@/components/NaetworkCommercialV9";
 
 export default function Home() {
-  return <NaetworkEndToEndV5 />;
+  return <NaetworkCommercialV9 />;
 }
