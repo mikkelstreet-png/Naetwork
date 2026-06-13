@@ -105,7 +105,7 @@ export function NaetworkGoLiveV11() {
           <p className="text-sm font-black uppercase tracking-[.2em] text-[#3f8f83]">Eksempel</p>
           <div className="mt-4 rounded-3xl bg-slate-50 p-5 text-sm leading-7 text-slate-700">“Vi har for mange manuelle mails, Excel-ark og opfølgninger. Jeg tror noget kan automatiseres, men jeg ved ikke hvad vi skal bestille eller hvem vi skal bruge.”</div>
           <div className="mt-5 grid gap-3">
-            <div className="rounded-2xl bg-[#071527] p-4 text-white"><p className="text-xs font-black text-emerald-200">Naetwork gør det klart</p><p className="mt-2 text-sm leading-6 text-white/75">Proceskortlægning, automationsscope, MVP-retning, åbne spørgsmål og et specialistklart brief.</p></div>
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-[#071527]"><p className="text-xs font-black uppercase tracking-[.14em] text-[#3f8f83]">Naetwork gør det klart</p><p className="mt-2 text-sm leading-6 text-slate-700">Proceskortlægning, automationsscope, MVP-retning, åbne spørgsmål og et specialistklart brief.</p></div>
             <div className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-xs font-black uppercase tracking-[.14em] text-slate-400">Specialistmatch</p><p className="mt-2 text-sm leading-6 text-slate-700">Opgaven peger mod en automationsspecialist med erfaring i interne workflows, integrationer og simple webapps — ikke bare en generisk udvikler.</p></div>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function NaetworkGoLiveV11() {
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             {steps.map(([number, title, text]) => (
               <div key={number} className="rounded-[28px] border border-slate-200 bg-[#f7f8fb] p-5">
-                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#071527] text-xs font-black text-white">{number}</span>
+                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-xs font-black text-[#071527] ring-1 ring-slate-200">{number}</span>
                 <h3 className="mt-5 text-xl font-black tracking-tight text-[#071527]">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
               </div>
@@ -130,14 +130,14 @@ export function NaetworkGoLiveV11() {
         </div>
       </section>
 
-      <section id="hvorfor" className="bg-[#071527] px-4 py-16 text-white sm:px-5 lg:py-24">
+      <section id="hvorfor" className="border-t border-slate-200 bg-white px-4 py-16 text-slate-950 sm:px-5 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
           <div>
-            <p className="text-sm font-black uppercase tracking-[.22em] text-emerald-200">Hvorfor Naetwork</p>
-            <h2 className="mt-4 text-4xl font-black leading-[.95] tracking-[-0.05em] md:text-6xl">Det handler ikke kun om scope. Det handler om at finde den specialist, der faktisk passer.</h2>
+            <p className="text-sm font-black uppercase tracking-[.22em] text-[#3f8f83]">Hvorfor Naetwork</p>
+            <h2 className="mt-4 text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#071527] md:text-6xl">Det handler ikke kun om scope. Det handler om at finde den specialist, der faktisk passer.</h2>
           </div>
           <div className="grid gap-3">
-            {reasons.map((reason) => <div key={reason} className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm font-black leading-7 text-white/85">{reason}</div>)}
+            {reasons.map((reason) => <div key={reason} className="rounded-2xl border border-slate-200 bg-[#f7f8fb] p-5 text-sm font-black leading-7 text-slate-700">{reason}</div>)}
           </div>
         </div>
       </section>
