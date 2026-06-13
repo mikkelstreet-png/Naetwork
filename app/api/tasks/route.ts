@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { notifyTaskCreated } from "@/lib/notifications";
+import { buildCustomerTaskUrl, createCustomerAccessToken } from "@/lib/customerAccess";
 
 type RequestBody = { intake?: Record<string, unknown>; email?: string; brief?: Record<string, unknown> };
 
@@ -30,11 +31,16 @@ export async function POST(request: Request) {
       budget: toText(intake.budget) || null,
       deadline: toText(intake.deadline) || null,
       brief,
+      specialist_direction: specialist || null,
+      next_step: "Naetwork gennemgår opgaven og vurderer, hvad der skal afklares før en specialist kan vælges.",
       status: "new",
       source: "website"
     }).select("id").single();
 
     if (error) throw new Error(error.message);
+
+    const access = await createCustomerAccessToken(contact);
+    const taskUrl = buildCustomerTaskUrl(access.token, data?.id);
 
     await notifyTaskCreated({
       id: data?.id,
@@ -43,7 +49,8 @@ export async function POST(request: Request) {
       need,
       briefTitle,
       specialist,
-      outcome
+      outcome,
+      taskUrl
     });
 
     return NextResponse.json({ ok: true, id: data?.id });
