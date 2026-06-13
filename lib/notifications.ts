@@ -8,6 +8,7 @@ type TaskNotice = {
   briefTitle?: string;
   specialist?: string;
   outcome?: string;
+  taskUrl?: string;
 };
 
 type ProviderNotice = {
@@ -22,6 +23,10 @@ export async function notifyTaskCreated(task: TaskNotice) {
   const briefTitle = task.briefTitle || "Foreløbig brief under afklaring";
   const specialist = task.specialist || "Specialistretning afklares";
   const outcome = task.outcome || "Næste skridt afklares ud fra opgaven.";
+  const taskLinkHtml = task.taskUrl
+    ? `<p><a href="${escapeHtml(task.taskUrl)}">Se din opgave</a></p>`
+    : "";
+  const taskLinkText = task.taskUrl ? `\n\nSe din opgave: ${task.taskUrl}` : "";
 
   const adminHtml = `
     <h1>Ny Naetwork opgave</h1>
@@ -42,11 +47,12 @@ export async function notifyTaskCreated(task: TaskNotice) {
     <p><strong>Foreløbig brief:</strong> ${escapeHtml(briefTitle)}</p>
     <p><strong>Foreløbig specialistretning:</strong> ${escapeHtml(specialist)}</p>
     <p><strong>Det ønskede resultat:</strong> ${escapeHtml(outcome)}</p>
+    ${taskLinkHtml}
     <h2>Hvad sker der nu?</h2>
     <ol>
       <li>Opgaven gennemgås og gøres klarere.</li>
       <li>Eventuelle åbne spørgsmål identificeres.</li>
-      <li>Hvis opgaven er relevant, kan næste skridt være kontakt til en specialistretning.</li>
+      <li>Du kan følge status og tilføje mere information via dit opgavelink.</li>
     </ol>
     <p>Der er ingen betaling og ingen binding på dette trin. Aftaler om pris, levering og rammer indgås direkte mellem kunde og specialist, medmindre andet aftales skriftligt.</p>
     <p>Venlig hilsen<br />Naetwork</p>
@@ -63,7 +69,7 @@ export async function notifyTaskCreated(task: TaskNotice) {
     to: task.email,
     subject: "Din Naetwork-opgave er modtaget",
     html: receiptHtml,
-    text: `Din opgave er modtaget hos Naetwork.\n\nStatus: Modtaget\nForeløbig brief: ${briefTitle}\nForeløbig specialistretning: ${specialist}\nØnsket resultat: ${outcome}\n\nNæste skridt er at gennemgå opgaven, gøre den klarere og identificere eventuelle åbne spørgsmål. Der er ingen betaling og ingen binding på dette trin.`
+    text: `Din opgave er modtaget hos Naetwork.\n\nStatus: Modtaget\nForeløbig brief: ${briefTitle}\nForeløbig specialistretning: ${specialist}\nØnsket resultat: ${outcome}${taskLinkText}\n\nNæste skridt er at gennemgå opgaven, gøre den klarere og identificere eventuelle åbne spørgsmål. Der er ingen betaling og ingen binding på dette trin.`
   });
 }
 
