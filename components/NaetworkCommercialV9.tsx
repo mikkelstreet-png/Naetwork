@@ -1,4 +1,5 @@
 import { NaetworkEndToEndV5 } from "@/components/NaetworkEndToEndV5";
+import { NaetworkHeaderClarityFix } from "@/components/NaetworkHeaderClarityFix";
 
 const audiences = [
   {
@@ -34,6 +35,7 @@ const promises = [
 export function NaetworkCommercialV9() {
   return (
     <>
+      <NaetworkHeaderClarityFix />
       <NaetworkEndToEndV5 />
 
       <section id="hvem" className="bg-[#f7f8fb] px-4 py-16 text-slate-950 sm:px-5 lg:py-24">
