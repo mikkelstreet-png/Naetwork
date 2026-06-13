@@ -62,12 +62,22 @@ create table if not exists public.specialist_task_invitations (
   responded_at timestamptz
 );
 
+create table if not exists public.admin_audit_log (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  action text not null,
+  entity_type text not null,
+  entity_id text,
+  metadata jsonb not null default '{}'::jsonb
+);
+
 alter table public.tasks enable row level security;
 alter table public.provider_applications enable row level security;
 alter table public.customer_access_tokens enable row level security;
 alter table public.task_customer_updates enable row level security;
 alter table public.specialist_access_tokens enable row level security;
 alter table public.specialist_task_invitations enable row level security;
+alter table public.admin_audit_log enable row level security;
 
 alter table public.tasks add column if not exists internal_note text;
 alter table public.tasks add column if not exists specialist_direction text;
@@ -88,3 +98,5 @@ create index if not exists specialist_access_tokens_email_idx on public.speciali
 create index if not exists specialist_access_tokens_expires_idx on public.specialist_access_tokens (expires_at);
 create index if not exists specialist_task_invitations_email_idx on public.specialist_task_invitations (specialist_email, created_at desc);
 create index if not exists specialist_task_invitations_task_idx on public.specialist_task_invitations (task_id);
+create index if not exists admin_audit_log_created_idx on public.admin_audit_log (created_at desc);
+create index if not exists admin_audit_log_entity_idx on public.admin_audit_log (entity_type, entity_id);
