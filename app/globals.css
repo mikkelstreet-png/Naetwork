@@ -4,7 +4,11 @@
 
 :root { color-scheme: dark; }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
 
 body {
   background: #050810;
@@ -13,6 +17,45 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+* {
+  min-width: 0;
+}
+
+main {
+  overflow-x: hidden;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+span,
+li,
+div {
+  overflow-wrap: anywhere;
 }
 
 ::selection { background: rgba(59,130,246,0.4); color: #ffffff; }
@@ -168,7 +211,6 @@ body {
 /* Naetwork polish layer */
 main textarea {
   min-height: 180px;
-  font-size: 15px;
   line-height: 1.7;
 }
 
@@ -185,17 +227,20 @@ main textarea[rows="3"] {
 }
 
 main input,
-main textarea {
+main textarea,
+main select {
   transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, transform 160ms ease;
 }
 
 main input:focus,
-main textarea:focus {
+main textarea:focus,
+main select:focus {
   transform: translateY(-1px);
 }
 
-main button {
-  -webkit-tap-highlight-color: transparent;
+main button,
+main a {
+  min-height: 44px;
 }
 
 main section {
@@ -215,6 +260,24 @@ main .shadow-sm {
 
   main h1 {
     word-break: normal;
+    overflow-wrap: normal;
+    hyphens: auto;
+  }
+
+  main [class*="rounded-\[32px\]"],
+  main [class*="rounded-\[30px\]"] {
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 420px) {
+  main h1 {
+    letter-spacing: -0.04em;
+  }
+
+  main button,
+  main a {
+    min-height: 46px;
   }
 }
 
