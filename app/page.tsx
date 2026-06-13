@@ -1,5 +1,5 @@
-import { NaetworkPolished } from "@/components/NaetworkPolished";
+import { NaetworkIntuitiveV2 } from "@/components/NaetworkIntuitiveV2";
 
 export default function Home() {
-  return <NaetworkPolished />;
+  return <NaetworkIntuitiveV2 />;
 }
