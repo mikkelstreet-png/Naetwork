@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { escapeHtml, sendEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 type RequestBody = { email?: string };
 
@@ -13,6 +14,9 @@ const baseUrl = () => (process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_U
 
 export async function POST(request: Request) {
   try {
+    const limit = checkRateLimit(request, { scope: "specialist-login", limit: 8, windowMs: 10 * 60 * 1000 });
+    if (!limit.ok) return rateLimitResponse(limit.resetAt);
+
     const body = (await request.json()) as RequestBody;
     const email = normalizeEmail(body.email || "");
 
