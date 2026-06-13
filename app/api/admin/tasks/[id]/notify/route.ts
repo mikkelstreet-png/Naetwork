@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { writeAdminAuditLog } from "@/lib/adminAudit";
 import { isAdminAuthenticated } from "@/lib/adminSession";
 import { buildCustomerTaskUrl, createCustomerAccessToken } from "@/lib/customerAccess";
 import { notifyCustomerTaskUpdated } from "@/lib/notifications";
@@ -34,6 +35,13 @@ export async function POST(_request: Request, context: Context) {
       specialistDirection: task.specialist_direction ? String(task.specialist_direction) : String(brief?.specialist || ""),
       nextStep: task.next_step ? String(task.next_step) : null,
       taskUrl
+    });
+
+    await writeAdminAuditLog({
+      action: "customer_notified",
+      entityType: "task",
+      entityId: id,
+      metadata: { customerEmail: task.customer_email, status: task.status }
     });
 
     return NextResponse.json({ ok: true });
