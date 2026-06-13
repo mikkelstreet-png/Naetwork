@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { NaetworkEndToEndV5 } from "@/components/NaetworkEndToEndV5";
 
 const audiences = [
@@ -35,23 +34,6 @@ const promises = [
 export function NaetworkCommercialV9() {
   return (
     <>
-      <div className="sticky top-3 z-[85] px-3 py-3">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-2 shadow-sm backdrop-blur-xl">
-          <Link href="/" className="flex items-center gap-2 text-sm font-black text-[#071527]">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-[#071527] text-xs text-white">N</span>
-            Naetwork
-          </Link>
-          <div className="hidden items-center gap-1 md:flex">
-            <a href="#hvem" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Hvem</a>
-            <a href="#eksempler" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Eksempler</a>
-            <Link href="/specialister" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Specialister</Link>
-            <Link href="/pris" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Pris</Link>
-            <Link href="/trust" className="rounded-full px-3 py-2 text-xs font-black text-slate-600 hover:bg-slate-100">Trust</Link>
-          </div>
-          <Link href="/access" className="rounded-full bg-[#071527] px-4 py-2 text-xs font-black text-white">Log ind</Link>
-        </div>
-      </div>
-
       <NaetworkEndToEndV5 />
 
       <section id="hvem" className="bg-[#f7f8fb] px-4 py-16 text-slate-950 sm:px-5 lg:py-24">
