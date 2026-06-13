@@ -2,11 +2,15 @@ import { NextResponse } from "next/server";
 import { buildCustomerTaskUrl, createCustomerAccessToken, emailLooksValid, normalizeEmail } from "@/lib/customerAccess";
 import { escapeHtml, sendEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 type RequestBody = { email?: string };
 
 export async function POST(request: Request) {
   try {
+    const limit = checkRateLimit(request, { scope: "customer-login", limit: 8, windowMs: 10 * 60 * 1000 });
+    if (!limit.ok) return rateLimitResponse(limit.resetAt);
+
     const body = (await request.json()) as RequestBody;
     const email = normalizeEmail(body.email || "");
 
