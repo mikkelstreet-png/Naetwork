@@ -1,5 +1,5 @@
-import { NaetworkCommercialV9 } from "@/components/NaetworkCommercialV9";
+import { NaetworkGoLiveV11 } from "@/components/NaetworkGoLiveV11";
 
 export default function Home() {
-  return <NaetworkCommercialV9 />;
+  return <NaetworkGoLiveV11 />;
 }
