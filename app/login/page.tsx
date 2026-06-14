@@ -1,14 +1,16 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
+import { useTranslation } from '@/context/LanguageContext';
 
 export default function LoginPage() {
+  const { tr } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,62 +19,69 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error: err } = await supabase.auth.signInWithPassword({ email, password });
     if (err) {
-      setError('Email eller adgangskode er forkert.');
+      setError(err.message);
       setLoading(false);
-      return;
+    } else {
+      window.location.href = '/dashboard';
     }
-    window.location.href = '/dashboard';
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f9f9f9] px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <Link href="/" className="block mb-8 text-center font-semibold text-[15px] text-[#0a0a0a]">
-          Naetwork
-        </Link>
-        <div className="bg-white border border-[#e5e5e5] rounded-xl p-8">
-          <h1 className="text-[20px] font-semibold text-[#0a0a0a] mb-6">Log ind</h1>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
-              <label className="block text-[13px] font-medium text-[#374151] mb-1.5">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-md border border-[#e5e5e5] bg-white px-3 py-2.5 text-[14px] text-[#0a0a0a] outline-none focus:border-[#1a1a1a] transition-colors"
-                placeholder="din@email.dk"
-              />
-            </div>
-            <div>
-              <label className="block text-[13px] font-medium text-[#374151] mb-1.5">Adgangskode</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border border-[#e5e5e5] bg-white px-3 py-2.5 text-[14px] text-[#0a0a0a] outline-none focus:border-[#1a1a1a] transition-colors"
-                placeholder="••••••••"
-              />
-            </div>
-            {error && (
-              <p className="text-[13px] text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-                {error}
-              </p>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-md bg-[#1a1a1a] py-2.5 text-[14px] font-medium text-white hover:bg-[#333] transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Logger ind…' : 'Log ind'}
-            </button>
-          </form>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-[#0A0A0A] mb-2">{tr('login.title')}</h1>
+          <p className="text-sm text-gray-500">{tr('login.sub')}</p>
         </div>
-        <p className="mt-4 text-center text-[13px] text-[#6b7280]">
-          Ingen konto?{' '}
-          <Link href="/signup" className="text-[#0a0a0a] font-medium hover:underline">
-            Opret konto
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('login.email')}</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              placeholder="du@eksempel.dk"
+            />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-[#0A0A0A]">{tr('login.password')}</label>
+              <Link href="/forgot-password" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                {tr('login.forgot')}
+              </Link>
+            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              placeholder="••••••••"
+            />
+          </div>
+
+          {error && (
+            <div className="rounded-md bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-md bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors disabled:opacity-50"
+          >
+            {loading ? '...' : tr('login.btn')}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          {tr('login.noAccount')}{' '}
+          <Link href="/signup" className="font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors">
+            {tr('login.signup')}
           </Link>
         </p>
       </div>
