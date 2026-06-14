@@ -1,49 +1,68 @@
-import type { Dict } from "@/lib/content";
-import { site, defaultFooter } from "@/lib/content";
+'use client';
 
-export function Footer({ 
-  t = defaultFooter, 
-  tagline 
-}: { 
-  t?: Dict["footer"]; 
-  tagline?: string; 
-} = {}) {
+import Link from 'next/link';
+import { useTranslation } from '@/context/LanguageContext';
+
+export function Footer() {
+  const { tr } = useTranslation();
+
   return (
     <footer className="bg-white border-t border-gray-100">
-      <div className="wrap py-16">
-        <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
-          <div className="max-w-sm">
-            <span className="font-extrabold text-[15px] tracking-tight text-[#0A0A0A]">{site.name}</span>
-            <p className="mt-5 text-sm leading-relaxed text-gray-500">{t.blurb}</p>
-            {tagline && (
-              <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400">
-                {tagline}
-              </p>
-            )}
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {/* Column 1: Logo + tagline */}
+          <div>
+            <p className="font-bold text-base tracking-tight text-gray-900">Naetwork</p>
+            <p className="mt-3 text-sm text-gray-400 leading-relaxed">{tr('footer.tagline')}</p>
           </div>
 
-          {t.columns.map((col) => (
-            <div key={col.title}>
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-gray-400">{col.title}</p>
-              <ul className="mt-5 space-y-3">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <a
-                      href={l.href}
-                      className="text-sm text-gray-500 transition-colors hover:text-gray-900"
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Column 2: Links */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Links</p>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/projekter" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Projekter
+                </Link>
+              </li>
+              <li>
+                <Link href="/signup?role=specialist" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Bliv specialist
+                </Link>
+              </li>
+              <li>
+                <Link href="#om" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Om Naetwork
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Legal */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Legal</p>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/privatlivspolitik" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  {tr('footer.privacy')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/vilkaar" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  {tr('footer.terms')}
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:kontakt@naetwork.dk" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                  Kontakt
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-gray-100 pt-7 text-xs text-gray-400 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-2xl leading-relaxed">{t.legal}</p>
-          <p className="shrink-0">© {new Date().getFullYear()} {site.name}</p>
+        <div className="mt-12 pt-8 border-t border-gray-100">
+          <p className="text-xs text-gray-400">{tr('footer.copy')}</p>
         </div>
       </div>
     </footer>
