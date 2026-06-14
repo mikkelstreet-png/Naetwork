@@ -26,30 +26,23 @@ export default function Home() {
             href="/signup"
             className="inline-flex items-center justify-center rounded-md bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-black transition-colors"
           >
-            {tr('hero.ctaBiz')}
+            {tr('hero.cta1')}
           </Link>
           <Link
             href="/specialist/profil"
             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-6 py-3 text-sm font-semibold text-[#0A0A0A] hover:border-gray-900 transition-colors"
           >
-            {tr('hero.ctaSpec')}
+            {tr('hero.cta2')}
           </Link>
         </div>
       </section>
 
       {/* VALUE PROPS */}
       <section className="border-t border-gray-100 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {[
-            { icon: tr('value.free'), label: tr('value.freeLabel'), sub: tr('value.freeSub') },
-            { icon: tr('value.nonprofit'), label: tr('value.nonprofitLabel'), sub: tr('value.nonprofitSub') },
-            { icon: tr('value.danish'), label: tr('value.danishLabel'), sub: tr('value.danishSub') },
-            { icon: tr('value.open'), label: tr('value.openLabel'), sub: tr('value.openSub') },
-          ].map((v, i) => (
-            <div key={i} className="flex flex-col gap-2">
-              <span className="text-2xl">{v.icon}</span>
-              <p className="font-semibold text-[#0A0A0A] text-sm">{v.label}</p>
-              <p className="text-xs text-gray-500 leading-relaxed">{v.sub}</p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {(['value.free', 'value.nonprofit', 'value.danish', 'value.open'] as const).map((key) => (
+            <div key={key} className="text-sm text-gray-700 leading-relaxed">
+              {tr(key)}
             </div>
           ))}
         </div>
@@ -60,14 +53,14 @@ export default function Home() {
         <h2 className="text-3xl font-black text-[#0A0A0A] mb-12">{tr('how.title')}</h2>
         <div className="grid sm:grid-cols-3 gap-6">
           {[
-            { icon: tr('how.step1.icon'), title: tr('how.step1.title'), sub: tr('how.step1.sub') },
-            { icon: tr('how.step2.icon'), title: tr('how.step2.title'), sub: tr('how.step2.sub') },
-            { icon: tr('how.step3.icon'), title: tr('how.step3.title'), sub: tr('how.step3.sub') },
+            { icon: tr('how.step1.icon'), title: tr('how.step1.title'), desc: tr('how.step1.desc') },
+            { icon: tr('how.step2.icon'), title: tr('how.step2.title'), desc: tr('how.step2.desc') },
+            { icon: tr('how.step3.icon'), title: tr('how.step3.title'), desc: tr('how.step3.desc') },
           ].map((step, i) => (
             <div key={i} className="rounded-2xl border border-gray-100 p-6 hover:border-gray-900 transition-colors">
               <span className="text-3xl block mb-4">{step.icon}</span>
               <h3 className="font-bold text-[#0A0A0A] mb-2">{step.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{step.sub}</p>
+              <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -79,7 +72,7 @@ export default function Home() {
           <div>
             <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 mb-4">{tr('biz.label')}</span>
             <h2 className="text-3xl font-black text-[#0A0A0A] mb-4">{tr('biz.title')}</h2>
-            <p className="text-gray-500 mb-8 leading-relaxed">{tr('biz.sub')}</p>
+            <p className="text-gray-500 mb-8 leading-relaxed">{tr('biz.desc')}</p>
             <ul className="space-y-3 mb-8">
               {[tr('biz.feature1'), tr('biz.feature2'), tr('biz.feature3'), tr('biz.feature4')].map((f, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-gray-700">
@@ -124,7 +117,7 @@ export default function Home() {
         <div className="order-1 sm:order-2">
           <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 mb-4">{tr('spec.label')}</span>
           <h2 className="text-3xl font-black text-[#0A0A0A] mb-4">{tr('spec.title')}</h2>
-          <p className="text-gray-500 mb-8 leading-relaxed">{tr('spec.sub')}</p>
+          <p className="text-gray-500 mb-8 leading-relaxed">{tr('spec.desc')}</p>
           <Link href="/specialist/profil" className="inline-flex items-center justify-center rounded-md bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-black transition-colors">
             {tr('spec.cta')}
           </Link>
