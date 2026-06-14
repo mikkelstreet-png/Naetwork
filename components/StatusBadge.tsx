@@ -1,15 +1,18 @@
-type Status = 'open' | 'in_progress' | 'closed';
+interface StatusBadgeProps {
+  status: string;
+}
 
-const statusConfig: Record<Status, { label: string; className: string }> = {
-  open: { label: 'Åben', className: 'bg-[#0a0a0a] text-white' },
-  in_progress: { label: 'I gang', className: 'bg-gray-200 text-gray-700' },
-  closed: { label: 'Lukket', className: 'bg-gray-100 text-gray-500' },
+const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  pending: { label: 'Afventer', className: 'bg-amber-50 text-amber-700 border border-amber-200' },
+  confirmed: { label: 'Bekraeftet', className: 'bg-green-50 text-green-700 border border-green-200' },
+  completed: { label: 'Gennemfoert', className: 'bg-blue-50 text-blue-700 border border-blue-200' },
+  cancelled: { label: 'Annulleret', className: 'bg-gray-50 text-gray-500 border border-gray-200' },
 };
 
-export function StatusBadge({ status }: { status: Status }) {
-  const config = statusConfig[status] ?? statusConfig.closed;
+export function StatusBadge({ status }: StatusBadgeProps) {
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[12px] font-medium ${config.className}`}>
+    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${config.className}`}>
       {config.label}
     </span>
   );
