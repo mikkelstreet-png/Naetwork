@@ -1,131 +1,157 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import { AI_CATEGORIES, BUDGET_OPTIONS, TIMELINE_OPTIONS } from '@/lib/constants';
+import { useTranslation } from '@/context/LanguageContext';
+
+const CATEGORIES = ['Chatbots & NLP', 'Computer Vision', 'Data & Analytics', 'Automation', 'Generativ AI', 'AI-strategi', 'Machine Learning', 'Andet'];
 
 export default function OpretProjektPage() {
-  const router = useRouter();
+  const { tr } = useTranslation();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState(CATEGORIES[0]);
+  const [budget, setBudget] = useState('');
+  const [duration, setDuration] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({
-    project_category: AI_CATEGORIES[0],
-    help_needed: '',
-    current_tools: '',
-    desired_result: '',
-    budget_range: BUDGET_OPTIONS[0],
-    timeline: TIMELINE_OPTIONS[0],
-    company_name: '',
-    contact_name: '',
-    contact_email: '',
-  });
-
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError('');
     const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { router.push('/login'); return; }
-    const { error: err } = await supabase.from('projects').insert({ ...form, user_id: session.user.id });
-    if (err) { setError('Der opstod en fejl. Prøv igen.'); setLoading(false); return; }
-    router.push('/dashboard');
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) { window.location.href = '/login'; return; }
+
+    const userId = session.session.user.id;
+    const { data: proj, error: err } = await supabase.from('projects').insert({
+      user_id: userId,
+      title,
+      description,
+      category,
+      budget,
+      duration,
+      status: 'open',
+    }).select().single();
+
+    if (err) {
+      setError(err.message);
+      setLoading(false);
+      return;
+    }
+
+    // Send confirmation email
+    const { data: profile } = await supabase.from('profiles').select('email, name').eq('id', userId).single();
+    if (profile?.email) {
+      fetch('/api/email/project-confirmed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: profile.email,
+          name: profile.name,
+          projectTitle: title,
+          projectCategory: category,
+          projectId: proj?.id,
+        }),
+      }).catch(() => {});
+    }
+
+    setSuccess(true);
+    setLoading(false);
+    setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
   }
 
-  const inp = "w-full rounded-md border border-[#e5e5e5] bg-white px-3 py-2.5 text-[14px] text-[#0a0a0a] outline-none focus:border-[#1a1a1a] transition-colors";
-  const label = "block text-[13px] font-medium text-[#374151] mb-1.5";
+  if (success) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4">
+          <div className="w-5 h-5 rounded-full bg-[#4F46E5]"></div>
+        </div>
+        <p className="font-semibold text-[#0A0A0A]">{tr('create.success')}</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1 bg-[#f9f9f9]">
-        <div className="wrap py-10 max-w-2xl">
-          <h1 className="text-[22px] font-semibold text-[#0a0a0a] mb-2">Opret AI-projekt</h1>
-          <p className="text-[14px] text-[#6b7280] mb-8">Beskriv jeres AI-behov. AI-specialister kan herefter melde interesse, og I kontakter dem direkte.</p>
+    <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-[#0A0A0A] mb-2">{tr('create.title')}</h1>
+        <p className="text-base text-gray-500">{tr('create.sub')}</p>
+      </div>
 
-          <form onSubmit={handleSubmit} className="bg-white border border-[#e5e5e5] rounded-xl p-6 sm:p-8 flex flex-col gap-5">
-            <div>
-              <label className={label}>Kategori</label>
-              <select value={form.project_category} onChange={(e) => update('project_category', e.target.value)} className={inp}>
-                {AI_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-              </select>
-            </div>
-
-            <div>
-              <label className={label}>Hvad har I brug for hjælp til?</label>
-              <textarea required value={form.help_needed} onChange={(e) => update('help_needed', e.target.value)}
-                className={`${inp} min-h-[100px] resize-y`}
-                placeholder="Beskriv konkret hvad I ønsker hjælp til..." />
-            </div>
-
-            <div>
-              <label className={label}>Nuværende værktøjer / systemer</label>
-              <input type="text" value={form.current_tools} onChange={(e) => update('current_tools', e.target.value)}
-                className={inp} placeholder="Eks. Excel, Salesforce, SAP..." />
-            </div>
-
-            <div>
-              <label className={label}>Ønsket resultat</label>
-              <textarea value={form.desired_result} onChange={(e) => update('desired_result', e.target.value)}
-                className={`${inp} min-h-[80px] resize-y`}
-                placeholder="Hvad skal løsningen gøre for jer?" />
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-5">
-              <div>
-                <label className={label}>Budget (estimat)</label>
-                <select value={form.budget_range} onChange={(e) => update('budget_range', e.target.value)} className={inp}>
-                  {BUDGET_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={label}>Tidshorisont</label>
-                <select value={form.timeline} onChange={(e) => update('timeline', e.target.value)} className={inp}>
-                  {TIMELINE_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="border-t border-[#e5e5e5] pt-5 flex flex-col gap-4">
-              <p className="text-[13px] font-medium text-[#374151]">Kontaktoplysninger</p>
-              <div>
-                <label className={label}>Virksomhedsnavn</label>
-                <input required type="text" value={form.company_name} onChange={(e) => update('company_name', e.target.value)} className={inp} placeholder="Jeres virksomhedsnavn" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label className={label}>Kontaktperson</label>
-                  <input required type="text" value={form.contact_name} onChange={(e) => update('contact_name', e.target.value)} className={inp} placeholder="Fulde navn" />
-                </div>
-                <div>
-                  <label className={label}>Email</label>
-                  <input required type="email" value={form.contact_email} onChange={(e) => update('contact_email', e.target.value)} className={inp} placeholder="kontakt@firma.dk" />
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg bg-[#f9f9f9] border border-[#e5e5e5] p-4">
-              <p className="text-[12px] text-[#6b7280] leading-relaxed">
-                <strong className="text-[#0a0a0a]">Bemærk:</strong> Naetwork er en gratis opslagstavle. Vi er ikke part i nogen aftale mellem jer og en specialist. Kontaktoplysninger er synlige for specialister der melder interesse.
-              </p>
-            </div>
-
-            {error && <p className="text-[13px] text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{error}</p>}
-
-            <button type="submit" disabled={loading} className="w-full rounded-md bg-[#1a1a1a] py-2.5 text-[14px] font-medium text-white hover:bg-[#333] transition-colors disabled:opacity-50">
-              {loading ? 'Opretter...' : 'Opret projekt'}
-            </button>
-          </form>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('create.titleLabel')}</label>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+            placeholder={tr('create.titlePlaceholder')}
+          />
         </div>
-      </main>
-      <Footer />
-    </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('create.categoryLabel')}</label>
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors bg-white"
+          >
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('create.descLabel')}</label>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            required
+            rows={5}
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors resize-none"
+            placeholder={tr('create.descPlaceholder')}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('create.budgetLabel')}</label>
+            <input
+              type="text"
+              value={budget}
+              onChange={e => setBudget(e.target.value)}
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              placeholder={tr('create.budgetPlaceholder')}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('create.durationLabel')}</label>
+            <input
+              type="text"
+              value={duration}
+              onChange={e => setDuration(e.target.value)}
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              placeholder={tr('create.durationPlaceholder')}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <div className="rounded-md bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">{error}</div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-md bg-[#4F46E5] px-4 py-3 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors disabled:opacity-50"
+        >
+          {loading ? '...' : tr('create.btn')}
+        </button>
+      </form>
+    </main>
   );
 }
