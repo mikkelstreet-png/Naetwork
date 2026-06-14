@@ -1,50 +1,27 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { t, Lang } from '@/lib/translations';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import type { Lang } from '@/lib/translations';
 
-interface LanguageContextType {
+interface LanguageContextValue {
   lang: Lang;
-  setLang: (l: Lang) => void;
-  tr: (key: string) => string;
+  setLang: (lang: Lang) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType>({
+const LanguageContext = createContext<LanguageContextValue>({
   lang: 'da',
   setLang: () => {},
-  tr: (k) => k,
 });
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('da');
-
-  useEffect(() => {
-    const stored = localStorage.getItem('naetwork_lang') as Lang | null;
-    if (stored === 'da' || stored === 'en') {
-      setLangState(stored);
-      document.documentElement.lang = stored;
-    } else {
-      document.documentElement.lang = 'da';
-    }
-  }, []);
-
-  const setLang = (l: Lang) => {
-    setLangState(l);
-    localStorage.setItem('naetwork_lang', l);
-    document.documentElement.lang = l;
-  };
-
-  const tr = (key: string): string => {
-    return t[lang][key] ?? t['da'][key] ?? key;
-  };
-
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>('da');
   return (
-    <LanguageContext.Provider value={{ lang, setLang, tr }}>
+    <LanguageContext.Provider value={{ lang, setLang }}>
       {children}
     </LanguageContext.Provider>
   );
 }
 
-export function useTranslation() {
+export function useLanguage() {
   return useContext(LanguageContext);
 }
