@@ -53,9 +53,9 @@ export default function DashboardPage() {
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
-      open: 'bg-indigo-50 text-indigo-700',
-      in_progress: 'bg-amber-50 text-amber-700',
-      closed: 'bg-gray-100 text-gray-600',
+      open: 'bg-gray-900 text-white',
+      in_progress: 'bg-gray-200 text-gray-700',
+      closed: 'bg-gray-100 text-gray-500',
     };
     const label: Record<string, string> = {
       open: tr('projects.open'),
@@ -71,7 +71,7 @@ export default function DashboardPage() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-5 h-5 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin"></div>
+      <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
 
@@ -84,7 +84,7 @@ export default function DashboardPage() {
         </div>
         <Link
           href="/projekt/opret"
-          className="inline-flex items-center justify-center rounded-md bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors"
+          className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-black transition-colors"
         >
           + {tr('dash.newProject')}
         </Link>
@@ -92,14 +92,12 @@ export default function DashboardPage() {
 
       {projects.length === 0 ? (
         <div className="border border-dashed border-gray-200 rounded-xl p-16 text-center">
-          <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-            <div className="w-4 h-4 rounded-full bg-[#4F46E5]"></div>
-          </div>
+          <div className="text-5xl mb-4">📂</div>
           <h2 className="text-lg font-semibold text-[#0A0A0A] mb-2">{tr('dash.noProjects')}</h2>
           <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">{tr('dash.noProjectsSub')}</p>
           <Link
             href="/projekt/opret"
-            className="inline-flex items-center justify-center rounded-md bg-[#4F46E5] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors"
+            className="inline-flex items-center justify-center rounded-md bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-black transition-colors"
           >
             {tr('dash.createFirst')}
           </Link>
@@ -109,7 +107,7 @@ export default function DashboardPage() {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="border border-gray-200 rounded-xl p-5 hover:border-[#4F46E5] transition-all duration-150 hover:-translate-y-0.5"
+              className="border border-gray-200 rounded-xl p-5 hover:border-gray-900 transition-all duration-150 hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -125,7 +123,7 @@ export default function DashboardPage() {
                   </span>
                   <Link
                     href={`/projekt/${project.id}/interesserede`}
-                    className="text-sm font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors"
+                    className="text-sm font-medium text-gray-900 hover:text-black underline transition-colors"
                   >
                     {tr('dash.viewInterested')} →
                   </Link>
