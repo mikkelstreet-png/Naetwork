@@ -2,295 +2,166 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
-import { HeartIcon } from '@/components/icons/HeartIcon';
 
-const INDUSTRIES = ['Teknologi','Finans','Konsulentbranchen','Marketing','Jura','Sundhed','Uddannelse','Medier','Andet'];
-const SESSION_TYPE_OPTIONS = [
-  { value: 'mock_interview', label: 'Mock Interview' },
-  { value: 'cv_review', label: 'CV & LinkedIn' },
-  { value: 'informal_chat', label: 'Uformel 1:1' },
-  { value: 'career_advice', label: 'Karriereraadgivning' },
+const INDUSTRIES = ['Finans', 'Tech', 'Konsulentbranchen', 'Sundhed', 'Marketing', 'HR', 'Jura', 'Produkt', 'Design', 'Andet'];
+const SESSION_TYPES = [
+  { type: 'mock_interview', label: 'Mock Interview' },
+  { type: 'cv_review', label: 'CV & LinkedIn' },
+  { type: 'informal_chat', label: 'Uformel 1:1' },
+  { type: 'career_advice', label: 'Karriereraadgivning' },
 ];
-
-const STEPS = ['Grundlaeggede oplysninger','Session-konfiguration','Donationsvalg','Bekraeft og opret'];
 
 export default function ProfessionalSignupPage() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({
+    name: '', email: '', password: '',
+    title: '', company: '', industry: '',
+    bio: '', linkedin: '',
+    sessionTypes: [] as string[], priceDkk: 500,
+    donatesToCharity: false,
+  });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Step 1
-  const [name, setName] = useState('');
-  const [title, setTitle] = useState('');
-  const [company, setCompany] = useState('');
-  const [industry, setIndustry] = useState('');
-  const [bio, setBio] = useState('');
-  const [linkedinUrl, setLinkedinUrl] = useState('');
-
-  // Step 2
-  const [sessionTypes, setSessionTypes] = useState<string[]>([]);
-  const [priceDkk, setPriceDkk] = useState(700);
-
-  // Step 3
-  const [donatesToCharity, setDonatesToCharity] = useState(false);
-
-  // Auth
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const toggleSessionType = (v: string) => {
-    setSessionTypes(prev => prev.includes(v) ? prev.filter(s => s !== v) : [...prev, v]);
-  };
-
-  const handleNext = () => {
-    if (step === 0 && (!name || !title || !industry || !bio)) {
-      setError('Udfyld alle paakraevede felter.'); return;
-    }
-    if (step === 1 && sessionTypes.length === 0) {
-      setError('Vaelg mindst en session-type.'); return;
-    }
-    setError('');
-    setStep(s => s + 1);
-  };
+  const set = (key: string, value: unknown) => setForm(f => ({ ...f, [key]: value }));
+  const toggleSessionType = (t: string) =>
+    set('sessionTypes', form.sessionTypes.includes(t) ? form.sessionTypes.filter(x => x !== t) : [...form.sessionTypes, t]);
 
   const handleSubmit = async () => {
-    if (!email || !password) { setError('Udfyld email og adgangskode.'); return; }
-    setSubmitting(true);
-    setError('');
-
+    setLoading(true); setError('');
     const supabase = createClient();
-
-    // Create auth user
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-    if (authError || !authData.user) {
-      setError(authError?.message ?? 'Kunne ikke oprette konto.');
-      setSubmitting(false);
-      return;
-    }
-
+    const { data: authData, error: authErr } = await supabase.auth.signUp({ email: form.email, password: form.password });
+    if (authErr || !authData.user) { setError(authErr?.message || 'Kunne ikke oprette konto.'); setLoading(false); return; }
     const userId = authData.user.id;
-
-    // Create profile
-    await supabase.from('profiles').insert({
-      user_id: userId,
-      user_type: 'professional',
-      name,
-      email,
+    await supabase.from('profiles').insert({ id: userId, email: form.email, full_name: form.name, role: 'professional' });
+    const { error: profErr } = await supabase.from('professionals').insert({
+      profile_id: userId, name: form.name, title: form.title,
+      company: form.company || null, industry: form.industry,
+      bio: form.bio || null, linkedin_url: form.linkedin || null,
+      session_types: form.sessionTypes, price_dkk: form.priceDkk,
+      donates_to_charity: form.donatesToCharity,
     });
-
-    // Create professional record
-    const { error: proError } = await supabase.from('professionals').insert({
-      user_id: userId,
-      name,
-      title,
-      company: company || null,
-      industry,
-      bio,
-      linkedin_url: linkedinUrl || null,
-      session_types: sessionTypes,
-      price_dkk: priceDkk,
-      donates_to_charity: donatesToCharity,
-      available: true,
-      languages: ['da'],
-    });
-
-    if (proError) {
-      setError('Profil kunne ikke oprettes: ' + proError.message);
-      setSubmitting(false);
-      return;
-    }
-
+    if (profErr) { setError('Profil kunne ikke oprettes. Proev igen.'); setLoading(false); return; }
     router.push('/dashboard');
   };
 
-  const commissionPct = donatesToCharity ? 7.5 : 15;
-  const platformFee = Math.round(priceDkk * commissionPct / 100);
-  const payout = priceDkk - platformFee;
-
   return (
-    <main className="pt-16">
-      <div className="max-w-xl mx-auto px-6 py-12">
-
-        {/* Progress */}
-        <div className="flex gap-2 mb-10">
-          {STEPS.map((s, i) => (
-            <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? 'bg-green-800' : 'bg-gray-100'}`} />
+    <main className="pt-16 min-h-screen bg-gray-50">
+      <div className="max-w-lg mx-auto px-6 py-16">
+        <div className="flex gap-1 mb-10">
+          {[1,2,3,4].map(n => (
+            <div key={n} className={`h-1 flex-1 rounded-full ${n <= step ? 'bg-green-800' : 'bg-gray-200'}`} />
           ))}
         </div>
 
-        <div className="text-xs text-gray-400 mb-2">Trin {step + 1} af {STEPS.length}</div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">{STEPS[step]}</h1>
+        <div className="bg-white rounded-2xl border border-gray-100 p-8">
+          {step === 1 && (
+            <div className="space-y-5">
+              <h1 className="text-xl font-bold text-gray-900">Grundlaegende information</h1>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fulde navn</label>
+                <input value={form.name} onChange={e => set('name', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Mikkel Jensen" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="mikkel@firma.dk" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Adgangskode</label>
+                <input type="password" value={form.password} onChange={e => set('password', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Min 8 tegn" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Jobtitel</label>
+                <input value={form.title} onChange={e => set('title', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Senior Manager" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Virksomhed (valgfri)</label>
+                <input value={form.company} onChange={e => set('company', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Nordea" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Branche</label>
+                <select value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800 bg-white">
+                  <option value="">Vaelg branche</option>
+                  {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
 
-        {/* Step 1: Basic info */}
-        {step === 0 && (
-          <div className="space-y-5">
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1.5">Fulde navn *</label>
-              <input value={name} onChange={e => setName(e.target.value)} placeholder="Marie Jensen"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1.5">Titel / stilling *</label>
-              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Senior Manager, McKinsey"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1.5">Virksomhed</label>
-              <input value={company} onChange={e => setCompany(e.target.value)} placeholder="McKinsey & Company"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1.5">Branche *</label>
-              <select value={industry} onChange={e => setIndustry(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800">
-                <option value="">Vaelg branche</option>
-                {INDUSTRIES.map(i => <option key={i}>{i}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1.5">Kort bio *</label>
-              <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4}
-                placeholder="Fortael kandidater om din baggrund, erfaringer og hvad du kan hjaelpe med..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800 resize-none" />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-1.5">LinkedIn URL</label>
-              <input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="https://linkedin.com/in/..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" />
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Session config */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div>
-              <div className="text-sm font-medium text-gray-700 mb-3">Hvilke sessions tilbyder du? *</div>
-              <div className="space-y-2">
-                {SESSION_TYPE_OPTIONS.map(o => (
-                  <label key={o.value} className={`flex items-center gap-3 border rounded-xl p-4 cursor-pointer transition-colors ${sessionTypes.includes(o.value) ? 'border-green-800 bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                    <input type="checkbox" checked={sessionTypes.includes(o.value)} onChange={() => toggleSessionType(o.value)} className="accent-green-800" />
-                    <span className="text-sm font-medium text-gray-900">{o.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-gray-700 block mb-3">
-                Pris per session: DKK {priceDkk}
-              </label>
-              <input type="range" min={300} max={2000} step={50} value={priceDkk}
-                onChange={e => setPriceDkk(Number(e.target.value))} className="w-full accent-green-800" />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>DKK 300</span><span>DKK 2.000</span>
-              </div>
-            </div>
-
-            {/* Fee preview */}
-            <div className="border border-gray-100 rounded-xl p-4 text-sm space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Sessionspris</span>
-                <span className="font-medium">DKK {priceDkk}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Platformsbidrag ({commissionPct}%)</span>
-                <span className="font-medium">DKK {platformFee}</span>
-              </div>
-              <div className="flex justify-between font-semibold border-t border-gray-100 pt-2">
-                <span className="text-gray-900">Din udbetaling</span>
-                <span className="text-gray-900">DKK {payout}</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Charity */}
-        {step === 2 && (
-          <div className="space-y-6">
-            <div className="border border-rose-200 bg-rose-50 rounded-2xl p-6">
-              <div className="flex items-center gap-2 mb-3">
-                <HeartIcon className="w-5 h-5 text-rose-600" />
-                <span className="font-semibold text-rose-800">Stoet Kraeftens Bekaempelse</span>
-              </div>
-              <p className="text-sm text-rose-700 mb-5">
-                Vaelg at donere dit honorar fra dine sessioner til Kraeftens Bekaempelse.
-                Naar du donerer, reduceres dit platformsbidrag fra 15% til 7,5% — resten af bidraget gaer til sagen.
-              </p>
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" checked={donatesToCharity} onChange={e => setDonatesToCharity(e.target.checked)} className="mt-0.5 accent-rose-600 w-4 h-4" />
-                <div>
-                  <div className="font-medium text-rose-800 text-sm">Jeg oensker at donere mit honorar til Kraeftens Bekaempelse</div>
-                  <div className="text-xs text-rose-600 mt-1">Dit valg vises paa din profil som et donationsbadge.</div>
+          {step === 2 && (
+            <div className="space-y-6">
+              <h1 className="text-xl font-bold text-gray-900">Session-typer og pris</h1>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">Hvad tilbyder du?</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {SESSION_TYPES.map(s => (
+                    <button key={s.type} onClick={() => toggleSessionType(s.type)}
+                      className={`text-sm font-medium px-4 py-3 rounded-xl border transition-colors ${form.sessionTypes.includes(s.type) ? 'bg-green-800 text-white border-green-800' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
+                      {s.label}
+                    </button>
+                  ))}
                 </div>
-              </label>
-            </div>
-
-            {donatesToCharity ? (
-              <div className="border border-gray-100 rounded-xl p-4 text-sm space-y-2">
-                <div className="flex justify-between"><span className="text-gray-500">Sessionspris</span><span>DKK {priceDkk}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Platformsbidrag (7,5%)</span><span>DKK {Math.round(priceDkk * 0.075)}</span></div>
-                <div className="flex justify-between text-rose-700"><span>Til Kraeftens Bekaempelse</span><span>DKK {Math.round(priceDkk * 0.075)}</span></div>
-                <div className="flex justify-between font-semibold border-t pt-2"><span>Din udbetaling</span><span>DKK {priceDkk - Math.round(priceDkk * 0.075)}</span></div>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">Du kan altid aendre dette i dine indstillinger senere.</p>
-            )}
-          </div>
-        )}
-
-        {/* Step 4: Confirm + account */}
-        {step === 3 && (
-          <div className="space-y-5">
-            <div className="border border-gray-100 rounded-2xl p-5 space-y-3 text-sm">
-              <div className="font-semibold text-gray-900 mb-3">Opsummering</div>
-              <div className="flex justify-between"><span className="text-gray-500">Navn</span><span>{name}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Titel</span><span>{title}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Branche</span><span>{industry}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Pris</span><span>DKK {priceDkk} / session</span></div>
-              <div className="flex justify-between"><span className="text-gray-500">Platformsbidrag</span><span>{donatesToCharity ? '7,5%' : '15%'}</span></div>
-              {donatesToCharity && <div className="flex justify-between text-rose-700"><span>Donation</span><span>Kraeftens Bekaempelse</span></div>}
-            </div>
-
-            <div className="border-t border-gray-100 pt-5 space-y-4">
-              <div className="font-semibold text-gray-900 text-sm mb-3">Opret konto</div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1.5">Email</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1.5">Adgangskode</label>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" />
+                <label className="block text-sm font-medium text-gray-700 mb-3">Pris pr. session: <span className="font-bold text-gray-900">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
+                <input type="range" min={300} max={2000} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
+                  className="w-full accent-green-800" />
+                <div className="flex justify-between text-xs text-gray-400 mt-1"><span>DKK 300</span><span>DKK 2.000</span></div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bio (valgfri)</label>
+                <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800 resize-none" placeholder="Fortael hvad du kan hjaelpe med..." />
               </div>
             </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-6">
+              <h1 className="text-xl font-bold text-gray-900">Donation til velgorenhed</h1>
+              <p className="text-gray-500 text-sm">Naetwork giver dig mulighed for at donere en del af platformsgebyret til Kraeftens Bekaempelse. Hvis du vaelger dette, reduceres dit platformsgebyr fra 15% til 7,5%.</p>
+              <button onClick={() => set('donatesToCharity', !form.donatesToCharity)}
+                className={`w-full text-left border rounded-2xl p-5 transition-colors ${form.donatesToCharity ? 'border-rose-300 bg-rose-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-gray-900 mb-1">Ja, jeg vil donere</div>
+                    <div className="text-sm text-gray-500">7,5% gebyr (i stedet for 15%). Halvdelen gaar til Kraeftens Bekaempelse.</div>
+                  </div>
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${form.donatesToCharity ? 'border-rose-500 bg-rose-500' : 'border-gray-300'}`}>
+                    {form.donatesToCharity && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>}
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-5">
+              <h1 className="text-xl font-bold text-gray-900">Bekraeft og opret profil</h1>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Navn</span><span className="font-medium">{form.name}</span></div>
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Titel</span><span className="font-medium">{form.title}</span></div>
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Branche</span><span className="font-medium">{form.industry}</span></div>
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Pris</span><span className="font-medium">DKK {form.priceDkk.toLocaleString('da-DK')}/session</span></div>
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Platformsgebyr</span><span className="font-medium">{form.donatesToCharity ? '7,5% (donerer)' : '15%'}</span></div>
+                <div className="flex justify-between py-2"><span className="text-gray-500">Sessions</span><span className="font-medium">{form.sessionTypes.length} valgt</span></div>
+              </div>
+              {error && <p className="text-sm text-red-600">{error}</p>}
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-8">
+            {step > 1 && <button onClick={() => setStep(s => s - 1)} className="flex-1 border border-gray-200 text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 transition-colors">Tilbage</button>}
+            {step < 4
+              ? <button onClick={() => setStep(s => s + 1)} className="flex-1 bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors">Naeste</button>
+              : <button onClick={handleSubmit} disabled={loading} className="flex-1 bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
+            }
           </div>
-        )}
-
-        {error && <p className="text-sm text-red-600 mt-4">{error}</p>}
-
-        <div className="flex gap-3 mt-8">
-          {step > 0 && (
-            <button onClick={() => { setError(''); setStep(s => s - 1); }}
-              className="flex-1 border border-gray-200 text-gray-700 font-medium py-3 rounded-xl hover:border-gray-400 transition-colors text-sm">
-              Tilbage
-            </button>
-          )}
-          {step < STEPS.length - 1 ? (
-            <button onClick={handleNext}
-              className="flex-1 bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors text-sm">
-              Naeste
-            </button>
-          ) : (
-            <button onClick={handleSubmit} disabled={submitting}
-              className="flex-1 bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors disabled:opacity-50 text-sm">
-              {submitting ? 'Opretter profil...' : 'Opret profil'}
-            </button>
-          )}
         </div>
+
+        <p className="text-center text-sm text-gray-400 mt-6">Har du allerede en profil? <Link href="/login" className="text-green-800 hover:underline">Log ind</Link></p>
       </div>
     </main>
   );
