@@ -1,9 +1,9 @@
 type Status = 'open' | 'in_progress' | 'closed';
 
 const statusConfig: Record<Status, { label: string; className: string }> = {
-  open: { label: 'Åben', className: 'bg-[#dcfce7] text-[#166534]' },
-  in_progress: { label: 'I gang', className: 'bg-[#fef9c3] text-[#854d0e]' },
-  closed: { label: 'Lukket', className: 'bg-[#f3f4f6] text-[#374151]' },
+  open: { label: 'Åben', className: 'bg-[#0a0a0a] text-white' },
+  in_progress: { label: 'I gang', className: 'bg-gray-200 text-gray-700' },
+  closed: { label: 'Lukket', className: 'bg-gray-100 text-gray-500' },
 };
 
 export function StatusBadge({ status }: { status: Status }) {
