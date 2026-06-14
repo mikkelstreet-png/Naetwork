@@ -59,7 +59,7 @@ export default function LoginPage() {
               onChange={e => setPassword(e.target.value)}
               required
               className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
-              placeholder="â¢â¢â¢â¢â¢â¢â¢â¢"
+              placeholder="Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢Ã¢ÂÂ¢"
             />
           </div>
 
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           {tr('login.noAccount')}{' '}
-          <Link href="/signup" className="font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors">
+          <Link href="/signup" className="font-semibold text-gray-900 hover:text-black underline transition-colors">
             {tr('login.signup')}
           </Link>
         </p>
