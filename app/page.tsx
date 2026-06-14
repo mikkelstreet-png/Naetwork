@@ -22,16 +22,10 @@ export default function Home() {
           {tr('hero.sub')}
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center rounded-md bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-black transition-colors"
-          >
+          <Link href="/signup" className="inline-flex items-center justify-center rounded-md bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-black transition-colors">
             {tr('hero.cta1')}
           </Link>
-          <Link
-            href="/specialist/profil"
-            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-6 py-3 text-sm font-semibold text-[#0A0A0A] hover:border-gray-900 transition-colors"
-          >
+          <Link href="/specialist/profil" className="inline-flex items-center justify-center rounded-md border border-gray-300 px-6 py-3 text-sm font-semibold text-[#0A0A0A] hover:border-gray-900 transition-colors">
             {tr('hero.cta2')}
           </Link>
         </div>
@@ -41,9 +35,7 @@ export default function Home() {
       <section className="border-t border-gray-100 bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {(['value.free', 'value.nonprofit', 'value.danish', 'value.open'] as const).map((key) => (
-            <div key={key} className="text-sm text-gray-700 leading-relaxed">
-              {tr(key)}
-            </div>
+            <div key={key} className="text-sm text-gray-700 leading-relaxed">{tr(key)}</div>
           ))}
         </div>
       </section>
@@ -66,7 +58,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BUSINESS SECTION */}
+      {/* BUSINESS */}
       <section className="bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 grid sm:grid-cols-2 gap-12 items-center">
           <div>
@@ -76,9 +68,7 @@ export default function Home() {
             <ul className="space-y-3 mb-8">
               {[tr('biz.feature1'), tr('biz.feature2'), tr('biz.feature3'), tr('biz.feature4')].map((f, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-gray-700">
-                  <svg className="w-4 h-4 mt-0.5 shrink-0 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  <svg className="w-4 h-4 mt-0.5 shrink-0 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   {f}
                 </li>
               ))}
@@ -101,7 +91,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SPECIALIST SECTION */}
+      {/* SPECIALIST */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-20 grid sm:grid-cols-2 gap-12 items-center">
         <div className="rounded-2xl border border-gray-100 p-8 bg-white order-2 sm:order-1">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">{tr('spec.label')}</p>
