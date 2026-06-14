@@ -40,7 +40,6 @@ function SignupForm() {
     }
     if (data.user) {
       await supabase.from('profiles').upsert({ id: data.user.id, name, role, email });
-      // Send welcome email
       fetch('/api/email/welcome', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,7 +94,7 @@ function SignupForm() {
               value={name}
               onChange={e => setName(e.target.value)}
               required
-              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors"
               placeholder="Dit navn eller virksomhedsnavn"
             />
           </div>
@@ -106,7 +105,7 @@ function SignupForm() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors"
               placeholder="du@eksempel.dk"
             />
           </div>
@@ -118,7 +117,7 @@ function SignupForm() {
               onChange={e => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+              className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors"
               placeholder="Min. 6 tegn"
             />
           </div>
@@ -132,7 +131,7 @@ function SignupForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors disabled:opacity-50"
+            className="w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-black transition-colors disabled:opacity-50"
           >
             {loading ? '...' : tr('signup.btn')}
           </button>
@@ -147,7 +146,7 @@ function SignupForm() {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           {tr('signup.hasAccount')}{' '}
-          <Link href="/login" className="font-semibold text-[#4F46E5] hover:text-[#4338CA] transition-colors">
+          <Link href="/login" className="font-semibold text-gray-900 hover:text-black transition-colors">
             {tr('signup.login')}
           </Link>
         </p>
