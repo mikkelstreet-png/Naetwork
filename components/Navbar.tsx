@@ -58,7 +58,7 @@ export function Navbar() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0A0A0A] transition-colors font-medium"
               >
-                <div className="w-7 h-7 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-bold">
                   {userEmail.charAt(0).toUpperCase()}
                 </div>
               </button>
@@ -102,7 +102,7 @@ export function Navbar() {
               </Link>
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center rounded-md bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors"
+                className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-black transition-colors"
               >
                 {tr('nav.signup')}
               </Link>
