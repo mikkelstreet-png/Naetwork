@@ -9,6 +9,10 @@ export function Navbar() {
 
   useEffect(() => {
     const supabase = createClient();
+    if (!supabase) {
+      setSession(false);
+      return;
+    }
     supabase.auth.getSession().then(({ data }) => {
       setSession(!!data.session);
     });
@@ -20,6 +24,7 @@ export function Navbar() {
 
   async function handleLogout() {
     const supabase = createClient();
+    if (!supabase) return;
     await supabase.auth.signOut();
     window.location.href = '/';
   }
