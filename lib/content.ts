@@ -1,37 +1,39 @@
-export type Dict = {
-  footer: {
-    blurb: string;
-    columns: Array<{
-      title: string;
-      links: Array<{ label: string; href: string }>;
-    }>;
-    legal: string;
-  };
+// Platform constants for Naetwork career session platform
+
+export const PLATFORM_NAME = 'Naetwork';
+export const PLATFORM_COMMISSION_DEFAULT = 0.15;
+export const PLATFORM_COMMISSION_CHARITY = 0.075;
+export const CHARITY_NAME = 'Kraeftens Bekaempelse';
+
+export const SESSION_TYPES = [
+  'mock_interview',
+  'cv_review',
+  'informal_chat',
+  'career_advice',
+] as const;
+
+export type SessionType = typeof SESSION_TYPES[number];
+
+export const SESSION_TYPE_LABELS: Record<SessionType, { da: string; en: string }> = {
+  mock_interview: { da: 'Mock Interview', en: 'Mock Interview' },
+  cv_review: { da: 'CV & LinkedIn', en: 'CV & LinkedIn' },
+  informal_chat: { da: 'Uformel 1:1', en: 'Informal 1:1' },
+  career_advice: { da: 'Karriereraadgivning', en: 'Career advice' },
 };
 
-export const site = {
-  name: 'Naetwork',
-};
+export const INDUSTRIES = [
+  'Teknologi',
+  'Finans',
+  'Konsulentbranchen',
+  'Marketing',
+  'Jura',
+  'Sundhed',
+  'Uddannelse',
+  'Medier',
+  'Andet',
+] as const;
 
-export const defaultFooter: Dict['footer'] = {
-  blurb: 'Et gratis, uafhængigt initiativ der forbinder virksomheder med AI-specialister — uden mellemled eller kommission.',
-  columns: [
-    {
-      title: 'Platform',
-      links: [
-        { label: 'Opret projekt', href: '/signup' },
-        { label: 'Projekter', href: '/projekter' },
-        { label: 'Bliv specialist', href: '/specialist' },
-      ],
-    },
-    {
-      title: 'Juridisk',
-      links: [
-        { label: 'Privatlivspolitik', href: '/privatlivspolitik' },
-        { label: 'Vilkår', href: '/vilkaar' },
-        { label: 'Ansvarsfraskrivelse', href: '/ansvarsfraskrivelse' },
-      ],
-    },
-  ],
-  legal: 'Naetwork er en gratis platform. Vi er ikke part i aftaler mellem virksomheder og specialister.',
-};
+export type Industry = typeof INDUSTRIES[number];
+
+export const PRICE_MIN = 300;
+export const PRICE_MAX = 2000;
