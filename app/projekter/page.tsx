@@ -92,13 +92,13 @@ export default function ProjekterPage() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-[#0A0A0A] mb-2">{tr('projects.title')}</h1>
-          <p className="text-gray-500">{tr('projects.subtitle')}</p>
+          <p className="text-gray-500">{tr('projects.sub')}</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-8">
           <input
             type="text"
-            placeholder={tr('projects.searchPlaceholder')}
+            placeholder={tr('projects.search')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -108,14 +108,14 @@ export default function ProjekterPage() {
             onChange={e => setCategory(e.target.value)}
             className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
           >
-            <option value="">{tr('projects.allCategories')}</option>
+            <option value="">{tr('projects.all')}</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
         {filtered.length === 0 ? (
           <div className="text-center py-24 text-gray-400">
-            <div className="text-5xl mb-4">🔍</div>
+            <div className="text-5xl mb-4">&#128269;</div>
             <p className="text-lg font-medium">{tr('projects.noResults')}</p>
           </div>
         ) : (
@@ -131,14 +131,16 @@ export default function ProjekterPage() {
                     <h2 className="text-lg font-semibold text-[#0A0A0A] mb-1">{project.title}</h2>
                     <p className="text-gray-500 text-sm line-clamp-2 mb-3">{project.description}</p>
                     <div className="flex items-center gap-4 text-xs text-gray-400">
-                      {getProfileName(project.profiles) && <span>af {getProfileName(project.profiles)}</span>}
+                      {getProfileName(project.profiles) && (
+                        <span>{tr('projects.postedBy')} {getProfileName(project.profiles)}</span>
+                      )}
                       {project.duration && <span>&#9201; {project.duration}</span>}
                     </div>
                   </div>
                   <div className="shrink-0">
                     {interests.includes(project.id) ? (
                       <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-50 text-green-700 text-sm font-medium">
-                        &#10003; {tr('projects.interestShown')}
+                        &#10003; {tr('projects.interested')}
                       </span>
                     ) : (
                       <button
