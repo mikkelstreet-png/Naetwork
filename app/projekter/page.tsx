@@ -83,7 +83,7 @@ export default function ProjekterPage() {
 
   if (loading) return (
     <main className="min-h-screen flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
     </main>
   );
 
@@ -101,12 +101,12 @@ export default function ProjekterPage() {
             placeholder={tr('projects.search')}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
           />
           <select
             value={category}
             onChange={e => setCategory(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+            className="border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
           >
             <option value="">{tr('projects.all')}</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -115,17 +115,17 @@ export default function ProjekterPage() {
 
         {filtered.length === 0 ? (
           <div className="text-center py-24 text-gray-400">
-            <div className="text-5xl mb-4">&#128269;</div>
+            <div className="text-5xl mb-4">🔍</div>
             <p className="text-lg font-medium">{tr('projects.noResults')}</p>
           </div>
         ) : (
           <div className="grid gap-4">
             {filtered.map(project => (
-              <div key={project.id} className="border border-gray-100 rounded-2xl p-6 hover:border-indigo-300 hover:shadow-md transition-all duration-150 hover:-translate-y-0.5">
+              <div key={project.id} className="border border-gray-100 rounded-2xl p-6 hover:border-gray-900 transition-all duration-150 hover:-translate-y-0.5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">{project.category}</span>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">{project.category}</span>
                       {project.budget && <span className="text-xs text-gray-400">{project.budget}</span>}
                     </div>
                     <h2 className="text-lg font-semibold text-[#0A0A0A] mb-1">{project.title}</h2>
@@ -134,18 +134,18 @@ export default function ProjekterPage() {
                       {getProfileName(project.profiles) && (
                         <span>{tr('projects.postedBy')} {getProfileName(project.profiles)}</span>
                       )}
-                      {project.duration && <span>&#9201; {project.duration}</span>}
+                      {project.duration && <span>⏱ {project.duration}</span>}
                     </div>
                   </div>
                   <div className="shrink-0">
                     {interests.includes(project.id) ? (
-                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-50 text-green-700 text-sm font-medium">
-                        &#10003; {tr('projects.interested')}
+                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium">
+                        ✓ {tr('projects.interested')}
                       </span>
                     ) : (
                       <button
                         onClick={() => showInterest(project.id)}
-                        className="px-4 py-2 rounded-xl bg-[#4F46E5] text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
+                        className="px-4 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-black transition-colors"
                       >
                         {tr('projects.showInterest')}
                       </button>
