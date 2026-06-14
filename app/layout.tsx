@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import "@fontsource/inter/latin-400.css";
 import "@fontsource/inter/latin-500.css";
 import "@fontsource/inter/latin-600.css";
+import "@fontsource/inter/latin-700.css";
 import "./globals.css";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { CookieBanner } from "@/components/CookieBanner";
+import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://naetwork.vercel.app"),
@@ -21,7 +25,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="da">
-      <body className="antialiased bg-white text-[#0a0a0a]">{children}</body>
+      <body className="antialiased bg-white text-[#0A0A0A]">
+        <LanguageProvider>
+          <Navbar />
+          {children}
+          <CookieBanner />
+        </LanguageProvider>
+      </body>
     </html>
   );
 }
