@@ -1,4 +1,3 @@
-import { Logo } from "./Logo";
 import type { Dict } from "@/lib/content";
 import { site } from "@/lib/content";
 
@@ -8,7 +7,7 @@ export function Footer({ t, tagline }: { t: Dict["footer"]; tagline: string }) {
       <div className="wrap py-16">
         <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr]">
           <div className="max-w-sm">
-            <Logo tone="dark" />
+            <span className="font-extrabold text-[15px] tracking-tight text-[#0A0A0A]">{site.name}</span>
             <p className="mt-5 text-sm leading-relaxed text-gray-500">{t.blurb}</p>
             <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400">
               {tagline}
