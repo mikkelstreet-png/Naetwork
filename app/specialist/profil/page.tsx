@@ -84,9 +84,7 @@ export default function SpecialistProfilPage() {
   if (success) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-          <div className="w-5 h-5 rounded-full bg-[#4F46E5]"></div>
-        </div>
+        <div className="text-5xl mb-4">✅</div>
         <p className="font-semibold text-[#0A0A0A]">{tr('profil.success')}</p>
       </div>
     </div>
@@ -103,20 +101,20 @@ export default function SpecialistProfilPage() {
         <div>
           <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('profil.nameLabel')}</label>
           <input type="text" value={name} onChange={e => setName(e.target.value)} required
-            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors" />
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors" />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('profil.titleLabel')}</label>
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} required
-            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors"
             placeholder={tr('profil.titlePlaceholder')} />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('profil.bioLabel')}</label>
           <textarea value={bio} onChange={e => setBio(e.target.value)} required rows={4}
-            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors resize-none"
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors resize-none"
             placeholder={tr('profil.bioPlaceholder')} />
         </div>
 
@@ -130,8 +128,8 @@ export default function SpecialistProfilPage() {
                 onClick={() => toggleCategory(cat)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                   selectedCategories.includes(cat)
-                    ? 'bg-[#4F46E5] text-white border-[#4F46E5]'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#4F46E5]'
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'
                 }`}
               >
                 {cat}
@@ -143,20 +141,20 @@ export default function SpecialistProfilPage() {
         <div>
           <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('profil.contactLabel')}</label>
           <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} required
-            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors" />
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors" />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-[#0A0A0A] mb-1.5">{tr('profil.linkedinLabel')}</label>
           <input type="url" value={linkedin} onChange={e => setLinkedin(e.target.value)}
-            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-[#4F46E5] transition-colors"
+            className="w-full border border-gray-200 rounded-md px-3 py-2.5 text-sm outline-none focus:border-gray-900 transition-colors"
             placeholder="https://linkedin.com/in/..." />
         </div>
 
         {error && <div className="rounded-md bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">{error}</div>}
 
         <button type="submit" disabled={loading}
-          className="w-full rounded-md bg-[#4F46E5] px-4 py-3 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors disabled:opacity-50">
+          className="w-full rounded-md bg-gray-900 px-4 py-3 text-sm font-semibold text-white hover:bg-black transition-colors disabled:opacity-50">
           {loading ? '...' : tr('profil.btn')}
         </button>
       </form>
