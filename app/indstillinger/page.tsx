@@ -59,7 +59,7 @@ export default function IndstillingerPage() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-5 h-5 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin"></div>
+      <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
 
@@ -77,7 +77,7 @@ export default function IndstillingerPage() {
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">{tr('settings.type')}</span>
-            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700">
+            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-700">
               {role === 'business' ? tr('settings.biz') : tr('settings.spec')}
             </span>
           </div>
