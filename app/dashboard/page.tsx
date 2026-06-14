@@ -1,111 +1,140 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import { StatusBadge } from '@/components/StatusBadge';
+import { useTranslation } from '@/context/LanguageContext';
 
 type Project = {
   id: string;
-  project_category: string;
-  status: 'open' | 'in_progress' | 'closed';
+  title: string;
+  category: string;
+  status: string;
   created_at: string;
-  company_name: string;
+  interest_count?: number;
 };
 
 export default function DashboardPage() {
+  const { tr } = useTranslation();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) { window.location.href = '/login'; return; }
-      const { data } = await supabase
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) { window.location.href = '/login'; return; }
+      const userId = data.session.user.id;
+
+      const { data: profile } = await supabase.from('profiles').select('name').eq('id', userId).single();
+      setUserName(profile?.name ?? data.session.user.email ?? '');
+
+      const { data: projs } = await supabase
         .from('projects')
-        .select('id, project_category, status, created_at, company_name')
-        .eq('user_id', session.user.id)
+        .select('id, title, category, status, created_at')
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
-      setProjects(data ?? []);
+
+      if (projs) {
+        const withCounts = await Promise.all(
+          projs.map(async (p) => {
+            const { count } = await supabase
+              .from('project_interests')
+              .select('*', { count: 'exact', head: true })
+              .eq('project_id', p.id);
+            return { ...p, interest_count: count ?? 0 };
+          })
+        );
+        setProjects(withCounts);
+      }
       setLoading(false);
     });
   }, []);
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1 bg-[#f9f9f9]">
-        <div className="wrap py-10">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-[22px] font-semibold text-[#0a0a0a]">Mine projekter</h1>
-              <p className="text-[14px] text-[#6b7280] mt-1">Projekter du har oprettet på Naetwork</p>
-            </div>
-            <Link
-              href="/projekt/opret"
-              className="inline-flex items-center justify-center rounded-md bg-[#1a1a1a] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#333] transition-colors"
-            >
-              Opret nyt projekt
-            </Link>
-          </div>
+  const statusBadge = (status: string) => {
+    const map: Record<string, string> = {
+      open: 'bg-indigo-50 text-indigo-700',
+      in_progress: 'bg-amber-50 text-amber-700',
+      closed: 'bg-gray-100 text-gray-600',
+    };
+    const label: Record<string, string> = {
+      open: tr('projects.open'),
+      in_progress: tr('projects.inProgress'),
+      closed: tr('projects.closed'),
+    };
+    return (
+      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${map[status] ?? 'bg-gray-100 text-gray-600'}`}>
+        {label[status] ?? status}
+      </span>
+    );
+  };
 
-          {loading ? (
-            <div className="text-[14px] text-[#6b7280]">Henter projekter…</div>
-          ) : projects.length === 0 ? (
-            <div className="bg-white border border-[#e5e5e5] rounded-xl p-10 text-center">
-              <p className="text-[14px] text-[#6b7280] mb-4">Du har ingen projekter endnu.</p>
-              <Link
-                href="/projekt/opret"
-                className="inline-flex items-center justify-center rounded-md bg-[#1a1a1a] px-4 py-2.5 text-[13px] font-medium text-white hover:bg-[#333] transition-colors"
-              >
-                Opret dit første projekt
-              </Link>
-            </div>
-          ) : (
-            <div className="bg-white border border-[#e5e5e5] rounded-xl overflow-hidden">
-              <table className="w-full text-[14px]">
-                <thead>
-                  <tr className="border-b border-[#e5e5e5] bg-[#f9f9f9]">
-                    <th className="text-left px-5 py-3 text-[13px] font-medium text-[#6b7280]">Kategori</th>
-                    <th className="text-left px-5 py-3 text-[13px] font-medium text-[#6b7280] hidden sm:table-cell">Oprettet</th>
-                    <th className="text-left px-5 py-3 text-[13px] font-medium text-[#6b7280]">Status</th>
-                    <th className="text-right px-5 py-3 text-[13px] font-medium text-[#6b7280]"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.map((p, i) => (
-                    <tr key={p.id} className={`${i < projects.length - 1 ? 'border-b border-[#e5e5e5]' : ''}`}>
-                      <td className="px-5 py-4">
-                        <span className="font-medium text-[#0a0a0a]">{p.project_category}</span>
-                        {p.company_name && (
-                          <span className="block text-[12px] text-[#6b7280]">{p.company_name}</span>
-                        )}
-                      </td>
-                      <td className="px-5 py-4 text-[#6b7280] hidden sm:table-cell">
-                        {new Date(p.created_at).toLocaleDateString('da-DK')}
-                      </td>
-                      <td className="px-5 py-4">
-                        <StatusBadge status={p.status} />
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <Link
-                          href={`/projekt/${p.id}/interesserede`}
-                          className="text-[13px] font-medium text-[#0a0a0a] hover:underline"
-                        >
-                          Se interesserede →
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </main>
-      <Footer />
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-5 h-5 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin"></div>
     </div>
+  );
+
+  return (
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+      <div className="flex items-center justify-between mb-10">
+        <div>
+          <p className="text-sm text-gray-500 mb-1">{tr('dash.welcome')} {userName}</p>
+          <h1 className="text-3xl font-bold text-[#0A0A0A]">{tr('dash.myProjects')}</h1>
+        </div>
+        <Link
+          href="/projekt/opret"
+          className="inline-flex items-center justify-center rounded-md bg-[#4F46E5] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors"
+        >
+          + {tr('dash.newProject')}
+        </Link>
+      </div>
+
+      {projects.length === 0 ? (
+        <div className="border border-dashed border-gray-200 rounded-xl p-16 text-center">
+          <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4">
+            <div className="w-4 h-4 rounded-full bg-[#4F46E5]"></div>
+          </div>
+          <h2 className="text-lg font-semibold text-[#0A0A0A] mb-2">{tr('dash.noProjects')}</h2>
+          <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">{tr('dash.noProjectsSub')}</p>
+          <Link
+            href="/projekt/opret"
+            className="inline-flex items-center justify-center rounded-md bg-[#4F46E5] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors"
+          >
+            {tr('dash.createFirst')}
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              className="border border-gray-200 rounded-xl p-5 hover:border-[#4F46E5] transition-all duration-150 hover:-translate-y-0.5"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    {statusBadge(project.status)}
+                    <span className="text-xs text-gray-400">{project.category}</span>
+                  </div>
+                  <h3 className="font-semibold text-[#0A0A0A] truncate">{project.title}</h3>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-sm text-gray-500">
+                    {project.interest_count} {tr('dash.interested')}
+                  </span>
+                  <Link
+                    href={`/projekt/${project.id}/interesserede`}
+                    className="text-sm font-medium text-[#4F46E5] hover:text-[#4338CA] transition-colors"
+                  >
+                    {tr('dash.viewInterested')} →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
   );
 }
