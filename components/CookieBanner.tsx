@@ -1,44 +1,39 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useTranslation } from '@/context/LanguageContext';
 
 export function CookieBanner() {
-  const { tr } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('naetwork_cookie_consent');
-    if (!consent) setVisible(true);
+    if (!localStorage.getItem('cookie_consent')) {
+      setVisible(true);
+    }
   }, []);
 
-  function accept() {
-    localStorage.setItem('naetwork_cookie_consent', 'accepted');
+  const accept = () => {
+    localStorage.setItem('cookie_consent', 'accepted');
     setVisible(false);
-  }
+  };
+
+  const decline = () => {
+    localStorage.setItem('cookie_consent', 'declined');
+    setVisible(false);
+  };
 
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-4">
-      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <p className="text-sm text-gray-600 leading-relaxed">
-          {tr('cookie.text')}
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg">
+      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+        <p className="text-sm text-gray-600">
+          Vi bruger cookies til at forbedre din oplevelse.{' '}
+          <Link href="/privatlivspolitik" className="underline hover:text-gray-900">Laes mere</Link>.
         </p>
-        <div className="flex items-center gap-3 shrink-0">
-          <Link
-            href="/privatlivspolitik"
-            className="text-sm text-gray-500 hover:text-gray-700 underline underline-offset-2 transition-colors"
-          >
-            {tr('cookie.readMore')}
-          </Link>
-          <button
-            onClick={accept}
-            className="inline-flex items-center justify-center rounded-md bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors"
-          >
-            {tr('cookie.accept')}
-          </button>
+        <div className="flex gap-3 flex-shrink-0">
+          <button onClick={decline} className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5">Afvis</button>
+          <button onClick={accept} className="text-sm bg-green-800 text-white px-4 py-1.5 rounded-lg hover:bg-green-900 transition-colors">Accepter</button>
         </div>
       </div>
     </div>
