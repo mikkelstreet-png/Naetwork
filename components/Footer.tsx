@@ -1,7 +1,13 @@
 import type { Dict } from "@/lib/content";
-import { site } from "@/lib/content";
+import { site, defaultFooter } from "@/lib/content";
 
-export function Footer({ t, tagline }: { t: Dict["footer"]; tagline: string }) {
+export function Footer({ 
+  t = defaultFooter, 
+  tagline 
+}: { 
+  t?: Dict["footer"]; 
+  tagline?: string; 
+} = {}) {
   return (
     <footer className="bg-white border-t border-gray-100">
       <div className="wrap py-16">
@@ -9,9 +15,11 @@ export function Footer({ t, tagline }: { t: Dict["footer"]; tagline: string }) {
           <div className="max-w-sm">
             <span className="font-extrabold text-[15px] tracking-tight text-[#0A0A0A]">{site.name}</span>
             <p className="mt-5 text-sm leading-relaxed text-gray-500">{t.blurb}</p>
-            <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400">
-              {tagline}
-            </p>
+            {tagline && (
+              <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.2em] text-gray-400">
+                {tagline}
+              </p>
+            )}
           </div>
 
           {t.columns.map((col) => (
