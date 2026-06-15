@@ -7,7 +7,7 @@ import { t, Lang } from '@/lib/translations';
 export default function Home() {
   const [lang, setLang] = useState<Lang>('da');
   const [howTab, setHowTab] = useState<'candidate' | 'professional'>('candidate');
-  const T = (key: string) => t[lang][key] ?? key;
+  const T = (key: string) => t(lang, key);
 
   return (
     <main className="font-[Inter,sans-serif] bg-white text-gray-900">
