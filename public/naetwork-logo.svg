@@ -1,28 +1,7 @@
-<svg viewBox="-210 -210 420 420" xmlns="http://www.w3.org/2000/svg" width="800" height="800">
-  <title>Naetwork Logo Mark</title>
-  <defs>
-    <clipPath id="logo-clip">
-      <circle r="196"/>
-    </clipPath>
-    <g id="N-shape">
-      <rect x="-125" y="-150" width="45" height="300"/>
-      <rect x="80" y="-150" width="45" height="300"/>
-      <polygon points="-80,-150 -35,-150 80,150 35,150"/>
-    </g>
-  </defs>
-  <circle r="204" fill="#0d0d0d"/>
-  <g clip-path="url(#logo-clip)" fill="white">
-    <use href="#N-shape" opacity="0.21" transform="rotate(0)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(36)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(72)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(108)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(144)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(180)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(216)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(252)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(288)"/>
-    <use href="#N-shape" opacity="0.21" transform="rotate(324)"/>
-  </g>
-  <circle r="188" fill="none" stroke="#166534" stroke-width="2.5"/>
-  <circle r="200" fill="none" stroke="white" stroke-width="1.2" opacity="0.18"/>
+<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+  <title>Naetwork</title>
+  <rect x="0" y="0" width="160" height="160" rx="16" fill="#0f0f0f" stroke="#166534" stroke-width="2.5"/>
+  <rect x="30" y="28" width="22" height="104" fill="white"/>
+  <rect x="108" y="28" width="22" height="104" fill="white"/>
+  <polygon points="30,28 52,28 130,132 108,132" fill="white"/>
 </svg>
