@@ -14,31 +14,11 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
           <span className="flex items-center gap-2">
-            <svg viewBox="-210 -210 420 420" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <clipPath id="nav-clip">
-                  <circle r="196"/>
-                </clipPath>
-                <g id="nav-N">
-                  <rect x="-125" y="-150" width="45" height="300"/>
-                  <rect x="80" y="-150" width="45" height="300"/>
-                  <polygon points="-80,-150 -35,-150 80,150 35,150"/>
-                </g>
-              </defs>
-              <circle r="204" fill="#111111"/>
-              <g clipPath="url(#nav-clip)" fill="white">
-                <use href="#nav-N" opacity="0.21" transform="rotate(0)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(36)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(72)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(108)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(144)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(180)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(216)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(252)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(288)"/>
-                <use href="#nav-N" opacity="0.21" transform="rotate(324)"/>
-              </g>
-              <circle r="188" fill="none" stroke="#166534" strokeWidth="2.5"/>
+            <svg viewBox="0 0 160 160" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="160" height="160" rx="16" fill="#0f0f0f" stroke="#166534" strokeWidth="2.5"/>
+              <rect x="30" y="28" width="22" height="104" fill="white"/>
+              <rect x="108" y="28" width="22" height="104" fill="white"/>
+              <polygon points="30,28 52,28 130,132 108,132" fill="white"/>
             </svg>
             <span className="font-bold text-lg tracking-tight">Naetwork</span>
           </span>
