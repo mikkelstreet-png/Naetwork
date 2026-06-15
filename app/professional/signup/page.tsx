@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 
-const INDUSTRIES = ['Finans', 'Tech', 'Konsulentbranchen', 'Sundhed', 'Marketing', 'HR', 'Jura', 'Produkt', 'Design', 'Andet'];
+const INDUSTRIES = ['Banking', 'Private Equity', 'AI', 'Management Consulting'];
 const SESSION_TYPES = [
   { type: 'mock_interview', label: 'Mock Interview' },
   { type: 'cv_review', label: 'CV & LinkedIn' },
@@ -82,9 +82,9 @@ export default function ProfessionalSignupPage() {
                 <input value={form.company} onChange={e => set('company', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Nordea" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Branche</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Industri</label>
                 <select value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800 bg-white">
-                  <option value="">Vaelg branche</option>
+                  <option value="">Vælg industri</option>
                   {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
                 </select>
               </div>
@@ -143,7 +143,7 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Navn</span><span className="font-medium">{form.name}</span></div>
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Titel</span><span className="font-medium">{form.title}</span></div>
-                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Branche</span><span className="font-medium">{form.industry}</span></div>
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Industri</span><span className="font-medium">{form.industry}</span></div>
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Pris</span><span className="font-medium">DKK {form.priceDkk.toLocaleString('da-DK')}/session</span></div>
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Platformsgebyr</span><span className="font-medium">{form.donatesToCharity ? '7,5% (donerer)' : '15%'}</span></div>
                 <div className="flex justify-between py-2"><span className="text-gray-500">Sessions</span><span className="font-medium">{form.sessionTypes.length} valgt</span></div>
