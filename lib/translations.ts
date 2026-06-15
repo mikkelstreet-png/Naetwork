@@ -178,6 +178,36 @@ export const translations: Record<Lang, Record<string, string>> = {
   },
 
   en: {
+    // —— Hero (new keys) ——
+    'hero.badge': 'Naetwork · Copenhagen · DKK 300–2,000',
+    'hero.h1_1': 'Your next career decision',
+    'hero.h1_2': 'starts with one conversation.',
+    'hero.sub': 'Book a 1:1 session with experienced professionals in Banking, Private Equity, AI and Consulting — and get the insight you won\'t find on LinkedIn.',
+    'hero.cta1': 'I am a candidate →',
+    'hero.cta2': 'I am a professional →',
+
+    // —— About (new keys) ——
+    'about.tagline': 'Two paths. One purpose.',
+
+    // —— Why (new keys) ——
+    'why.candidate.cta': 'See available professionals →',
+    'why.professional.cta': 'Become a professional on Naetwork →',
+    'why.professional.bullet2': 'Help young talents move forward',
+    'why.professional.bullet3': '15% commission — 7.5% if you donate to Kr\u00e6ftens Bek\u00e6mpelse',
+
+    // —— Sessions (new keys) ——
+    'sessions.sub': 'Four formats. One purpose: Your next step.',
+
+    // —— How (new keys) ——
+    'how.tagline': 'Three steps. No hassle.',
+
+    // —— Trust (new keys) ——
+    'trust.headline': 'Transparency',
+    'trust.sub': 'You know exactly what you\'re paying for.',
+
+    // —— Industries ——
+    'industries.headline': 'The industries we know from the inside',
+
     // ── Hero (new copy) ──
     'hero.h1': 'One hour with the right person can change your career.',
     'hero.sub': 'Naetwork connects ambitious candidates with experienced professionals from Banking, Private Equity, AI and Management Consulting — for a direct, honest and personal session.',
