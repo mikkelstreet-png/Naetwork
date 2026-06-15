@@ -7,15 +7,10 @@ import { HeartIcon } from '@/components/icons/HeartIcon';
 
 const INDUSTRIES = [
   'Alle brancher',
-  'Teknologi',
-  'Finans',
-  'Konsulentbranchen',
-  'Marketing',
-  'Jura',
-  'Sundhed',
-  'Uddannelse',
-  'Medier',
-  'Andet',
+  'Banking',
+  'Private Equity',
+  'AI',
+  'Management Consulting',
 ];
 
 const SESSION_TYPE_OPTIONS = [
