@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Naetwork – Din næste karrierebeslutning starter her',
+  title: 'Naetwork â Din nÃ¦ste karrierebeslutning starter her',
   description:
     'Book en 1:1 session med erfarne professionelle inden for Banking, Private Equity, AI og Consulting.',
 }
@@ -29,22 +29,22 @@ export default function Home() {
         .animate-bounce-y { animation: bounce-y 1.5s ease-in-out infinite; }
       `}</style>
 
-      {/* ─── HERO ─────────────────────────────────────────────── */}
+      {/* âââ HERO âââââââââââââââââââââââââââââââââââââââââââââââ */}
       <section className="min-h-screen flex flex-col justify-center bg-white px-6 pt-24 pb-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(22,101,52,0.06) 0%, transparent 70%)' }}>
         <div className="max-w-6xl mx-auto w-full">
 
           <div className="animate-fade-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase text-green-700 mb-10 border border-green-200 bg-green-50 px-3 py-1.5 rounded-full">
-              Naetwork · København · DKK 300–2.000
+              Naetwork Â· KÃ¸benhavn Â· DKK 300â2.000
             </span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none text-gray-950 mb-6 animate-fade-up delay-1">
-            Din næste karriere­beslutning<br className="hidden md:block" /> starter med én samtale.
+            Din nÃ¦ste karriereÂ­beslutning<br className="hidden md:block" /> starter med Ã©n samtale.
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mb-10 animate-fade-up delay-2">
-            Book en 1:1 session med erfarne professionelle inden for Banking, Private Equity, AI og Consulting — og få den indsigt, du ikke finder på LinkedIn.
+            Book en 1:1 session med erfarne professionelle inden for Banking, Private Equity, AI og Consulting â og fÃ¥ den indsigt, du ikke finder pÃ¥ LinkedIn.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
@@ -52,13 +52,13 @@ export default function Home() {
               href="/find-professionel"
               className="inline-flex items-center justify-center px-8 py-4 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-base"
             >
-              Jeg er kandidat →
+              Jeg er kandidat â
             </Link>
             <Link
               href="/bliv-professionel"
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl border-2 border-gray-950 hover:bg-gray-50 transition-colors text-base"
             >
-              Jeg er professionel →
+              Jeg er professionel â
             </Link>
           </div>
         </div>
@@ -79,18 +79,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── DUAL-VALUE SPLIT ─────────────────────────────────── */}
+      {/* âââ DUAL-VALUE SPLIT âââââââââââââââââââââââââââââââââââ */}
       <section className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-pink-700 mb-4">
             Hvad er Naetwork?
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-12">
-            To veje. Ét formål.
+            To veje. Ãt formÃ¥l.
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Kandidater – dark */}
+            {/* Kandidater â dark */}
             <div className="bg-gray-950 text-white rounded-3xl p-10 md:p-14 flex flex-col justify-between min-h-[400px]">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-green-400 mb-6">
@@ -101,12 +101,12 @@ export default function Home() {
                 </h3>
                 <ul className="space-y-3 mb-8">
                   {[
-                    'Mød professionelle på din karrierevej',
-                    'Forbered dig til interviews og ansøgninger',
-                    'Få ærlig, konkret feedback der rykker',
+                    'MÃ¸d professionelle pÃ¥ din karrierevej',
+                    'Forbered dig til interviews og ansÃ¸gninger',
+                    'FÃ¥ Ã¦rlig, konkret feedback der rykker',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-gray-300 text-sm leading-relaxed">
-                      <span className="text-green-400 font-bold mt-0.5 shrink-0">→</span>
+                      <span className="text-green-400 font-bold mt-0.5 shrink-0">â</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -116,27 +116,27 @@ export default function Home() {
                 href="/find-professionel"
                 className="inline-flex items-center gap-2 text-white text-sm font-semibold border border-white/25 rounded-xl px-6 py-3 hover:bg-white/10 transition-colors w-fit"
               >
-                Se tilgængelige professionelle →
+                Se tilgÃ¦ngelige professionelle â
               </Link>
             </div>
 
-            {/* Professionelle – green */}
+            {/* Professionelle â green */}
             <div className="bg-green-800 text-white rounded-3xl p-10 md:p-14 flex flex-col justify-between min-h-[400px]">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-green-200 mb-6">
                   For professionelle
                 </p>
                 <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-6">
-                  Del din erfaring. Gør en forskel.
+                  Del din erfaring. GÃ¸r en forskel.
                 </h3>
                 <ul className="space-y-3 mb-8">
                   {[
-                    'Sæt dine egne priser og tilgængelighed',
-                    'Hjæmp unge talenter videre',
-                    '15% provision — 7,5% hvis du donerer til Kræftens Bekæmpelse',
+                    'SÃ¦t dine egne priser og tilgÃ¦ngelighed',
+                    'HjÃ¦mp unge talenter videre',
+                    '15% provision â 7,5% hvis du donerer til KrÃ¦ftens BekÃ¦mpelse',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-green-100 text-sm leading-relaxed">
-                      <span className="text-green-300 font-bold mt-0.5 shrink-0">→</span>
+                      <span className="text-green-300 font-bold mt-0.5 shrink-0">â</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -146,24 +146,24 @@ export default function Home() {
                 href="/bliv-professionel"
                 className="inline-flex items-center gap-2 text-white text-sm font-semibold border border-white/25 rounded-xl px-6 py-3 hover:bg-white/10 transition-colors w-fit"
               >
-                Bliv professionel på Naetwork →
+                Bliv professionel pÃ¥ Naetwork â
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SESSIONSTYPER ────────────────────────────────────── */}
+      {/* âââ SESSIONSTYPER ââââââââââââââââââââââââââââââââââââââ */}
       <section className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-            Vælg din session
+            VÃ¦lg din session
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-3">
-            Fire formater. Ét formål: Dit næste skridt.
+            Fire formater. Ãt formÃ¥l: Dit nÃ¦ste skridt.
           </h2>
           <p className="text-gray-600 leading-relaxed mb-12 max-w-xl">
-            DKK 300–2.000 pr. session — prissat af den professionelle.
+            DKK 300â2.000 pr. session â prissat af den professionelle.
           </p>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -180,10 +180,10 @@ export default function Home() {
               <div>
                 <h3 className="font-bold text-gray-950 mb-1">Mock Interview</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Øv dig med en der har siddet på begge sider af bordet
+                  Ãv dig med en der har siddet pÃ¥ begge sider af bordet
                 </p>
               </div>
-              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300–2.000</p>
+              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300â2.000</p>
             </div>
 
             {/* CV & LinkedIn */}
@@ -200,10 +200,10 @@ export default function Home() {
               <div>
                 <h3 className="font-bold text-gray-950 mb-1">CV &amp; LinkedIn Review</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Få konkret, ærlig feedback på dit materiale
+                  FÃ¥ konkret, Ã¦rlig feedback pÃ¥ dit materiale
                 </p>
               </div>
-              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300–2.000</p>
+              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300â2.000</p>
             </div>
 
             {/* Uformel 1:1 */}
@@ -216,13 +216,13 @@ export default function Home() {
               <div>
                 <h3 className="font-bold text-gray-950 mb-1">Uformel 1:1</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  En åben samtale om karriere, muligheder og næste skridt
+                  En Ã¥ben samtale om karriere, muligheder og nÃ¦ste skridt
                 </p>
               </div>
-              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300–2.000</p>
+              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300â2.000</p>
             </div>
 
-            {/* Karriererådgivning */}
+            {/* KarriererÃ¥dgivning */}
             <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow flex flex-col gap-4">
               <div className="text-gray-950">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -230,25 +230,25 @@ export default function Home() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-gray-950 mb-1">Karriererådgivning</h3>
+                <h3 className="font-bold text-gray-950 mb-1">KarriererÃ¥dgivning</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Strategisk sparring fra nogen der har prøvet det
+                  Strategisk sparring fra nogen der har prÃ¸vet det
                 </p>
               </div>
-              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300–2.000</p>
+              <p className="text-xs font-semibold text-green-700 mt-auto">DKK 300â2.000</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SÅDAN FUNGERER DET ───────────────────────────────── */}
+      {/* âââ SÃDAN FUNGERER DET âââââââââââââââââââââââââââââââââ */}
       <section className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-            Sådan fungerer det
+            SÃ¥dan fungerer det
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-16">
-            Tre skridt. Ingen besvær.
+            Tre skridt. Ingen besvÃ¦r.
           </h2>
 
           <div className="grid md:grid-cols-3 gap-12 md:gap-8">
@@ -256,16 +256,16 @@ export default function Home() {
               {
                 num: '01',
                 title: 'Find din professionelle',
-                desc: 'Browse profiler, filtrer på industri og sessiontype. Find den rette match.',
+                desc: 'Browse profiler, filtrer pÃ¥ industri og sessiontype. Find den rette match.',
               },
               {
                 num: '02',
                 title: 'Book og betal',
-                desc: 'Vælg tidspunkt, betal sikkert. DKK 300–2.000. Ingen skjulte gebyrer.',
+                desc: 'VÃ¦lg tidspunkt, betal sikkert. DKK 300â2.000. Ingen skjulte gebyrer.',
               },
               {
                 num: '03',
-                title: 'Mød op og ryk dig',
+                title: 'MÃ¸d op og ryk dig',
                 desc: '45 min. Video eller fysisk. Ingen bullshit.',
               },
             ].map((step) => (
@@ -279,29 +279,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── TRANSPARENS ──────────────────────────────────────── */}
+      {/* âââ TRANSPARENS ââââââââââââââââââââââââââââââââââââââââ */}
       <section className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
             Transparens
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-12">
-            Du ved præcis hvad du betaler for.
+            Du ved prÃ¦cis hvad du betaler for.
           </h2>
 
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
-              <p className="text-4xl font-black text-gray-950 mb-1">300–2.000</p>
+              <p className="text-4xl font-black text-gray-950 mb-1">300â2.000</p>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">DKK pr. session</p>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Prisen sættes af den professionelle. Du ser den altid inden du booker.
+                Prisen sÃ¦ttes af den professionelle. Du ser den altid inden du booker.
               </p>
             </div>
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
               <p className="text-4xl font-black text-gray-950 mb-1">15%</p>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Provision til Naetwork</p>
               <p className="text-gray-600 leading-relaxed text-sm">
-                Resten går direkte til den professionelle. Vi tager intet skjult.
+                Resten gÃ¥r direkte til den professionelle. Vi tager intet skjult.
               </p>
             </div>
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
@@ -315,19 +315,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── KRÆFTENS BEKÆMPELSE ──────────────────────────────── */}
+      {/* âââ KRÃFTENS BEKÃMPELSE ââââââââââââââââââââââââââââââââ */}
 
-      {/* ─── INDUSTRIER ────────────────────────────────────────── */}
+      {/* âââ INDUSTRIER ââââââââââââââââââââââââââââââââââââââââââ */}
       <section className="py-24 md:py-32 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
             De industrier vi kender indefra
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-6">
-            Karrierevejen i Banking, PE, AI og Consulting er sjældent gennemsigtig.
+            Karrierevejen i Banking, Private Equity, AI og Management Consulting er sjÃ¦ldent gennemsigtig.
           </h2>
           <p className="text-base text-gray-600 max-w-2xl mb-12">
-            Bag enhver ansøgning gemmer der sig spørgsmål, ingen LinkedIn-post besvarer. Naetworks grundlæggere har selv arbejdet i — eller kender stærke netværk inden for — Banking, Private Equity, AI og Management Consulting. Vi ved, at adgang til ærlig vejledning ikke burde afhænge af hvem du tilfældigvis kender.
+            Bag enhver ansÃ¸gning gemmer der sig spÃ¸rgsmÃ¥l, ingen LinkedIn-post besvarer. Naetworks grundlÃ¦ggere har selv arbejdet i â eller kender stÃ¦rke netvÃ¦rk inden for â Banking, Private Equity, AI og Management Consulting. Vi ved, at adgang til Ã¦rlig vejledning ikke burde afhÃ¦nge af hvem du tilfÃ¦ldigvis kender.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
@@ -335,21 +335,21 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 21V3m-4 4h8M4 21h16M6 17V9m4 8V9m4 8V9m4 8V9" />
               </svg>
               <h3 className="font-semibold text-gray-950 mb-2">Banking</h3>
-              <p className="text-sm text-gray-500">M&A, ECM, DCM, Corporate Finance. Vi kender presset, recruitmentprocesserne og hvad der faktisk adskiller de stærke kandidater.</p>
+              <p className="text-sm text-gray-500">M&A, ECM, DCM, Corporate Finance. Vi kender presset, recruitmentprocesserne og hvad der faktisk adskiller de stÃ¦rke kandidater.</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
               <svg className="w-6 h-6 text-green-700 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
               </svg>
               <h3 className="font-semibold text-gray-950 mb-2">Private Equity</h3>
-              <p className="text-sm text-gray-500">Deal sourcing, due diligence, portfolio management. Et lukket miljø — vi åbner døren.</p>
+              <p className="text-sm text-gray-500">Deal sourcing, due diligence, portfolio management. Et lukket miljÃ¸ â vi Ã¥bner dÃ¸ren.</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
               <svg className="w-6 h-6 text-green-700 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
               </svg>
-              <h3 className="font-semibold text-gray-950 mb-2">AI &amp; Tech</h3>
-              <p className="text-sm text-gray-500">Fra ML engineer til AI strategy. Feltet bevæger sig hurtigt — vi hjælper dig med at navigere det.</p>
+              <h3 className="font-semibold text-gray-950 mb-2">AI</h3>
+              <p className="text-sm text-gray-500">Fra ML engineer til AI strategy. Feltet bevÃ¦ger sig hurtigt â vi hjÃ¦lper dig med at navigere det.</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
               <svg className="w-6 h-6 text-green-700 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -368,26 +368,26 @@ export default function Home() {
               Samfundsansvar
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-4">
-              Vi donerer til dem der kæmper.
+              Vi donerer til dem der kÃ¦mper.
             </h2>
             <p className="text-gray-600 leading-relaxed max-w-2xl mb-8 text-base">
-              Professionelle der vælger at donere 7,5% af deres honorar til Kræftens Bekæmpelse, betaler kun 7,5% i provision til Naetwork. En lille beslutning med stor effekt.
+              Professionelle der vÃ¦lger at donere 7,5% af deres honorar til KrÃ¦ftens BekÃ¦mpelse, betaler kun 7,5% i provision til Naetwork. En lille beslutning med stor effekt.
             </p>
             <p className="text-sm font-semibold text-pink-700 tracking-wide">
-              Officiel partner: Kræftens Bekæmpelse
+              Officiel partner: KrÃ¦ftens BekÃ¦mpelse
             </p>
           </div>
         </div>
       </section>
 
-      {/* ─── FINAL CTA ────────────────────────────────────────── */}
+      {/* âââ FINAL CTA ââââââââââââââââââââââââââââââââââââââââââ */}
       <section className="py-32 text-center bg-gray-950">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-none mb-4">
-            Hvad venter du på?
+            Hvad venter du pÃ¥?
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed mb-12">
-            Bliv en del af et netværk der åbner døre.
+            Bliv en del af et netvÃ¦rk der Ã¥bner dÃ¸re.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
