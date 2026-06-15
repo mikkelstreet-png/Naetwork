@@ -394,10 +394,3 @@ export function t(lang: Lang, key: string, vars?: Record<string, string | number
   }
   return str;
 }
-
-
-export function t(lang: Lang, key: string, vars?: Record<string, string | number>): string {
-  const val = translations[lang]?.[key] ?? translations['da']?.[key] ?? key;
-  if (!vars) return val;
-  return Object.entries(vars).reduce((s, [k, v]) => s.split(`{${k}}`).join(String(v)), val);
-}
