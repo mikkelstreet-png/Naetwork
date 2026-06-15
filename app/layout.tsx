@@ -10,12 +10,16 @@ import { Footer } from '@/components/Footer';
 import { CookieBanner } from '@/components/CookieBanner';
 
 export const metadata: Metadata = {
-  title: 'Naetwork — Karrieresessioner med erfarne professionelle',
-  description: 'Book en session med en erfaren professionel. Mock interviews, CV-gennemgang og karriereraadgivning. DKK 300–2.000 per session.',
+  title: 'Naetwork â Karrieresessioner med erfarne professionelle',
+  description: 'Book en session med en erfaren professionel. Mock interviews, CV-gennemgang og karriereraadgivning. DKK 300â2.000 per session.',
   openGraph: {
     title: 'Naetwork',
     description: 'Karrieresessioner med mennesker der ved det.',
     siteName: 'Naetwork',
+  },
+  icons: {
+    icon: '/naetwork-logo.svg',
+    apple: '/naetwork-logo.svg',
   },
 };
 
