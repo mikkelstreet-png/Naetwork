@@ -1,80 +1,213 @@
 'use client';
 
-import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
-import { MicrophoneIcon } from '@/components/icons/MicrophoneIcon';
-import { DocumentCheckIcon } from '@/components/icons/DocumentCheckIcon';
-import { ChatBubbleIcon } from '@/components/icons/ChatBubbleIcon';
-import { LightBulbIcon } from '@/components/icons/LightBulbIcon';
-import { HeartIcon } from '@/components/icons/HeartIcon';
+import { useState } from 'react';
 import Link from 'next/link';
+import { t, Lang } from '@/lib/translations';
 
-const SESSION_TYPES = [
-  { type: 'mock_interview', icon: <MicrophoneIcon className="w-8 h-8" />, titleKey: 'sessions.mock', descKey: 'sessions.mock.desc' },
-  { type: 'cv_review', icon: <DocumentCheckIcon className="w-8 h-8" />, titleKey: 'sessions.cv', descKey: 'sessions.cv.desc' },
-  { type: 'informal_chat', icon: <ChatBubbleIcon className="w-8 h-8" />, titleKey: 'sessions.chat', descKey: 'sessions.chat.desc' },
-  { type: 'career_advice', icon: <LightBulbIcon className="w-8 h-8" />, titleKey: 'sessions.advice', descKey: 'sessions.advice.desc' },
-];
-
-export default function HomePage() {
-  const { lang } = useLanguage();
+export default function Home() {
+  const [lang, setLang] = useState<Lang>('da');
+  const [howTab, setHowTab] = useState<'candidate' | 'professional'>('candidate');
+  const T = (key: string) => t[lang][key] ?? key;
 
   return (
-    <main className="pt-16">
+    <main className="font-[Inter,sans-serif] bg-white text-gray-900">
+      {/* Language toggle */}
+      <div className="fixed top-4 right-4 z-50 flex gap-2">
+        <button
+          onClick={() => setLang('da')}
+          className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${lang === 'da' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+        >
+          DA
+        </button>
+        <button
+          onClick={() => setLang('en')}
+          className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${lang === 'en' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+        >
+          EN
+        </button>
+      </div>
 
-      {/* ── Hero ── */}
-      <section className="max-w-6xl mx-auto px-6 py-24 md:py-32">
-        <div className="max-w-3xl">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
-            {t(lang, 'hero.h1')}
-          </h1>
-          <p className="text-lg text-gray-500 mb-10 max-w-xl leading-relaxed">
-            {t(lang, 'hero.sub')}
-          </p>
-          <div className="flex flex-wrap gap-3 mb-10">
-            <Link
-              href="/professionals"
-              className="bg-green-800 text-white font-medium px-6 py-3 rounded-xl hover:bg-green-900 transition-colors"
-            >
-              {t(lang, 'hero.cta1')}
-            </Link>
-            <Link
-              href="/professional/signup"
-              className="border border-gray-200 text-gray-700 font-medium px-6 py-3 rounded-xl hover:border-gray-400 transition-colors"
-            >
-              {t(lang, 'hero.cta2')}
-            </Link>
-          </div>
-          <p className="text-xs text-gray-400">{t(lang, 'hero.trust')}</p>
+      {/* ── 1. HERO ── */}
+      <section className="py-24 px-6 max-w-4xl mx-auto text-center">
+        <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight mb-6">
+          {T('hero.h1')}
+        </h1>
+        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10">
+          {T('hero.sub')}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/professionals"
+            className="px-8 py-4 bg-black text-white rounded-xl font-semibold text-base hover:bg-gray-800 transition-colors"
+          >
+            {T('hero.cta.primary')}
+          </Link>
+          <Link
+            href="/become-professional"
+            className="px-8 py-4 border border-gray-300 text-gray-900 rounded-xl font-semibold text-base hover:border-gray-500 transition-colors"
+          >
+            {T('hero.cta.secondary')}
+          </Link>
         </div>
       </section>
 
-      {/* ── What is Naetwork ── */}
-      <section className="border-t border-gray-100 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="text-xs font-medium text-green-800 uppercase tracking-widest mb-4">Hvad er Naetwork?</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              En simpel platform hvor din naeste karrieresprog sker over en time med den rette person.
-            </h2>
-            <p className="text-gray-500">
-              Vi har fjernet alt det besvaerlige. Ingen lange processer, ingen bureaukrati.
-              Du finder den rigtige professionelle, booker en session, og moedes.
-            </p>
+      {/* ── 2. OM NAETWORK ── */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold mb-6">{T('about.headline')}</h2>
+          <p className="text-gray-600 text-lg leading-relaxed mb-10">
+            {T('about.body')}
+          </p>
+          <ul className="space-y-4">
+            {(['bullet1', 'bullet2', 'bullet3'] as const).map((b) => (
+              <li key={b} className="flex items-start gap-3">
+                <span className="mt-1 flex-shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-green-800">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </span>
+                <span className="text-gray-700">{T(`about.${b}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ── 3. HVORFOR NAETWORK ── */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">{T('why.headline')}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Kandidat */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+                <h3 className="text-xl font-bold">{T('why.candidate.title')}</h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed mb-6">{T('why.candidate.body')}</p>
+              <ul className="space-y-3">
+                {(['bullet1', 'bullet2', 'bullet3', 'bullet4'] as const).map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-sm text-gray-700">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mt-0.5 flex-shrink-0 text-green-800">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    {T(`why.candidate.${b}`)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Professionel */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+                <h3 className="text-xl font-bold">{T('why.professional.title')}</h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed mb-6">{T('why.professional.body')}</p>
+              <ul className="space-y-3">
+                {(['bullet1', 'bullet2', 'bullet3', 'bullet4'] as const).map((b) => (
+                  <li key={b} className="flex items-start gap-2 text-sm text-gray-700">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mt-0.5 flex-shrink-0 text-green-800">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    {T(`why.professional.${b}`)}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className="grid grid-cols-1 gap-4">
-            {[
-              { num: '1', title: 'Vaelg session-type', desc: 'Mock interview, CV-gennemgang, uformel snak eller karriereraadgivning.' },
-              { num: '2', title: 'Book direkte', desc: 'Send en besked og foreslaa en tid. Ingen mellemmand.' },
-              { num: '3', title: 'Betal sikkert', desc: 'Betaling via Stripe. Pengene overfoeres kun efter bekraeftet session.' },
-            ].map(item => (
-              <div key={item.num} className="border border-gray-100 rounded-2xl p-5 bg-white flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-green-800 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">
-                  {item.num}
+        </div>
+      </section>
+
+      {/* ── 4. SESSION-TYPER ── */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold mb-12 text-center">{T('sessions.headline')}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Mock Interview */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold mb-1">{T('sessions.mock.title')}</h3>
+              <p className="text-sm font-medium text-green-800 mb-3">{T('sessions.mock.tagline')}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{T('sessions.mock.desc')}</p>
+            </div>
+            {/* CV & LinkedIn */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold mb-1">{T('sessions.cv.title')}</h3>
+              <p className="text-sm font-medium text-green-800 mb-3">{T('sessions.cv.tagline')}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{T('sessions.cv.desc')}</p>
+            </div>
+            {/* Uformel 1:1 */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold mb-1">{T('sessions.chat.title')}</h3>
+              <p className="text-sm font-medium text-green-800 mb-3">{T('sessions.chat.tagline')}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{T('sessions.chat.desc')}</p>
+            </div>
+            {/* Karriererådgivning */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold mb-1">{T('sessions.career.title')}</h3>
+              <p className="text-sm font-medium text-green-800 mb-3">{T('sessions.career.tagline')}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{T('sessions.career.desc')}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. SÅDAN FUNGERER DET ── */}
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold mb-10 text-center">{T('how.headline')}</h2>
+          {/* Tabs */}
+          <div className="flex gap-2 mb-10 bg-gray-100 p-1 rounded-xl w-fit mx-auto">
+            <button
+              onClick={() => setHowTab('candidate')}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-colors ${howTab === 'candidate' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              {T('how.tab.candidate')}
+            </button>
+            <button
+              onClick={() => setHowTab('professional')}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-colors ${howTab === 'professional' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              {T('how.tab.professional')}
+            </button>
+          </div>
+          {/* Steps */}
+          <div className="space-y-8">
+            {[1, 2, 3].map((step) => (
+              <div key={step} className="flex gap-6 items-start">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm">
+                  {step}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm mb-1">{item.title}</div>
-                  <div className="text-sm text-gray-500">{item.desc}</div>
+                  <h3 className="font-bold text-lg mb-1">
+                    {T(`how.${howTab}.step${step}.title`)}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {T(`how.${howTab}.step${step}.desc`)}
+                  </p>
                 </div>
               </div>
             ))}
@@ -82,122 +215,46 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Session Types ── */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="text-center mb-12">
-          <div className="text-xs font-medium text-green-800 uppercase tracking-widest mb-3">Sessions</div>
-          <h2 className="text-3xl font-bold text-gray-900">Fire maader vi kan hjaelpe dig</h2>
+      {/* ── 6. KRÆFTENS BEKÆMPELSE ── */}
+      <section className="py-20 px-6 bg-green-50 border-y border-green-100">
+        <div className="max-w-3xl mx-auto flex flex-col md:flex-row gap-6 items-start">
+          <div className="flex-shrink-0">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#166534" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-green-900 mb-4">{T('charity.headline')}</h2>
+            <p className="text-green-800 leading-relaxed">{T('charity.body')}</p>
+          </div>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SESSION_TYPES.map(s => (
-            <div key={s.type} className="border border-gray-100 rounded-2xl p-6 hover:border-gray-300 transition-colors">
-              <div className="text-green-800 mb-4">{s.icon}</div>
-              <div className="font-semibold text-gray-900 mb-2">{t(lang, s.titleKey)}</div>
-              <div className="text-sm text-gray-500">{t(lang, s.descKey)}</div>
+      </section>
+
+      {/* ── 7. TRUST SIGNALS ── */}
+      <section className="py-20 px-6 bg-gray-50">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+              <div className="text-3xl font-bold mb-2 text-gray-900">{T(`trust.stat${i}.value`)}</div>
+              <div className="text-gray-500 text-sm">{T(`trust.stat${i}.desc`)}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── For Candidates ── */}
-      <section className="border-t border-gray-100 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 py-20">
-          <div className="max-w-2xl">
-            <div className="text-xs font-medium text-green-800 uppercase tracking-widest mb-4">For kandidater</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Kom videre med din karriere — en time ad gangen</h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-6 mt-8">
-            {[
-              { title: 'Aerkelige svar', desc: 'Tal med nogen der faktisk har vaeret i din situation og ved hvad det kraever.' },
-              { title: 'Konkret feedback', desc: 'Faa direkte input paa dit CV, dine svar eller din strategi — ikke vage raad.' },
-              { title: 'Pris du kan styre', desc: 'Fra DKK 300. Vaelg den professionelle der passer til dit behov og din lomme.' },
-            ].map(item => (
-              <div key={item.title} className="border border-gray-100 rounded-2xl p-6 bg-white">
-                <div className="font-semibold text-gray-900 mb-2">{item.title}</div>
-                <div className="text-sm text-gray-500">{item.desc}</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8">
-            <Link href="/professionals" className="bg-green-800 text-white font-medium px-6 py-3 rounded-xl hover:bg-green-900 transition-colors inline-block">
-              Find en professionel
-            </Link>
-          </div>
+      {/* ── 8. FINAL CTA ── */}
+      <section className="py-24 px-6 bg-black text-white text-center">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{T('cta.headline')}</h2>
+          <p className="text-gray-300 text-lg mb-10">{T('cta.sub')}</p>
+          <Link
+            href="/professionals"
+            className="inline-block px-10 py-4 bg-white text-black rounded-xl font-semibold text-base hover:bg-gray-100 transition-colors"
+          >
+            {T('cta.button')}
+          </Link>
         </div>
       </section>
-
-      {/* ── For Professionals ── */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          <div>
-            <div className="text-xs font-medium text-green-800 uppercase tracking-widest mb-4">For professionelle</div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Del din viden. Faa betaling. Goer en forskel.</h2>
-            <p className="text-gray-500 mb-6">
-              Du saetter prisen — fra DKK 300 til 2.000 per session. Naetwork tager 15% i platformsbidrag.
-            </p>
-            <div className="border border-rose-200 bg-rose-50 rounded-2xl p-5 flex gap-3">
-              <HeartIcon className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="font-semibold text-rose-800 text-sm mb-1">Vaelg at donere til Kraeftens Bekaempelse</div>
-                <p className="text-sm text-rose-700">
-                  Vaelg at donere dit honorar til Kraeftens Bekaempelse og betaler du kun 7,5% i platformsbidrag i stedet for 15%.
-                  Din samlede donation vises paa din profil.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="space-y-4">
-            {[
-              { title: 'Du saetter prisen', desc: 'DKK 300–2.000 per session. Du bestemmer fuldt ud.' },
-              { title: 'Faa booking direkte', desc: 'Kandidater booker og betaler. Du bekraefter og moedes.' },
-              { title: 'Simpel udbetaling', desc: 'Pengene overfoeres til dig efter sessionen via Stripe.' },
-              { title: 'Din profil — dit brand', desc: 'Vis dine erfaringer, sessions-typer og tilgaengelighed.' },
-            ].map(item => (
-              <div key={item.title} className="flex gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-100 flex-shrink-0 mt-0.5 flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-green-800" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900 text-sm">{item.title}</div>
-                  <div className="text-sm text-gray-500">{item.desc}</div>
-                </div>
-              </div>
-            ))}
-            <div className="pt-2">
-              <Link href="/professional/signup" className="border border-gray-200 text-gray-700 font-medium px-6 py-3 rounded-xl hover:border-gray-400 transition-colors inline-block text-sm">
-                Bliv professionel →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Trust ── */}
-      <section className="border-t border-gray-100 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6 py-16 text-center">
-          <div className="text-xs font-medium text-green-800 uppercase tracking-widest mb-4">Sikkerhed</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Sikker betaling via Stripe</h2>
-          <p className="text-gray-500 max-w-lg mx-auto">
-            Pengene overfoeres kun efter bekraeftet session. Vi gemmer aldrig kortoplysninger.
-            Alle transaktioner er krypterede og beskyttede.
-          </p>
-        </div>
-      </section>
-
-      {/* ── Final CTA ── */}
-      <section className="max-w-6xl mx-auto px-6 py-24 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Klar til din naeste karrieresession?
-        </h2>
-        <p className="text-gray-500 mb-8">Vaelg en professionel og book din session i dag.</p>
-        <Link
-          href="/professionals"
-          className="bg-green-800 text-white font-medium px-8 py-4 rounded-xl hover:bg-green-900 transition-colors inline-block text-lg"
-        >
-          Find din session
-        </Link>
-      </section>
-
     </main>
   );
 }
