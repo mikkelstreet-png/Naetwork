@@ -76,6 +76,18 @@ export function HomeContent() {
         </div>
       </section>
 
+      {/* ─── WHY NAETWORK ──────────────────────────────────────── */}
+      <section className="py-24 md:py-32 bg-gray-950">
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-6">
+            {tr('why.label')}
+          </p>
+          <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+            {tr('why.body')}
+          </p>
+        </div>
+      </section>
+
       {/* ─── DUAL-VALUE SPLIT ─────────────────────────────────── */}
       <section id="about" className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
