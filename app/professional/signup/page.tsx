@@ -53,7 +53,7 @@ export default function ProfessionalSignupPage() {
       <div className="max-w-lg mx-auto px-6 py-16">
         <div className="flex gap-1 mb-10">
           {[1,2,3,4].map(n => (
-            <div key={n} className={`h-1 flex-1 rounded-full ${n <= step ? 'bg-green-800' : 'bg-gray-200'}`} />
+            <div key={n} className={`h-1 flex-1 rounded-full ${n <= step ? 'bg-indigo-600' : 'bg-gray-200'}`} />
           ))}
         </div>
 
@@ -63,27 +63,27 @@ export default function ProfessionalSignupPage() {
               <h1 className="text-xl font-bold text-gray-900">Grundlaegende information</h1>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Fulde navn</label>
-                <input value={form.name} onChange={e => set('name', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Mikkel Jensen" />
+                <input value={form.name} onChange={e => set('name', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600" placeholder="Mikkel Jensen" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="mikkel@firma.dk" />
+                <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600" placeholder="mikkel@firma.dk" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Adgangskode</label>
-                <input type="password" value={form.password} onChange={e => set('password', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Min 8 tegn" />
+                <input type="password" value={form.password} onChange={e => set('password', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600" placeholder="Min 8 tegn" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Jobtitel</label>
-                <input value={form.title} onChange={e => set('title', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Senior Manager" />
+                <input value={form.title} onChange={e => set('title', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600" placeholder="Senior Manager" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Virksomhed (valgfri)</label>
-                <input value={form.company} onChange={e => set('company', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800" placeholder="Nordea" />
+                <input value={form.company} onChange={e => set('company', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600" placeholder="Nordea" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Industri</label>
-                <select value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800 bg-white">
+                <select value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 bg-white">
                   <option value="">Vælg industri</option>
                   {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
                 </select>
@@ -99,7 +99,7 @@ export default function ProfessionalSignupPage() {
                 <div className="grid grid-cols-2 gap-2">
                   {SESSION_TYPES.map(s => (
                     <button key={s.type} onClick={() => toggleSessionType(s.type)}
-                      className={`text-sm font-medium px-4 py-3 rounded-xl border transition-colors ${form.sessionTypes.includes(s.type) ? 'bg-green-800 text-white border-green-800' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
+                      className={`text-sm font-medium px-4 py-3 rounded-xl border transition-colors ${form.sessionTypes.includes(s.type) ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
                       {s.label}
                     </button>
                   ))}
@@ -108,12 +108,12 @@ export default function ProfessionalSignupPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">Pris pr. session: <span className="font-bold text-gray-900">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
                 <input type="range" min={300} max={2000} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
-                  className="w-full accent-green-800" />
+                  className="w-full accent-indigo-600" />
                 <div className="flex justify-between text-xs text-gray-400 mt-1"><span>DKK 300</span><span>DKK 2.000</span></div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bio (valgfri)</label>
-                <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-800 resize-none" placeholder="Fortael hvad du kan hjaelpe med..." />
+                <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 resize-none" placeholder="Fortael hvad du kan hjaelpe med..." />
               </div>
             </div>
           )}
@@ -155,13 +155,13 @@ export default function ProfessionalSignupPage() {
           <div className="flex gap-3 mt-8">
             {step > 1 && <button onClick={() => setStep(s => s - 1)} className="flex-1 border border-gray-200 text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 transition-colors">Tilbage</button>}
             {step < 4
-              ? <button onClick={() => setStep(s => s + 1)} className="flex-1 bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors">Naeste</button>
-              : <button onClick={handleSubmit} disabled={loading} className="flex-1 bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
+              ? <button onClick={() => setStep(s => s + 1)} className="flex-1 bg-indigo-600 text-white font-medium py-3 rounded-xl hover:bg-indigo-700 transition-colors">Naeste</button>
+              : <button onClick={handleSubmit} disabled={loading} className="flex-1 bg-indigo-600 text-white font-medium py-3 rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
             }
           </div>
         </div>
 
-        <p className="text-center text-sm text-gray-400 mt-6">Har du allerede en profil? <Link href="/login" className="text-green-800 hover:underline">Log ind</Link></p>
+        <p className="text-center text-sm text-gray-400 mt-6">Har du allerede en profil? <Link href="/login" className="text-indigo-600 hover:underline">Log ind</Link></p>
       </div>
     </main>
   );
