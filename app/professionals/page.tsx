@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 import BookingDrawer from '@/components/BookingDrawer'
 
 type Industry = 'Alle brancher' | 'Banking' | 'Private Equity' | 'AI' | 'Management Consulting'
@@ -56,71 +55,61 @@ export default function ProfessionalsPage() {
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>([])
   const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
 
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   useEffect(() => {
     async function fetchProfessionals() {
       const { data } = await supabase
         .from('professional_profiles')
-        .select(`
-          id,
-          title,
-          company,
-          bio,
-          price_per_session,
-          industries,
-          profiles!inner(full_name)
-        `)
+        .select(`id, title, company, bio, price_per_session, industries, profiles!inner(full_name)`)
         .eq('visibility', 'published')
         .eq('approval_status', 'approved')
 
       if (data && data.length > 0) {
-        const mapped = data.map((p: Record<string, unknown>) => {
-          const profile = p.profiles as { full_name?: string } | null
-          return {
-            id: p.id as string,
-            name: profile?.full_name ?? '',
-            title: p.title as string ?? '',
-            company: p.company as string ?? '',
-            industries: (p.industries as string[]) ?? [],
-            price: (p.price_per_session as number) ?? 0,
-            bio: (p.bio as string) ?? '',
-          }
-        })
+        const mapped: ProfessionalCard[] = (data as Array<{
+          id: string
+          title: string
+          company: string
+          bio: string
+          price_per_session: number
+          industries: string[]
+          profiles: { full_name?: string } | null
+        }>).map((p) => ({
+          id: p.id,
+          name: p.profiles?.full_name ?? '',
+          title: p.title ?? '',
+          company: p.company ?? '',
+          industries: p.industries ?? [],
+          price: p.price_per_session ?? 0,
+          bio: p.bio ?? '',
+        }))
         setDbProfessionals(mapped)
       }
     }
     fetchProfessionals()
-  }, [supabase])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const allProfessionals = dbProfessionals.length > 0 ? dbProfessionals : DEMO_PROFESSIONALS
 
   const filtered = allProfessionals.filter((p) => {
-    const matchesIndustry =
-      industryFilter === 'Alle brancher' || p.industries.includes(industryFilter)
+    const matchesIndustry = industryFilter === 'Alle brancher' || p.industries.includes(industryFilter)
     const searchLower = search.toLowerCase()
-    const matchesSearch =
-      !search ||
-      p.name.toLowerCase().includes(searchLower) ||
-      p.title.toLowerCase().includes(searchLower) ||
-      p.company.toLowerCase().includes(searchLower)
+    const matchesSearch = !search || p.name.toLowerCase().includes(searchLower) || p.title.toLowerCase().includes(searchLower) || p.company.toLowerCase().includes(searchLower)
     return matchesIndustry && matchesSearch
   })
 
   const t = {
     heading: locale === 'da' ? 'Find en professionel' : 'Find a professional',
-    subheading: locale === 'da'
-      ? 'Book en 60-minutters session med erfarne professionelle'
-      : 'Book a 60-minute session with experienced professionals',
+    subheading: locale === 'da' ? 'Book en 60-minutters session med erfarne professionelle' : 'Book a 60-minute session with experienced professionals',
     searchPlaceholder: locale === 'da' ? 'Soeg paa navn eller titel...' : 'Search by name or title...',
-    bookCta: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
-    perSession: locale === 'da' ? '/ session' : '/ session',
+    bookCta: 'Book 60 min',
+    perSession: '/ session',
     noResults: locale === 'da' ? 'Ingen resultater' : 'No results',
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
           <div className="flex items-center justify-between mb-6">
@@ -129,22 +118,10 @@ export default function ProfessionalsPage() {
               <p className="text-gray-500 mt-1">{t.subheading}</p>
             </div>
             <div className="flex gap-2">
-              <button
-                onClick={() => setLocale('da')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'da' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}
-              >
-                DA
-              </button>
-              <button
-                onClick={() => setLocale('en')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'en' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}
-              >
-                EN
-              </button>
+              <button onClick={() => setLocale('da')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'da' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}>DA</button>
+              <button onClick={() => setLocale('en')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'en' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}>EN</button>
             </div>
           </div>
-
-          {/* Filter bar */}
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
@@ -158,11 +135,7 @@ export default function ProfessionalsPage() {
                 <button
                   key={ind}
                   onClick={() => setIndustryFilter(ind)}
-                  className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${
-                    industryFilter === ind
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-400 hover:text-indigo-600'
-                  }`}
+                  className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${industryFilter === ind ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-400 hover:text-indigo-600'}`}
                 >
                   {ind}
                 </button>
@@ -172,47 +145,26 @@ export default function ProfessionalsPage() {
         </div>
       </div>
 
-      {/* Cards grid */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {filtered.length === 0 ? (
           <p className="text-center text-gray-400 py-16">{t.noResults}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((pro) => (
-              <div
-                key={pro.id}
-                className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col"
-              >
-                {/* Name + company */}
+              <div key={pro.id} className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col">
                 <div className="mb-3">
                   <h2 className="text-base font-semibold text-gray-900">{pro.name}</h2>
                   <p className="text-sm text-gray-500">{pro.title} &middot; {pro.company}</p>
                 </div>
-
-                {/* Industry tags */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {pro.industries.map((ind) => (
-                    <span
-                      key={ind}
-                      className="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full"
-                    >
-                      {ind}
-                    </span>
+                    <span key={ind} className="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full">{ind}</span>
                   ))}
                 </div>
-
-                {/* Bio excerpt */}
-                <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-1">{pro.bio}</p>
-
-                {/* Price + CTA */}
+                <p className="text-sm text-gray-600 mb-4 flex-1 overflow-hidden" style={{display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{pro.bio}</p>
                 <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
-                  <span className="text-sm font-semibold text-gray-900">
-                    DKK {pro.price} <span className="text-gray-400 font-normal">{t.perSession}</span>
-                  </span>
-                  <button
-                    onClick={() => setBookTarget(pro)}
-                    className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                  >
+                  <span className="text-sm font-semibold text-gray-900">DKK {pro.price} <span className="text-gray-400 font-normal">{t.perSession}</span></span>
+                  <button onClick={() => setBookTarget(pro)} className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
                     {t.bookCta}
                   </button>
                 </div>
@@ -222,14 +174,8 @@ export default function ProfessionalsPage() {
         )}
       </div>
 
-      {/* Booking drawer */}
       {bookTarget && (
-        <BookingDrawer
-          professional={bookTarget}
-          open={!!bookTarget}
-          onClose={() => setBookTarget(null)}
-          locale={locale}
-        />
+        <BookingDrawer professional={bookTarget} open={!!bookTarget} onClose={() => setBookTarget(null)} locale={locale} />
       )}
     </div>
   )
