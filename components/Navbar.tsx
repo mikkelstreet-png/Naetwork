@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 
-export default function Navbar() {
+export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
@@ -91,3 +91,5 @@ export default function Navbar() {
     </nav>
   );
 }
+
+export default Navbar;
