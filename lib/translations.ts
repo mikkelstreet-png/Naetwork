@@ -43,6 +43,35 @@ export const t: Record<Lang, Record<string, string>> = {
     'pricing.h2': 'Sessioner starter fra 300 kr.',
     'pricing.body': 'Naetwork er bygget med et ønske om at skabe meningsfuld effekt. Donations- og betalingsmodellen er under juridisk afklaring og bliver først aktiveret, når den rette opsætning er på plads.',
 
+    // FAQ
+    'faq.label': 'Ofte stillede spørgsmål',
+    'faq.h2': 'Har du spørgsmål? Vi har svarene.',
+    'faq.q1': 'Hvor lang tid varer en session?',
+    'faq.a1': 'Hver session varer 60 minutter.',
+    'faq.q2': 'Hvad kan jeg bruge en session til?',
+    'faq.a2': 'Du kan bruge den til CV-feedback, jobsamtaleforberedelse, ansøgninger, case-træning, karrierespørgsmål, brancheindsigt eller generel sparring.',
+    'faq.q3': 'Hvad koster det?',
+    'faq.a3': 'Sessioner starter fra 300 kr. Den endelige pris afhænger af den professionelle.',
+    'faq.q4': 'Hvorfor skal professionelle være med?',
+    'faq.a4': 'Fordi Naetwork giver professionelle en meningsfuld måde at hjælpe andre og styrke kompetencer som mentoring, kommunikation, ledelse og struktureret feedback.',
+    'faq.q5': 'Kan jeg redigere eller slette min bruger?',
+    'faq.a5': 'Ja. Du kan redigere dine oplysninger, ændre notifikationsvalg og anmode om sletning af din bruger.',
+    'faq.q6': 'Er Naetwork en del af Kræftens Bekæmpelse?',
+    'faq.a6': 'Naetwork er et uafhængigt initiativ og kan kun beskrives som officiel partner, hvis der foreligger en skriftlig aftale.',
+
+    // KB
+    'kb.body': 'Naetwork er bygget med et ønske om at skabe meningsfuld effekt. Donations- og betalingsmodellen er under juridisk afklaring og bliver først aktiveret, når den rette opsætning er på plads.',
+
+    // Contact
+    'contact.label': 'Kontakt Naetwork',
+    'contact.h2': 'Send os en besked',
+    'contact.name': 'Navn',
+    'contact.email': 'E-mail',
+    'contact.subject': 'Emne',
+    'contact.message': 'Besked',
+    'contact.privacy': 'Vi bruger kun dine oplysninger til at svare på din henvendelse.',
+    'contact.submit': 'Send besked',
+
     // Navbar
     'nav.home': 'Forside',
     'nav.how_it_works': 'Sådan virker det',
@@ -59,6 +88,11 @@ export const t: Record<Lang, Record<string, string>> = {
     // Footer
     'footer.tagline': 'Karrieresessioner med mennesker der ved det.',
     'footer.legal': 'Naetwork opkræver 15% platformsbidrag (7,5% ved donation til Kræftens Bekæmpelse). Alle betalinger behandles sikkert via Stripe.',
+    'footer.terms': 'Vilkår',
+    'footer.privacy_link': 'Privatlivspolitik',
+    'footer.cookies': 'Cookies',
+    'footer.contact_link': 'Kontakt',
+    'footer.copyright': '© 2025 Naetwork. Alle rettigheder forbeholdes.',
 
     // Charity
     'charity.badge': 'Officiel partner',
@@ -125,6 +159,35 @@ export const t: Record<Lang, Record<string, string>> = {
     'pricing.h2': 'Sessions start from 300 DKK.',
     'pricing.body': 'Naetwork is built with the ambition to create meaningful impact. The donation and payment model is under legal review and will only be activated when the correct setup is in place.',
 
+    // FAQ
+    'faq.label': 'Frequently asked questions',
+    'faq.h2': 'Got questions? We have the answers.',
+    'faq.q1': 'How long does a session last?',
+    'faq.a1': 'Each session lasts 60 minutes.',
+    'faq.q2': 'What can I use a session for?',
+    'faq.a2': 'You can use it for CV feedback, interview preparation, applications, case practice, career questions, industry insight or general guidance.',
+    'faq.q3': 'What does it cost?',
+    'faq.a3': 'Sessions start from 300 DKK. The final price depends on the professional.',
+    'faq.q4': 'Why should professionals join?',
+    'faq.a4': 'Because Naetwork gives professionals a meaningful way to help others and strengthen skills such as mentoring, communication, leadership and structured feedback.',
+    'faq.q5': 'Can I edit or delete my account?',
+    'faq.a5': 'Yes. You can edit your information, change notification preferences and request deletion of your account.',
+    'faq.q6': 'Is Naetwork part of Kræftens Bekæmpelse?',
+    'faq.a6': 'Naetwork is an independent initiative and can only be described as an official partner if a written agreement is in place.',
+
+    // KB
+    'kb.body': 'Naetwork is built with the ambition to create meaningful impact. The donation and payment model is under legal review and will only be activated when the correct setup is in place.',
+
+    // Contact
+    'contact.label': 'Contact Naetwork',
+    'contact.h2': 'Send us a message',
+    'contact.name': 'Name',
+    'contact.email': 'Email',
+    'contact.subject': 'Subject',
+    'contact.message': 'Message',
+    'contact.privacy': 'We only use your information to respond to your enquiry.',
+    'contact.submit': 'Send message',
+
     // Navbar
     'nav.home': 'Home',
     'nav.how_it_works': 'How it works',
@@ -141,6 +204,11 @@ export const t: Record<Lang, Record<string, string>> = {
     // Footer
     'footer.tagline': 'Career sessions with people who know.',
     'footer.legal': 'Naetwork charges 15% platform fee (7.5% with donation to Kræftens Bekæmpelse). All payments processed securely via Stripe.',
+    'footer.terms': 'Terms',
+    'footer.privacy_link': 'Privacy',
+    'footer.cookies': 'Cookies',
+    'footer.contact_link': 'Contact',
+    'footer.copyright': '© 2025 Naetwork. All rights reserved.',
 
     // Charity
     'charity.badge': 'Donates to Kræftens Bekæmpelse',
