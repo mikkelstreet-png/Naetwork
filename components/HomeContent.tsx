@@ -26,7 +26,7 @@ export function HomeContent() {
         .animate-bounce-y { animation: bounce-y 1.5s ease-in-out infinite; }
       `}</style>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ HERO Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── HERO ─────────────────────────────────────────────── */}
       <section id="home" className="min-h-screen flex flex-col justify-center bg-white px-6 pt-24 pb-0" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(79,70,229,0.06) 0%, transparent 70%)' }}>
         <div className="max-w-6xl mx-auto w-full">
 
@@ -76,7 +76,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ DUAL-VALUE SPLIT Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── DUAL-VALUE SPLIT ─────────────────────────────────── */}
       <section id="about" className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-pink-700 mb-4">
@@ -87,7 +87,7 @@ export function HomeContent() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Kandidater Ã¢ÂÂ dark */}
+            {/* Kandidater – dark */}
             <div id="candidates" className="bg-gray-950 text-white rounded-3xl p-10 md:p-14 flex flex-col justify-between min-h-[400px]">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-indigo-400 mb-6">
@@ -103,7 +103,7 @@ export function HomeContent() {
                     tr('why.candidate.bullet3'),
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-gray-300 text-sm leading-relaxed">
-                      <span className="text-indigo-400 font-bold mt-0.5 shrink-0">Ã¢ÂÂ</span>
+                      <span className="text-indigo-400 font-bold mt-0.5 shrink-0">→</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -117,7 +117,7 @@ export function HomeContent() {
               </Link>
             </div>
 
-            {/* Professionelle Ã¢ÂÂ indigo */}
+            {/* Professionelle – indigo */}
             <div id="professionals" className="bg-indigo-600 text-white rounded-3xl p-10 md:p-14 flex flex-col justify-between min-h-[400px]">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-indigo-200 mb-6">
@@ -133,7 +133,7 @@ export function HomeContent() {
                     tr('why.professional.bullet3'),
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-indigo-100 text-sm leading-relaxed">
-                      <span className="text-indigo-300 font-bold mt-0.5 shrink-0">Ã¢ÂÂ</span>
+                      <span className="text-indigo-300 font-bold mt-0.5 shrink-0">→</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -150,7 +150,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ SESSIONSTYPER Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── SESSIONSTYPER ────────────────────────────────────── */}
       <section className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-4">
@@ -160,7 +160,7 @@ export function HomeContent() {
             {tr('sessions.sub')}
           </h2>
           <p className="text-gray-600 leading-relaxed mb-12 max-w-xl">
-            DKK 300Ã¢ÂÂ2.000 pr. session Ã¢ÂÂ prissat af den professionelle.
+            DKK 300–2.000 pr. session — prissat af den professionelle.
           </p>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -177,10 +177,10 @@ export function HomeContent() {
               <div>
                 <h3 className="font-bold text-gray-950 mb-1">Mock Interview</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  ÃÂv dig med en der har siddet pÃÂ¥ begge sider af bordet
+                  Øv dig med en der har siddet på begge sider af bordet
                 </p>
               </div>
-              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300Ã¢ÂÂ2.000</p>
+              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300–2.000</p>
             </div>
 
             {/* CV & LinkedIn */}
@@ -197,10 +197,10 @@ export function HomeContent() {
               <div>
                 <h3 className="font-bold text-gray-950 mb-1">CV &amp; LinkedIn Review</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  FÃÂ¥ konkret, ÃÂ¦rlig feedback pÃÂ¥ dit materiale
+                  Få konkret, ærlig feedback på dit materiale
                 </p>
               </div>
-              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300Ã¢ÂÂ2.000</p>
+              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300–2.000</p>
             </div>
 
             {/* Uformel 1:1 */}
@@ -213,13 +213,13 @@ export function HomeContent() {
               <div>
                 <h3 className="font-bold text-gray-950 mb-1">Uformel 1:1</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  En ÃÂ¥ben samtale om karriere, muligheder og nÃÂ¦ste skridt
+                  En åben samtale om karriere, muligheder og næste skridt
                 </p>
               </div>
-              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300Ã¢ÂÂ2.000</p>
+              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300–2.000</p>
             </div>
 
-            {/* KarriererÃÂ¥dgivning */}
+            {/* Karriererådgivning */}
             <div className="bg-white border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow flex flex-col gap-4">
               <div className="text-gray-950">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -227,18 +227,18 @@ export function HomeContent() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-gray-950 mb-1">KarriererÃÂ¥dgivning</h3>
+                <h3 className="font-bold text-gray-950 mb-1">Karriererådgivning</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  Strategisk sparring fra nogen der har prÃÂ¸vet det
+                  Strategisk sparring fra nogen der har prøvet det
                 </p>
               </div>
-              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300Ã¢ÂÂ2.000</p>
+              <p className="text-xs font-semibold text-indigo-600 mt-auto">DKK 300–2.000</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ SÃÂDAN FUNGERER DET Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── SÅDAN FUNGERER DET ───────────────────────────────── */}
       <section id="how-it-works" className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-4">
@@ -265,10 +265,10 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ TRANSPARENS / PRISER Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── TRANSPARENS / PRISER ─────────────────────────────── */}
 
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ KRÃÂFDENS BEKÃÂMPELSE Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── KRÆFDENS BEKÆMPELSE ──────────────────────────────── */}
       {/* Impact / Pricing section */}
       <section id="pricing" className="bg-gray-950 py-24 px-6">
         <div className="max-w-4xl mx-auto">
@@ -345,17 +345,17 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ INDUSTRIER Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── INDUSTRIER ────────────────────────────────────────── */}
       <section className="py-24 md:py-32 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-4">
             {tr('industries.headline')}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-6">
-            Karrierevejen i Banking, Private Equity, AI og Management Consulting er sjÃÂ¦ldent gennemsigtig.
+            Karrierevejen i Banking, Private Equity, AI og Management Consulting er sjældent gennemsigtig.
           </h2>
           <p className="text-base text-gray-600 max-w-2xl mb-12">
-            Bag enhver ansÃÂ¸gning gemmer der sig spÃÂ¸rgsmÃÂ¥l, ingen LinkedIn-post besvarer. Naetworks grundlÃÂ¦ggere har selv arbejdet i Ã¢ÂÂ eller kender stÃÂ¦rke netvÃÂ¦rk inden for Ã¢ÂÂ Banking, Private Equity, AI og Management Consulting. Vi ved, at adgang til ÃÂ¦rlig vejledning ikke burde afhÃÂ¦nge af hvem du tilfÃÂ¦ldigvis kender.
+            Bag enhver ansøgning gemmer der sig spørgsmål, ingen LinkedIn-post besvarer. Naetworks grundlæggere har selv arbejdet i — eller kender stærke netværk inden for — Banking, Private Equity, AI og Management Consulting. Vi ved, at adgang til ærlig vejledning ikke burde afhænge af hvem du tilfældigvis kender.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
@@ -363,21 +363,21 @@ export function HomeContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 21V3m-4 4h8M4 21h16M6 17V9m4 8V9m4 8V9m4 8V9" />
               </svg>
               <h3 className="font-semibold text-gray-950 mb-2">Banking</h3>
-              <p className="text-sm text-gray-500">M&A, ECM, DCM, Corporate Finance. Vi kender presset, recruitmentprocesserne og hvad der faktisk adskiller de stÃÂ¦rke kandidater.</p>
+              <p className="text-sm text-gray-500">M&A, ECM, DCM, Corporate Finance. Vi kender presset, recruitmentprocesserne og hvad der faktisk adskiller de stærke kandidater.</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
               <svg className="w-6 h-6 text-indigo-600 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
               </svg>
               <h3 className="font-semibold text-gray-950 mb-2">Private Equity</h3>
-              <p className="text-sm text-gray-500">Deal sourcing, due diligence, portfolio management. Et lukket miljÃÂ¸ Ã¢ÂÂ vi ÃÂ¥bner dÃÂ¸ren.</p>
+              <p className="text-sm text-gray-500">Deal sourcing, due diligence, portfolio management. Et lukket miljø — vi åbner døren.</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
               <svg className="w-6 h-6 text-indigo-600 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
               </svg>
               <h3 className="font-semibold text-gray-950 mb-2">AI</h3>
-              <p className="text-sm text-gray-500">Fra ML engineer til AI strategy. Feltet bevÃÂ¦ger sig hurtigt Ã¢ÂÂ vi hjÃÂ¦mper dig med at navigere det.</p>
+              <p className="text-sm text-gray-500">Fra ML engineer til AI strategy. Feltet bevæger sig hurtigt — vi hjæmper dig med at navigere det.</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition">
               <svg className="w-6 h-6 text-indigo-600 mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -390,7 +390,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FAQ Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── FAQ ──────────────────────────────────────────────── */}
       <section id="faq" className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
         <div className="max-w-3xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-4">
@@ -417,7 +417,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ CONTACT Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── CONTACT ──────────────────────────────────────────── */}
       <section id="contact" className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-lg mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-indigo-600 mb-4">
@@ -470,7 +470,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FINAL CTA Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
+      {/* ─── FINAL CTA ────────────────────────────────────────── */}
       <section className="py-32 text-center bg-gray-950">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-none mb-4">
