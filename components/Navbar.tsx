@@ -1,100 +1,91 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { useLanguage } from '@/context/LanguageContext';
-import { LanguageToggle } from './LanguageToggle';
+import { useRouter } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
 
-const NAV_LINKS = [
-  { key: 'nav.home', href: '#home' },
-  { key: 'nav.how_it_works', href: '#how-it-works' },
-  { key: 'nav.about', href: '#about' },
-  { key: 'nav.candidates', href: '#candidates' },
-  { key: 'nav.professionals', href: '#professionals' },
-  { key: 'nav.pricing', href: '#pricing' },
-  { key: 'nav.faq', href: '#faq' },
-  { key: 'nav.contact', href: '#contact' },
-];
-
-export function Navbar() {
-  const { tr } = useLanguage();
+export default function Navbar() {
+  const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push('/');
+    router.refresh();
+  }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-
-        {/* Brand - text only */}
-        <Link href="/" className="flex-shrink-0 font-bold text-lg tracking-tight text-gray-950">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="font-bold text-xl tracking-tight text-gray-900">
           Naetwork
         </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-5 flex-1">
-          {NAV_LINKS.map(link => (
-            <a
-              key={link.key}
-              href={link.href}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap"
-            >
-              {tr(link.key)}
-            </a>
-          ))}
+        <div className="hidden md:flex items-center gap-6">
+          <Link href="/eksperter" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            Find ekspert
+          </Link>
+          <Link href="/om" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            Om Naetwork
+          </Link>
+          {user ? (
+            <>
+              <Link href="/profil" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                Min profil
+              </Link>
+              <Link href="/book" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                Book session
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                Log ind
+              </Link>
+              <Link href="/book" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                Book session
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Right: lang toggle + login + CTA + hamburger */}
-        <div className="flex items-center gap-3">
-          <LanguageToggle />
-          <Link
-            href="/login"
-            className="hidden sm:block text-sm text-gray-500 hover:text-gray-900 transition-colors"
-          >
-            {tr('nav.login')}
-          </Link>
-          <a
-            href="#contact"
-            className="hidden sm:inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors"
-          >
-            {tr('nav.book')}
-          </a>
-          {/* Hamburger */}
-          <button
-            onClick={() => setMenuOpen(o => !o)}
-            className="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-            aria-label="Menu"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {menuOpen
-                ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                : <><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></>
-              }
-            </svg>
-          </button>
-        </div>
+        <button className="md:hidden text-gray-600 hover:text-gray-900" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {menuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-1">
-          {NAV_LINKS.map(link => (
-            <a
-              key={link.key}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="block py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              {tr(link.key)}
-            </a>
-          ))}
-          <div className="pt-3 border-t border-gray-100 mt-3">
-            <a
-              href="#contact"
-              onClick={() => setMenuOpen(false)}
-              className="block w-full text-center py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors"
-            >
-              {tr('nav.book')}
-            </a>
-          </div>
+        <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3">
+          <Link href="/eksperter" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Find ekspert</Link>
+          <Link href="/om" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Om Naetwork</Link>
+          {user ? (
+            <>
+              <Link href="/profil" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Min profil</Link>
+              <button onClick={handleSignOut} className="block text-sm text-gray-400 hover:text-gray-700 py-2 w-full text-left">Log ud</button>
+            </>
+          ) : (
+            <Link href="/login" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Log ind</Link>
+          )}
+          <Link href="/book" className="block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors text-center" onClick={() => setMenuOpen(false)}>Book session</Link>
         </div>
       )}
     </nav>
