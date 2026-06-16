@@ -1,7 +1,6 @@
 'use client';
 
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 import { HeartIcon } from './icons/HeartIcon';
 
 export interface ProfessionalData {
@@ -38,7 +37,7 @@ function Initials({ name }: { name: string }) {
 }
 
 export function ProfessionalCard({ professional }: { professional: ProfessionalData }) {
-  const { lang } = useLanguage();
+  const { tr } = useLanguage();
 
   return (
     <div className="border border-gray-100 rounded-2xl p-6 hover:border-gray-300 transition-colors flex flex-col gap-4">
@@ -56,7 +55,7 @@ export function ProfessionalCard({ professional }: { professional: ProfessionalD
       {professional.donates_to_charity && (
         <div className="flex items-center gap-1.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg px-3 py-1.5 text-xs font-medium">
           <HeartIcon className="w-3.5 h-3.5 flex-shrink-0" />
-          {t(lang, 'charity.badge')}
+          {tr('charity.badge')}
         </div>
       )}
 
