@@ -24,7 +24,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     company: 'Goldman Sachs',
     industries: ['Banking', 'Private Equity'],
     price: 500,
-    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjaelper dig med at forberede dig til interviews og forstaae, hvad der kraeves for at komme ind i investment banking.'
+    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med at forberede dig til interviews og forstaae, hvad der kraeves for at komme ind i investment banking.'
   },
   {
     id: 'demo-2',
