@@ -266,32 +266,7 @@ export function HomeContent() {
       </section>
 
       {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ TRANSPARENS / PRISER Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
-      <section id="pricing" className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
-        <div className="max-w-3xl mx-auto px-6">
-          <span className="inline-block bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide mb-6">
-            {tr('pricing.label')}
-          </span>
-          <p className="text-gray-600 mb-10 text-lg leading-relaxed">{tr('pricing.intro')}</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            <div className="border border-gray-200 rounded-2xl p-6 bg-white">
-              <h3 className="font-semibold text-gray-900 text-lg mb-3">{tr('pricing.model1_title')}</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">{tr('pricing.model1_body')}</p>
-            </div>
-            <div className="border border-indigo-200 rounded-2xl p-6 bg-indigo-50">
-              <h3 className="font-semibold text-indigo-900 text-lg mb-3">{tr('pricing.model2_title')}</h3>
-              <p className="text-indigo-700 text-sm leading-relaxed">{tr('pricing.model2_body')}</p>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <h3 className="font-semibold text-gray-900 text-lg mb-3">{tr('pricing.why_title')}</h3>
-            <p className="text-gray-600 leading-relaxed">{tr('pricing.why_body')}</p>
-          </div>
-
-          <p className="text-xs text-gray-400 border-t border-gray-100 pt-4">{tr('pricing.gated_notice')}</p>
-        </div>
-      </section>
 
       {/* Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ KRÃÂFDENS BEKÃÂMPELSE Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ */}
       {/* Impact / Pricing section */}
