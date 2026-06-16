@@ -52,7 +52,7 @@ export default function ProfilPage() {
 
   async function handleDelete() {
     if (deleteInput !== 'SLET') {
-      setDeleteError('Skriv SLET for at bekrÃ¦fte.');
+      setDeleteError('Skriv SLET for at bekræfte.');
       return;
     }
     setDeleteLoading(true);
@@ -65,7 +65,7 @@ export default function ProfilPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-400">IndlÃ¦ser...</div>
+        <div className="text-gray-400">Indlæser...</div>
       </main>
     );
   }
@@ -125,14 +125,14 @@ export default function ProfilPage() {
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
                   <p className="text-gray-900 font-medium">Servicemeddelelser</p>
-                  <p className="text-xs text-gray-400">KontobekrÃ¦ftelse, sikkerheds- og bookingbeskeder â kan ikke frameldes</p>
+                  <p className="text-xs text-gray-400">Kontobekræftelse, sikkerheds- og bookingbeskeder â kan ikke frameldes</p>
                 </div>
-                <div className="text-xs text-gray-400 font-medium">PÃ¥krÃ¦vet</div>
+                <div className="text-xs text-gray-400 font-medium">Påkrævet</div>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-gray-100">
                 <div>
-                  <p className="text-gray-900 font-medium">Booking-pÃ¥mindelser</p>
-                  <p className="text-xs text-gray-400">PÃ¥mindelser om kommende sessioner</p>
+                  <p className="text-gray-900 font-medium">Booking-påmindelser</p>
+                  <p className="text-xs text-gray-400">Påmindelser om kommende sessioner</p>
                 </div>
                 <button
                   onClick={() => setProfile((p: any) => ({ ...p, notification_booking_reminders: !p.notification_booking_reminders }))}
@@ -176,7 +176,7 @@ export default function ProfilPage() {
 
         <section className="mb-10">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Dine data</h2>
-          <p className="text-sm text-gray-500 mb-3">Du kan til enhver tid anmode om at fÃ¥ udleveret dine data i henhold til GDPR.</p>
+          <p className="text-sm text-gray-500 mb-3">Du kan til enhver tid anmode om at få udleveret dine data i henhold til GDPR.</p>
           <button className="text-sm text-indigo-600 hover:underline">Anmod om dataeksport</button>
         </section>
 
@@ -185,7 +185,7 @@ export default function ProfilPage() {
           {!showDelete ? (
             <>
               <p className="text-sm text-gray-500 mb-4">
-                NÃ¥r du sletter din bruger, fjerner eller anonymiserer vi din profil, hvor det er muligt. Nogle oplysninger kan skulle opbevares i en begrÃ¦nset periode af juridiske eller regnskabsmÃ¦ssige Ã¥rsager.
+                Når du sletter din bruger, fjerner eller anonymiserer vi din profil, hvor det er muligt. Nogle oplysninger kan skulle opbevares i en begrænset periode af juridiske eller regnskabsmæssige årsager.
               </p>
               <button
                 onClick={() => setShowDelete(true)}
@@ -197,7 +197,7 @@ export default function ProfilPage() {
           ) : (
             <>
               <p className="text-sm text-gray-500 mb-4">
-                Er du sikker? Denne handling kan ikke fortrydes. For at bekrÃ¦fte, skriv <strong>SLET</strong> i feltet nedenfor.
+                Er du sikker? Denne handling kan ikke fortrydes. For at bekræfte, skriv <strong>SLET</strong> i feltet nedenfor.
               </p>
               <input
                 type="text"
@@ -213,7 +213,7 @@ export default function ProfilPage() {
                   disabled={deleteLoading}
                   className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {deleteLoading ? 'Behandler...' : 'BekrÃ¦ft sletning'}
+                  {deleteLoading ? 'Behandler...' : 'Bekræft sletning'}
                 </button>
                 <button
                   onClick={() => { setShowDelete(false); setDeleteInput(''); setDeleteError(''); }}
