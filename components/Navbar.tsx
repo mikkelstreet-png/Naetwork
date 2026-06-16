@@ -35,10 +35,10 @@ export function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          <Link href="/eksperter" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/professionals" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             Find ekspert
           </Link>
-          <Link href="/om" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/#about" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             Om Naetwork
           </Link>
           {user ? (
@@ -49,7 +49,7 @@ export function Navbar() {
               <Link href="/profil/bookings" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Mine bookinger
               </Link>
-              <Link href="/book" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+              <Link href="/professionals" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                 Book session
               </Link>
             </>
@@ -58,7 +58,7 @@ export function Navbar() {
               <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Log ind
               </Link>
-              <Link href="/book" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+              <Link href="/professionals" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                 Book session
               </Link>
             </>
@@ -78,8 +78,8 @@ export function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-3">
-          <Link href="/eksperter" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Find ekspert</Link>
-          <Link href="/om" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Om Naetwork</Link>
+          <Link href="/professionals" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Find ekspert</Link>
+          <Link href="/#about" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Om Naetwork</Link>
           {user ? (
             <>
               <Link href="/profil" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Min profil</Link>
@@ -89,7 +89,7 @@ export function Navbar() {
           ) : (
             <Link href="/login" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Log ind</Link>
           )}
-          <Link href="/book" className="block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors text-center" onClick={() => setMenuOpen(false)}>Book session</Link>
+          <Link href="/professionals" className="block bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors text-center" onClick={() => setMenuOpen(false)}>Book session</Link>
         </div>
       )}
     </nav>
