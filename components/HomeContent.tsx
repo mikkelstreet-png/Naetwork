@@ -46,13 +46,13 @@ export function HomeContent() {
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
             <Link
-              href="/find-professionel"
+              href="/professionals"
               className="inline-flex items-center justify-center px-8 py-4 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-base"
             >
               {tr('hero.cta_primary')}
             </Link>
             <Link
-              href="/bliv-professionel"
+              href="/professional/signup"
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl border-2 border-gray-950 hover:bg-gray-50 transition-colors text-base"
             >
               {tr('hero.cta_secondary')}
@@ -110,7 +110,7 @@ export function HomeContent() {
                 </ul>
               </div>
               <Link
-                href="/find-professionel"
+                href="/professionals"
                 className="inline-flex items-center gap-2 text-white text-sm font-semibold border border-white/25 rounded-xl px-6 py-3 hover:bg-white/10 transition-colors w-fit"
               >
                 {tr('candidates.cta')}
@@ -140,7 +140,7 @@ export function HomeContent() {
                 </ul>
               </div>
               <Link
-                href="/bliv-professionel"
+                href="/professional/signup"
                 className="inline-flex items-center gap-2 text-white text-sm font-semibold border border-white/25 rounded-xl px-6 py-3 hover:bg-white/10 transition-colors w-fit"
               >
                 {tr('professionals.cta')}
@@ -454,13 +454,13 @@ export function HomeContent() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/find-professionel"
+              href="/professionals"
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl hover:bg-gray-100 transition-colors text-base"
             >
               {tr('cta.button')}
             </Link>
             <Link
-              href="/bliv-professionel"
+              href="/professional/signup"
               className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-indigo-400 font-semibold rounded-xl border-2 border-indigo-600 hover:bg-indigo-950 transition-colors text-base"
             >
               {tr('professionals.cta')}
