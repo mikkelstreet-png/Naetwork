@@ -11,17 +11,26 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name) { return request.cookies.get(name)?.value; },
-        set(name, value, options) { response.cookies.set({ name, value, ...options }); },
-        remove(name, options) { response.cookies.set({ name, value: '', ...options }); },
+        get(name: string) { return request.cookies.get(name)?.value; },
+        set(name: string, value: string, options: Record<string, unknown>) { response.cookies.set({ name, value, ...options } as Parameters<typeof response.cookies.set>[0]); },
+        remove(name: string, options: Record<string, unknown>) { response.cookies.set({ name, value: '', ...options } as Parameters<typeof response.cookies.set>[0]); },
       },
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Protect /admin — redirect to /login if not authenticated
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    // Note: role check happens in the admin layout component (server-side)
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
