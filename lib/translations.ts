@@ -56,6 +56,14 @@ export const t: Record<Lang, Record<string, string>> = {
     'nav.lang_toggle': 'EN',
     'nav.login': 'Log ind',
 
+    // Footer
+    'footer.tagline': 'Karrieresessioner med mennesker der ved det.',
+    'footer.legal': 'Naetwork opkræver 15% platformsbidrag (7,5% ved donation til Kræftens Bekæmpelse). Alle betalinger behandles sikkert via Stripe.',
+
+    // Charity
+    'charity.badge': 'Officiel partner',
+    'charity.headline': 'Samfundsansvar',
+
     // Legacy keys (sections not yet migrated)
     'why.candidate.bullet1': 'Mød professionelle på din karrierevej',
     'why.candidate.bullet2': 'Forbered dig til interviews og ansøgninger',
@@ -70,7 +78,6 @@ export const t: Record<Lang, Record<string, string>> = {
     'trust.headline': 'Transparens',
     'trust.sub': 'Du ved præcis hvad du betaler for.',
     'industries.headline': 'De industrier vi kender indefra',
-    'charity.headline': 'Samfundsansvar',
     'cta.headline': 'Hvad venter du på?',
     'cta.sub': 'Bliv en del af et netværk der åbner døre.',
     'cta.button': 'Find din professionelle',
@@ -131,6 +138,14 @@ export const t: Record<Lang, Record<string, string>> = {
     'nav.lang_toggle': 'DA',
     'nav.login': 'Log in',
 
+    // Footer
+    'footer.tagline': 'Career sessions with people who know.',
+    'footer.legal': 'Naetwork charges 15% platform fee (7.5% with donation to Kræftens Bekæmpelse). All payments processed securely via Stripe.',
+
+    // Charity
+    'charity.badge': 'Donates to Kræftens Bekæmpelse',
+    'charity.headline': 'Give back',
+
     // Legacy keys (sections not yet migrated)
     'why.candidate.bullet1': 'Prepare for the specific interview',
     'why.candidate.bullet2': 'Get your CV and LinkedIn reviewed by someone who screens candidates',
@@ -145,7 +160,6 @@ export const t: Record<Lang, Record<string, string>> = {
     'trust.headline': 'Transparency',
     'trust.sub': 'You know exactly what you are paying for.',
     'industries.headline': 'The industries we know from the inside',
-    'charity.headline': 'Give back',
     'cta.headline': 'Ready to take the next step?',
     'cta.sub': 'Find the professional that matches exactly what you need.',
     'cta.button': 'See all professionals',
