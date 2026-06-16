@@ -139,6 +139,8 @@ export const t: Record<Lang, Record<string, string>> = {
     'impact.allin_note': 'Den mest direkte måde at omsætte din erfaring til donation og impact.',
     'impact.allin_fee': 'Naetwork platform fee: 10%',
     'impact.kb_legal': 'Donationsmodel afventer juridisk og regnskabsmæssig afklaring.',
+    'why.label': 'Hvorfor Naetwork',
+    'why.body': 'Naetwork er ikke endnu et socialt netværk. Det er et sted, hvor erfaring bliver gjort tilgængelig for dem, der har brug for den. Kandidater får konkret sparring fra mennesker, der har prøvet vejen før. Professionelle kan bruge deres viden til at skabe reel impact. Og virksomheder kan opdage relevante kompetencer på en mere direkte måde.',
 
   },
 
@@ -280,6 +282,8 @@ export const t: Record<Lang, Record<string, string>> = {
     'impact.allin_note': 'The most direct way to turn your experience into donation and impact.',
     'impact.allin_fee': 'Naetwork platform fee: 10%',
     'impact.kb_legal': 'Donation model pending legal and accounting confirmation.',
+    'why.label': 'Why Naetwork',
+    'why.body': 'Naetwork is not another social network. It is a place where experience is made accessible to the people who need it. Candidates get practical support from people who have walked the path before. Professionals can use their knowledge to create real impact. And companies can discover relevant skills in a more direct way.',
 
   },
 };
