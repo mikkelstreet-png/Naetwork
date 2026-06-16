@@ -73,7 +73,7 @@ export default function ProfessionalsPage() {
                 <select
                   value={industry}
                   onChange={e => setIndustry(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-800"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"
                 >
                   {INDUSTRIES.map(i => <option key={i}>{i}</option>)}
                 </select>
@@ -85,7 +85,7 @@ export default function ProfessionalsPage() {
                 <select
                   value={sessionType}
                   onChange={e => setSessionType(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-green-800"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"
                 >
                   {SESSION_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
@@ -103,7 +103,7 @@ export default function ProfessionalsPage() {
                   step={100}
                   value={maxPrice}
                   onChange={e => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-green-800"
+                  className="w-full accent-indigo-600"
                 />
                 <div className="flex justify-between text-xs text-gray-400 mt-1">
                   <span>300</span><span>2.000</span>
@@ -116,7 +116,7 @@ export default function ProfessionalsPage() {
                   type="checkbox"
                   checked={charityOnly}
                   onChange={e => setCharityOnly(e.target.checked)}
-                  className="mt-0.5 accent-green-800"
+                  className="mt-0.5 accent-indigo-600"
                 />
                 <span className="text-sm text-gray-600 flex items-center gap-1.5">
                   <HeartIcon className="w-4 h-4 text-rose-500 flex-shrink-0" />
