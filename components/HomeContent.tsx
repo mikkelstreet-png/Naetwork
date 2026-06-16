@@ -1,11 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 
 
 export function HomeContent() {
-  const { lang } = useLanguage();
+  const { tr } = useLanguage();
   return (
     <>
       <style>{`
@@ -33,16 +32,16 @@ export function HomeContent() {
 
           <div className="animate-fade-up">
             <span className="inline-block text-xs font-semibold tracking-widest uppercase text-green-700 mb-10 border border-green-200 bg-green-50 px-3 py-1.5 rounded-full">
-              {t(lang, 'hero.badge')}
+              {tr('hero.label')}
             </span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none text-gray-950 mb-6 animate-fade-up delay-1">
-            {t(lang, 'hero.h1_1')}<br className="hidden md:block" />{' '}{t(lang, 'hero.h1_2')}
+            {tr('hero.h1')}
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mb-10 animate-fade-up delay-2">
-            {t(lang, 'hero.sub')}
+            {tr('hero.sub')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
@@ -50,13 +49,13 @@ export function HomeContent() {
               href="/find-professionel"
               className="inline-flex items-center justify-center px-8 py-4 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-base"
             >
-              {t(lang, 'hero.cta1')}
+              {tr('hero.cta_primary')}
             </Link>
             <Link
               href="/bliv-professionel"
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl border-2 border-gray-950 hover:bg-gray-50 transition-colors text-base"
             >
-              {t(lang, 'hero.cta2')}
+              {tr('hero.cta_secondary')}
             </Link>
           </div>
         </div>
@@ -81,10 +80,10 @@ export function HomeContent() {
       <section className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-pink-700 mb-4">
-            {t(lang, 'about.headline')}
+            {tr('about.label')}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-12">
-            {t(lang, 'about.tagline')}
+            {tr('about.h2')}
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -92,16 +91,16 @@ export function HomeContent() {
             <div className="bg-gray-950 text-white rounded-3xl p-10 md:p-14 flex flex-col justify-between min-h-[400px]">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-green-400 mb-6">
-                  {t(lang, 'why.candidate.title')}
+                  {tr('candidates.label')}
                 </p>
                 <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-6">
-                  {t(lang, 'why.candidate.body')}
+                  {tr('candidates.h2')}
                 </h3>
                 <ul className="space-y-3 mb-8">
                   {[
-                    t(lang, 'why.candidate.bullet1'),
-                    t(lang, 'why.candidate.bullet2'),
-                    t(lang, 'why.candidate.bullet3'),
+                    tr('why.candidate.bullet1'),
+                    tr('why.candidate.bullet2'),
+                    tr('why.candidate.bullet3'),
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-gray-300 text-sm leading-relaxed">
                       <span className="text-green-400 font-bold mt-0.5 shrink-0">→</span>
@@ -114,7 +113,7 @@ export function HomeContent() {
                 href="/find-professionel"
                 className="inline-flex items-center gap-2 text-white text-sm font-semibold border border-white/25 rounded-xl px-6 py-3 hover:bg-white/10 transition-colors w-fit"
               >
-                {t(lang, 'why.candidate.cta')}
+                {tr('candidates.cta')}
               </Link>
             </div>
 
@@ -122,16 +121,16 @@ export function HomeContent() {
             <div className="bg-green-800 text-white rounded-3xl p-10 md:p-14 flex flex-col justify-between min-h-[400px]">
               <div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-green-200 mb-6">
-                  {t(lang, 'why.professional.title')}
+                  {tr('professionals.label')}
                 </p>
                 <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-6">
-                  {t(lang, 'why.professional.body')}
+                  {tr('professionals.h2')}
                 </h3>
                 <ul className="space-y-3 mb-8">
                   {[
-                    t(lang, 'why.professional.bullet1'),
-                    t(lang, 'why.professional.bullet2'),
-                    t(lang, 'why.professional.bullet3'),
+                    tr('why.professional.bullet1'),
+                    tr('why.professional.bullet2'),
+                    tr('why.professional.bullet3'),
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-green-100 text-sm leading-relaxed">
                       <span className="text-green-300 font-bold mt-0.5 shrink-0">→</span>
@@ -144,7 +143,7 @@ export function HomeContent() {
                 href="/bliv-professionel"
                 className="inline-flex items-center gap-2 text-white text-sm font-semibold border border-white/25 rounded-xl px-6 py-3 hover:bg-white/10 transition-colors w-fit"
               >
-                {t(lang, 'why.professional.cta')}
+                {tr('professionals.cta')}
               </Link>
             </div>
           </div>
@@ -155,10 +154,10 @@ export function HomeContent() {
       <section className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-            {t(lang, 'sessions.headline')}
+            {tr('sessions.headline')}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-3">
-            {t(lang, 'sessions.sub')}
+            {tr('sessions.sub')}
           </h2>
           <p className="text-gray-600 leading-relaxed mb-12 max-w-xl">
             DKK 300–2.000 pr. session — prissat af den professionelle.
@@ -243,34 +242,23 @@ export function HomeContent() {
       <section className="py-24 md:py-32 bg-white border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-            {t(lang, 'how.headline')}
+            {tr('how.label')}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-16">
-            {t(lang, 'how.tagline')}
+            {tr('how.tagline')}
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-12 md:gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              {
-                num: '01',
-                title: '{t(lang, 'cta.button')}',
-                desc: 'Browse profiler, filtrer på industri og sessiontype. Find den rette match.',
-              },
-              {
-                num: '02',
-                title: 'Book og betal',
-                desc: 'Vælg tidspunkt, betal sikkert. DKK 300–2.000. Ingen skjulte gebyrer.',
-              },
-              {
-                num: '03',
-                title: 'Mød op og ryk dig',
-                desc: '45 min. Video eller fysisk. Ingen bullshit.',
-              },
+              { num: '01', titleKey: 'how.step1_title', bodyKey: 'how.step1_body' },
+              { num: '02', titleKey: 'how.step2_title', bodyKey: 'how.step2_body' },
+              { num: '03', titleKey: 'how.step3_title', bodyKey: 'how.step3_body' },
+              { num: '04', titleKey: 'how.step4_title', bodyKey: 'how.step4_body' },
             ].map((step) => (
               <div key={step.num} className="flex flex-col gap-4">
                 <span className="text-5xl font-black text-green-700 leading-none">{step.num}</span>
-                <h3 className="text-xl font-bold text-gray-950">{step.title}</h3>
-                <p className="text-gray-600 leading-relaxed text-sm">{step.desc}</p>
+                <h3 className="text-xl font-bold text-gray-950">{tr(step.titleKey)}</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">{tr(step.bodyKey)}</p>
               </div>
             ))}
           </div>
@@ -281,10 +269,10 @@ export function HomeContent() {
       <section className="py-24 md:py-32 bg-gray-50 border-t-2 border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-            {t(lang, 'trust.headline')}
+            {tr('trust.headline')}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-12">
-            {t(lang, 'trust.sub')}
+            {tr('trust.sub')}
           </h2>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -303,7 +291,7 @@ export function HomeContent() {
               </p>
             </div>
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
-              <p className="text-4xl font-black text-gray-950 mb-1">45 min</p>
+              <p className="text-4xl font-black text-gray-950 mb-1">60 min</p>
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Pr. session</p>
               <p className="text-gray-600 leading-relaxed text-sm">
                 Fokuseret, konkret, no-nonsense. Ingen small talk.
@@ -319,7 +307,7 @@ export function HomeContent() {
       <section className="py-24 md:py-32 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-            {t(lang, 'industries.headline')}
+            {tr('industries.headline')}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-6">
             Karrierevejen i Banking, Private Equity, AI og Management Consulting er sjældent gennemsigtig.
@@ -363,7 +351,7 @@ export function HomeContent() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="rounded-3xl p-8 md:p-16" style={{ background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%)' }}>
             <p className="text-xs font-semibold tracking-widest uppercase text-green-700 mb-4">
-              {t(lang, 'charity.headline')}
+              {tr('charity.headline')}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-4">
               Vi donerer til dem der kæmper.
@@ -382,23 +370,23 @@ export function HomeContent() {
       <section className="py-32 text-center bg-gray-950">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight leading-none mb-4">
-            {t(lang, 'cta.headline')}
+            {tr('cta.headline')}
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed mb-12">
-            {t(lang, 'cta.sub')}
+            {tr('cta.sub')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/find-professionel"
               className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl hover:bg-gray-100 transition-colors text-base"
             >
-              {t(lang, 'cta.button')}
+              {tr('cta.button')}
             </Link>
             <Link
               href="/bliv-professionel"
               className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-green-400 font-semibold rounded-xl border-2 border-green-700 hover:bg-green-950 transition-colors text-base"
             >
-              Bliv professionel
+              {tr('professionals.cta')}
             </Link>
           </div>
         </div>
