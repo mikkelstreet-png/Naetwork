@@ -1,129 +1,237 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import type { User } from '@supabase/supabase-js';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase';
-import { StarIcon } from '@/components/icons/StarIcon';
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import Link from 'next/link'
+import BookingDrawer from '@/components/BookingDrawer'
 
-type DbRow = Record<string, unknown>;
+interface Professional {
+  id: string
+  name: string
+  title: string
+  company: string
+  industries: string[]
+  price: number
+  bio: string
+  focus_areas?: string[]
+}
 
-const SESSION_TYPE_LABELS: Record<string, string> = {
-  mock_interview: 'Mock Interview',
-  cv_review: 'CV & LinkedIn',
-  informal_chat: 'Uformel 1:1',
-  career_advice: 'Karriereraadgivning',
-};
+const DEMO_PROFESSIONALS: Record<string, Professional> = {
+  'demo-1': {
+    id: 'demo-1',
+    name: 'Mads Christensen',
+    title: 'Associate Director',
+    company: 'Goldman Sachs',
+    industries: ['Banking', 'Private Equity'],
+    price: 500,
+    bio: 'Tidligere Associate Director med 8 aars erfaring i M&A og kapitalmarkeder. Jeg hjaelper dig med at forberede dig til interviews og forstaae, hvad der kraeves for at komme ind i investment banking. Jeg har siddet i interview-paneler og ved praecis, hvad der skiller de kandidater ad, der faar tilbud, fra dem der ikke goer.',
+    focus_areas: ['Interview forberedelse', 'CV review', 'Karriereraagivning', 'Case-traening']
+  },
+  'demo-2': {
+    id: 'demo-2',
+    name: 'Sofie Larsen',
+    title: 'Senior Consultant',
+    company: 'McKinsey & Company',
+    industries: ['Management Consulting'],
+    price: 450,
+    bio: 'Senior Consultant med fokus paa strategi og organisationsudvikling. Har hjulpet over 30 kandidater med case-forberedelse og karriereplan. Jeg tilbyder strukturerede sessioner, der er skraeddersyet til din baggrund og dine maal.',
+    focus_areas: ['Case-forberedelse', 'Karriereplan', 'Networking tips', 'Loenforhandling']
+  },
+  'demo-3': {
+    id: 'demo-3',
+    name: 'Emil Andersen',
+    title: 'AI Product Lead',
+    company: 'Google DeepMind',
+    industries: ['AI'],
+    price: 400,
+    bio: 'Produktleder med baggrund i maskinlaering og AI-strategi. Tidligere engineer, nu fokuseret paa at guide folk ind i AI-industrien. Jeg hjaelper dig med at navigere i AI-jobmarkedet og finde den rette vej, uanset om du kommer fra tech eller ej.',
+    focus_areas: ['AI karrierevej', 'Portfolio review', 'Teknisk forberedelse', 'Produktstrategi']
+  }
+}
 
-export default function ProfessionalProfilePage() {
-  const { id } = useParams<{ id: string }>();
-  const [professional, setProfessional] = useState<DbRow | null>(null);
-  const [reviews, setReviews] = useState<DbRow[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function ProfessionalDetailPage() {
+  const params = useParams()
+  const id = params?.id as string
+  const [professional, setProfessional] = useState<Professional | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [locale, setLocale] = useState<'da' | 'en'>('da')
+
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
-    if (!id) return;
-    const supabase = createClient();
-    Promise.all([
-      supabase.from('professionals').select('*').eq('id', id).single(),
-      supabase.from('reviews').select('*').eq('professional_id', id).order('created_at', { ascending: false }).limit(5),
-      supabase.auth.getUser(),
-    ]).then(([{ data: prof }, { data: revs }, { data: { user: u } }]) => {
-      setProfessional(prof as DbRow | null);
-      setReviews((revs as DbRow[]) || []);
-      setUser(u);
-      setLoading(false);
-    });
-  }, [id]);
+    if (!id) return
 
-  if (loading) return <div className="pt-32 text-center text-gray-400">Indlaeser...</div>;
-  if (!professional) return <div className="pt-32 text-center text-gray-500">Profil ikke fundet.</div>;
+    if (id.startsWith('demo-')) {
+      setProfessional(DEMO_PROFESSIONALS[id] ?? null)
+      setLoading(false)
+      return
+    }
 
-  const initials = (professional.name as string).split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
-  const sessionTypes = professional.session_types as string[];
-  const avgRating = reviews.length ? (reviews.reduce((s, r) => s + (r.rating as number), 0) / reviews.length).toFixed(1) : null;
+    async function fetchProfessional() {
+      const { data } = await supabase
+        .from('professional_profiles')
+        .select(`
+          id,
+          title,
+          company,
+          bio,
+          price_per_session,
+          industries,
+          focus_areas,
+          profiles!inner(full_name)
+        `)
+        .eq('id', id)
+        .single()
+
+      if (data) {
+        const profile = (data.profiles as { full_name?: string } | null)
+        setProfessional({
+          id: data.id,
+          name: profile?.full_name ?? '',
+          title: data.title ?? '',
+          company: data.company ?? '',
+          industries: data.industries ?? [],
+          price: data.price_per_session ?? 0,
+          bio: data.bio ?? '',
+          focus_areas: data.focus_areas ?? [],
+        })
+      }
+      setLoading(false)
+    }
+    fetchProfessional()
+  }, [id, supabase])
+
+  const t = {
+    back: locale === 'da' ? 'Tilbage til oversigt' : 'Back to overview',
+    perSession: locale === 'da' ? '/ session' : '/ session',
+    sessionTypes: locale === 'da' ? 'Sessionstyper' : 'Session types',
+    availability: locale === 'da' ? 'Se ledige tider' : 'View availability',
+    bookCta: locale === 'da' ? 'Book 60 min session' : 'Book 60 min session',
+    duration: '60 min',
+    loading: locale === 'da' ? 'Indlaaser...' : 'Loading...',
+    notFound: locale === 'da' ? 'Profil ikke fundet' : 'Profile not found',
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400">{t.loading}</p>
+      </div>
+    )
+  }
+
+  if (!professional) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400 mb-4">{t.notFound}</p>
+          <Link href="/professionals" className="text-indigo-600 hover:underline text-sm">
+            {t.back}
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <main className="pt-16">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <Link href="/professionals" className="text-sm text-gray-400 hover:text-gray-700 mb-8 inline-block">tilbageknap Alle professionelle</Link>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
-            <div className="flex items-start gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-green-800 text-white flex items-center justify-center text-xl font-bold flex-shrink-0">
-                {initials}
-              </div>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="text-2xl font-bold text-gray-900">{professional.name as string}</h1>
-                  {professional.donates_to_charity && (
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200">Donerer til Kraeftens Bekaempelse</span>
-                  )}
-                </div>
-                <p className="text-gray-500 mt-1">{professional.title as string}{professional.company ? ` hoskoven ${professional.company as string}` : ''}</p>
-                {avgRating && (
-                  <div className="flex items-center gap-1 mt-2">
-                    <StarIcon className="w-4 h-4 text-amber-400 fill-amber-400" />
-                    <span className="text-sm font-medium text-gray-700">{avgRating}</span>
-                    <span className="text-sm text-gray-400">({reviews.length} anmeldelser)</span>
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* Top nav */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/professionals"
+            className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1"
+          >
+            <span>&larr;</span>
+            <span>{t.back}</span>
+          </Link>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setLocale('da')}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'da' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}
+            >
+              DA
+            </button>
+            <button
+              onClick={() => setLocale('en')}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'en' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}
+            >
+              EN
+            </button>
+          </div>
+        </div>
 
-            {professional.bio && (
-              <div>
-                <h2 className="font-semibold text-gray-900 mb-3">Om mig</h2>
-                <p className="text-gray-600 leading-relaxed">{professional.bio as string}</p>
-              </div>
-            )}
-
+        {/* Profile card */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-8 mb-5">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="font-semibold text-gray-900 mb-3">Tilbyder</h2>
+              <h1 className="text-2xl font-bold text-gray-900">{professional.name}</h1>
+              <p className="text-gray-500 mt-0.5">{professional.title} &middot; {professional.company}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xl font-bold text-gray-900">DKK {professional.price}</p>
+              <p className="text-sm text-gray-400">{t.perSession}</p>
+            </div>
+          </div>
+
+          {/* Industry tags */}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {professional.industries.map((ind) => (
+              <span
+                key={ind}
+                className="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-medium"
+              >
+                {ind}
+              </span>
+            ))}
+          </div>
+
+          {/* Bio */}
+          <p className="text-gray-700 leading-relaxed mb-6">{professional.bio}</p>
+
+          {/* Focus areas */}
+          {professional.focus_areas && professional.focus_areas.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.sessionTypes}</h3>
               <div className="flex flex-wrap gap-2">
-                {sessionTypes.map(t => (
-                  <span key={t} className="text-sm font-medium px-3 py-1.5 rounded-xl bg-gray-100 text-gray-700">{SESSION_TYPE_LABELS[t] || t}</span>
+                {professional.focus_areas.map((area) => (
+                  <span
+                    key={area}
+                    className="bg-gray-50 text-gray-700 text-sm px-3 py-1 rounded-lg border border-gray-100"
+                  >
+                    {area}
+                  </span>
                 ))}
               </div>
             </div>
+          )}
 
-            {reviews.length > 0 && (
-              <div>
-                <h2 className="font-semibold text-gray-900 mb-4">Anmeldelser</h2>
-                <div className="space-y-4">
-                  {reviews.map((r, i) => (
-                    <div key={i} className="border border-gray-100 rounded-2xl p-4">
-                      <div className="flex items-center gap-1 mb-2">
-                        {Array.from({ length: r.rating as number }).map((_, j) => (
-                          <StarIcon key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                        ))}
-                      </div>
-                      {r.comment && <p className="text-sm text-gray-600">{r.comment as string}</p>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+          {/* Availability placeholder */}
+          <div className="bg-gray-50 rounded-xl p-4 mb-6">
+            <p className="text-sm text-gray-500 text-center">{t.availability}</p>
           </div>
 
-          <div className="sticky top-20">
-            <div className="border border-gray-100 rounded-2xl p-6 space-y-4">
-              <div className="text-2xl font-bold text-gray-900">DKK {(professional.price_dkk as number).toLocaleString('da-DK')}</div>
-              <p className="text-sm text-gray-400">pr. session</p>
-              {professional.donates_to_charity && (
-                <p className="text-xs text-rose-700 bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">Platformsgebyr reduceret til 7,5 % naar professionel donerer</p>
-              )}
-              <Link href={user ? `/professionals/${id}/book` : '/login'} className="block w-full text-center bg-green-800 text-white font-medium py-3 rounded-xl hover:bg-green-900 transition-colors">
-                Book session
-              </Link>
-              <p className="text-xs text-gray-400 text-center">Ingen betaling nu</p>
-            </div>
-          </div>
+          {/* Book CTA */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="w-full py-3.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-base"
+          >
+            {t.bookCta}
+          </button>
         </div>
       </div>
-    </main>
-  );
+
+      {/* Booking drawer */}
+      <BookingDrawer
+        professional={professional}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        locale={locale}
+      />
+    </div>
+  )
 }
