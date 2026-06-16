@@ -1,165 +1,236 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase';
-import { ProfessionalCard, type ProfessionalData } from '@/components/ProfessionalCard';
-import { HeartIcon } from '@/components/icons/HeartIcon';
+import { useState, useEffect } from 'react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import Link from 'next/link'
+import BookingDrawer from '@/components/BookingDrawer'
 
-const INDUSTRIES = [
-  'Alle brancher',
-  'Banking',
-  'Private Equity',
-  'AI',
-  'Management Consulting',
-];
+type Industry = 'Alle brancher' | 'Banking' | 'Private Equity' | 'AI' | 'Management Consulting'
 
-const SESSION_TYPE_OPTIONS = [
-  { value: '', label: 'Alle session-typer' },
-  { value: 'mock_interview', label: 'Mock Interview' },
-  { value: 'cv_review', label: 'CV & LinkedIn' },
-  { value: 'informal_chat', label: 'Uformel 1:1' },
-  { value: 'career_advice', label: 'Karriereraadgivning' },
-];
+interface ProfessionalCard {
+  id: string
+  name: string
+  title: string
+  company: string
+  industries: string[]
+  price: number
+  bio: string
+}
+
+const DEMO_PROFESSIONALS: ProfessionalCard[] = [
+  {
+    id: 'demo-1',
+    name: 'Mads Christensen',
+    title: 'Associate Director',
+    company: 'Goldman Sachs',
+    industries: ['Banking', 'Private Equity'],
+    price: 500,
+    bio: 'Tidligere Associate Director med 8 aars erfaring i M&A og kapitalmarkeder. Jeg hjaelper dig med at forberede dig til interviews og forstaae, hvad der kraeves for at komme ind i investment banking.'
+  },
+  {
+    id: 'demo-2',
+    name: 'Sofie Larsen',
+    title: 'Senior Consultant',
+    company: 'McKinsey & Company',
+    industries: ['Management Consulting'],
+    price: 450,
+    bio: 'Senior Consultant med fokus paa strategi og organisationsudvikling. Har hjulpet over 30 kandidater med case-forberedelse og karriereplan.'
+  },
+  {
+    id: 'demo-3',
+    name: 'Emil Andersen',
+    title: 'AI Product Lead',
+    company: 'Google DeepMind',
+    industries: ['AI'],
+    price: 400,
+    bio: 'Produktleder med baggrund i maskinlaering og AI-strategi. Tidligere engineer, nu fokuseret paa at guide folk ind i AI-industrien.'
+  },
+]
+
+const INDUSTRIES: Industry[] = ['Alle brancher', 'Banking', 'Private Equity', 'AI', 'Management Consulting']
 
 export default function ProfessionalsPage() {
-  const [professionals, setProfessionals] = useState<ProfessionalData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [industry, setIndustry] = useState('Alle brancher');
-  const [sessionType, setSessionType] = useState('');
-  const [maxPrice, setMaxPrice] = useState(2000);
-  const [charityOnly, setCharityOnly] = useState(false);
+  const [locale, setLocale] = useState<'da' | 'en'>('da')
+  const [industryFilter, setIndustryFilter] = useState<Industry>('Alle brancher')
+  const [search, setSearch] = useState('')
+  const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>([])
+  const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
+
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from('professionals')
-      .select('*')
-      .eq('available', true)
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setProfessionals((data as ProfessionalData[]) ?? []);
-        setLoading(false);
-      });
-  }, []);
+    async function fetchProfessionals() {
+      const { data } = await supabase
+        .from('professional_profiles')
+        .select(`
+          id,
+          title,
+          company,
+          bio,
+          price_per_session,
+          industries,
+          profiles!inner(full_name)
+        `)
+        .eq('visibility', 'published')
+        .eq('approval_status', 'approved')
 
-  const filtered = professionals.filter(p => {
-    if (industry !== 'Alle brancher' && p.industry !== industry) return false;
-    if (sessionType && !p.session_types.includes(sessionType)) return false;
-    if (p.price_dkk > maxPrice) return false;
-    if (charityOnly && !p.donates_to_charity) return false;
-    return true;
-  });
+      if (data && data.length > 0) {
+        const mapped = data.map((p: Record<string, unknown>) => {
+          const profile = p.profiles as { full_name?: string } | null
+          return {
+            id: p.id as string,
+            name: profile?.full_name ?? '',
+            title: p.title as string ?? '',
+            company: p.company as string ?? '',
+            industries: (p.industries as string[]) ?? [],
+            price: (p.price_per_session as number) ?? 0,
+            bio: (p.bio as string) ?? '',
+          }
+        })
+        setDbProfessionals(mapped)
+      }
+    }
+    fetchProfessionals()
+  }, [supabase])
+
+  const allProfessionals = dbProfessionals.length > 0 ? dbProfessionals : DEMO_PROFESSIONALS
+
+  const filtered = allProfessionals.filter((p) => {
+    const matchesIndustry =
+      industryFilter === 'Alle brancher' || p.industries.includes(industryFilter)
+    const searchLower = search.toLowerCase()
+    const matchesSearch =
+      !search ||
+      p.name.toLowerCase().includes(searchLower) ||
+      p.title.toLowerCase().includes(searchLower) ||
+      p.company.toLowerCase().includes(searchLower)
+    return matchesIndustry && matchesSearch
+  })
+
+  const t = {
+    heading: locale === 'da' ? 'Find en professionel' : 'Find a professional',
+    subheading: locale === 'da'
+      ? 'Book en 60-minutters session med erfarne professionelle'
+      : 'Book a 60-minute session with experienced professionals',
+    searchPlaceholder: locale === 'da' ? 'Soeg paa navn eller titel...' : 'Search by name or title...',
+    bookCta: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
+    perSession: locale === 'da' ? '/ session' : '/ session',
+    noResults: locale === 'da' ? 'Ingen resultater' : 'No results',
+  }
 
   return (
-    <main className="pt-16">
-      <div className="max-w-6xl mx-auto px-6 py-12">
-
-        {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Find en professionel</h1>
-          <p className="text-gray-500">Book en session med en erfaren professionel inden for din branche.</p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-
-          {/* Filters */}
-          <aside className="lg:w-64 flex-shrink-0">
-            <div className="border border-gray-100 rounded-2xl p-5 space-y-5 sticky top-20">
-              <div className="font-semibold text-sm text-gray-900">Filtrering</div>
-
-              {/* Industry */}
-              <div>
-                <label className="text-xs text-gray-500 font-medium block mb-2">Branche</label>
-                <select
-                  value={industry}
-                  onChange={e => setIndustry(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"
-                >
-                  {INDUSTRIES.map(i => <option key={i}>{i}</option>)}
-                </select>
-              </div>
-
-              {/* Session type */}
-              <div>
-                <label className="text-xs text-gray-500 font-medium block mb-2">Session-type</label>
-                <select
-                  value={sessionType}
-                  onChange={e => setSessionType(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-600"
-                >
-                  {SESSION_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-              </div>
-
-              {/* Max price */}
-              <div>
-                <label className="text-xs text-gray-500 font-medium block mb-2">
-                  Max pris: DKK {maxPrice}
-                </label>
-                <input
-                  type="range"
-                  min={300}
-                  max={2000}
-                  step={100}
-                  value={maxPrice}
-                  onChange={e => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-indigo-600"
-                />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                  <span>300</span><span>2.000</span>
-                </div>
-              </div>
-
-              {/* Charity only */}
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={charityOnly}
-                  onChange={e => setCharityOnly(e.target.checked)}
-                  className="mt-0.5 accent-indigo-600"
-                />
-                <span className="text-sm text-gray-600 flex items-center gap-1.5">
-                  <HeartIcon className="w-4 h-4 text-rose-500 flex-shrink-0" />
-                  Donerer til Kraeftens Bekaempelse
-                </span>
-              </label>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{t.heading}</h1>
+              <p className="text-gray-500 mt-1">{t.subheading}</p>
             </div>
-          </aside>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLocale('da')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'da' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                DA
+              </button>
+              <button
+                onClick={() => setLocale('en')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'en' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
 
-          {/* Results */}
-          <div className="flex-1">
-            {loading ? (
-              <div className="grid sm:grid-cols-2 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="border border-gray-100 rounded-2xl p-6 animate-pulse">
-                    <div className="flex gap-4 mb-4">
-                      <div className="w-14 h-14 rounded-full bg-gray-100" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gray-100 rounded w-3/4" />
-                        <div className="h-3 bg-gray-100 rounded w-1/2" />
-                      </div>
-                    </div>
-                    <div className="h-3 bg-gray-100 rounded mb-2" />
-                    <div className="h-3 bg-gray-100 rounded w-2/3" />
-                  </div>
-                ))}
-              </div>
-            ) : filtered.length === 0 ? (
-              <div className="text-center py-16 text-gray-400">
-                <p className="text-lg font-medium mb-2">Ingen professionelle fundet</p>
-                <p className="text-sm">Proev at justere dine filtre.</p>
-              </div>
-            ) : (
-              <>
-                <p className="text-sm text-gray-400 mb-4">{filtered.length} professionelle</p>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {filtered.map(p => <ProfessionalCard key={p.id} professional={p} />)}
-                </div>
-              </>
-            )}
+          {/* Filter bar */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+            <div className="flex gap-2 flex-wrap">
+              {INDUSTRIES.map((ind) => (
+                <button
+                  key={ind}
+                  onClick={() => setIndustryFilter(ind)}
+                  className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${
+                    industryFilter === ind
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-400 hover:text-indigo-600'
+                  }`}
+                >
+                  {ind}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </main>
-  );
+
+      {/* Cards grid */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {filtered.length === 0 ? (
+          <p className="text-center text-gray-400 py-16">{t.noResults}</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((pro) => (
+              <div
+                key={pro.id}
+                className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col"
+              >
+                {/* Name + company */}
+                <div className="mb-3">
+                  <h2 className="text-base font-semibold text-gray-900">{pro.name}</h2>
+                  <p className="text-sm text-gray-500">{pro.title} &middot; {pro.company}</p>
+                </div>
+
+                {/* Industry tags */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {pro.industries.map((ind) => (
+                    <span
+                      key={ind}
+                      className="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full"
+                    >
+                      {ind}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Bio excerpt */}
+                <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-1">{pro.bio}</p>
+
+                {/* Price + CTA */}
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                  <span className="text-sm font-semibold text-gray-900">
+                    DKK {pro.price} <span className="text-gray-400 font-normal">{t.perSession}</span>
+                  </span>
+                  <button
+                    onClick={() => setBookTarget(pro)}
+                    className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    {t.bookCta}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Booking drawer */}
+      {bookTarget && (
+        <BookingDrawer
+          professional={bookTarget}
+          open={!!bookTarget}
+          onClose={() => setBookTarget(null)}
+          locale={locale}
+        />
+      )}
+    </div>
+  )
 }
