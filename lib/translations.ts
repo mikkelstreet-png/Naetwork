@@ -40,14 +40,14 @@ export const t: Record<Lang, Record<string, string>> = {
 
     // Pricing
     'pricing.label': 'Priser og donation',
-    'pricing.intro': 'Naetwork bygger pÃ¥ en enkel model: Kandidaten betaler for sessionen, og den professionelle vÃ¦lger selv, hvor stor en del af belÃ¸bet der skal doneres.',
-    'pricing.model1_title': '1. DonÃ©r halvdelen',
-    'pricing.model1_body': 'Kandidaten betaler det fulde belÃ¸b for sessionen. Den professionelle beholder halvdelen af belÃ¸bet, mens den anden halvdel doneres til det velgÃ¸rende formÃ¥l. Ved denne model tager Naetwork et platform fee pÃ¥ 20%.',
-    'pricing.model2_title': '2. DonÃ©r hele belÃ¸bet',
-    'pricing.model2_body': 'Kandidaten betaler det fulde belÃ¸b for sessionen. Den professionelle donerer hele belÃ¸bet til det velgÃ¸rende formÃ¥l. Ved denne model tager Naetwork et reduceret platform fee pÃ¥ 10%.',
+    'pricing.intro': 'Naetwork bygger på en enkel model: Kandidaten betaler for sessionen, og den professionelle vælger selv, hvor stor en del af beløbet der skal doneres.',
+    'pricing.model1_title': '1. Donér halvdelen',
+    'pricing.model1_body': 'Kandidaten betaler det fulde beløb for sessionen. Den professionelle beholder halvdelen af beløbet, mens den anden halvdel doneres til det velgørende formål. Ved denne model tager Naetwork et platform fee på 20%.',
+    'pricing.model2_title': '2. Donér hele beløbet',
+    'pricing.model2_body': 'Kandidaten betaler det fulde beløb for sessionen. Den professionelle donerer hele beløbet til det velgørende formål. Ved denne model tager Naetwork et reduceret platform fee på 10%.',
     'pricing.why_title': 'Hvorfor denne model?',
-    'pricing.why_body': 'Modellen gÃ¸r det muligt for kandidater at fÃ¥ konkret sparring fra dygtige professionelle, samtidig med at en betydelig del af belÃ¸bet gÃ¥r til et godt formÃ¥l. Naetworks platform fee bruges til at dÃ¦kke drift, betalingshÃ¥ndtering, teknisk vedligeholdelse og administration.',
-    'pricing.gated_notice': 'Betalingsintegration er under opsÃ¦tning.',
+    'pricing.why_body': 'Modellen gør det muligt for kandidater at få konkret sparring fra dygtige professionelle, samtidig med at en betydelig del af beløbet går til et godt formål. Naetworks platform fee bruges til at dække drift, betalingshåndtering, teknisk vedligeholdelse og administration.',
+    'pricing.gated_notice': 'Betalingsintegration er under opsætning.',
 
     // FAQ
     'faq.label': 'Ofte stillede spÃÂ¸rgsmÃÂ¥l',
