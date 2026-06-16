@@ -24,74 +24,77 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
 
-        {/* Brand â€” text only */}
-        <Link href="/" className="font-bold text-xl tracking-tight text-gray-950 flex-shrink-0">
+        {/* Brand - text only */}
+        <Link href="/" className="flex-shrink-0 font-bold text-lg tracking-tight text-gray-950">
           Naetwork
         </Link>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-5 flex-1">
           {NAV_LINKS.map(link => (
             <a
               key={link.key}
               href={link.href}
-              className="text-xs text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors whitespace-nowrap"
             >
               {tr(link.key)}
             </a>
           ))}
         </div>
 
-        {/* Right: lang toggle + CTA + hamburger */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        {/* Right: lang toggle + login + CTA + hamburger */}
+        <div className="flex items-center gap-3">
           <LanguageToggle />
+          <Link
+            href="/login"
+            className="hidden sm:block text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            {tr('nav.login')}
+          </Link>
           <a
             href="#contact"
-            className="hidden sm:inline-flex items-center justify-center bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors"
+            className="hidden sm:inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors"
           >
             {tr('nav.book')}
           </a>
+          {/* Hamburger */}
           <button
-            className="lg¢hi‚	ån&ð–Ü¢rounded-lg hover:bg-gray-100 transition-colors"
             onClick={() => setMenuOpen(o => !o)}
-            aria-label="Toggle menu"
+            className="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            aria-label="Menu"
           >
-            {menuOpen ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            )}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {menuOpen
+                ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+                : <><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></>
+              }
+            </svg>
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white px-6 py-4 flex flex-col gap-1">
+        <div className="lg:hidden border-t border-gray-100 bg-white px-6 py-4 space-y-1">
           {NAV_LINKS.map(link => (
             <a
               key={link.key}
               href={link.href}
-              className="text-sm text-gray-600 hover:text-gray-900 py-2 transition-colors"
               onClick={() => setMenuOpen(false)}
+              className="block py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
               {tr(link.key)}
             </a>
           ))}
-          <a
-            href="#contact"
-            className="mt-3 inline-flex items-center justify-center bg-indigo-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors"
-            onClick={() => setMenuOpen(false)}
-          >
-            {tr('nav.book')}
-          </a>
+          <div className="pt-3 border-t border-gray-100 mt-3">
+            <a
+              href="#contact"
+              onClick={() => setMenuOpen(false)}
+              className="block w-full text-center py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors"
+            >
+              {tr('nav.book')}
+            </a>
+          </div>
         </div>
       )}
     </nav>
