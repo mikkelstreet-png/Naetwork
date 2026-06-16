@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 import { LanguageToggle } from './LanguageToggle';
 
 export function Navbar() {
-  const { lang } = useLanguage();
+  const { tr } = useLanguage();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
@@ -27,10 +26,10 @@ export function Navbar() {
         {/* Left nav */}
         <div className="hidden md:flex items-center gap-6 flex-1">
           <Link href="/professionals" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            {t(lang, 'nav.find')}
+            {tr('nav.candidates')}
           </Link>
           <Link href="/professional/signup" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            {t(lang, 'nav.become')}
+            {tr('nav.professionals')}
           </Link>
         </div>
 
@@ -38,13 +37,13 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <LanguageToggle />
           <Link href="/login" className="hidden sm:block text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            {t(lang, 'nav.login')}
+            {tr('nav.login')}
           </Link>
           <Link
             href="/professionals"
             className="bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-green-900 transition-colors"
           >
-            {t(lang, 'nav.book')}
+            {tr('nav.book')}
           </Link>
         </div>
       </div>
