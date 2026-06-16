@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import BookingDrawer from '@/components/BookingDrawer'
 
@@ -54,6 +55,7 @@ export default function ProfessionalsPage() {
   const [search, setSearch] = useState('')
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>([])
   const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const supabase = createClient()
 
@@ -106,10 +108,12 @@ export default function ProfessionalsPage() {
     bookCta: 'Book 60 min',
     perSession: '/ session',
     noResults: locale === 'da' ? 'Ingen resultater' : 'No results',
+    readMore: locale === 'da' ? 'Læs mere →' : 'Read more →',
+    showLess: locale === 'da' ? 'Vis mindre ↑' : 'Show less ↑',
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
           <div className="flex items-center justify-between mb-6">
@@ -150,26 +154,45 @@ export default function ProfessionalsPage() {
           <p className="text-center text-gray-400 py-16">{t.noResults}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((pro) => (
-              <div key={pro.id} className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col">
-                <div className="mb-3">
-                  <h2 className="text-base font-semibold text-gray-900">{pro.name}</h2>
-                  <p className="text-sm text-gray-500">{pro.title} &middot; {pro.company}</p>
+            {filtered.map((pro) => {
+              const isExpanded = expandedId === pro.id
+              return (
+                <div key={pro.id} className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow flex flex-col relative">
+                  <Link
+                    href={`/professionals/${pro.id}`}
+                    className="absolute inset-0 rounded-2xl"
+                    aria-label={`Se profil for ${pro.name}`}
+                  />
+                  <div className="mb-3 relative z-10">
+                    <h2 className="text-base font-semibold text-gray-900">{pro.name}</h2>
+                    <p className="text-sm text-gray-500">{pro.title} &middot; {pro.company}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mb-3 relative z-10">
+                    {pro.industries.map((ind) => (
+                      <span key={ind} className="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full">{ind}</span>
+                    ))}
+                  </div>
+                  <div className="mb-4 flex-1 relative z-10">
+                    <p className={`text-sm text-gray-600 ${isExpanded ? '' : 'line-clamp-3'}`}>{pro.bio}</p>
+                    <button
+                      onClick={(e) => { e.preventDefault(); setExpandedId(isExpanded ? null : pro.id) }}
+                      className="mt-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                    >
+                      {isExpanded ? t.showLess : t.readMore}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50 relative z-10">
+                    <span className="text-sm font-semibold text-gray-900">DKK {pro.price} <span className="text-gray-400 font-normal">{t.perSession}</span></span>
+                    <button
+                      onClick={(e) => { e.preventDefault(); setBookTarget(pro) }}
+                      className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors relative z-20"
+                    >
+                      {t.bookCta}
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {pro.industries.map((ind) => (
-                    <span key={ind} className="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full">{ind}</span>
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600 mb-4 flex-1 overflow-hidden" style={{display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{pro.bio}</p>
-                <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
-                  <span className="text-sm font-semibold text-gray-900">DKK {pro.price} <span className="text-gray-400 font-normal">{t.perSession}</span></span>
-                  <button onClick={() => setBookTarget(pro)} className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
-                    {t.bookCta}
-                  </button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
