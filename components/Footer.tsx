@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 
 export function Footer() {
-  const { lang } = useLanguage();
+  const { tr } = useLanguage();
 
   return (
     <footer className="border-t border-gray-100 bg-white mt-24">
@@ -14,7 +13,7 @@ export function Footer() {
           {/* Brand */}
           <div className="max-w-xs">
             <div className="font-semibold text-gray-900 text-lg mb-2">Naetwork</div>
-            <p className="text-sm text-gray-500">{t(lang, 'footer.tagline')}</p>
+            <p className="text-sm text-gray-500">{tr('footer.tagline')}</p>
           </div>
 
           {/* Links */}
@@ -35,7 +34,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-gray-100">
-          <p className="text-xs text-gray-400">{t(lang, 'footer.legal')}</p>
+          <p className="text-xs text-gray-400">{tr('footer.legal')}</p>
           <p className="text-xs text-gray-400 mt-1">&copy; {new Date().getFullYear()} Naetwork</p>
         </div>
       </div>
