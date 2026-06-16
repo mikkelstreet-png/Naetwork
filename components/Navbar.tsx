@@ -46,6 +46,9 @@ export function Navbar() {
               <Link href="/profil" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Min profil
               </Link>
+              <Link href="/profil/bookings" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                Mine bookinger
+              </Link>
               <Link href="/book" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                 Book session
               </Link>
@@ -80,6 +83,7 @@ export function Navbar() {
           {user ? (
             <>
               <Link href="/profil" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Min profil</Link>
+              <Link href="/profil/bookings" className="block text-sm text-gray-600 hover:text-gray-900 py-2" onClick={() => setMenuOpen(false)}>Mine bookinger</Link>
               <button onClick={handleSignOut} className="block text-sm text-gray-400 hover:text-gray-700 py-2 w-full text-left">Log ud</button>
             </>
           ) : (
