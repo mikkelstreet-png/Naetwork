@@ -5,38 +5,38 @@ export const t: Record<Lang, Record<string, string>> = {
     // Hero
     'hero.label': 'Karrieresparring med mening.',
     'hero.h1': 'Din adgang til meningsfuld karrieresparring',
-    'hero.sub': 'FÃÂ¥ konkret og ÃÂ¦rlig karrieresparring fra en person med reel erfaring, samtidig med at professionelle fÃÂ¥r en meningsfuld mÃÂ¥de at styrke deres mentor-, ledelses- og rÃÂ¥dgivningskompetencer.',
+    'hero.sub': 'Få konkret og ærlig karrieresparring fra en person med reel erfaring, samtidig med at professionelle får en meningsfuld måde at styrke deres mentor-, ledelses- og rådgivningskompetencer.',
     'hero.cta_primary': 'Find en professionel',
-    'hero.cta_secondary': 'AnsÃÂ¸g som professionel',
+    'hero.cta_secondary': 'Ansøg som professionel',
 
     // How it works
-    'how.label': 'SÃÂ¥dan virker det',
-    'how.tagline': 'Fire trin. Ingen besvÃÂ¦r.',
-    'how.step1_title': 'VÃÂ¦lg en professionel',
-    'how.step1_body': 'Find en person med relevant erfaring fra den branche, rolle eller karrierevej, du gerne vil blive klogere pÃÂ¥.',
+    'how.label': 'Sådan virker det',
+    'how.tagline': 'Fire trin. Ingen besvær.',
+    'how.step1_title': 'Vælg en professionel',
+    'how.step1_body': 'Find en person med relevant erfaring fra den branche, rolle eller karrierevej, du gerne vil blive klogere på.',
     'how.step2_title': 'Book 60 minutter',
-    'how.step2_body': 'Sessioner starter fra 300 kr. og tager udgangspunkt i dine spÃÂ¸rgsmÃÂ¥l, mÃÂ¥l og nÃÂ¦ste skridt.',
-    'how.step3_title': 'FÃÂ¥ konkret sparring',
-    'how.step3_body': 'Brug sessionen til CV-feedback, jobsamtaler, ansÃÂ¸gninger, case-forberedelse, karriereretning eller brancheindsigt.',
-    'how.step4_title': 'Skab vÃÂ¦rdi begge veje',
-    'how.step4_body': 'Kandidaten fÃÂ¥r ÃÂ¦rlig sparring. Den professionelle udvikler sin evne til at rÃÂ¥dgive, lytte, strukturere og hjÃÂ¦lpe andre videre.',
+    'how.step2_body': 'Sessioner starter fra 300 kr. og tager udgangspunkt i dine spørgsmål, mål og næste skridt.',
+    'how.step3_title': 'Få konkret sparring',
+    'how.step3_body': 'Brug sessionen til CV-feedback, jobsamtaler, ansøgninger, case-forberedelse, karriereretning eller brancheindsigt.',
+    'how.step4_title': 'Skab værdi begge veje',
+    'how.step4_body': 'Kandidaten får ærlig sparring. Den professionelle udvikler sin evne til at rådgive, lytte, strukturere og hjælpe andre videre.',
 
     // For candidates
     'candidates.label': 'For kandidater',
-    'candidates.h2': 'FÃÂ¥ sparring fra en, der har prÃÂ¸vet det fÃÂ¸r.',
-    'candidates.body': 'Naetwork giver dig adgang til erfarne professionelle, der kan hjÃÂ¦lpe dig med at trÃÂ¦ffe bedre karrierevalg med mere klarhed og selvtillid.',
+    'candidates.h2': 'Få sparring fra en, der har prøvet det før.',
+    'candidates.body': 'Naetwork giver dig adgang til erfarne professionelle, der kan hjælpe dig med at træffe bedre karrierevalg med mere klarhed og selvtillid.',
     'candidates.cta': 'Find en professionel',
 
     // For professionals
     'professionals.label': 'For professionelle',
     'professionals.h2': 'Brug din erfaring. Styrk din gennemslagskraft.',
-    'professionals.body': 'Naetwork giver professionelle en enkel mÃÂ¥de at hjÃÂ¦lpe andre, samtidig med at de udvikler sig selv.',
-    'professionals.cta': 'AnsÃÂ¸g som professionel',
+    'professionals.body': 'Naetwork giver professionelle en enkel måde at hjælpe andre, samtidig med at de udvikler sig selv.',
+    'professionals.cta': 'Ansøg som professionel',
 
     // About
     'about.label': 'Om Naetwork',
     'about.h2': 'Naetwork findes, fordi mange har brug for bedre adgang til reel karrieresparring.',
-    'about.body': 'Ikke endnu en artikel. Ikke endnu en generisk guide. Ikke endnu et netvÃÂ¦rksarrangement. Bare ÃÂ©n fokuseret samtale med en person, der forstÃÂ¥r vejen, branchen eller udfordringen.',
+    'about.body': 'Ikke endnu en artikel. Ikke endnu en generisk guide. Ikke endnu et netværksarrangement. Bare én fokuseret samtale med en person, der forstår vejen, branchen eller udfordringen.',
 
     // Pricing
     'pricing.label': 'Priser og donation',
@@ -50,23 +50,23 @@ export const t: Record<Lang, Record<string, string>> = {
     'pricing.gated_notice': 'Betalingsintegration er under opsætning.',
 
     // FAQ
-    'faq.label': 'Ofte stillede spÃÂ¸rgsmÃÂ¥l',
-    'faq.h2': 'Har du spÃÂ¸rgsmÃÂ¥l? Vi har svarene.',
+    'faq.label': 'Ofte stillede spørgsmål',
+    'faq.h2': 'Har du spørgsmål? Vi har svarene.',
     'faq.q1': 'Hvor lang tid varer en session?',
     'faq.a1': 'Hver session varer 60 minutter.',
     'faq.q2': 'Hvad kan jeg bruge en session til?',
-    'faq.a2': 'Du kan bruge den til CV-feedback, jobsamtaleforberedelse, ansÃÂ¸gninger, case-trÃÂ¦ning, karrierespÃÂ¸rgsmÃÂ¥l, brancheindsigt eller generel sparring.',
+    'faq.a2': 'Du kan bruge den til CV-feedback, jobsamtaleforberedelse, ansøgninger, case-træning, karrierespørgsmål, brancheindsigt eller generel sparring.',
     'faq.q3': 'Hvad koster det?',
-    'faq.a3': 'Sessioner starter fra 300 kr. Den endelige pris afhÃÂ¦nger af den professionelle.',
-    'faq.q4': 'Hvorfor skal professionelle vÃÂ¦re med?',
-    'faq.a4': 'Fordi Naetwork giver professionelle en meningsfuld mÃÂ¥de at hjÃÂ¦lpe andre og styrke kompetencer som mentoring, kommunikation, ledelse og struktureret feedback.',
+    'faq.a3': 'Sessioner starter fra 300 kr. Den endelige pris afhænger af den professionelle.',
+    'faq.q4': 'Hvorfor skal professionelle være med?',
+    'faq.a4': 'Fordi Naetwork giver professionelle en meningsfuld måde at hjælpe andre og styrke kompetencer som mentoring, kommunikation, ledelse og struktureret feedback.',
     'faq.q5': 'Kan jeg redigere eller slette min bruger?',
-    'faq.a5': 'Ja. Du kan redigere dine oplysninger, ÃÂ¦ndre notifikationsvalg og anmode om sletning af din bruger.',
-    'faq.q6': 'Er Naetwork en del af KrÃÂ¦ftens BekÃÂ¦mpelse?',
-    'faq.a6': 'Naetwork er et uafhÃÂ¦ngigt initiativ og kan kun beskrives som officiel partner, hvis der foreligger en skriftlig aftale.',
+    'faq.a5': 'Ja. Du kan redigere dine oplysninger, ændre notifikationsvalg og anmode om sletning af din bruger.',
+    'faq.q6': 'Er Naetwork en del af Kræftens Bekæmpelse?',
+    'faq.a6': 'Naetwork er et uafhængigt initiativ og kan kun beskrives som officiel partner, hvis der foreligger en skriftlig aftale.',
 
     // KB
-    'kb.body': 'Naetwork er bygget med et ÃÂ¸nske om at skabe meningsfuld effekt. Donations- og betalingsmodellen er under juridisk afklaring og bliver fÃÂ¸rst aktiveret, nÃÂ¥r den rette opsÃÂ¦tning er pÃÂ¥ plads.',
+    'kb.body': 'Naetwork er bygget med et ønske om at skabe meningsfuld effekt. Donations- og betalingsmodellen er under juridisk afklaring og bliver først aktiveret, når den rette opsætning er på plads.',
 
     // Contact
     'contact.label': 'Kontakt Naetwork',
@@ -75,16 +75,16 @@ export const t: Record<Lang, Record<string, string>> = {
     'contact.email': 'E-mail',
     'contact.subject': 'Emne',
     'contact.message': 'Besked',
-    'contact.privacy': 'Vi bruger kun dine oplysninger til at svare pÃÂ¥ din henvendelse.',
+    'contact.privacy': 'Vi bruger kun dine oplysninger til at svare på din henvendelse.',
     'contact.submit': 'Send besked',
 
     // Navbar
     'nav.home': 'Forside',
-    'nav.how_it_works': 'SÃÂ¥dan virker det',
+    'nav.how_it_works': 'Sådan virker det',
     'nav.about': 'Om Naetwork',
     'nav.candidates': 'For kandidater',
     'nav.professionals': 'For professionelle',
-    'nav.pricing': 'Priser og formÃÂ¥l',
+    'nav.pricing': 'Priser og formål',
     'nav.faq': 'FAQ',
     'nav.contact': 'Kontakt Naetwork',
     'nav.book': 'Book session',
@@ -93,33 +93,33 @@ export const t: Record<Lang, Record<string, string>> = {
 
     // Footer
     'footer.tagline': 'Karrieresessioner med mennesker der ved det.',
-    'footer.legal': 'Naetwork opkrÃÂ¦ver 15% platformsbidrag (7,5% ved donation til KrÃÂ¦ftens BekÃÂ¦mpelse). Alle betalinger behandles sikkert via Stripe.',
-    'footer.terms': 'VilkÃÂ¥r',
+    'footer.legal': 'Naetwork opkræver 15% platformsbidrag (7,5% ved donation til Kræftens Bekæmpelse). Alle betalinger behandles sikkert via Stripe.',
+    'footer.terms': 'Vilkår',
     'footer.privacy_link': 'Privatlivspolitik',
     'footer.cookies': 'Cookies',
     'footer.contact_link': 'Kontakt',
-    'footer.copyright': 'ÃÂ© 2025 Naetwork. Alle rettigheder forbeholdes.',
+    'footer.copyright': '© 2025 Naetwork. Alle rettigheder forbeholdes.',
 
     // Charity
     'charity.badge': 'Officiel partner',
     'charity.headline': 'Samfundsansvar',
 
     // Legacy keys (sections not yet migrated)
-    'why.candidate.bullet1': 'MÃÂ¸d professionelle pÃÂ¥ din karrierevej',
-    'why.candidate.bullet2': 'Forbered dig til interviews og ansÃÂ¸gninger',
-    'why.candidate.bullet3': 'FÃÂ¥ ÃÂ¦rlig, konkret feedback der rykker',
-    'why.candidate.bullet4': 'DKK 300Ã¢ÂÂ2.000 per session Ã¢ÂÂ ingen binding',
-    'why.professional.bullet1': 'SÃÂ¦t dine egne priser og tilgÃÂ¦ngelighed',
-    'why.professional.bullet2': 'HjÃÂ¦lp unge talenter videre',
-    'why.professional.bullet3': '15% provision Ã¢ÂÂ 7,5% hvis du donerer til KrÃÂ¦ftens BekÃÂ¦mpelse',
-    'why.professional.bullet4': 'Ingen binding Ã¢ÂÂ pause eller stop nÃÂ¥r du vil',
-    'sessions.headline': 'VÃÂ¦lg din session',
-    'sessions.sub': 'Fire formater. ÃÂt formÃÂ¥l: Dit nÃÂ¦ste skridt.',
+    'why.candidate.bullet1': 'Mød professionelle på din karrierevej',
+    'why.candidate.bullet2': 'Forbered dig til interviews og ansøgninger',
+    'why.candidate.bullet3': 'Få ærlig, konkret feedback der rykker',
+    'why.candidate.bullet4': 'DKK 300–2.000 per session – ingen binding',
+    'why.professional.bullet1': 'Sæt dine egne priser og tilgængelighed',
+    'why.professional.bullet2': 'Hjælp unge talenter videre',
+    'why.professional.bullet3': '15% provision – 7,5% hvis du donerer til Kræftens Bekæmpelse',
+    'why.professional.bullet4': 'Ingen binding – pause eller stop når du vil',
+    'sessions.headline': 'Vælg din session',
+    'sessions.sub': 'Fire formater. Ét formål: Dit næste skridt.',
     'trust.headline': 'Transparens',
-    'trust.sub': 'Du ved prÃÂ¦cis hvad du betaler for.',
+    'trust.sub': 'Du ved præcis hvad du betaler for.',
     'industries.headline': 'De industrier vi kender indefra',
-    'cta.headline': 'Hvad venter du pÃÂ¥?',
-    'cta.sub': 'Bliv en del af et netvÃÂ¦rk der ÃÂ¥bner dÃÂ¸re.',
+    'cta.headline': 'Hvad venter du på?',
+    'cta.sub': 'Bliv en del af et netværk der åbner døre.',
     'cta.button': 'Find din professionelle',
 
     // Impact / Pricing
@@ -203,7 +203,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'faq.a4': 'Because Naetwork gives professionals a meaningful way to help others and strengthen skills such as mentoring, communication, leadership and structured feedback.',
     'faq.q5': 'Can I edit or delete my account?',
     'faq.a5': 'Yes. You can edit your information, change notification preferences and request deletion of your account.',
-    'faq.q6': 'Is Naetwork part of KrÃÂ¦ftens BekÃÂ¦mpelse?',
+    'faq.q6': 'Is Naetwork part of Kræftens Bekæmpelse?',
     'faq.a6': 'Naetwork is an independent initiative and can only be described as an official partner if a written agreement is in place.',
 
     // KB
@@ -234,26 +234,26 @@ export const t: Record<Lang, Record<string, string>> = {
 
     // Footer
     'footer.tagline': 'Career sessions with people who know.',
-    'footer.legal': 'Naetwork charges 15% platform fee (7.5% with donation to KrÃÂ¦ftens BekÃÂ¦mpelse). All payments processed securely via Stripe.',
+    'footer.legal': 'Naetwork charges 15% platform fee (7.5% with donation to Kræftens Bekæmpelse). All payments processed securely via Stripe.',
     'footer.terms': 'Terms',
     'footer.privacy_link': 'Privacy',
     'footer.cookies': 'Cookies',
     'footer.contact_link': 'Contact',
-    'footer.copyright': 'ÃÂ© 2025 Naetwork. All rights reserved.',
+    'footer.copyright': '© 2025 Naetwork. All rights reserved.',
 
     // Charity
-    'charity.badge': 'Donates to KrÃÂ¦ftens BekÃÂ¦mpelse',
+    'charity.badge': 'Donates to Kræftens Bekæmpelse',
     'charity.headline': 'Give back',
 
     // Legacy keys (sections not yet migrated)
     'why.candidate.bullet1': 'Prepare for the specific interview',
     'why.candidate.bullet2': 'Get your CV and LinkedIn reviewed by someone who screens candidates',
     'why.candidate.bullet3': 'Understand the culture and what actually counts',
-    'why.candidate.bullet4': 'DKK 300Ã¢ÂÂ2,000 per session Ã¢ÂÂ no commitment',
-    'why.professional.bullet1': 'You set the price: DKK 300Ã¢ÂÂ2,000 per session',
+    'why.candidate.bullet4': 'DKK 300–2,000 per session – no commitment',
+    'why.professional.bullet1': 'You set the price: DKK 300–2,000 per session',
     'why.professional.bullet2': 'Choose your own availability and session types',
-    'why.professional.bullet3': 'Option to donate to KrÃÂ¦ftens BekÃÂ¦mpelse (reduces commission to 7.5%)',
-    'why.professional.bullet4': 'No commitment Ã¢ÂÂ pause or stop whenever you want',
+    'why.professional.bullet3': 'Option to donate to Kræftens Bekæmpelse (reduces commission to 7.5%)',
+    'why.professional.bullet4': 'No commitment – pause or stop whenever you want',
     'sessions.headline': 'Choose the session you need',
     'sessions.sub': 'Four formats. One purpose: Your next step.',
     'trust.headline': 'Transparency',
