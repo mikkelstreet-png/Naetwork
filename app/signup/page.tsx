@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { sendWelcomeCandidate, sendWelcomeProfessional } from '@/lib/email';
 import Link from 'next/link';
 
 export default function SignupPage() {
@@ -29,6 +30,10 @@ export default function SignupPage() {
       setError(error.message);
       setLoading(false);
     } else {
+      const welcomeEmail = role === 'professional'
+        ? sendWelcomeProfessional({ email, name, priceDkk: 300, donatesToCharity: false })
+        : sendWelcomeCandidate({ email, name });
+      await welcomeEmail.catch(() => false);
       setDone(true);
     }
   }
