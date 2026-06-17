@@ -19,10 +19,10 @@ export const t: Record<Lang, Record<string, string>> = {
     // Hero
     'hero.label': 'AI, Banking, Management Consulting og Private Equity',
     'hero.h1': 'Kom tættere på karrieren, du sigter efter.',
-    'hero.sub': 'Book 1:1 karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity. Få konkret feedback på CV, interviews, cases og karrierevalg fra folk, der kender vejen indefra.',
+    'hero.sub': 'Book én 60-minutters 1:1 session med professionelle fra AI, Banking, Management Consulting og Private Equity. Brug tiden på CV, interviews, cases, technicals, AI strategy eller karrierevalg.',
     'hero.cta1': 'Opret et projekt',
     'hero.cta2': 'Bliv specialist',
-    'hero.badge': '1:1 sparring · Sessioner fra DKK 300 · Konkret feedback',
+    'hero.badge': '60 min · DKK 500-1.800 · Konkret feedback',
     'hero.cta_primary': 'Find en professionel',
     'hero.cta_secondary': 'Bliv professionel',
 
@@ -39,20 +39,20 @@ export const t: Record<Lang, Record<string, string>> = {
     'candidates.h2': 'Forbered dig med nogen, der allerede har været gennem processen.',
     'why.candidate.bullet1': 'Få konkret feedback på CV, interviews, cases og karrierevalg',
     'why.candidate.bullet2': 'Lær hvad der faktisk tæller i AI, Banking, Management Consulting og Private Equity',
-    'why.candidate.bullet3': 'Book direkte, stil de svære spørgsmål og gå videre med klarhed',
+    'why.candidate.bullet3': 'Book 60 minutter direkte, stil de svære spørgsmål og gå videre med klarhed',
     'candidates.cta': 'Find din professionelle',
 
     // Professionals
     'professionals.label': 'For professionelle',
     'professionals.h2': 'Gør din erfaring til adgang for næste generation.',
     'why.professional.bullet1': 'Del ærlig brancheindsigt med ambitiøse kandidater',
-    'why.professional.bullet2': 'Sæt selv pris, sessionstype og tilgængelighed',
+    'why.professional.bullet2': 'Sæt selv pris mellem DKK 500 og 1.800, fokusområder og tilgængelighed',
     'why.professional.bullet3': 'Vælg om dit honorar også skal støtte Kræftens Bekæmpelse',
     'professionals.cta': 'Bliv professionel',
 
     // Sessions
-    'sessions.headline': 'Sessioner',
-    'sessions.sub': 'Vælg den sparring, der passer til dit næste karriereskridt',
+    'sessions.headline': '60 min 1:1 session',
+    'sessions.sub': 'Vælg den professionelle, og brug sessionen på det karrierespørgsmål, der betyder mest nu',
 
     // How it works
     'how.label': 'Sådan fungerer det',
@@ -60,8 +60,8 @@ export const t: Record<Lang, Record<string, string>> = {
     'how.tagline': 'Fire enkle trin til bedre forberedelse',
     'how.step1_title': 'Vælg den rette professionelle',
     'how.step1_body': 'Find en person med relevant erfaring fra den branche, rolle eller proces, du vil forstå bedre.',
-    'how.step2_title': 'Book 1:1 sparring',
-    'how.step2_body': 'Vælg sessionstype og tidspunkt. Ingen ventelister — du booker direkte.',
+    'how.step2_title': 'Book 60 minutter',
+    'how.step2_body': 'Vælg en professionel, et tidspunkt og hvad du vil bruge de 60 minutter på.',
     'how.step3_title': 'Kom forberedt',
     'how.step3_body': 'Brug sessionen til CV-feedback, interviewtræning, case-prep, brancheindsigt eller karrierestrategi.',
     'how.step4_title': 'Brug indsigterne',
@@ -76,7 +76,7 @@ export const t: Record<Lang, Record<string, string>> = {
     // Impact / Pricing
     'impact.label': 'Impact model',
     'impact.intro': 'Naetwork skal skabe bedre adgang til karrieresparring — og gøre det muligt at give noget tilbage.',
-    'impact.sub': 'Professionelle vælger selv, hvordan honoraret fordeles mellem betaling for deres tid og donation til Kræftens Bekæmpelse.',
+    'impact.sub': 'Professionelle sætter selv pris mellem DKK 500 og 1.800 og vælger, hvordan honoraret fordeles mellem betaling for deres tid og donation til Kræftens Bekæmpelse.',
     'impact.both': 'Kandidaten får reel sparring. Den professionelle deler erfaring. Og en del af værdien kan gå videre til en sag, der betyder noget.',
     'impact.shared_name': 'Shared Impact',
     'impact.shared_tag': 'For professionelle, der vil kombinere fair betaling med et tydeligt bidrag.',
@@ -102,11 +102,11 @@ export const t: Record<Lang, Record<string, string>> = {
     'faq.q2': 'Hvad kan jeg bruge en session til?',
     'faq.a2': 'CV-feedback, case-træning, mock interviews, ansøgninger, karrierevalg, brancheindsigt eller en ærlig vurdering af dit næste skridt.',
     'faq.q3': 'Hvad koster en session?',
-    'faq.a3': 'Prisen sættes af den professionelle og ligger typisk mellem DKK 300 og 2.000 afhængigt af sessionstype og erfaring.',
+    'faq.a3': 'Alle sessioner er 60 minutter. Den professionelle sætter selv prisen mellem DKK 500 og 1.800, og prisen vises altid før booking.',
     'faq.q4': 'Er Naetwork officielt tilknyttet Kræftens Bekæmpelse?',
     'faq.a4': 'Nej. Naetwork er et uafhængigt initiativ. Eventuelle donationer afregnes direkte og beskrives transparent.',
     'faq.q5': 'Kan jeg selv blive professionel på platformen?',
-    'faq.a5': 'Ja. Opret en profil, vælg dine sessionstyper og sæt din tilgængelighed, hvis du vil dele din erfaring med kandidater.',
+    'faq.a5': 'Ja. Opret en profil, vælg dine fokusområder, sæt din pris og tilgængelighed, hvis du vil dele din erfaring med kandidater.',
     'faq.q6': 'Hvad gør Naetwork anderledes?',
     'faq.a6': 'Fokus er smallere og skarpere: direkte adgang til branchefolk i de mest konkurrenceprægede karriereveje — uden at sparringen afhænger af dit eksisterende netværk.',
 
@@ -253,10 +253,10 @@ export const t: Record<Lang, Record<string, string>> = {
     // Hero
     'hero.label': 'AI, Banking, Management Consulting and Private Equity',
     'hero.h1': 'Get closer to the career you are aiming for.',
-    'hero.sub': 'Book 1:1 career sessions with professionals from AI, Banking, Management Consulting and Private Equity. Get concrete feedback on CVs, interviews, cases and career decisions from people who know the path from the inside.',
+    'hero.sub': 'Book one 60-minute 1:1 session with professionals from AI, Banking, Management Consulting and Private Equity. Use the time for CVs, interviews, cases, technicals, AI strategy or career decisions.',
     'hero.cta1': 'Post a project',
     'hero.cta2': 'Become a specialist',
-    'hero.badge': '1:1 sessions · From DKK 300 · Concrete feedback',
+    'hero.badge': '60 min · DKK 500-1,800 · Concrete feedback',
     'hero.cta_primary': 'Find a professional',
     'hero.cta_secondary': 'Become a professional',
 
@@ -273,20 +273,20 @@ export const t: Record<Lang, Record<string, string>> = {
     'candidates.h2': 'Prepare with someone who has already been through the process.',
     'why.candidate.bullet1': 'Get concrete feedback on CVs, interviews, cases and career choices',
     'why.candidate.bullet2': 'Learn what actually matters in AI, Banking, Management Consulting and Private Equity',
-    'why.candidate.bullet3': 'Book directly, ask sharper questions and leave with more clarity',
+    'why.candidate.bullet3': 'Book 60 minutes directly, ask sharper questions and leave with more clarity',
     'candidates.cta': 'Find your professional',
 
     // Professionals
     'professionals.label': 'For professionals',
     'professionals.h2': 'Turn your experience into access for the next generation.',
     'why.professional.bullet1': 'Share honest industry insight with ambitious candidates',
-    'why.professional.bullet2': 'Set your own price, session types and availability',
+    'why.professional.bullet2': 'Set your own DKK 500-1,800 price, focus areas and availability',
     'why.professional.bullet3': 'Choose whether your fee can also support Kræftens Bekæmpelse',
     'professionals.cta': 'Become a professional',
 
     // Sessions
-    'sessions.headline': 'Sessions',
-    'sessions.sub': 'Choose the guidance that fits your next career move',
+    'sessions.headline': '60 min 1:1 session',
+    'sessions.sub': 'Choose the professional and use the session for the career question that matters most right now',
 
     // How it works
     'how.label': 'How it works',
@@ -294,8 +294,8 @@ export const t: Record<Lang, Record<string, string>> = {
     'how.tagline': 'Four simple steps to sharper preparation',
     'how.step1_title': 'Choose the right professional',
     'how.step1_body': 'Find someone with relevant experience from the industry, role or process you want to understand better.',
-    'how.step2_title': 'Book a 1:1 session',
-    'how.step2_body': 'Choose session type and time. No waiting lists — book directly.',
+    'how.step2_title': 'Book 60 minutes',
+    'how.step2_body': 'Choose a professional, a time and what you want to use the 60 minutes for.',
     'how.step3_title': 'Arrive prepared',
     'how.step3_body': 'Use the session for CV feedback, interview practice, case prep, industry insight or career strategy.',
     'how.step4_title': 'Apply the insight',
@@ -310,7 +310,7 @@ export const t: Record<Lang, Record<string, string>> = {
     // Impact / Pricing
     'impact.label': 'Impact model',
     'impact.intro': 'Naetwork should create better access to career guidance — and make it possible to give something back.',
-    'impact.sub': 'Professionals choose how their fee is split between compensation for their time and donation to Kræftens Bekæmpelse.',
+    'impact.sub': 'Professionals set their own DKK 500-1,800 price and choose how their fee is split between compensation for their time and donation to Kræftens Bekæmpelse.',
     'impact.both': 'The candidate gets real guidance. The professional shares experience. And part of the value can support a cause that matters.',
     'impact.shared_name': 'Shared Impact',
     'impact.shared_tag': 'For professionals who want to combine fair compensation with a clear contribution.',
@@ -336,11 +336,11 @@ export const t: Record<Lang, Record<string, string>> = {
     'faq.q2': 'What can I use a session for?',
     'faq.a2': 'CV feedback, case practice, mock interviews, applications, career decisions, industry insight or an honest view on your next step.',
     'faq.q3': 'What does a session cost?',
-    'faq.a3': 'The price is set by the professional and typically ranges from DKK 300 to 2,000 depending on session type and experience.',
+    'faq.a3': 'All sessions are 60 minutes. The professional sets the price between DKK 500 and 1,800, and the price is always shown before booking.',
     'faq.q4': 'Is Naetwork officially affiliated with Kræftens Bekæmpelse?',
     'faq.a4': 'No. Naetwork is an independent initiative. Any donations are handled directly and described transparently.',
     'faq.q5': 'Can I become a professional on the platform myself?',
-    'faq.a5': 'Yes. Create a profile, choose your session types and set your availability if you want to share your experience with candidates.',
+    'faq.a5': 'Yes. Create a profile, choose your focus areas and set your price and availability if you want to share your experience with candidates.',
     'faq.q6': 'What makes Naetwork different?',
     'faq.a6': 'The focus is narrower and sharper: direct access to industry people in highly competitive career paths — without depending on your existing network.',
 
