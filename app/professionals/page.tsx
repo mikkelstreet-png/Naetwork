@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import BookingDrawer from '@/components/BookingDrawer'
 
-type Industry = 'Alle brancher' | 'Banking' | 'Private Equity' | 'AI' | 'Management Consulting'
+type Industry = 'Alle brancher' | 'AI' | 'Banking' | 'Management Consulting' | 'Private Equity'
 
 interface ProfessionalCard {
   id: string
@@ -25,7 +25,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     company: 'Goldman Sachs',
     industries: ['Banking', 'Private Equity'],
     price: 500,
-    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med at forberede dig til interviews og forstaae, hvad der kraeves for at komme ind i investment banking.'
+    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.'
   },
   {
     id: 'demo-2',
@@ -34,7 +34,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     company: 'McKinsey & Company',
     industries: ['Management Consulting'],
     price: 450,
-    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet over 30 kandidater med case-forberedelse og karriereplan.'
+    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.'
   },
   {
     id: 'demo-3',
@@ -43,11 +43,11 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     company: 'Google DeepMind',
     industries: ['AI'],
     price: 400,
-    bio: 'Produktleder med baggrund i maskinlæring og AI-strategi. Tidligere engineer, nu fokuseret paa at guide folk ind i AI-industrien.'
+    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.'
   },
 ]
 
-const INDUSTRIES: Industry[] = ['Alle brancher', 'Banking', 'Private Equity', 'AI', 'Management Consulting']
+const INDUSTRIES: Industry[] = ['Alle brancher', 'AI', 'Banking', 'Management Consulting', 'Private Equity']
 
 export default function ProfessionalsPage() {
   const [locale, setLocale] = useState<'da' | 'en'>('da')
@@ -61,32 +61,31 @@ export default function ProfessionalsPage() {
 
   useEffect(() => {
     async function fetchProfessionals() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('professional_profiles')
-        .select(`id, title, company, bio, price_per_session, industries, profiles!inner(full_name)`)
+        .select('id, title, company, bio, price_dkk, industries, profiles!inner(name)')
         .eq('visibility', 'published')
-        .eq('approval_status', 'approved')
 
-      if (data && data.length > 0) {
-        const mapped: ProfessionalCard[] = (data as Array<{
-          id: string
-          title: string
-          company: string
-          bio: string
-          price_per_session: number
-          industries: string[]
-          profiles: { full_name?: string } | null
-        }>).map((p) => ({
-          id: p.id,
-          name: p.profiles?.full_name ?? '',
-          title: p.title ?? '',
-          company: p.company ?? '',
-          industries: p.industries ?? [],
-          price: p.price_per_session ?? 0,
-          bio: p.bio ?? '',
-        }))
-        setDbProfessionals(mapped)
-      }
+      if (error || !data) return
+
+      const mapped: ProfessionalCard[] = (data as Array<{
+        id: string
+        title: string | null
+        company: string | null
+        bio: string | null
+        price_dkk: number | null
+        industries: string[] | null
+        profiles: { name?: string | null } | null
+      }>).map((p) => ({
+        id: p.id,
+        name: p.profiles?.name ?? '',
+        title: p.title ?? '',
+        company: p.company ?? '',
+        industries: p.industries ?? [],
+        price: p.price_dkk ?? 300,
+        bio: p.bio ?? '',
+      }))
+      setDbProfessionals(mapped)
     }
     fetchProfessionals()
   // eslint-disable-next-line react-hooks/exhaustive-deps
