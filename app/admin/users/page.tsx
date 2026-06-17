@@ -4,12 +4,11 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
 type UserRole = 'candidate' | 'professional' | 'admin';
-type UserStatus = 'active' | 'suspended' | 'deleted';
+type UserStatus = 'active' | 'deletion_requested' | 'deleted';
 
 interface UserProfile {
   id: string;
-  full_name: string | null;
-  email: string | null;
+  name: string | null;
   role: UserRole;
   status: UserStatus;
   created_at: string;
@@ -32,12 +31,12 @@ const roleBadge = (role: UserRole) => {
 const statusBadge = (status: UserStatus) => {
   const map: Record<UserStatus, string> = {
     active: 'bg-indigo-100 text-indigo-800',
-    suspended: 'bg-yellow-100 text-yellow-800',
+    deletion_requested: 'bg-yellow-100 text-yellow-800',
     deleted: 'bg-red-100 text-red-800',
   };
   const labels: Record<UserStatus, string> = {
     active: 'Aktiv',
-    suspended: 'Suspenderet',
+    deletion_requested: 'Sletning anmodet',
     deleted: 'Slettet',
   };
   return <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[status]}`}>{labels[status]}</span>;
@@ -59,22 +58,22 @@ export default function UsersPage() {
     setLoading(true);
     const { data } = await supabase
       .from('profiles')
-      .select('id, full_name, email, role, status, created_at')
+      .select('id, name, role, status, created_at')
       .order('created_at', { ascending: false });
     setUsers((data as UserProfile[]) || []);
     setLoading(false);
   }
 
-  async function suspendUser(id: string) {
+  async function requestDeletion(id: string) {
     setActionLoading(id);
-    await supabase.from('profiles').update({ status: 'suspended' }).eq('id', id);
+    await supabase.from('profiles').update({ status: 'deletion_requested' }).eq('id', id);
     await loadUsers();
     setActionLoading(null);
   }
 
   const filtered = users.filter(u => {
     const q = search.toLowerCase();
-    return !q || (u.full_name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q));
+    return !q || u.name?.toLowerCase().includes(q) || u.role.toLowerCase().includes(q);
   });
 
   return (
@@ -112,7 +111,7 @@ export default function UsersPage() {
           <div className="mb-4">
             <input
               type="text"
-              placeholder="S\u00f8g p\u00e5 navn eller e-mail..."
+              placeholder="Søg på navn eller rolle..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full max-w-sm px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -121,7 +120,7 @@ export default function UsersPage() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             {loading ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indl\u00e6ser...</div>
+              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indlæser...</div>
             ) : filtered.length === 0 ? (
               <div className="px-5 py-8 text-center text-gray-400 text-sm">Ingen brugere fundet</div>
             ) : (
@@ -129,7 +128,6 @@ export default function UsersPage() {
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Navn</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">E-mail</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Rolle</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Oprettet</th>
@@ -139,19 +137,18 @@ export default function UsersPage() {
                 <tbody className="divide-y divide-gray-100">
                   {filtered.map((u) => (
                     <tr key={u.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{u.full_name || '\u2014'}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{u.email || '\u2014'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{u.name || '—'}</td>
                       <td className="px-4 py-3">{roleBadge(u.role)}</td>
                       <td className="px-4 py-3">{statusBadge(u.status)}</td>
                       <td className="px-4 py-3 text-xs text-gray-400">{new Date(u.created_at).toLocaleDateString('da-DK')}</td>
                       <td className="px-4 py-3">
-                        {u.status !== 'suspended' && u.role !== 'admin' && (
+                        {u.status === 'active' && u.role !== 'admin' && (
                           <button
-                            onClick={() => suspendUser(u.id)}
+                            onClick={() => requestDeletion(u.id)}
                             disabled={actionLoading === u.id}
                             className="text-xs px-2 py-1 rounded bg-yellow-100 text-yellow-800 hover:bg-yellow-200 disabled:opacity-50"
                           >
-                            Suspender
+                            Marker sletning
                           </button>
                         )}
                       </td>
