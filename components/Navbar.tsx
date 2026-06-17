@@ -7,12 +7,13 @@ import { useTranslation } from '@/context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
 
 export function Navbar() {
-  const { tr } = useTranslation();
+  const { tr, lang } = useTranslation();
   const [session, setSession] = useState<boolean | null>(null);
   const [userEmail, setUserEmail] = useState<string>('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isDa = lang === 'da';
 
   useEffect(() => {
     const supabase = createClient();
@@ -44,106 +45,81 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/professionals', labelKey: 'nav.find' },
-    { href: '/#how-it-works', labelKey: 'nav.how' },
-    { href: '/#candidates', labelKey: 'nav.candidates' },
-    { href: '/#professionals', labelKey: 'nav.professionals' },
-    { href: '/#about', labelKey: 'nav.about' },
+    { href: '/professionals', label: isDa ? 'Find professionals' : 'Find professionals' },
+    { href: '/#pricing', label: isDa ? 'Format' : 'Format' },
+    { href: '/#how-it-works', label: tr('nav.how') },
+    { href: '/#candidates', label: tr('nav.candidates') },
+    { href: '/#professionals', label: tr('nav.professionals') },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-        {/* Logo */}
-        <Link href="/" className="font-extrabold text-[15px] tracking-tight text-[#0A0A0A] shrink-0">
-          Naetwork
+    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/86 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="group flex items-center gap-2 shrink-0" aria-label="Naetwork home">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
+            N
+          </span>
+          <span className="text-[15px] font-black tracking-tight text-gray-950">Naetwork</span>
         </Link>
 
-        {/* Desktop nav links */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden items-center gap-1 rounded-full border border-gray-200 bg-white px-1.5 py-1 shadow-sm md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-gray-500 hover:text-gray-950 transition-colors font-medium"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-950"
             >
-              {tr(link.labelKey)}
+              {link.label}
             </Link>
           ))}
         </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          <LanguageToggle />
+        <div className="flex items-center gap-2">
+          <div className="hidden rounded-full border border-gray-200 bg-white px-1 py-1 shadow-sm sm:block">
+            <LanguageToggle />
+          </div>
 
-          {/* Primary CTA — always visible on desktop */}
           <Link
             href="/professionals"
-            className="hidden md:inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 transition-colors shadow-sm"
+            className="hidden items-center justify-center rounded-full bg-gray-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-800 md:inline-flex"
           >
-            {tr('nav.find')}
+            {isDa ? 'Book 60 min' : 'Book 60 min'}
           </Link>
 
           {session === null ? null : session ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0A0A0A] transition-colors font-medium"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-950 text-xs font-bold text-white transition-transform hover:scale-105"
+                aria-label="Open account menu"
               >
-                <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-bold">
-                  {userEmail.charAt(0).toUpperCase()}
-                </div>
+                {userEmail.charAt(0).toUpperCase()}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-sm py-1 z-50">
-                  <Link
-                    href="/dashboard"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    {tr('nav.dashboard')}
-                  </Link>
-                  <Link
-                    href="/projekter"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    {tr('nav.projects')}
-                  </Link>
-                  <Link
-                    href="/indstillinger"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    {tr('nav.settings')}
-                  </Link>
-                  <hr className="my-1 border-gray-100" />
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    {tr('nav.logout')}
-                  </button>
+                <div className="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-950/10">
+                  <div className="border-b border-gray-100 px-4 py-3">
+                    <p className="truncate text-xs font-medium text-gray-500">{userEmail}</p>
+                  </div>
+                  <Link href="/dashboard" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.dashboard')}</Link>
+                  <Link href="/projekter" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.projects')}</Link>
+                  <Link href="/indstillinger" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.settings')}</Link>
+                  <button onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">{tr('nav.logout')}</button>
                 </div>
               )}
             </div>
           ) : (
-            <div className="hidden md:flex items-center gap-2">
-              <Link href="/login" className="text-sm text-gray-500 hover:text-[#0A0A0A] transition-colors font-medium">
+            <div className="hidden items-center gap-2 md:flex">
+              <Link href="/login" className="rounded-full px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-950">
                 {tr('nav.login')}
               </Link>
-              <Link
-                href="/professional/signup"
-                className="inline-flex items-center justify-center rounded-md border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                {tr('nav.signup')}
+              <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
+                {tr('professionals.cta')}
               </Link>
             </div>
           )}
 
-          {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 text-gray-500 hover:text-gray-950"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -155,9 +131,9 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
+                  <line x1="4" y1="7" x2="20" y2="7" />
+                  <line x1="4" y1="12" x2="20" y2="12" />
+                  <line x1="4" y1="17" x2="20" y2="17" />
                 </>
               )}
             </svg>
@@ -165,41 +141,30 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="block text-sm text-gray-700 font-medium py-2"
-              onClick={() => setMobileOpen(false)}
-            >
-              {tr(link.labelKey)}
-            </Link>
-          ))}
-          <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
-            <Link
-              href="/professionals"
-              className="inline-flex items-center justify-center px-4 py-2 bg-gray-950 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              {tr('nav.find')}
+        <div className="border-t border-gray-100 bg-white px-4 py-4 md:hidden">
+          <div className="space-y-1 rounded-2xl border border-gray-200 bg-gray-50 p-2">
+            {navLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="block rounded-xl px-3 py-3 text-sm font-semibold text-gray-800" onClick={() => setMobileOpen(false)}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-3 grid gap-2">
+            <Link href="/professionals" className="inline-flex items-center justify-center rounded-xl bg-gray-950 px-4 py-3 text-sm font-semibold text-white" onClick={() => setMobileOpen(false)}>
+              {isDa ? 'Book 60 min' : 'Book 60 min'}
             </Link>
             {!session && (
               <>
-                <Link href="/login" className="text-sm text-gray-500 text-center py-2" onClick={() => setMobileOpen(false)}>
-                  {tr('nav.login')}
+                <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-950" onClick={() => setMobileOpen(false)}>
+                  {tr('professionals.cta')}
                 </Link>
-                <Link
-                  href="/professional/signup"
-                  className="inline-flex items-center justify-center px-4 py-2 border border-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {tr('nav.signup')}
+                <Link href="/login" className="text-center text-sm font-medium text-gray-500 py-2" onClick={() => setMobileOpen(false)}>
+                  {tr('nav.login')}
                 </Link>
               </>
             )}
+            <div className="mx-auto pt-1"><LanguageToggle /></div>
           </div>
         </div>
       )}
