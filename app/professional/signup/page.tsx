@@ -6,11 +6,17 @@ import { createClient } from '@/lib/supabase/client';
 import { sendWelcomeProfessional } from '@/lib/email';
 
 const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'];
-const SESSION_TYPES = [
-  { type: 'mock_interview', label: 'Mock Interview' },
-  { type: 'cv_review', label: 'CV & LinkedIn' },
+const FOCUS_AREAS = [
+  { type: 'cv_linkedin', label: 'CV / LinkedIn' },
+  { type: 'application_review', label: 'Application Review' },
+  { type: 'interview_prep', label: 'Interview Prep' },
   { type: 'case_prep', label: 'Case Prep' },
-  { type: 'career_strategy', label: 'Career Strategy' },
+  { type: 'banking_technicals', label: 'Banking Technicals' },
+  { type: 'consulting_cases', label: 'Consulting Cases' },
+  { type: 'pe_investment_case', label: 'PE / Investment Case' },
+  { type: 'career_direction', label: 'Career Direction' },
+  { type: 'ai_career_strategy', label: 'AI Career Strategy' },
+  { type: 'industry_insight', label: 'Industry Insight' },
 ];
 
 export default function ProfessionalSignupPage() {
@@ -20,7 +26,7 @@ export default function ProfessionalSignupPage() {
     name: '', email: '', password: '',
     title: '', company: '', industry: '',
     bio: '', linkedin: '',
-    sessionTypes: [] as string[], priceDkk: 500,
+    sessionTypes: [] as string[], priceDkk: 1200,
     donatesToCharity: false,
   });
   const [error, setError] = useState('');
@@ -38,7 +44,7 @@ export default function ProfessionalSignupPage() {
       }
     }
     if (nextStep === 2 && form.sessionTypes.length === 0) {
-      setError('Vælg mindst én sessionstype.');
+      setError('Vælg mindst ét fokusområde.');
       return false;
     }
     setError('');
@@ -178,11 +184,11 @@ export default function ProfessionalSignupPage() {
 
           {step === 2 && (
             <div className="space-y-6">
-              <h1 className="text-xl font-bold text-gray-900">Sessionstyper og pris</h1>
+              <h1 className="text-xl font-bold text-gray-900">Fokusområder og pris</h1>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Hvad tilbyder du?</label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">Hvad kan kandidater bruge din 60-minutters session på?</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {SESSION_TYPES.map(s => (
+                  {FOCUS_AREAS.map(s => (
                     <button key={s.type} onClick={() => toggleSessionType(s.type)}
                       className={`text-sm font-medium px-4 py-3 rounded-xl border transition-colors ${form.sessionTypes.includes(s.type) ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
                       {s.label}
@@ -191,14 +197,14 @@ export default function ProfessionalSignupPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">Pris pr. session: <span className="font-bold text-gray-900">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
-                <input type="range" min={300} max={2000} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
+                <label className="block text-sm font-medium text-gray-700 mb-3">Pris pr. 60 min session: <span className="font-bold text-gray-900">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
+                <input type="range" min={500} max={1800} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
                   className="w-full accent-indigo-600" />
-                <div className="flex justify-between text-xs text-gray-400 mt-1"><span>DKK 300</span><span>DKK 2.000</span></div>
+                <div className="flex justify-between text-xs text-gray-400 mt-1"><span>DKK 500</span><span>DKK 1.800</span></div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bio (valgfri)</label>
-                <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 resize-none" placeholder="Fortæl hvad du kan hjælpe med..." />
+                <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={4} className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 resize-none" placeholder="Fortæl hvad du kan hjælpe med i en 60-minutters session..." />
               </div>
             </div>
           )}
@@ -229,8 +235,8 @@ export default function ProfessionalSignupPage() {
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Navn</span><span className="font-medium">{form.name}</span></div>
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Titel</span><span className="font-medium">{form.title}</span></div>
                 <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Industri</span><span className="font-medium">{form.industry}</span></div>
-                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Pris</span><span className="font-medium">DKK {form.priceDkk.toLocaleString('da-DK')}/session</span></div>
-                <div className="flex justify-between py-2"><span className="text-gray-500">Sessions</span><span className="font-medium">{form.sessionTypes.length} valgt</span></div>
+                <div className="flex justify-between py-2 border-b border-gray-100"><span className="text-gray-500">Pris</span><span className="font-medium">DKK {form.priceDkk.toLocaleString('da-DK')}/60 min</span></div>
+                <div className="flex justify-between py-2"><span className="text-gray-500">Fokusområder</span><span className="font-medium">{form.sessionTypes.length} valgt</span></div>
               </div>
             </div>
           )}
