@@ -17,6 +17,15 @@ interface Professional {
   focus_areas?: string[]
 }
 
+const FOCUS_LABELS: Record<string, string> = {
+  mock_interview: 'Mock Interview',
+  cv_review: 'CV & LinkedIn Review',
+  case_prep: 'Case Prep',
+  career_strategy: 'Career Strategy',
+  career_advice: 'Career Strategy',
+  informal_chat: '1:1 Career Conversation',
+}
+
 const DEMO_PROFESSIONALS: Record<string, Professional> = {
   'demo-1': {
     id: 'demo-1',
@@ -26,7 +35,7 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     industries: ['Banking', 'Private Equity'],
     price: 500,
     bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
-    focus_areas: ['Mock Interview', 'CV review', 'Career Strategy', 'Case Prep']
+    focus_areas: ['mock_interview', 'cv_review', 'career_strategy', 'case_prep']
   },
   'demo-2': {
     id: 'demo-2',
@@ -36,7 +45,7 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     industries: ['Management Consulting'],
     price: 450,
     bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
-    focus_areas: ['Case Prep', 'Career Strategy', 'Mock Interview']
+    focus_areas: ['case_prep', 'career_strategy', 'mock_interview']
   },
   'demo-3': {
     id: 'demo-3',
@@ -146,7 +155,7 @@ export default function ProfessionalDetailPage() {
               <h3 className="text-sm font-semibold text-gray-900 mb-2">{t.sessionTypes}</h3>
               <div className="flex flex-wrap gap-2">
                 {professional.focus_areas.map((area) => (
-                  <span key={area} className="bg-gray-50 text-gray-700 text-sm px-3 py-1 rounded-lg border border-gray-100">{area}</span>
+                  <span key={area} className="bg-gray-50 text-gray-700 text-sm px-3 py-1 rounded-lg border border-gray-100">{FOCUS_LABELS[area] ?? area}</span>
                 ))}
               </div>
             </div>
