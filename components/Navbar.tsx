@@ -43,43 +43,55 @@ export function Navbar() {
     window.location.href = '/';
   }
 
+  const navLinks = [
+    { href: '/professionals', labelKey: 'nav.find' },
+    { href: '/#how', labelKey: 'nav.how' },
+    { href: '/#candidates', labelKey: 'nav.candidates' },
+    { href: '/#professionals-section', labelKey: 'nav.professionals' },
+    { href: '/#about', labelKey: 'nav.about' },
+  ];
+
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-
         {/* Logo */}
-        <Link href="/" className="font-extrabold text-[15px] tracking-tight text-gray-950 flex-shrink-0">
+        <Link href="/" className="font-extrabold text-[15px] tracking-tight text-[#0A0A0A] shrink-0">
           Naetwork
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden lg:flex items-center gap-6">
-          <Link href="/professionals" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-            {tr('nav.find')}
-          </Link>
-          <a href="#how" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-            {tr('nav.how')}
-          </a>
-          <a href="#candidates" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-            {tr('nav.candidates')}
-          </a>
-          <a href="#professionals-section" className="txt-sm text-gray-600 hover:text-gray-900 transition-colors">
-            {tr('nav.professionals')}
-          </a>
+        <div className="hidden md:flex items-center gap-6">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm text-gray-500 hover:text-gray-950 transition-colors font-medium"
+            >
+              {tr(link.labelKey)}
+            </Link>
+          ))}
         </div>
 
         {/* Right side */}
         <div className="flex items-center gap-3">
           <LanguageToggle />
 
+          {/* Primary CTA — always visible on desktop */}
+          <Link
+            href="/professionals"
+            className="hidden md:inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+          >
+            {tr('nav.find')}
+          </Link>
+
           {session === null ? null : session ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0A0A0A] transition-colors font-medium"
               >
-                <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-bold">
-                 {userEmail.charAt(0).toUpperCase()}
+                <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-bold">
+                  {userEmail.charAt(0).toUpperCase()}
                 </div>
               </button>
               {dropdownOpen && (
@@ -89,7 +101,7 @@ export function Navbar() {
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     onClick={() => setDropdownOpen(false)}
                   >
-                     {tr('nav.dashboard')}
+                    {tr('nav.dashboard')}
                   </Link>
                   <Link
                     href="/projekter"
@@ -116,33 +128,38 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <>
-              <Link
-                href="/login"
-                className="hidden sm:block text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium"
-              >
+            <div className="hidden md:flex items-center gap-2">
+              <Link href="/login" className="text-sm text-gray-500 hover:text-[#0A0A0A] transition-colors font-medium">
                 {tr('nav.login')}
               </Link>
               <Link
-                href="/professionals"
-                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-sm font-medium text-white transition-colors"
+                href="/professional/signup"
+                className="inline-flex items-center justify-center rounded-md border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
               >
-                {tr('nav.find')}
+                {tr('nav.signup')}
               </Link>
-            </>
+            </div>
           )}
 
-          {/* Mobile menu button */}
+          {/* Mobile hamburger */}
           <button
+            className="md:hidden p-2 text-gray-500 hover:text-gray-950"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-1 text-gray-500 hover:text-gray-900 transition-colors"
-            aria-label="Menu"
+            aria-label="Toggle menu"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {mobileOpen
-                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              }
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {mobileOpen ? (
+                <>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </>
+              )}
             </svg>
           </button>
         </div>
@@ -150,24 +167,40 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
-          <Link href="/professionals" className="block py-2 text-sm text-gray-700 hover:text-gray-900" onClick={() => setMobileOpen(false)}>
-            {tr('nav.find')}
-          </Link>
-          <a href="#how" className="block py-2 text-sm text-gray-700 hover:text-gray-900" onClick={() => setMobileOpen(false)}>
-            {tr('nav.how')}
-          </a>
-          <a href="#candidates" className="block py-2 text-sm text-gray-700 hover:text-gray-900" onClick={() => setMobileOpen(false)}>
-            {tr('nav.candidates')}
-          </a>
-          <a href="#professionals-section" className="block py-2 text-sm text-gray-700 hover:text-gray-900" onClick={() => setMobileOpen(false)}>
-            {tr('nav.professionals')}
-          </a>
-          {!session && (
-            <Link href="/login" className="block py-2 text-sm text-gray-700 hover:text-gray-900" onClick={() => setMobileOpen(false)}>
-              {tr('nav.login')}
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="block text-sm text-gray-700 font-medium py-2"
+              onClick={() => setMobileOpen(false)}
+            >
+              {tr(link.labelKey)}
             </Link>
-          )}
+          ))}
+          <div className="pt-3 border-t border-gray-100 flex flex-col gap-2">
+            <Link
+              href="/professionals"
+              className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              {tr('nav.find')}
+            </Link>
+            {!session && (
+              <>
+                <Link href="/login" className="text-sm text-gray-500 text-center py-2" onClick={() => setMobileOpen(false)}>
+                  {tr('nav.login')}
+                </Link>
+                <Link
+                  href="/professional/signup"
+                  className="inline-flex items-center justify-center px-4 py-2 border border-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {tr('nav.signup')}
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>
