@@ -24,7 +24,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     title: 'Associate Director',
     company: 'Goldman Sachs',
     industries: ['Banking', 'Private Equity'],
-    price: 500,
+    price: 1200,
     bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.'
   },
   {
@@ -33,7 +33,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     title: 'Senior Consultant',
     company: 'McKinsey & Company',
     industries: ['Management Consulting'],
-    price: 450,
+    price: 1100,
     bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.'
   },
   {
@@ -42,7 +42,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     title: 'AI Product Lead',
     company: 'Google DeepMind',
     industries: ['AI'],
-    price: 400,
+    price: 900,
     bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.'
   },
 ]
@@ -82,7 +82,7 @@ export default function ProfessionalsPage() {
         title: p.title ?? '',
         company: p.company ?? '',
         industries: p.industries ?? [],
-        price: p.price_dkk ?? 300,
+        price: p.price_dkk ?? 1200,
         bio: p.bio ?? '',
       }))
       setDbProfessionals(mapped)
@@ -102,10 +102,10 @@ export default function ProfessionalsPage() {
 
   const t = {
     heading: locale === 'da' ? 'Find en professionel' : 'Find a professional',
-    subheading: locale === 'da' ? 'Book en 60-minutters session med erfarne professionelle' : 'Book a 60-minute session with experienced professionals',
+    subheading: locale === 'da' ? 'Book en 60-minutters 1:1 session med erfarne professionelle' : 'Book a 60-minute 1:1 session with experienced professionals',
     searchPlaceholder: locale === 'da' ? 'Søg på navn eller titel...' : 'Search by name or title...',
     bookCta: 'Book 60 min',
-    perSession: '/ session',
+    perSession: '/ 60 min',
     noResults: locale === 'da' ? 'Ingen resultater' : 'No results',
     readMore: locale === 'da' ? 'Læs mere →' : 'Read more →',
     showLess: locale === 'da' ? 'Vis mindre ↑' : 'Show less ↑',
