@@ -9,7 +9,7 @@ export function HomeContent() {
   const heroSignals = [
     {
       title: isDa ? 'Fra DKK 600' : 'From DKK 600',
-      body: isDa ? 'Konkret 1:1 sparring med klare sessionstyper' : 'Concrete 1:1 guidance with clear session formats',
+      body: isDa ? 'Konkrete 1:1 sessioner med klare formater' : 'Concrete 1:1 sessions with clear formats',
       tone: 'tone-cyan',
     },
     {
@@ -19,8 +19,33 @@ export function HomeContent() {
     },
     {
       title: isDa ? 'Direkte booking' : 'Direct booking',
-      body: isDa ? 'Vælg den professionelle, pris og session, der passer' : 'Choose the professional, price and session that fits',
+      body: isDa ? 'Vælg professionel, pris og session uden friktion' : 'Choose professional, price and session without friction',
       tone: 'tone-blue',
+    },
+  ];
+
+  const heroStack = [
+    {
+      title: 'Focused Review',
+      meta: '30 min',
+      price: 'DKK 600',
+      line: isDa ? 'CV, LinkedIn eller ansøgning' : 'CV, LinkedIn or application',
+      tone: 'tone-cyan',
+    },
+    {
+      title: 'Case / Deep Prep',
+      meta: '60 min',
+      price: 'DKK 1.200',
+      line: isDa ? 'Consulting cases, banking technicals eller PE prep' : 'Consulting cases, banking technicals or PE prep',
+      tone: 'tone-ink',
+      featured: true,
+    },
+    {
+      title: 'Career Sprint',
+      meta: '90 min',
+      price: 'DKK 1.800',
+      line: isDa ? 'Profil, target roles og næste skridt' : 'Profile, target roles and next steps',
+      tone: 'tone-sage',
     },
   ];
 
@@ -69,7 +94,8 @@ export function HomeContent() {
         ? 'Case prep, banking technicals, consulting cases eller PE/investment prep.'
         : 'Case prep, banking technicals, consulting cases or PE/investment prep.',
       output: isDa ? 'Træning tættere på virkeligheden' : 'Practice closer to the real process',
-      tone: 'tone-blue',
+      tone: 'tone-ink',
+      featured: true,
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -90,6 +116,37 @@ export function HomeContent() {
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
         </svg>
       ),
+    },
+  ];
+
+  const professionalCards = [
+    {
+      role: 'AI Product Lead',
+      field: 'AI',
+      price: 'DKK 900-1.800',
+      focus: isDa ? 'Product interviews, AI strategy og story' : 'Product interviews, AI strategy and story',
+      tone: 'tone-blue',
+    },
+    {
+      role: 'Investment Banking Associate',
+      field: 'Banking',
+      price: 'DKK 900-1.200',
+      focus: isDa ? 'M&A process, technicals og fit interviews' : 'M&A process, technicals and fit interviews',
+      tone: 'tone-mint',
+    },
+    {
+      role: 'Management Consultant',
+      field: 'Consulting',
+      price: 'DKK 900-1.200',
+      focus: isDa ? 'Case struktur, hypoteser og kommunikation' : 'Case structure, hypotheses and communication',
+      tone: 'tone-cyan',
+    },
+    {
+      role: 'Private Equity Investor',
+      field: 'Private Equity',
+      price: 'DKK 1.200-1.800',
+      focus: isDa ? 'Investment cases, diligence og deal thinking' : 'Investment cases, diligence and deal thinking',
+      tone: 'tone-sage',
     },
   ];
 
@@ -165,6 +222,13 @@ export function HomeContent() {
     },
   ];
 
+  const pathCards = [
+    { label: isDa ? 'Ambition' : 'Ambition', value: 'AI / Banking / Consulting / PE' },
+    { label: isDa ? 'Spørgsmål' : 'Question', value: isDa ? 'CV, interview, case eller karrierevalg' : 'CV, interview, case or career choice' },
+    { label: isDa ? 'Session' : 'Session', value: isDa ? '1:1 med relevant professionel' : '1:1 with a relevant professional' },
+    { label: isDa ? 'Output' : 'Output', value: isDa ? 'Klarere svar og næste skridt' : 'Sharper answers and next steps' },
+  ];
+
   const howSteps = [
     { num: '01', titleKey: 'how.step1_title', bodyKey: 'how.step1_body' },
     { num: '02', titleKey: 'how.step2_title', bodyKey: 'how.step2_body' },
@@ -193,11 +257,6 @@ export function HomeContent() {
         .delay-2 { animation-delay: 0.20s; }
         .delay-3 { animation-delay: 0.32s; }
         .delay-4 { animation-delay: 0.46s; }
-        @keyframes bounce-y {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(7px); }
-        }
-        .animate-bounce-y { animation: bounce-y 1.5s ease-in-out infinite; }
         .tone-card {
           background: var(--tone-bg, #ffffff);
           border-color: var(--tone-border, rgba(229, 231, 235, 1));
@@ -232,61 +291,100 @@ export function HomeContent() {
           box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
           border-color: rgba(15, 23, 42, 0.14);
         }
+        .market-grid {
+          background-image: linear-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+          background-size: 28px 28px;
+        }
       `}</style>
 
       {/* HERO */}
-      <section id="home" className="min-h-screen flex flex-col justify-center bg-white px-6 pt-24 pb-0" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fbfbfb 62%, #ffffff 100%)' }}>
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="animate-fade-up">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase text-gray-700 mb-10 border border-gray-200 bg-white px-3 py-1.5 rounded-full shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              {isDa ? 'For ambitiøse kandidater' : 'For ambitious candidates'}
-            </span>
+      <section id="home" className="bg-white px-6 pt-20 pb-16 md:pt-28 md:pb-20" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fbfbfb 62%, #ffffff 100%)' }}>
+        <div className="max-w-6xl mx-auto grid gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+          <div>
+            <div className="animate-fade-up">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase text-gray-700 mb-10 border border-gray-200 bg-white px-3 py-1.5 rounded-full shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                {isDa ? 'For ambitiøse kandidater' : 'For ambitious candidates'}
+              </span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-black leading-none text-gray-950 mb-6 animate-fade-up delay-1 max-w-5xl">
+              {isDa
+                ? 'Insider-sparring til karrierer i AI, Banking, Management Consulting og Private Equity.'
+                : 'Insider guidance for careers in AI, Banking, Management Consulting and Private Equity.'}
+            </h1>
+
+            <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mb-10 animate-fade-up delay-2">
+              {isDa
+                ? 'Book 1:1 sessioner fra DKK 600 med professionelle, der kender CV-screening, interviews, cases og karrierevalg indefra.'
+                : 'Book 1:1 sessions from DKK 600 with professionals who know CV screening, interviews, cases and career decisions from the inside.'}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
+              <Link
+                href="/professionals"
+                className="inline-flex items-center justify-center px-8 py-4 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-base shadow-[0_18px_40px_rgba(0,0,0,0.16)]"
+              >
+                {tr('hero.cta_primary')}
+              </Link>
+              <Link
+                href="/#pricing"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl border border-gray-300 hover:border-gray-950 hover:bg-gray-50 transition-colors text-base"
+              >
+                {isDa ? 'Se sessioner og priser' : 'See sessions and pricing'}
+              </Link>
+            </div>
+
+            <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3 animate-fade-up delay-4">
+              {heroSignals.map((item) => (
+                <div key={item.title} className={`premium-card tone-card ${item.tone} rounded-2xl border p-5`}>
+                  <p className="text-sm font-bold text-gray-950">{item.title}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-600">{item.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black leading-none text-gray-950 mb-6 animate-fade-up delay-1 max-w-5xl">
-            {isDa
-              ? 'Insider-sparring til karrierer i AI, Banking, Management Consulting og Private Equity.'
-              : 'Insider guidance for careers in AI, Banking, Management Consulting and Private Equity.'}
-          </h1>
-
-          <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mb-10 animate-fade-up delay-2">
-            {isDa
-              ? 'Book 1:1 sessioner fra DKK 600 med professionelle, der kender CV-screening, interviews, cases og karrierevalg indefra.'
-              : 'Book 1:1 sessions from DKK 600 with professionals who know CV screening, interviews, cases and career decisions from the inside.'}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
-            <Link
-              href="/professionals"
-              className="inline-flex items-center justify-center px-8 py-4 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-base shadow-[0_18px_40px_rgba(0,0,0,0.16)]"
-            >
-              {tr('hero.cta_primary')}
-            </Link>
-            <Link
-              href="/#pricing"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl border border-gray-300 hover:border-gray-950 hover:bg-gray-50 transition-colors text-base"
-            >
-              {isDa ? 'Se sessioner og priser' : 'See sessions and pricing'}
-            </Link>
-          </div>
-
-          <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3 animate-fade-up delay-4">
-            {heroSignals.map((item) => (
-              <div key={item.title} className={`premium-card tone-card ${item.tone} rounded-2xl border p-5`}>
-                <p className="text-sm font-bold text-gray-950">{item.title}</p>
-                <p className="mt-2 text-xs leading-relaxed text-gray-600">{item.body}</p>
+          <div className="relative animate-fade-up delay-3">
+            <div className="market-grid absolute inset-0 rounded-[28px] opacity-70" aria-hidden="true" />
+            <div className="relative space-y-4 py-6 lg:py-10">
+              <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Marketplace preview' : 'Marketplace preview'}</p>
+                    <p className="mt-1 text-sm font-bold text-gray-950">{isDa ? 'Vælg format før du booker' : 'Choose format before booking'}</p>
+                  </div>
+                  <span className="rounded-full bg-gray-950 px-3 py-1 text-xs font-semibold text-white">1:1</span>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="max-w-6xl mx-auto w-full mt-20 pb-10 animate-fade-up delay-4">
-          <div className="flex flex-col items-start gap-2">
-            <span className="text-xs text-gray-400 uppercase">Scroll</span>
-            <svg className="animate-bounce-y text-gray-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
+              {heroStack.map((item, index) => {
+                const isFeatured = item.featured;
+                return (
+                  <div
+                    key={item.title}
+                    className={`premium-card tone-card ${item.tone} mx-auto max-w-md rounded-2xl border p-5 ${isFeatured ? 'text-white lg:translate-x-8' : index === 0 ? 'lg:-translate-x-4' : 'lg:translate-x-2'}`}
+                  >
+                    <div className="flex items-start justify-between gap-5">
+                      <div>
+                        <p className={`text-xs font-semibold uppercase ${isFeatured ? 'text-cyan-200' : 'text-gray-500'}`}>{item.meta}</p>
+                        <h3 className={`mt-2 text-xl font-bold ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{item.title}</h3>
+                      </div>
+                      <p className={`text-lg font-black tracking-tight ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{item.price}</p>
+                    </div>
+                    <p className={`mt-5 text-sm leading-relaxed ${isFeatured ? 'text-gray-300' : 'text-gray-600'}`}>{item.line}</p>
+                  </div>
+                );
+              })}
+
+              <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm lg:-translate-x-6">
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div><p className="text-lg font-black text-gray-950">4</p><p className="text-[11px] text-gray-500">{isDa ? 'brancher' : 'fields'}</p></div>
+                  <div><p className="text-lg font-black text-gray-950">4</p><p className="text-[11px] text-gray-500">{isDa ? 'priser' : 'prices'}</p></div>
+                  <div><p className="text-lg font-black text-gray-950">1:1</p><p className="text-[11px] text-gray-500">{isDa ? 'format' : 'format'}</p></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -309,21 +407,24 @@ export function HomeContent() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {pricingCards.map((card) => (
-              <div key={card.title} className={`premium-card tone-card ${card.tone} border rounded-2xl p-6 flex flex-col min-h-[360px]`}>
-                <div className="w-10 h-10 rounded-full bg-gray-950 text-white flex items-center justify-center mb-8">{card.icon}</div>
-                <div className="mb-5">
-                  <p className="text-sm font-semibold text-gray-600 mb-2">{card.duration}</p>
-                  <h3 className="font-bold text-xl text-gray-950 mb-4">{card.title}</h3>
-                  <p className="text-3xl font-black text-gray-950 tracking-tight">{card.price}</p>
+            {pricingCards.map((card) => {
+              const isFeatured = card.featured;
+              return (
+                <div key={card.title} className={`premium-card tone-card ${card.tone} border rounded-2xl p-6 flex flex-col min-h-[370px] ${isFeatured ? 'text-white' : ''}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-8 ${isFeatured ? 'bg-white text-gray-950' : 'bg-gray-950 text-white'}`}>{card.icon}</div>
+                  <div className="mb-5">
+                    <p className={`text-sm font-semibold mb-2 ${isFeatured ? 'text-gray-300' : 'text-gray-600'}`}>{card.duration}</p>
+                    <h3 className={`font-bold text-xl mb-4 ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{card.title}</h3>
+                    <p className={`text-3xl font-black tracking-tight ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{card.price}</p>
+                  </div>
+                  <p className={`text-sm leading-relaxed mb-5 ${isFeatured ? 'text-gray-300' : 'text-gray-600'}`}>{card.body}</p>
+                  <div className={`mt-auto border-t pt-5 ${isFeatured ? 'border-white/10' : 'border-gray-950/10'}`}>
+                    <p className={`text-xs font-semibold uppercase mb-1 ${isFeatured ? 'text-gray-400' : 'text-gray-500'}`}>Output</p>
+                    <p className={`text-sm font-semibold ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{card.output}</p>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed mb-5">{card.body}</p>
-                <div className="mt-auto border-t border-gray-950/10 pt-5">
-                  <p className="text-xs font-semibold uppercase text-gray-500 mb-1">{isDa ? 'Output' : 'Output'}</p>
-                  <p className="text-sm font-semibold text-gray-950">{card.output}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-10 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-6 md:flex-row md:items-center md:justify-between">
@@ -335,6 +436,44 @@ export function HomeContent() {
             <Link href="/professionals" className="inline-flex items-center justify-center px-6 py-3 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-sm w-fit">
               {tr('cta.button')}
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* PROFESSIONAL PREVIEW */}
+      <section className="py-24 md:py-32 bg-gray-950 border-t border-gray-900">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+            <div>
+              <p className="text-xs font-semibold uppercase text-cyan-200 mb-4">{isDa ? 'Hvem du kan møde' : 'Who you can meet'}</p>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                {isDa ? 'Produktet er ikke en artikel. Det er adgang til et menneske.' : 'The product is not an article. It is access to a person.'}
+              </h2>
+              <p className="text-gray-400 leading-relaxed max-w-md">
+                {isDa
+                  ? 'Naetwork skal føles kurateret: branche, erfaring, sessionstype og pris skal kunne aflæses på få sekunder.'
+                  : 'Naetwork should feel curated: field, experience, session type and price should be readable in seconds.'}
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {professionalCards.map((card) => (
+                <div key={card.role} className={`premium-card tone-card ${card.tone} rounded-2xl border p-6 min-h-[250px] flex flex-col`}>
+                  <div className="flex items-start justify-between gap-4 mb-8">
+                    <div className="h-10 w-10 rounded-full bg-gray-950 text-white flex items-center justify-center text-xs font-black">
+                      {card.field.slice(0, 2).toUpperCase()}
+                    </div>
+                    <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-gray-700 border border-white/80">{card.field}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-950 mb-2">{card.role}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed mb-6">{card.focus}</p>
+                  <div className="mt-auto flex items-center justify-between border-t border-gray-950/10 pt-5">
+                    <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Typisk pris' : 'Typical price'}</p>
+                    <p className="text-sm font-black text-gray-950">{card.price}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -362,25 +501,48 @@ export function HomeContent() {
       </section>
 
       {/* WHY NAETWORK */}
-      <section className="py-24 md:py-32 bg-gray-950">
+      <section className="py-24 md:py-32 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid gap-12 md:grid-cols-[1.05fr_1fr] md:items-end">
             <div>
-              <p className="text-xs font-semibold uppercase text-gray-400 mb-6">{tr('why.label')}</p>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight max-w-2xl">
+              <p className="text-xs font-semibold uppercase text-gray-500 mb-6">{tr('why.label')}</p>
+              <h2 className="text-3xl md:text-5xl font-black text-gray-950 leading-tight max-w-2xl">
                 {isDa ? 'Forbered dig med folk, der kender vurderingen indefra.' : 'Prepare with people who know the assessment from inside.'}
               </h2>
             </div>
-            <p className="text-lg text-gray-300 leading-relaxed max-w-xl">{tr('why.body')}</p>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-xl">{tr('why.body')}</p>
           </div>
 
           <div className="mt-14 grid md:grid-cols-3 gap-4">
             {proofCards.map((card) => (
-              <div key={card.title} className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-                <p className="text-sm font-bold text-white mb-3">{card.title}</p>
-                <p className="text-sm text-gray-400 leading-relaxed">{card.body}</p>
+              <div key={card.title} className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
+                <p className="text-sm font-bold text-gray-950 mb-3">{card.title}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{card.body}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SIGNATURE FLOW */}
+      <section className="py-24 md:py-32 bg-gray-950 border-t border-gray-900">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="text-xs font-semibold uppercase text-cyan-200 mb-4">{isDa ? 'Naetwork flow' : 'Naetwork flow'}</p>
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
+                {isDa ? 'Fra usikkerhed til et skarpere næste træk.' : 'From uncertainty to a sharper next move.'}
+              </h2>
+            </div>
+            <div className="grid sm:grid-cols-4 gap-3">
+              {pathCards.map((card, index) => (
+                <div key={card.label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 min-h-[170px] flex flex-col">
+                  <p className="text-xs font-semibold text-gray-500 mb-5">0{index + 1}</p>
+                  <p className="text-sm font-bold text-white mb-2">{card.label}</p>
+                  <p className="text-xs text-gray-400 leading-relaxed">{card.value}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
