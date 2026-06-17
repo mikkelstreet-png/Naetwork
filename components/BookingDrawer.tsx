@@ -53,13 +53,15 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const days = getNextTwoWeekdays()
 
   const t = {
-    title: 'Book session',
+    title: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
     step1Title: locale === 'da' ? 'Vælg tid' : 'Choose time',
     step2Title: locale === 'da' ? 'Bekræft detaljer' : 'Confirm details',
     duration: '60 min',
-    price: `DKK ${professional.price} / session`,
+    price: `DKK ${professional.price} / 60 min`,
     reminder: locale === 'da' ? 'Tilføj påmindelse' : 'Add reminder',
-    messagePlaceholder: locale === 'da' ? 'Besked til den professionelle (valgfri, maks 200 tegn)...' : 'Message to professional (optional, max 200 chars)...',
+    messagePlaceholder: locale === 'da'
+      ? 'Hvad vil du bruge sessionen på? F.eks. CV, interview, case, career direction...'
+      : 'What would you like to use the session for? E.g. CV, interview, case, career direction...',
     confirm: locale === 'da' ? 'Bekræft booking' : 'Confirm booking',
     successTitle: locale === 'da' ? 'Booking anmodet!' : 'Booking requested!',
     successMsg: locale === 'da'
@@ -113,7 +115,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
           candidateEmail: user.email,
           candidateName: (profile.name as string | null) ?? user.email,
           professionalName: professional.name,
-          sessionType: 'career_advice',
+          sessionType: '60 min career session',
           scheduledAt: startsAt.toISOString(),
           priceDkk: professional.price,
         }).catch(() => false)
