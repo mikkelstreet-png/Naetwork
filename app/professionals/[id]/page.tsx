@@ -18,12 +18,21 @@ interface Professional {
 }
 
 const FOCUS_LABELS: Record<string, string> = {
-  mock_interview: 'Mock Interview',
-  cv_review: 'CV & LinkedIn Review',
+  cv_linkedin: 'CV / LinkedIn',
+  application_review: 'Application Review',
+  interview_prep: 'Interview Prep',
   case_prep: 'Case Prep',
-  career_strategy: 'Career Strategy',
-  career_advice: 'Career Strategy',
-  informal_chat: '1:1 Career Conversation',
+  banking_technicals: 'Banking Technicals',
+  consulting_cases: 'Consulting Cases',
+  pe_investment_case: 'PE / Investment Case',
+  career_direction: 'Career Direction',
+  ai_career_strategy: 'AI Career Strategy',
+  industry_insight: 'Industry Insight',
+  mock_interview: 'Interview Prep',
+  cv_review: 'CV / LinkedIn',
+  career_strategy: 'Career Direction',
+  career_advice: 'Career Direction',
+  informal_chat: 'Industry Insight',
 }
 
 const DEMO_PROFESSIONALS: Record<string, Professional> = {
@@ -33,9 +42,9 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     title: 'Associate Director',
     company: 'Goldman Sachs',
     industries: ['Banking', 'Private Equity'],
-    price: 500,
+    price: 1200,
     bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
-    focus_areas: ['mock_interview', 'cv_review', 'career_strategy', 'case_prep']
+    focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals', 'pe_investment_case']
   },
   'demo-2': {
     id: 'demo-2',
@@ -43,9 +52,9 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     title: 'Senior Consultant',
     company: 'McKinsey & Company',
     industries: ['Management Consulting'],
-    price: 450,
+    price: 1100,
     bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
-    focus_areas: ['case_prep', 'career_strategy', 'mock_interview']
+    focus_areas: ['case_prep', 'consulting_cases', 'interview_prep', 'career_direction']
   },
   'demo-3': {
     id: 'demo-3',
@@ -53,9 +62,9 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     title: 'AI Product Lead',
     company: 'Google DeepMind',
     industries: ['AI'],
-    price: 400,
+    price: 900,
     bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
-    focus_areas: ['AI career path', 'Portfolio review', 'Technical preparation', 'Product strategy']
+    focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review']
   }
 }
 
@@ -91,7 +100,7 @@ export default function ProfessionalDetailPage() {
         setProfessional({
           id: row.id, name: row.profiles?.name ?? '',
           title: row.title ?? '', company: row.company ?? '',
-          industries: row.industries ?? [], price: row.price_dkk ?? 300,
+          industries: row.industries ?? [], price: row.price_dkk ?? 1200,
           bio: row.bio ?? '', focus_areas: row.focus_areas ?? [],
         })
       }
@@ -103,9 +112,9 @@ export default function ProfessionalDetailPage() {
 
   const t = {
     back: locale === 'da' ? 'Tilbage til oversigt' : 'Back to overview',
-    sessionTypes: locale === 'da' ? 'Sessionstyper' : 'Session types',
+    sessionTypes: locale === 'da' ? 'Fokusområder' : 'Focus areas',
     availability: locale === 'da' ? 'Se ledige tider' : 'View availability',
-    bookCta: 'Book 60 min session',
+    bookCta: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
     loading: locale === 'da' ? 'Indlæser...' : 'Loading...',
     notFound: locale === 'da' ? 'Profil ikke fundet' : 'Profile not found',
   }
@@ -141,7 +150,7 @@ export default function ProfessionalDetailPage() {
             </div>
             <div className="text-right">
               <p className="text-xl font-bold text-gray-900">DKK {professional.price}</p>
-              <p className="text-sm text-gray-400">/ session</p>
+              <p className="text-sm text-gray-400">/ 60 min</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-1.5 mb-5">
