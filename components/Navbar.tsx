@@ -45,9 +45,9 @@ export function Navbar() {
 
   const navLinks = [
     { href: '/professionals', labelKey: 'nav.find' },
-    { href: '/#how', labelKey: 'nav.how' },
+    { href: '/#how-it-works', labelKey: 'nav.how' },
     { href: '/#candidates', labelKey: 'nav.candidates' },
-    { href: '/#professionals-section', labelKey: 'nav.professionals' },
+    { href: '/#professionals', labelKey: 'nav.professionals' },
     { href: '/#about', labelKey: 'nav.about' },
   ];
 
