@@ -45,7 +45,7 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/professionals', label: isDa ? 'Find professionals' : 'Find professionals' },
+    { href: '/professionals', label: tr('nav.find') },
     { href: '/#pricing', label: isDa ? 'Format' : 'Format' },
     { href: '/#how-it-works', label: tr('nav.how') },
     { href: '/#candidates', label: tr('nav.candidates') },
