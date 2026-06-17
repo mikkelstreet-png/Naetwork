@@ -3,44 +3,59 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
-type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+type BookingStatus = 'requested' | 'pending' | 'confirmed' | 'rescheduled' | 'cancelled' | 'completed' | 'no_show' | 'refunded' | 'disputed';
 
 interface Booking {
   id: string;
-  date: string;
-  time: string | null;
+  starts_at: string;
   status: BookingStatus;
-  price: number | null;
-  candidate: { full_name: string | null } | null;
-  professional: { full_name: string | null } | null;
+  price_dkk: number | null;
+  candidate_profile_id: string | null;
+  professional_profile_id: string | null;
+}
+
+interface BookingRow extends Booking {
+  candidateName: string;
+  professionalName: string;
 }
 
 const STATUS_OPTIONS: { label: string; value: BookingStatus | 'all' }[] = [
   { label: 'Alle', value: 'all' },
+  { label: 'Anmodet', value: 'requested' },
   { label: 'Afventer', value: 'pending' },
-  { label: 'Bekr\u00e6ftet', value: 'confirmed' },
-  { label: 'Annulleret', value: 'cancelled' },
-  { label: 'Gennemf\u00f8rt', value: 'completed' },
+  { label: 'Bekræftet', value: 'confirmed' },
+  { label: 'Aflyst', value: 'cancelled' },
+  { label: 'Gennemført', value: 'completed' },
 ];
 
 const statusBadge = (status: BookingStatus) => {
   const map: Record<BookingStatus, string> = {
+    requested: 'bg-gray-100 text-gray-700',
     pending: 'bg-yellow-100 text-yellow-800',
     confirmed: 'bg-indigo-100 text-indigo-800',
+    rescheduled: 'bg-indigo-50 text-indigo-700',
     cancelled: 'bg-red-100 text-red-800',
-    completed: 'bg-gray-100 text-gray-700',
+    completed: 'bg-green-100 text-green-800',
+    no_show: 'bg-red-50 text-red-700',
+    refunded: 'bg-gray-100 text-gray-600',
+    disputed: 'bg-red-100 text-red-800',
   };
   const labels: Record<BookingStatus, string> = {
+    requested: 'Anmodet',
     pending: 'Afventer',
-    confirmed: 'Bekr\u00e6ftet',
-    cancelled: 'Annulleret',
-    completed: 'Gennemf\u00f8rt',
+    confirmed: 'Bekræftet',
+    rescheduled: 'Omplanlagt',
+    cancelled: 'Aflyst',
+    completed: 'Gennemført',
+    no_show: 'Udeblevet',
+    refunded: 'Refunderet',
+    disputed: 'Tvist',
   };
   return <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[status]}`}>{labels[status]}</span>;
 };
 
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingRow[]>([]);
   const [filter, setFilter] = useState<BookingStatus | 'all'>('all');
   const [loading, setLoading] = useState(true);
 
@@ -51,12 +66,44 @@ export default function BookingsPage() {
       setLoading(true);
       const { data } = await supabase
         .from('bookings')
-        .select('id, date, time, status, price, candidate:candidate_id(full_name), professional:professional_id(full_name)')
-        .order('date', { ascending: false });
-      setBookings((data as unknown as Booking[]) || []);
+        .select('id, starts_at, status, price_dkk, candidate_profile_id, professional_profile_id')
+        .order('starts_at', { ascending: false });
+
+      const rows = (data as Booking[]) || [];
+      const candidateIds = Array.from(new Set(rows.map(b => b.candidate_profile_id).filter(Boolean))) as string[];
+      const professionalIds = Array.from(new Set(rows.map(b => b.professional_profile_id).filter(Boolean))) as string[];
+
+      const [{ data: candidateProfiles }, { data: professionalProfiles }] = await Promise.all([
+        candidateIds.length
+          ? supabase.from('profiles').select('id, name').in('id', candidateIds)
+          : Promise.resolve({ data: [] }),
+        professionalIds.length
+          ? supabase.from('professional_profiles').select('id, profile_id').in('id', professionalIds)
+          : Promise.resolve({ data: [] }),
+      ]);
+
+      const proProfileRows = (professionalProfiles as Array<{ id: string; profile_id: string | null }> | null) || [];
+      const proOwnerProfileIds = Array.from(new Set(proProfileRows.map(p => p.profile_id).filter(Boolean))) as string[];
+      const { data: proOwnerProfiles } = proOwnerProfileIds.length
+        ? await supabase.from('profiles').select('id, name').in('id', proOwnerProfileIds)
+        : { data: [] };
+
+      const candidateNames = new Map(((candidateProfiles as Array<{ id: string; name: string | null }> | null) || []).map(p => [p.id, p.name || '—']));
+      const ownerNames = new Map(((proOwnerProfiles as Array<{ id: string; name: string | null }> | null) || []).map(p => [p.id, p.name || '—']));
+      const proToOwner = new Map(proProfileRows.map(p => [p.id, p.profile_id]));
+
+      setBookings(rows.map((booking) => {
+        const ownerProfileId = booking.professional_profile_id ? proToOwner.get(booking.professional_profile_id) : null;
+        return {
+          ...booking,
+          candidateName: booking.candidate_profile_id ? candidateNames.get(booking.candidate_profile_id) ?? '—' : '—',
+          professionalName: ownerProfileId ? ownerNames.get(ownerProfileId) ?? '—' : '—',
+        };
+      }));
       setLoading(false);
     }
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
@@ -105,7 +152,7 @@ export default function BookingsPage() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             {loading ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indl\u00e6ser...</div>
+              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indlæser...</div>
             ) : filtered.length === 0 ? (
               <div className="px-5 py-8 text-center text-gray-400 text-sm">Ingen bookinger fundet</div>
             ) : (
@@ -114,7 +161,7 @@ export default function BookingsPage() {
                   <tr className="bg-gray-50">
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Kandidat</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Professionel</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Dato / Tid</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Tidspunkt</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Pris</th>
                   </tr>
@@ -122,14 +169,14 @@ export default function BookingsPage() {
                 <tbody className="divide-y divide-gray-100">
                   {filtered.map((b) => (
                     <tr key={b.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">{b.candidate?.full_name || '\u2014'}</td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{b.professional?.full_name || '\u2014'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{b.candidateName}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{b.professionalName}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        <div>{new Date(b.date).toLocaleDateString('da-DK')}</div>
-                        {b.time && <div className="text-xs text-gray-400">{b.time}</div>}
+                        <div>{new Date(b.starts_at).toLocaleDateString('da-DK')}</div>
+                        <div className="text-xs text-gray-400">{new Date(b.starts_at).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}</div>
                       </td>
                       <td className="px-4 py-3">{statusBadge(b.status)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{b.price != null ? `${b.price} kr.` : '\u2014'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{b.price_dkk != null ? `${b.price_dkk} kr.` : '—'}</td>
                     </tr>
                   ))}
                 </tbody>
