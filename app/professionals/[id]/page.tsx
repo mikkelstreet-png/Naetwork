@@ -25,8 +25,8 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     company: 'Goldman Sachs',
     industries: ['Banking', 'Private Equity'],
     price: 500,
-    bio: 'Tidligere Associate Director med 8 aars erfaring i M&A og kapitalmarkeder. Jeg hjaelper dig med at forberede dig til interviews og forstaae, hvad der kraeves for at komme ind i investment banking.',
-    focus_areas: ['Interview forberedelse', 'CV review', 'Karriereraagivning', 'Case-traening']
+    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
+    focus_areas: ['Mock Interview', 'CV review', 'Career Strategy', 'Case Prep']
   },
   'demo-2': {
     id: 'demo-2',
@@ -35,8 +35,8 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     company: 'McKinsey & Company',
     industries: ['Management Consulting'],
     price: 450,
-    bio: 'Senior Consultant med fokus paa strategi og organisationsudvikling. Har hjulpet over 30 kandidater med case-forberedelse og karriereplan.',
-    focus_areas: ['Case-forberedelse', 'Karriereplan', 'Networking tips', 'Loenforhandling']
+    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
+    focus_areas: ['Case Prep', 'Career Strategy', 'Mock Interview']
   },
   'demo-3': {
     id: 'demo-3',
@@ -45,8 +45,8 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     company: 'Google DeepMind',
     industries: ['AI'],
     price: 400,
-    bio: 'Produktleder med baggrund i maskinlaering og AI-strategi. Tidligere engineer, nu fokuseret paa at guide folk ind i AI-industrien.',
-    focus_areas: ['AI karrierevej', 'Portfolio review', 'Teknisk forberedelse', 'Produktstrategi']
+    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
+    focus_areas: ['AI career path', 'Portfolio review', 'Technical preparation', 'Product strategy']
   }
 }
 
@@ -70,19 +70,19 @@ export default function ProfessionalDetailPage() {
     async function fetchProfessional() {
       const { data } = await supabase
         .from('professional_profiles')
-        .select(`id, title, company, bio, price_per_session, industries, focus_areas, profiles!inner(full_name)`)
+        .select('id, title, company, bio, price_dkk, industries, focus_areas, profiles!inner(name)')
         .eq('id', id)
         .single()
       if (data) {
         const row = data as {
-          id: string; title: string; company: string; bio: string
-          price_per_session: number; industries: string[]; focus_areas: string[]
-          profiles: { full_name?: string } | null
+          id: string; title: string | null; company: string | null; bio: string | null
+          price_dkk: number | null; industries: string[] | null; focus_areas: string[] | null
+          profiles: { name?: string | null } | null
         }
         setProfessional({
-          id: row.id, name: row.profiles?.full_name ?? '',
+          id: row.id, name: row.profiles?.name ?? '',
           title: row.title ?? '', company: row.company ?? '',
-          industries: row.industries ?? [], price: row.price_per_session ?? 0,
+          industries: row.industries ?? [], price: row.price_dkk ?? 300,
           bio: row.bio ?? '', focus_areas: row.focus_areas ?? [],
         })
       }
@@ -97,7 +97,7 @@ export default function ProfessionalDetailPage() {
     sessionTypes: locale === 'da' ? 'Sessionstyper' : 'Session types',
     availability: locale === 'da' ? 'Se ledige tider' : 'View availability',
     bookCta: 'Book 60 min session',
-    loading: locale === 'da' ? 'Indlaaser...' : 'Loading...',
+    loading: locale === 'da' ? 'Indlæser...' : 'Loading...',
     notFound: locale === 'da' ? 'Profil ikke fundet' : 'Profile not found',
   }
 
