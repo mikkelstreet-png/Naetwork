@@ -4,8 +4,13 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const INDUSTRIES = ['Banking', 'Private Equity', 'AI', 'Management Consulting'];
-const SESSION_TYPES = ['Mock Interview', 'CV & LinkedIn Review', 'Uformel 1:1', 'Karriererådgivning'];
+const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'];
+const SESSION_TYPES = [
+  { type: 'mock_interview', label: 'Mock Interview' },
+  { type: 'cv_review', label: 'CV & LinkedIn Review' },
+  { type: 'case_prep', label: 'Case Prep' },
+  { type: 'career_strategy', label: 'Career Strategy' },
+];
 
 export default function ProfessionalProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -150,12 +155,12 @@ export default function ProfessionalProfilePage() {
             <div className="flex flex-wrap gap-2">
               {SESSION_TYPES.map(st => (
                 <button
-                  key={st}
+                  key={st.type}
                   type="button"
-                  onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, st) }))}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${data.focus_areas.includes(st) ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                  onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, st.type) }))}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${data.focus_areas.includes(st.type) ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
                 >
-                  {st}
+                  {st.label}
                 </button>
               ))}
             </div>
