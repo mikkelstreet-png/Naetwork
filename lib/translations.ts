@@ -10,6 +10,11 @@ export const t: Record<Lang, Record<string, string>> = {
     'nav.settings': 'Indstillinger',
     'nav.logout': 'Log ud',
     'nav.postProject': 'Opret projekt',
+    'nav.find': 'Find professionelle',
+    'nav.how': 'Sådan virker det',
+    'nav.candidates': 'Kandidater',
+    'nav.professionals': 'Professionelle',
+    'nav.about': 'Om os',
 
     // ─── Hero ──────────────────────────────────────────────────
     'hero.label': 'Karrierenetværk',
@@ -50,7 +55,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'sessions.sub': 'Vælg den session der passer dig',
 
     // ─── How it works ──────────────────────────────────────────
-    'how.label': 'Sådan fungerer det',
+    'how.label': 'SåRdan fungerer det',
     'how.title': 'Sådan virker det',
     'how.tagline': 'Fire skridt til dit næste karrieregennembrud',
     'how.step1_title': 'Find en professionel',
@@ -58,7 +63,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'how.step2_title': 'Book en session',
     'how.step2_body': 'Vælg sessiontype og tidspunkt. Ingen ventelister — book direkte.',
     'how.step3_title': 'Mød op og lær',
-    'how.step3_body': 'Få ægte, brugbar feedback fra nogen der kender din branche indefra.',
+    'how.step3_body': 'Få C�gte, brugbar feedback fra nogen der kender din branche indefra.',
     'how.step4_title': 'Tag det med videre',
     'how.step4_body': 'Brug indsigterne i din jobsøgning, CV, interview-prep eller karrierestrategi.',
     'how.step1.title': 'Virksomheder poster projekter',
@@ -80,7 +85,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'impact.shared_note': 'Du modtager 40% og donerer 40% af det fulde sessionshonorar.',
     'impact.shared_fee': 'Platformgebyr: 20% · Donation: 50% af nettohonorar',
     'impact.allin_name': 'All-In Impact',
-    'impact.allin_tag': 'Donér dit fulde honorar til Kræftens Bekæmpelse',
+    'impact.allin_tag': 'Donér r dit fulde honorar til Kræftens Bekæmpelse',
     'impact.allin_body': 'Du donerer 100% af dit nettohonorar til Kræftens Bekæmpelse. Naetwork tager kun 10% platformgebyr — det laveste.',
     'impact.allin_note': 'Den laveste platformgebyr — fordi du giver det hele videre.',
     'impact.allin_fee': 'Platformgebyr: 10% · Donation: 100% af nettohonorar',
@@ -89,7 +94,6 @@ export const t: Record<Lang, Record<string, string>> = {
     // ─── Industries ────────────────────────────────────────────
     'industries.headline': 'Brancher vi kender',
 
-    // ─── FAQ ───────────────────────────────────────────────────
     'faq.label': 'Spørgsmål & svar',
     'faq.h2': 'Ofte stillede spørgsmål',
     'faq.q1': 'Hvem er de professionelle på Naetwork?',
@@ -105,34 +109,29 @@ export const t: Record<Lang, Record<string, string>> = {
     'faq.q6': 'Hvor lang tid tager det at oprette en profil?',
     'faq.a6': 'Under 5 minutter. Du kan tilføje mere information løbende.',
 
-    // ─── Contact ───────────────────────────────────────────────
     'contact.label': 'Kontakt',
-    'contact.h2': 'Skriv til os',
+    'contact.h2': 'Skrin til os',
     'contact.name': 'Navn',
     'contact.email': 'E-mail',
     'contact.subject': 'Emne',
     'contact.message': 'Besked',
     'contact.privacy': 'Din besked sendes direkte til vores team. Vi svarer inden for 24 timer.',
     'contact.submit': 'Send besked',
-
-    // ─── Final CTA ─────────────────────────────────────────────
     'cta.headline': 'Klar til næste skridt?',
     'cta.sub': 'Find din vejledning — eller tilbyd din erfaring til næste generation.',
     'cta.button': 'Se alle professionelle',
-
-    // ─── Auth / Dashboard / Other pages (unchanged) ────────────
     'biz.title': 'For virksomheder og startups',
     'biz.desc': 'Reducer omkostninger ved at arbejde med AI-talenter — gratis og uden forpligtelser.',
     'biz.cta': 'Opret et projekt',
     'spec.title': 'For specialister og AI-professionelle',
-    'spec.desc': 'Byg din erfaring på virkelige projekter. Find opgaver der matcher dine kompetencer.',
+    'spec.desc': 'Byg din erfaring pä virkelige projekter. Find opgaver der matcher dine kompetencer.',
     'spec.cta': 'Opret specialistprofil',
     'signup.title': 'Opret konto — det tager under 2 minutter',
     'signup.role.biz': 'Jeg er virksomhed / startup',
     'signup.role.spec': 'Jeg er specialist / AI-professionel',
     'signup.name': 'Navn',
     'signup.email': 'E-mail',
-    'signup.password': 'Adgangskode',
+    'signup.password': 'Adgangkode',
     'signup.btn': 'Opret konto',
     'signup.hasAccount': 'Har du allerede en konto?',
     'signup.login': 'Log ind her',
@@ -167,7 +166,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'projects.postedBy': 'Oprettet af',
     'projects.open': 'Åben',
     'projects.inProgress': 'I gang',
-    'projects.closed': 'Lukket',
+    'projects.closed': 'Lukkut',
     'create.title': 'Opret projekt',
     'create.sub': 'Beskriv dit projekt — specialister viser interesse direkte.',
     'create.titleLabel': 'Projekttitel',
@@ -187,7 +186,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'profil.titleLabel': 'Titel / rolle',
     'profil.titlePlaceholder': 'F.eks. "AI Engineer", "Data Scientist"',
     'profil.bioLabel': 'Kort beskrivelse',
-    'profil.bioPlaceholder': 'Fortæl kort om din baggrund og hvad du kan hjælpe med...',
+    'profil.bioPlaceholder': 'Fortæl kort om din baggrund og hvad du kan hjæipe med...',
     'profil.categoriesLabel': 'Kompetenceområder',
     'profil.contactLabel': 'Kontakt-e-mail (vises til virksomheder)',
     'profil.linkedinLabel': 'LinkedIn URL (valgfrit)',
@@ -226,7 +225,6 @@ export const t: Record<Lang, Record<string, string>> = {
   },
 
   en: {
-    // ─── Navigation ────────────────────────────────────────────
     'nav.login': 'Log in',
     'nav.signup': 'Sign up',
     'nav.dashboard': 'Dashboard',
@@ -234,8 +232,11 @@ export const t: Record<Lang, Record<string, string>> = {
     'nav.settings': 'Settings',
     'nav.logout': 'Log out',
     'nav.postProject': 'Post project',
-
-    // ─── Hero ──────────────────────────────────────────────────
+    'nav.find': 'Find professionals',
+    'nav.how': 'How it works',
+    'nav.candidates': 'Candidates',
+    'nav.professionals': 'Professionals',
+    'nav.about': 'About',
     'hero.label': 'Career Network',
     'hero.h1': 'Your shortcut to Banking, PE, AI and Consulting.',
     'hero.sub': 'Book a session with a professional who knows your industry from the inside — and take the next step in your career.',
@@ -244,36 +245,24 @@ export const t: Record<Lang, Record<string, string>> = {
     'hero.badge': 'Free · Non-commercial · No intermediaries',
     'hero.cta_primary': 'Browse professionals',
     'hero.cta_secondary': 'Become a professional',
-
-    // ─── Why Naetwork ──────────────────────────────────────────
     'why.label': 'Why Naetwork',
     'why.body': 'Access to honest guidance from those who have been there shouldn\'t depend on who you happen to know. We build the bridge.',
-
-    // ─── About ─────────────────────────────────────────────────
     'about.label': 'Two sides of the network',
     'about.h2': 'For candidates and professionals — both sides win.',
-
-    // ─── Candidates ────────────────────────────────────────────
     'candidates.label': 'Candidates',
     'candidates.h2': 'Connect with people who have been in your position.',
     'why.candidate.bullet1': 'Honest, concrete guidance from experienced professionals',
     'why.candidate.bullet2': 'Book sessions from DKK 300 — no hidden fees',
     'why.candidate.bullet3': 'No screening, no approval, no waiting',
     'candidates.cta': 'Browse all professionals',
-
-    // ─── Professionals ─────────────────────────────────────────
     'professionals.label': 'Professionals',
     'professionals.h2': 'Share your experience. Make a difference.',
     'why.professional.bullet1': 'Help candidates navigate into your industry',
     'why.professional.bullet2': 'Set your own price — you keep up to 90%',
     'why.professional.bullet3': 'Donate to Kræftens Bekæmpelse with your earnings',
     'professionals.cta': 'Become a professional',
-
-    // ─── Sessions ──────────────────────────────────────────────
     'sessions.headline': 'Session types',
     'sessions.sub': 'Choose the session that suits you',
-
-    // ─── How it works ──────────────────────────────────────────
     'how.label': 'How it works',
     'how.title': 'How it works',
     'how.tagline': 'Four steps to your next career breakthrough',
@@ -291,8 +280,6 @@ export const t: Record<Lang, Record<string, string>> = {
     'how.step2.desc': 'AI professionals and young talents browse projects and express interest directly.',
     'how.step3.title': 'You connect directly',
     'how.step3.desc': 'No approvals. No waiting. Agree on everything yourselves.',
-
-    // ─── Impact / Pricing ──────────────────────────────────────
     'impact.label': 'Impact Model',
     'impact.intro': 'At Naetwork, we believe career guidance and charity can go hand in hand.',
     'impact.sub': 'Our professionals choose whether to donate part of their fee to Kræftens Bekæmpelse.',
@@ -309,11 +296,7 @@ export const t: Record<Lang, Record<string, string>> = {
     'impact.allin_note': 'The lowest platform fee — because you give it all.',
     'impact.allin_fee': 'Platform fee: 10% · Donation: 100% of net fee',
     'impact.kb_legal': 'Naetwork is not officially affiliated with Kræftens Bekæmpelse. Donations are settled directly and can be fully documented.',
-
-    // ─── Industries ────────────────────────────────────────────
     'industries.headline': 'Industries we know',
-
-    // ─── FAQ ───────────────────────────────────────────────────
     'faq.label': 'Q&A',
     'faq.h2': 'Frequently asked questions',
     'faq.q1': 'Who are the professionals on Naetwork?',
@@ -328,8 +311,6 @@ export const t: Record<Lang, Record<string, string>> = {
     'faq.a5': 'Yes. Create a profile and start offering sessions. No approval process — you set your own terms.',
     'faq.q6': 'How long does it take to create a profile?',
     'faq.a6': 'Under 5 minutes. You can add more information over time.',
-
-    // ─── Contact ───────────────────────────────────────────────
     'contact.label': 'Contact',
     'contact.h2': 'Write to us',
     'contact.name': 'Name',
@@ -338,13 +319,9 @@ export const t: Record<Lang, Record<string, string>> = {
     'contact.message': 'Message',
     'contact.privacy': 'Your message goes directly to our team. We respond within 24 hours.',
     'contact.submit': 'Send message',
-
-    // ─── Final CTA ─────────────────────────────────────────────
     'cta.headline': 'Ready for the next step?',
     'cta.sub': 'Find your guidance — j+ offer your expertise to the next generation.',
     'cta.button': 'Browse all professionals',
-
-    // ─── Auth / Dashboard / Other pages (unchanged) ────────────
     'biz.title': 'For businesses and startups',
     'biz.desc': 'Reduce costs by working with AI talent — free and with no obligations.',
     'biz.cta': 'Post a project',
