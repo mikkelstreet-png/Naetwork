@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { sendBookingConfirmed } from '@/lib/email'
 
 interface Professional {
   id: string
@@ -53,42 +54,48 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
   const t = {
     title: 'Book session',
-    step1Title: locale === 'da' ? 'Vaelg tid' : 'Choose time',
-    step2Title: locale === 'da' ? 'Bekraeft detaljer' : 'Confirm details',
+    step1Title: locale === 'da' ? 'Vælg tid' : 'Choose time',
+    step2Title: locale === 'da' ? 'Bekræft detaljer' : 'Confirm details',
     duration: '60 min',
     price: `DKK ${professional.price} / session`,
-    reminder: locale === 'da' ? 'Tilfoj paamindelse' : 'Add reminder',
+    reminder: locale === 'da' ? 'Tilføj påmindelse' : 'Add reminder',
     messagePlaceholder: locale === 'da' ? 'Besked til den professionelle (valgfri, maks 200 tegn)...' : 'Message to professional (optional, max 200 chars)...',
-    confirm: locale === 'da' ? 'Bekraeft booking' : 'Confirm booking',
+    confirm: locale === 'da' ? 'Bekræft booking' : 'Confirm booking',
     successTitle: locale === 'da' ? 'Booking anmodet!' : 'Booking requested!',
     successMsg: locale === 'da'
-      ? 'Den professionelle bekraefter inden for 24 timer. Du modtager en e-mail.'
-      : 'The professional will confirm within 24 hours. You will receive an email.',
+      ? 'Din booking er modtaget. Du får en e-mail, og den professionelle vender tilbage med bekræftelse.'
+      : 'Your booking has been received. You will get an email, and the professional will confirm the session.',
     close: locale === 'da' ? 'Luk' : 'Close',
     back: locale === 'da' ? 'Tilbage' : 'Back',
+    authError: locale === 'da' ? 'Log ind for at booke en session.' : 'Log in to book a session.',
+    profileError: locale === 'da' ? 'Din profil blev ikke fundet. Prøv at logge ind igen.' : 'Your profile was not found. Please log in again.',
+    bookingError: locale === 'da' ? 'Bookingen kunne ikke oprettes. Prøv igen.' : 'The booking could not be created. Please try again.',
   }
 
   async function handleConfirm() {
     if (!selectedDate || !selectedTime) return
     setLoading(true)
     setError(null)
+
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+      if (!user) throw new Error(t.authError)
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('id')
+        .select('id, name')
         .eq('auth_user_id', user.id)
         .single()
+
+      if (profileError || !profile) throw new Error(t.profileError)
 
       const startsAt = new Date(selectedDate)
       const [h, m] = selectedTime.split(':').map(Number)
       startsAt.setHours(h, m, 0, 0)
       const endsAt = new Date(startsAt.getTime() + 60 * 60 * 1000)
 
-      await supabase.from('bookings').insert({
-        candidate_profile_id: profile?.id ?? null,
+      const { error: bookingError } = await supabase.from('bookings').insert({
+        candidate_profile_id: profile.id,
         professional_profile_id: professional.id.startsWith('demo-') ? null : professional.id,
         starts_at: startsAt.toISOString(),
         ends_at: endsAt.toISOString(),
@@ -99,9 +106,22 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
         payment_status: 'pending',
       })
 
+      if (bookingError) throw new Error(t.bookingError)
+
+      if (user.email) {
+        await sendBookingConfirmed({
+          candidateEmail: user.email,
+          candidateName: (profile.name as string | null) ?? user.email,
+          professionalName: professional.name,
+          sessionType: 'career_advice',
+          scheduledAt: startsAt.toISOString(),
+          priceDkk: professional.price,
+        }).catch(() => false)
+      }
+
       setStep(3)
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Noget gik galt')
+      setError(e instanceof Error ? e.message : t.bookingError)
     } finally {
       setLoading(false)
     }
