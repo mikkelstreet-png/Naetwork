@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import { HomeContent } from '@/components/HomeContent'
 
 export const metadata: Metadata = {
-  title: 'Naetwork – Din næste karrierebeslutning starter her',
+  title: 'Naetwork - 1:1 karrieresparring i AI, Banking, Consulting og PE',
   description:
-    'Book en 1:1 session med erfarne professionelle inden for Banking, Private Equity, AI og Consulting.',
+    'Book 1:1 karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity. Få konkret feedback på CV, interviews, cases og karrierevalg.',
 }
 
 export default function Home() {
