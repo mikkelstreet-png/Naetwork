@@ -8,143 +8,59 @@ export function HomeContent() {
 
   const heroSignals = [
     {
-      title: isDa ? 'Fra DKK 600' : 'From DKK 600',
-      body: isDa ? 'Konkrete 1:1 sessioner med klare formater' : 'Concrete 1:1 sessions with clear formats',
+      title: '60 min',
+      body: isDa ? 'Én tydelig 1:1 session med fri fokusretning' : 'One clear 1:1 session with flexible focus',
       tone: 'tone-cyan',
+    },
+    {
+      title: 'DKK 500-1.800',
+      body: isDa ? 'Prisen sættes af den professionelle' : 'Price set by the professional',
+      tone: 'tone-mint',
     },
     {
       title: isDa ? 'Fire fokusområder' : 'Four focus areas',
       body: 'AI, Banking, Management Consulting & Private Equity',
-      tone: 'tone-mint',
-    },
-    {
-      title: isDa ? 'Direkte booking' : 'Direct booking',
-      body: isDa ? 'Vælg professionel, pris og session uden friktion' : 'Choose professional, price and session without friction',
       tone: 'tone-blue',
     },
   ];
 
-  const heroStack = [
-    {
-      title: 'Focused Review',
-      meta: '30 min',
-      price: 'DKK 600',
-      line: isDa ? 'CV, LinkedIn eller ansøgning' : 'CV, LinkedIn or application',
-      tone: 'tone-cyan',
-    },
-    {
-      title: 'Case / Deep Prep',
-      meta: '60 min',
-      price: 'DKK 1.200',
-      line: isDa ? 'Consulting cases, banking technicals eller PE prep' : 'Consulting cases, banking technicals or PE prep',
-      tone: 'tone-ink',
-      featured: true,
-    },
-    {
-      title: 'Career Sprint',
-      meta: '90 min',
-      price: 'DKK 1.800',
-      line: isDa ? 'Profil, target roles og næste skridt' : 'Profile, target roles and next steps',
-      tone: 'tone-sage',
-    },
-  ];
-
-  const pricingCards = [
-    {
-      title: 'Focused Review',
-      price: 'DKK 600',
-      duration: '30 min',
-      body: isDa
-        ? 'CV, LinkedIn, ansøgning eller ét konkret karrierespørgsmål.'
-        : 'CV, LinkedIn, application review or one focused career question.',
-      output: isDa ? 'Klar feedback og næste justering' : 'Clear feedback and the next improvement',
-      tone: 'tone-cyan',
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <path d="M14 2v6h6" />
-          <path d="M16 13H8" />
-          <path d="M13 17H8" />
-        </svg>
-      ),
-    },
-    {
-      title: 'Interview Session',
-      price: 'DKK 900',
-      duration: '45 min',
-      body: isDa
-        ? 'Interviewtræning, skarp feedback og forberedelse til rollen.'
-        : 'Interview practice, sharp feedback and preparation for the role.',
-      output: isDa ? 'Bedre svar, bedre struktur' : 'Sharper answers, stronger structure',
-      tone: 'tone-mint',
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      ),
-    },
-    {
-      title: 'Case / Deep Prep',
-      price: 'DKK 1.200',
-      duration: '60 min',
-      body: isDa
-        ? 'Case prep, banking technicals, consulting cases eller PE/investment prep.'
-        : 'Case prep, banking technicals, consulting cases or PE/investment prep.',
-      output: isDa ? 'Træning tættere på virkeligheden' : 'Practice closer to the real process',
-      tone: 'tone-ink',
-      featured: true,
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-      ),
-    },
-    {
-      title: 'Career Sprint',
-      price: 'DKK 1.800',
-      duration: '90 min',
-      body: isDa
-        ? 'Fuld gennemgang af profil, target roles, interviews og næste skridt.'
-        : 'Full review of profile, target roles, interviews and next steps.',
-      output: isDa ? 'En klarere plan og prioritering' : 'A clearer plan and prioritisation',
-      tone: 'tone-sage',
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      ),
-    },
+  const focusOptions = [
+    { title: 'CV / LinkedIn', body: isDa ? 'Få dit materiale skarpere og mere relevant.' : 'Make your material sharper and more relevant.', tone: 'tone-cyan' },
+    { title: 'Interview Prep', body: isDa ? 'Træn svar, struktur og troværdighed.' : 'Practice answers, structure and credibility.', tone: 'tone-mint' },
+    { title: 'Case Prep', body: isDa ? 'Øv cases, hypoteser og kommunikation.' : 'Practice cases, hypotheses and communication.', tone: 'tone-blue' },
+    { title: 'Career Direction', body: isDa ? 'Få klarhed over roller, brancher og næste skridt.' : 'Get clarity on roles, fields and next steps.', tone: 'tone-sage' },
+    { title: 'Banking Technicals', body: isDa ? 'Forstå processer, technicals og interviewkrav.' : 'Understand processes, technicals and interview expectations.', tone: 'tone-mint' },
+    { title: 'Consulting Cases', body: isDa ? 'Bliv bedre til struktur, problem solving og fit.' : 'Improve structure, problem solving and fit.', tone: 'tone-cyan' },
+    { title: 'PE / Investment Case', body: isDa ? 'Træn investment thinking, diligence og cases.' : 'Practice investment thinking, diligence and cases.', tone: 'tone-sage' },
+    { title: 'AI Career Strategy', body: isDa ? 'Afkod roller, portfolio og veje ind i AI.' : 'Decode roles, portfolio and paths into AI.', tone: 'tone-blue' },
   ];
 
   const professionalCards = [
     {
       role: 'AI Product Lead',
       field: 'AI',
-      price: 'DKK 900-1.800',
-      focus: isDa ? 'Product interviews, AI strategy og story' : 'Product interviews, AI strategy and story',
+      price: 'DKK 500-1.800',
+      focus: isDa ? 'Product interviews, AI strategy og career direction' : 'Product interviews, AI strategy and career direction',
       tone: 'tone-blue',
     },
     {
       role: 'Investment Banking Associate',
       field: 'Banking',
-      price: 'DKK 900-1.200',
-      focus: isDa ? 'M&A process, technicals og fit interviews' : 'M&A process, technicals and fit interviews',
+      price: 'DKK 500-1.800',
+      focus: isDa ? 'M&A process, technicals, CV og fit interviews' : 'M&A process, technicals, CV and fit interviews',
       tone: 'tone-mint',
     },
     {
       role: 'Management Consultant',
       field: 'Consulting',
-      price: 'DKK 900-1.200',
+      price: 'DKK 500-1.800',
       focus: isDa ? 'Case struktur, hypoteser og kommunikation' : 'Case structure, hypotheses and communication',
       tone: 'tone-cyan',
     },
     {
       role: 'Private Equity Investor',
       field: 'Private Equity',
-      price: 'DKK 1.200-1.800',
+      price: 'DKK 500-1.800',
       focus: isDa ? 'Investment cases, diligence og deal thinking' : 'Investment cases, diligence and deal thinking',
       tone: 'tone-sage',
     },
@@ -203,16 +119,16 @@ export function HomeContent() {
 
   const proofCards = [
     {
-      title: isDa ? 'Skarpt fokus' : 'Narrow focus',
+      title: isDa ? 'Én enkel ydelse' : 'One simple product',
       body: isDa
-        ? 'Naetwork er bygget til de karriereveje, hvor adgang, timing og forberedelse betyder meget.'
-        : 'Naetwork is built for career paths where access, timing and preparation matter.',
+        ? 'Kandidaten booker 60 minutter og vælger selv, hvad sessionen skal handle om.'
+        : 'The candidate books 60 minutes and chooses what the session should focus on.',
     },
     {
-      title: isDa ? 'Reel forberedelse' : 'Real preparation',
+      title: isDa ? 'Fleksibelt for professionals' : 'Flexible for professionals',
       body: isDa
-        ? 'Sessionerne handler om konkrete svar, cases, materiale og beslutninger. Ikke generisk motivation.'
-        : 'Sessions are about concrete answers, cases, material and decisions. Not generic motivation.',
+        ? 'Professionelle sætter selv pris mellem DKK 500 og 1.800 afhængigt af erfaring og efterspørgsel.'
+        : 'Professionals set their own price between DKK 500 and 1,800 based on experience and demand.',
     },
     {
       title: isDa ? 'Direkte adgang' : 'Direct access',
@@ -224,8 +140,8 @@ export function HomeContent() {
 
   const pathCards = [
     { label: isDa ? 'Ambition' : 'Ambition', value: 'AI / Banking / Consulting / PE' },
-    { label: isDa ? 'Spørgsmål' : 'Question', value: isDa ? 'CV, interview, case eller karrierevalg' : 'CV, interview, case or career choice' },
-    { label: isDa ? 'Session' : 'Session', value: isDa ? '1:1 med relevant professionel' : '1:1 with a relevant professional' },
+    { label: isDa ? 'Fokus' : 'Focus', value: isDa ? 'CV, interview, case eller karrierevalg' : 'CV, interview, case or career choice' },
+    { label: isDa ? 'Session' : 'Session', value: isDa ? '60 min med relevant professionel' : '60 min with a relevant professional' },
     { label: isDa ? 'Output' : 'Output', value: isDa ? 'Klarere svar og næste skridt' : 'Sharper answers and next steps' },
   ];
 
@@ -310,14 +226,14 @@ export function HomeContent() {
 
             <h1 className="text-5xl md:text-7xl font-black leading-none text-gray-950 mb-6 animate-fade-up delay-1 max-w-5xl">
               {isDa
-                ? 'Insider-sparring til karrierer i AI, Banking, Management Consulting og Private Equity.'
-                : 'Insider guidance for careers in AI, Banking, Management Consulting and Private Equity.'}
+                ? 'Book 60 minutter med en, der kender vejen indefra.'
+                : 'Book 60 minutes with someone who knows the path from inside.'}
             </h1>
 
             <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mb-10 animate-fade-up delay-2">
               {isDa
-                ? 'Book 1:1 sessioner fra DKK 600 med professionelle, der kender CV-screening, interviews, cases og karrierevalg indefra.'
-                : 'Book 1:1 sessions from DKK 600 with professionals who know CV screening, interviews, cases and career decisions from the inside.'}
+                ? 'Én enkel 1:1 session til CV, interviews, cases, technicals, AI strategy eller karrierevalg. Professionelle sætter selv pris mellem DKK 500 og 1.800.'
+                : 'One simple 1:1 session for CVs, interviews, cases, technicals, AI strategy or career decisions. Professionals set their own price between DKK 500 and 1,800.'}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
@@ -331,7 +247,7 @@ export function HomeContent() {
                 href="/#pricing"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl border border-gray-300 hover:border-gray-950 hover:bg-gray-50 transition-colors text-base"
               >
-                {isDa ? 'Se sessioner og priser' : 'See sessions and pricing'}
+                {isDa ? 'Se format og prisramme' : 'See format and pricing'}
               </Link>
             </div>
 
@@ -351,37 +267,41 @@ export function HomeContent() {
               <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Marketplace preview' : 'Marketplace preview'}</p>
-                    <p className="mt-1 text-sm font-bold text-gray-950">{isDa ? 'Vælg format før du booker' : 'Choose format before booking'}</p>
+                    <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Session preview' : 'Session preview'}</p>
+                    <p className="mt-1 text-sm font-bold text-gray-950">{isDa ? 'Vælg selv fokus før booking' : 'Choose your focus before booking'}</p>
                   </div>
-                  <span className="rounded-full bg-gray-950 px-3 py-1 text-xs font-semibold text-white">1:1</span>
+                  <span className="rounded-full bg-gray-950 px-3 py-1 text-xs font-semibold text-white">60 min</span>
                 </div>
               </div>
 
-              {heroStack.map((item, index) => {
-                const isFeatured = item.featured;
-                return (
-                  <div
-                    key={item.title}
-                    className={`premium-card tone-card ${item.tone} mx-auto max-w-md rounded-2xl border p-5 ${isFeatured ? 'text-white lg:translate-x-8' : index === 0 ? 'lg:-translate-x-4' : 'lg:translate-x-2'}`}
-                  >
-                    <div className="flex items-start justify-between gap-5">
-                      <div>
-                        <p className={`text-xs font-semibold uppercase ${isFeatured ? 'text-cyan-200' : 'text-gray-500'}`}>{item.meta}</p>
-                        <h3 className={`mt-2 text-xl font-bold ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{item.title}</h3>
-                      </div>
-                      <p className={`text-lg font-black tracking-tight ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{item.price}</p>
-                    </div>
-                    <p className={`mt-5 text-sm leading-relaxed ${isFeatured ? 'text-gray-300' : 'text-gray-600'}`}>{item.line}</p>
+              <div className="premium-card tone-card tone-ink mx-auto max-w-md rounded-2xl border p-6 text-white lg:translate-x-8">
+                <div className="flex items-start justify-between gap-5">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-cyan-200">{isDa ? 'Hovedydelse' : 'Core session'}</p>
+                    <h3 className="mt-2 text-2xl font-bold text-white">1:1 Career Session</h3>
                   </div>
-                );
-              })}
+                  <p className="text-lg font-black tracking-tight text-white">DKK 500-1.800</p>
+                </div>
+                <p className="mt-5 text-sm leading-relaxed text-gray-300">
+                  {isDa
+                    ? '60 minutter med en relevant professionel. Brug tiden på det, der betyder mest for dit næste skridt.'
+                    : '60 minutes with a relevant professional. Use the time on what matters most for your next move.'}
+                </p>
+              </div>
+
+              <div className="mx-auto grid max-w-md grid-cols-2 gap-3 lg:-translate-x-4">
+                {['CV / LinkedIn', 'Interview Prep', 'Case Prep', 'Career Direction'].map((item) => (
+                  <div key={item} className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <p className="text-sm font-bold text-gray-950">{item}</p>
+                  </div>
+                ))}
+              </div>
 
               <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm lg:-translate-x-6">
                 <div className="grid grid-cols-3 gap-3 text-center">
+                  <div><p className="text-lg font-black text-gray-950">1</p><p className="text-[11px] text-gray-500">{isDa ? 'format' : 'format'}</p></div>
+                  <div><p className="text-lg font-black text-gray-950">8+</p><p className="text-[11px] text-gray-500">{isDa ? 'fokus' : 'focuses'}</p></div>
                   <div><p className="text-lg font-black text-gray-950">4</p><p className="text-[11px] text-gray-500">{isDa ? 'brancher' : 'fields'}</p></div>
-                  <div><p className="text-lg font-black text-gray-950">4</p><p className="text-[11px] text-gray-500">{isDa ? 'priser' : 'prices'}</p></div>
-                  <div><p className="text-lg font-black text-gray-950">1:1</p><p className="text-[11px] text-gray-500">{isDa ? 'format' : 'format'}</p></div>
                 </div>
               </div>
             </div>
@@ -394,44 +314,58 @@ export function HomeContent() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-12">
             <div>
-              <p className="text-xs font-semibold uppercase text-gray-500 mb-4">{isDa ? 'Priser og sessioner' : 'Pricing and sessions'}</p>
+              <p className="text-xs font-semibold uppercase text-gray-500 mb-4">{isDa ? 'Format og pris' : 'Format and pricing'}</p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-950 max-w-3xl">
-                {isDa ? 'Fire konkrete måder at booke skarp 1:1 sparring på.' : 'Four concrete ways to book sharp 1:1 guidance.'}
+                {isDa ? 'Én 60-minutters session. Fokus vælges af kandidaten.' : 'One 60-minute session. The candidate chooses the focus.'}
               </h2>
             </div>
             <p className="text-gray-600 leading-relaxed max-w-sm text-sm md:text-base">
               {isDa
-                ? 'Priserne er simple at forstå, før du booker. Den professionelle kan tilpasse formatet, men Naetwork starter premium og klart.'
-                : 'Pricing is simple before you book. Professionals can adapt the format, but Naetwork starts premium and clear.'}
+                ? 'Det gør oplevelsen renere: vælg den rigtige professionelle, vælg et tidspunkt, og fortæl hvad du vil bruge sessionen på.'
+                : 'This keeps the experience cleaner: choose the right professional, pick a time and explain what you want to use the session for.'}
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {pricingCards.map((card) => {
-              const isFeatured = card.featured;
-              return (
-                <div key={card.title} className={`premium-card tone-card ${card.tone} border rounded-2xl p-6 flex flex-col min-h-[370px] ${isFeatured ? 'text-white' : ''}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-8 ${isFeatured ? 'bg-white text-gray-950' : 'bg-gray-950 text-white'}`}>{card.icon}</div>
-                  <div className="mb-5">
-                    <p className={`text-sm font-semibold mb-2 ${isFeatured ? 'text-gray-300' : 'text-gray-600'}`}>{card.duration}</p>
-                    <h3 className={`font-bold text-xl mb-4 ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{card.title}</h3>
-                    <p className={`text-3xl font-black tracking-tight ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{card.price}</p>
+          <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="premium-card tone-card tone-ink border rounded-2xl p-8 text-white flex flex-col min-h-[430px]">
+              <p className="text-xs font-semibold uppercase text-cyan-200 mb-5">{isDa ? 'Standardformat' : 'Standard format'}</p>
+              <h3 className="text-3xl font-black leading-tight mb-4">1:1 Career Session</h3>
+              <p className="text-gray-300 leading-relaxed mb-8">
+                {isDa
+                  ? '60 minutter med en professionel fra AI, Banking, Management Consulting eller Private Equity.'
+                  : '60 minutes with a professional from AI, Banking, Management Consulting or Private Equity.'}
+              </p>
+              <div className="rounded-2xl bg-white/10 border border-white/10 p-5 mb-8">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-gray-400 mb-1">{isDa ? 'Prisramme' : 'Price range'}</p>
+                    <p className="text-3xl font-black text-white">DKK 500-1.800</p>
                   </div>
-                  <p className={`text-sm leading-relaxed mb-5 ${isFeatured ? 'text-gray-300' : 'text-gray-600'}`}>{card.body}</p>
-                  <div className={`mt-auto border-t pt-5 ${isFeatured ? 'border-white/10' : 'border-gray-950/10'}`}>
-                    <p className={`text-xs font-semibold uppercase mb-1 ${isFeatured ? 'text-gray-400' : 'text-gray-500'}`}>Output</p>
-                    <p className={`text-sm font-semibold ${isFeatured ? 'text-white' : 'text-gray-950'}`}>{card.output}</p>
-                  </div>
+                  <p className="text-sm font-semibold text-gray-300">60 min</p>
                 </div>
-              );
-            })}
+              </div>
+              <p className="text-sm text-gray-400 leading-relaxed mt-auto">
+                {isDa
+                  ? 'Prisen sættes af den professionelle og vises altid tydeligt før booking.'
+                  : 'The price is set by the professional and is always shown clearly before booking.'}
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {focusOptions.map((card) => (
+                <div key={card.title} className={`premium-card tone-card ${card.tone} border rounded-2xl p-5 min-h-[185px] flex flex-col`}>
+                  <h3 className="font-bold text-gray-950 mb-3">{card.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{card.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="mt-10 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-6 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
               {isDa
-                ? 'Alle priser vises før booking. Donation og platformgebyr er adskilt fra sessionens pris, så kandidaten altid kan forstå, hvad sessionen koster.'
-                : 'All prices are shown before booking. Donation and platform fee are separate from the session price, so candidates always understand the cost.'}
+                ? 'Alle professionals tilbyder samme 60-minutters format. Forskellen ligger i erfaring, branche, fokus og pris.'
+                : 'All professionals offer the same 60-minute format. The difference is experience, field, focus and price.'}
             </p>
             <Link href="/professionals" className="inline-flex items-center justify-center px-6 py-3 bg-gray-950 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-sm w-fit">
               {tr('cta.button')}
@@ -451,8 +385,8 @@ export function HomeContent() {
               </h2>
               <p className="text-gray-400 leading-relaxed max-w-md">
                 {isDa
-                  ? 'Naetwork skal føles kurateret: branche, erfaring, sessionstype og pris skal kunne aflæses på få sekunder.'
-                  : 'Naetwork should feel curated: field, experience, session type and price should be readable in seconds.'}
+                  ? 'Naetwork skal føles kurateret: branche, erfaring, fokus og pris skal kunne aflæses på få sekunder.'
+                  : 'Naetwork should feel curated: field, experience, focus and price should be readable in seconds.'}
               </p>
             </div>
 
@@ -468,7 +402,7 @@ export function HomeContent() {
                   <h3 className="text-lg font-bold text-gray-950 mb-2">{card.role}</h3>
                   <p className="text-sm text-gray-600 leading-relaxed mb-6">{card.focus}</p>
                   <div className="mt-auto flex items-center justify-between border-t border-gray-950/10 pt-5">
-                    <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Typisk pris' : 'Typical price'}</p>
+                    <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Prisramme' : 'Price range'}</p>
                     <p className="text-sm font-black text-gray-950">{card.price}</p>
                   </div>
                 </div>
@@ -685,8 +619,8 @@ export function HomeContent() {
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {item.q === 'faq.q3'
                     ? (isDa
-                        ? 'Sessioner starter ved DKK 600 og ligger typisk på DKK 600, 900, 1.200 eller 1.800 afhængigt af format og længde. Prisen vises altid før booking.'
-                        : 'Sessions start at DKK 600 and typically sit at DKK 600, 900, 1,200 or 1,800 depending on format and length. The price is always shown before booking.')
+                        ? 'Alle sessioner er 60 minutter. Den professionelle sætter selv prisen mellem DKK 500 og 1.800, og prisen vises altid før booking.'
+                        : 'All sessions are 60 minutes. The professional sets the price between DKK 500 and 1,800, and the price is always shown before booking.')
                     : tr(item.a)}
                 </p>
               </div>
@@ -716,7 +650,7 @@ export function HomeContent() {
         <div className="max-w-6xl mx-auto px-6">
           <p className="mx-auto mb-8 h-px max-w-2xl bg-gradient-to-r from-transparent via-cyan-200/40 to-transparent" aria-hidden="true" />
           <h2 className="text-4xl md:text-6xl font-black text-white leading-none mb-4">
-            {isDa ? 'Book sparring, der føles tæt på virkeligheden.' : 'Book guidance that feels close to the real thing.'}
+            {isDa ? 'Book 60 minutter tættere på virkeligheden.' : 'Book 60 minutes closer to the real thing.'}
           </h2>
           <p className="text-gray-400 text-lg leading-relaxed mb-12">
             {isDa ? 'Find en professionel med erfaring fra den karrierevej, du sigter efter.' : 'Find a professional with experience from the career path you are aiming for.'}
