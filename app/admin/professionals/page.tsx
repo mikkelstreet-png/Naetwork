@@ -3,47 +3,44 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
-type ApprovalStatus = 'pending' | 'approved' | 'rejected';
+type Visibility = 'hidden' | 'published';
 
 interface Professional {
   id: string;
-  full_name: string | null;
+  profile_id: string | null;
+  name: string;
   title: string | null;
   company: string | null;
   industries: string[] | null;
-  approval_status: ApprovalStatus;
-  visibility: string | null;
+  visibility: Visibility;
   created_at: string;
 }
 
-const STATUS_TABS: { label: string; value: ApprovalStatus | 'all' }[] = [
+const STATUS_TABS: { label: string; value: Visibility | 'all' }[] = [
   { label: 'Alle', value: 'all' },
-  { label: 'Afventer', value: 'pending' },
-  { label: 'Godkendt', value: 'approved' },
-  { label: 'Afvist', value: 'rejected' },
+  { label: 'Skjult', value: 'hidden' },
+  { label: 'Publiceret', value: 'published' },
 ];
 
-const statusBadge = (status: ApprovalStatus) => {
-  const map: Record<ApprovalStatus, string> = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    approved: 'bg-indigo-100 text-indigo-800',
-    rejected: 'bg-red-100 text-red-800',
+const statusBadge = (visibility: Visibility) => {
+  const map: Record<Visibility, string> = {
+    hidden: 'bg-yellow-100 text-yellow-800',
+    published: 'bg-indigo-100 text-indigo-800',
   };
-  const labels: Record<ApprovalStatus, string> = {
-    pending: 'Afventer',
-    approved: 'Godkendt',
-    rejected: 'Afvist',
+  const labels: Record<Visibility, string> = {
+    hidden: 'Skjult',
+    published: 'Publiceret',
   };
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[status]}`}>
-      {labels[status]}
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[visibility]}`}>
+      {labels[visibility]}
     </span>
   );
 };
 
 export default function ProfessionalsPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [filter, setFilter] = useState<ApprovalStatus | 'all'>('all');
+  const [filter, setFilter] = useState<Visibility | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -57,23 +54,31 @@ export default function ProfessionalsPage() {
     setLoading(true);
     const { data } = await supabase
       .from('professional_profiles')
-      .select('id, full_name, title, company, industries, approval_status, visibility, created_at')
+      .select('id, profile_id, title, company, industries, visibility, created_at')
       .order('created_at', { ascending: false });
-    setProfessionals((data as Professional[]) || []);
+
+    const rows = (data as Array<Omit<Professional, 'name'>> | null) || [];
+    const profileIds = Array.from(new Set(rows.map(row => row.profile_id).filter(Boolean))) as string[];
+    const { data: profiles } = profileIds.length
+      ? await supabase.from('profiles').select('id, name').in('id', profileIds)
+      : { data: [] };
+    const names = new Map(((profiles as Array<{ id: string; name: string | null }> | null) || []).map(profile => [profile.id, profile.name || '—']));
+
+    setProfessionals(rows.map(row => ({ ...row, name: row.profile_id ? names.get(row.profile_id) ?? '—' : '—' })));
     setLoading(false);
   }
 
-  async function updateStatus(id: string, status: ApprovalStatus) {
-    setActionLoading(id + status);
+  async function updateVisibility(id: string, visibility: Visibility) {
+    setActionLoading(id + visibility);
     await supabase
       .from('professional_profiles')
-      .update({ approval_status: status })
+      .update({ visibility })
       .eq('id', id);
     await loadProfessionals();
     setActionLoading(null);
   }
 
-  const filtered = filter === 'all' ? professionals : professionals.filter(p => p.approval_status === filter);
+  const filtered = filter === 'all' ? professionals : professionals.filter(p => p.visibility === filter);
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -107,7 +112,6 @@ export default function ProfessionalsPage() {
         </header>
 
         <main className="flex-1 overflow-y-auto px-6 py-6">
-          {/* Filter tabs */}
           <div className="flex gap-2 mb-4">
             {STATUS_TABS.map(tab => (
               <button
@@ -122,7 +126,7 @@ export default function ProfessionalsPage() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             {loading ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indl\u00e6ser...</div>
+              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indlæser...</div>
             ) : filtered.length === 0 ? (
               <div className="px-5 py-8 text-center text-gray-400 text-sm">Ingen professionelle fundet</div>
             ) : (
@@ -133,7 +137,6 @@ export default function ProfessionalsPage() {
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Titel / Virksomhed</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Brancher</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Synlighed</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Oprettet</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Handlinger</th>
                   </tr>
@@ -141,36 +144,35 @@ export default function ProfessionalsPage() {
                 <tbody className="divide-y divide-gray-100">
                   {filtered.map((p) => (
                     <tr key={p.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{p.full_name || '\u2014'}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{p.name}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        <div>{p.title || '\u2014'}</div>
+                        <div>{p.title || '—'}</div>
                         <div className="text-gray-400 text-xs">{p.company || ''}</div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {p.industries?.slice(0, 2).join(', ') || '\u2014'}
+                        {p.industries?.slice(0, 2).join(', ') || '—'}
                         {(p.industries?.length ?? 0) > 2 && <span className="text-gray-400"> +{(p.industries?.length ?? 0) - 2}</span>}
                       </td>
-                      <td className="px-4 py-3">{statusBadge(p.approval_status)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{p.visibility || '\u2014'}</td>
+                      <td className="px-4 py-3">{statusBadge(p.visibility)}</td>
                       <td className="px-4 py-3 text-xs text-gray-400">{new Date(p.created_at).toLocaleDateString('da-DK')}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1.5">
-                          {p.approval_status !== 'approved' && (
+                          {p.visibility !== 'published' && (
                             <button
-                              onClick={() => updateStatus(p.id, 'approved')}
-                              disabled={actionLoading === p.id + 'approved'}
+                              onClick={() => updateVisibility(p.id, 'published')}
+                              disabled={actionLoading === p.id + 'published'}
                               className="text-xs px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
                             >
-                              Godkend
+                              Publicer
                             </button>
                           )}
-                          {p.approval_status !== 'rejected' && (
+                          {p.visibility !== 'hidden' && (
                             <button
-                              onClick={() => updateStatus(p.id, 'rejected')}
-                              disabled={actionLoading === p.id + 'rejected'}
+                              onClick={() => updateVisibility(p.id, 'hidden')}
+                              disabled={actionLoading === p.id + 'hidden'}
                               className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50"
                             >
-                              Afvis
+                              Skjul
                             </button>
                           )}
                           <Link href={`/professionals/${p.id}`} className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200">
