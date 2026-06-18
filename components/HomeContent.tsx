@@ -75,6 +75,36 @@ export function HomeContent() {
 
   const focusAreas = ['CV / LinkedIn', 'Interview Prep', 'Case Prep', 'Banking Technicals', 'Consulting Cases', 'PE / Investment Case', 'AI Career Strategy', 'Career Direction'];
 
+  const trustSignals = [
+    {
+      label: isDa ? 'Baggrund' : 'Background',
+      title: isDa ? 'Se erfaringen før du booker' : 'See the background before booking',
+      body: isDa ? 'Profiler viser rolle, firma, branche, fokusområder og pris, så du kan vælge med ro.' : 'Profiles show role, company, field, focus areas and price so you can choose with confidence.',
+    },
+    {
+      label: isDa ? 'Pris' : 'Price',
+      title: isDa ? 'Tydelig pris. Ét format.' : 'Clear price. One format.',
+      body: isDa ? 'Alle sessioner er 60 minutter. Prisen vises tydeligt, før du sender en bookinganmodning.' : 'All sessions are 60 minutes. The price is shown clearly before you send a booking request.',
+    },
+    {
+      label: isDa ? 'Brief' : 'Brief',
+      title: isDa ? 'Den professionelle får kontekst' : 'The professional gets context',
+      body: isDa ? 'Du vælger fokus, procesfase, mål og eventuelt materiale, så sessionen starter mere præcist.' : 'You choose focus, process stage, goal and optional material, so the session starts with sharper context.',
+    },
+    {
+      label: 'Impact',
+      title: isDa ? 'Mulighed for donation' : 'Optional donation model',
+      body: isDa ? 'Professionelle kan vælge en impact-model, hvor en del af indtjeningen går til Kræftens Bekæmpelse.' : 'Professionals can choose an impact model where part of the earnings goes to the Danish Cancer Society.',
+    },
+  ];
+
+  const outcomes = [
+    isDa ? 'Skarpere CV og LinkedIn' : 'Sharper CV and LinkedIn',
+    isDa ? 'Bedre interviewstruktur' : 'Better interview structure',
+    isDa ? 'Mere præcis case-forberedelse' : 'More precise case preparation',
+    isDa ? 'Klarere næste karriereskridt' : 'Clearer next career move',
+  ];
+
   return (
     <>
       <style>{`
@@ -184,7 +214,51 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="how-it-works" className="border-y border-gray-200 bg-[#f7f7f4] px-5 py-24 sm:px-8 md:py-32">
+      <section id="trust" className="border-y border-gray-200 bg-[#f7f7f4] px-5 py-24 sm:px-8 md:py-32">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-14 max-w-3xl">
+            <p className="mb-4 text-xs font-bold uppercase text-gray-400">Trust layer</p>
+            <h2 className="text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">
+              {isDa ? 'Troværdighed skal kunne mærkes på få sekunder.' : 'Credibility should be visible in seconds.'}
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-gray-600">
+              {isDa
+                ? 'Naetwork skal føles som et produkt til seriøse beslutninger: tydelige profiler, tydelig pris og et brief, der gør sparringen mere præcis.'
+                : 'Naetwork should feel like a product for serious decisions: clear profiles, clear pricing and a brief that makes guidance more precise.'}
+            </p>
+          </div>
+
+          <div className="grid gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200 md:grid-cols-4">
+            {trustSignals.map((item) => (
+              <article key={item.title} className="bg-white p-6 md:min-h-[300px]">
+                <p className="text-xs font-black uppercase text-gray-300">{item.label}</p>
+                <h3 className="mt-12 text-lg font-black leading-tight text-gray-950">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-gray-500">{item.body}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-5 rounded-3xl bg-gray-950 p-6 text-white md:p-8">
+            <div className="grid gap-8 md:grid-cols-[0.75fr_1.25fr] md:items-center">
+              <div>
+                <p className="text-xs font-bold uppercase text-white/40">{isDa ? 'Mulige outcomes' : 'Possible outcomes'}</p>
+                <p className="mt-3 text-2xl font-black leading-tight text-white">
+                  {isDa ? 'Målet er ikke mere information. Målet er bedre beslutninger.' : 'The goal is not more information. The goal is better decisions.'}
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {outcomes.map((outcome) => (
+                  <div key={outcome} className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-white/80">
+                    {outcome}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="border-y border-gray-200 bg-white px-5 py-24 sm:px-8 md:py-32">
         <div className="mx-auto max-w-6xl">
           <div className="mb-14 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -200,7 +274,7 @@ export function HomeContent() {
 
           <div className="grid gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200 md:grid-cols-4">
             {productSteps.map((step) => (
-              <div key={step.number} className="bg-white p-6 md:min-h-[260px] md:p-7">
+              <div key={step.number} className="bg-[#f7f7f4] p-6 md:min-h-[260px] md:p-7">
                 <p className="text-xs font-black text-gray-300">{step.number}</p>
                 <h3 className="mt-12 text-lg font-black leading-tight text-gray-950 md:mt-16">{step.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-gray-500">{step.body}</p>
