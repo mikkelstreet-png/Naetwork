@@ -10,8 +10,10 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -73,6 +75,25 @@ input, textarea, select { font-size: 16px; }
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.mobile-safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@supports (content-visibility: auto) {
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+  }
+}
+
+@media (max-width: 640px) {
+  body { min-height: 100svh; }
+
+  input, textarea, select {
+    border-radius: 0.875rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
