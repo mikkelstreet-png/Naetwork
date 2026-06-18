@@ -32,9 +32,9 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center px-6">
-        <div className="w-full max-w-md text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">Password opdateret</h1>
+      <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-6 pt-16">
+        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <h1 className="mb-3 text-2xl font-black text-gray-950">Password opdateret</h1>
           <p className="text-gray-500">Du bliver sendt videre til din profil...</p>
         </div>
       </main>
@@ -42,43 +42,25 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
-        <div className="mb-8">
-          <Link href="/" className="font-bold text-xl tracking-tight text-gray-900">Naetwork</Link>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Nyt password</h1>
-        <p className="text-gray-500 mb-8">Vælg et nyt password til din konto.</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-6 pt-16">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <Link href="/" className="mb-8 inline-flex items-center gap-2" aria-label="Naetwork home">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white">N</span>
+          <span className="font-black tracking-tight text-gray-950">Naetwork</span>
+        </Link>
+        <h1 className="text-3xl font-black text-gray-950">Nyt password</h1>
+        <p className="mt-2 text-sm leading-relaxed text-gray-500">Vælg et nyt password til din konto.</p>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nyt password</label>
-            <input
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Mindst 8 tegn"
-            />
+            <label className="mb-1 block text-sm font-semibold text-gray-700">Nyt password</label>
+            <input type="password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Mindst 8 tegn" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Bekræft password</label>
-            <input
-              type="password"
-              required
-              value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Gentag password"
-            />
+            <label className="mb-1 block text-sm font-semibold text-gray-700">Bekræft password</label>
+            <input type="password" required value={confirm} onChange={e => setConfirm(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Gentag password" />
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50"
-          >
+          {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+          <button type="submit" disabled={loading} className="w-full rounded-xl bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
             {loading ? 'Gemmer...' : 'Gem nyt password'}
           </button>
         </form>
