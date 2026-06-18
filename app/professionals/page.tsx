@@ -97,6 +97,15 @@ function bestFor(pro: ProfessionalCard, isDa: boolean) {
   return isDa ? 'Career clarity' : 'Career clarity'
 }
 
+function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
+  const focus = pro.focus_areas ?? []
+  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
+  return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
+}
+
 function availabilityFor(pro: ProfessionalCard, isDa: boolean) {
   if (pro.id.startsWith('demo-')) return isDa ? 'Ledig denne uge' : 'Available this week'
   return isDa ? 'Anmod om tid' : 'Request availability'
@@ -161,10 +170,10 @@ export default function ProfessionalsPage() {
   })
 
   const t = {
-    heading: isDa ? 'Find den rette professionelle' : 'Find the right professional',
+    heading: isDa ? 'Vælg den profil, der passer til dit næste skridt.' : 'Choose the profile that fits your next step.',
     subheading: isDa
-      ? 'En rolig marketplace til 60-minutters karrieresessioner med professionelle fra AI, Banking, Management Consulting og Private Equity.'
-      : 'A calm marketplace for 60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.',
+      ? 'Et roligt profil-univers til 60-minutters karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
+      : 'A calm profile universe for 60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.',
     searchPlaceholder: isDa ? 'Søg efter rolle, firma, fokus eller branche...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
     noResults: isDa ? 'Ingen præcis match' : 'No exact match',
@@ -177,16 +186,20 @@ export default function ProfessionalsPage() {
 
   const marketplaceSignals = [
     {
-      value: '60 min',
-      label: isDa ? 'Ét format på tværs af alle profiler' : 'One format across all profiles',
+      value: 'Profile fit',
+      label: isDa ? 'Vælg ud fra rolle, branche og konkret fokus.' : 'Choose by role, field and concrete focus.',
     },
     {
-      value: isDa ? 'Tydelig pris' : 'Clear price',
-      label: isDa ? 'Prisen vises før booking' : 'Price shown before booking',
+      value: '60 min',
+      label: isDa ? 'Ét format på tværs af alle profiler.' : 'One format across all profiles.',
+    },
+    {
+      value: isDa ? 'Klar pris' : 'Clear price',
+      label: isDa ? 'Prisen vises før booking.' : 'Price shown before booking.',
     },
     {
       value: 'Brief',
-      label: isDa ? 'Fokus og mål sendes med anmodningen' : 'Focus and goal are sent with the request',
+      label: isDa ? 'Fokus og mål sendes med anmodningen.' : 'Focus and goal are sent with the request.',
     },
   ]
 
@@ -201,14 +214,14 @@ export default function ProfessionalsPage() {
         <div className="mx-auto max-w-6xl py-16 md:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-end">
             <div>
-              <p className="mb-5 text-xs font-bold uppercase text-gray-400">Naetwork marketplace</p>
+              <p className="mb-5 text-xs font-bold uppercase text-gray-400">Naetwork profile universe</p>
               <h1 className="max-w-4xl text-5xl font-black leading-[0.96] tracking-tight text-gray-950 text-balance md:text-7xl">{t.heading}</h1>
               <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
             </div>
             <div className="grid grid-cols-3 gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200">
               {[
                 ['60', 'min'],
-                ['4', isDa ? 'brancher' : 'fields'],
+                ['4', isDa ? 'spor' : 'tracks'],
                 ['500+', 'DKK'],
               ].map(([value, label]) => (
                 <div key={label} className="bg-[#f7f7f4] p-5 text-center">
@@ -247,7 +260,7 @@ export default function ProfessionalsPage() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200 md:grid-cols-3">
+          <div className="mt-5 grid gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200 md:grid-cols-4">
             {marketplaceSignals.map((signal) => (
               <div key={signal.value} className="bg-white p-5">
                 <p className="text-sm font-black text-gray-950">{signal.value}</p>
@@ -262,7 +275,7 @@ export default function ProfessionalsPage() {
         <div className="mb-7 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-bold text-gray-950">{filtered.length} {isDa ? 'professionelle' : 'professionals'}</p>
-            <p className="mt-1 text-sm text-gray-500">{isDa ? 'Alle sessioner er 60 minutter. Prisen vises før booking.' : 'All sessions are 60 minutes. The price is shown before booking.'}</p>
+            <p className="mt-1 text-sm text-gray-500">{isDa ? 'Sammenlign på fit, output og pris før du booker.' : 'Compare by fit, output and price before booking.'}</p>
           </div>
           <p className="text-xs font-bold uppercase text-gray-400">AI · Banking · Consulting · PE</p>
         </div>
@@ -281,14 +294,15 @@ export default function ProfessionalsPage() {
               const isExpanded = expandedId === pro.id
               const focusAreas = (pro.focus_areas ?? []).slice(0, 4)
               return (
-                <article key={pro.id} className="group flex min-h-[500px] flex-col rounded-3xl border border-gray-200 bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-gray-950/8">
-                  <span className={`mb-6 block h-2 w-20 rounded-full ${accentFor(pro)}`} />
-
+                <article key={pro.id} className="group flex min-h-[540px] flex-col rounded-[2rem] border border-gray-200 bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-gray-950/8">
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
-                      {initials(pro.name)}
+                    <div>
+                      <span className={`mb-6 block h-2 w-20 rounded-full ${accentFor(pro)}`} />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
+                        {initials(pro.name)}
+                      </div>
                     </div>
-                    <div className="text-right">
+                    <div className="rounded-2xl bg-[#f7f7f4] px-4 py-3 text-right">
                       <p className="text-[10px] font-bold uppercase text-gray-400">{isDa ? 'Pris' : 'Price'}</p>
                       <p className="text-base font-black text-gray-950">DKK {pro.price}</p>
                       <p className="text-[11px] font-medium text-gray-400">/ 60 min</p>
@@ -301,12 +315,16 @@ export default function ProfessionalsPage() {
                     <p className="mt-2 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
                   </div>
 
-                  <div className="mt-5 grid gap-2 border-y border-gray-100 py-4 text-sm sm:grid-cols-2">
-                    <div>
+                  <div className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 text-sm sm:grid-cols-3">
+                    <div className="bg-[#f7f7f4] p-4">
                       <p className="text-[10px] font-bold uppercase text-gray-400">Best for</p>
                       <p className="mt-1 font-black text-gray-950">{bestFor(pro, isDa)}</p>
                     </div>
-                    <div>
+                    <div className="bg-white p-4">
+                      <p className="text-[10px] font-bold uppercase text-gray-400">Output</p>
+                      <p className="mt-1 font-black text-gray-950">{primaryOutputFor(pro, isDa)}</p>
+                    </div>
+                    <div className="bg-[#f7f7f4] p-4">
                       <p className="text-[10px] font-bold uppercase text-gray-400">Status</p>
                       <p className="mt-1 font-black text-gray-950">{availabilityFor(pro, isDa)}</p>
                     </div>
