@@ -94,6 +94,37 @@ function bestFor(pro: Professional, isDa: boolean) {
   return isDa ? 'Career clarity' : 'Career clarity'
 }
 
+function primaryOutputFor(pro: Professional, isDa: boolean) {
+  const focus = pro.focus_areas ?? []
+  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
+  return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
+}
+
+function useCasesFor(pro: Professional, isDa: boolean) {
+  const focus = pro.focus_areas ?? []
+  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) {
+    return isDa
+      ? ['Du søger Banking eller Private Equity og vil forstå interviewbaren.', 'Du vil træne technicals, deal thinking eller investment cases.', 'Du har materiale eller processtatus, der skal skærpes hurtigt.']
+      : ['You are targeting Banking or Private Equity and want to understand the interview bar.', 'You want to practice technicals, deal thinking or investment cases.', 'You have materials or process context that needs sharper positioning.']
+  }
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
+    return isDa
+      ? ['Du vil træne cases med mere struktur og mindre støj.', 'Du vil forbedre fit-svar og personlig kommunikation.', 'Du vil forstå, hvordan konsulenthuse vurderer kandidater.']
+      : ['You want to practice cases with more structure and less noise.', 'You want to improve fit answers and personal communication.', 'You want to understand how consultancies evaluate candidates.']
+  }
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) {
+    return isDa
+      ? ['Du vil ind i AI og har brug for en klarere vej ind.', 'Du vil oversætte din erfaring til relevante AI-roller.', 'Du vil forstå portfolio, rolletyper og interviewvinkler.']
+      : ['You want to enter AI and need a clearer path in.', 'You want to translate your experience into relevant AI roles.', 'You want to understand portfolio, role types and interview angles.']
+  }
+  return isDa
+    ? ['Du vil gøre dit CV, LinkedIn eller ansøgningsmateriale skarpere.', 'Du vil have ærlig feedback fra en person tættere på markedet.', 'Du vil afklare næste skridt før en vigtig beslutning.']
+    : ['You want to sharpen your CV, LinkedIn or application materials.', 'You want honest feedback from someone closer to the market.', 'You want to clarify next steps before an important decision.']
+}
+
 function outcomesFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
   if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) {
@@ -170,11 +201,14 @@ export default function ProfessionalDetailPage() {
     bestFor: isDa ? 'Best for' : 'Best for',
     sessionBrief: isDa ? 'Session brief' : 'Session brief',
     sessionBriefBody: isDa
-      ? 'Før du sender bookinganmodningen, vælger du fokus og skriver kort, hvad du vil opnå. Det giver den professionelle bedre kontekst og gør sessionen mere konkret.'
-      : 'Before sending the booking request, you choose a focus and briefly explain what you want to achieve. That gives the professional better context and makes the session more concrete.',
+      ? 'Før du sender bookinganmodningen, vælger du fokus, procesfase, mål og eventuelt materiale. Det giver den professionelle bedre kontekst og gør sessionen mere konkret.'
+      : 'Before sending the booking request, you choose focus, process stage, goal and optional material. That gives the professional better context and makes the session more concrete.',
     beforeBooking: isDa ? 'Før booking' : 'Before booking',
     outcomes: isDa ? 'Mulige outcomes' : 'Possible outcomes',
     trust: isDa ? 'Tryghed før booking' : 'Confidence before booking',
+    profileSignal: isDa ? 'Profil-signal' : 'Profile signal',
+    useThisProfileIf: isDa ? 'Brug denne profil hvis...' : 'Use this profile if...',
+    leaveWith: isDa ? 'Hvad du kan gå fra sessionen med' : 'What you can leave with',
   }
 
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#f7f7f4]"><p className="text-gray-400">{t.loading}</p></div>
@@ -190,6 +224,8 @@ export default function ProfessionalDetailPage() {
 
   const focusAreas = professional.focus_areas ?? []
   const bestFit = bestFor(professional, isDa)
+  const primaryOutput = primaryOutputFor(professional, isDa)
+  const useCases = useCasesFor(professional, isDa)
   const outcomes = outcomesFor(professional, isDa)
   const prepItems = [
     {
@@ -208,6 +244,7 @@ export default function ProfessionalDetailPage() {
   const trustItems = [
     { label: isDa ? 'Baggrund' : 'Background', value: `${professional.title} · ${professional.company}` },
     { label: isDa ? 'Pris før booking' : 'Price before booking', value: `DKK ${professional.price}` },
+    { label: isDa ? 'Primært output' : 'Primary output', value: primaryOutput },
     { label: isDa ? 'Brief inkluderet' : 'Brief included', value: isDa ? 'Ja' : 'Yes' },
   ]
 
@@ -262,10 +299,28 @@ export default function ProfessionalDetailPage() {
             <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
               <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.outcomes}</p>
-                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{bestFit}</h2>
+                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.profileSignal}</p>
+                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{t.useThisProfileIf}</h2>
                 </div>
                 <span className={`block h-2 w-20 rounded-full ${accentFor(professional)}`} />
+              </div>
+              <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 md:grid-cols-3">
+                {useCases.map((item, index) => (
+                  <div key={item} className="bg-[#f7f7f4] p-5">
+                    <p className="text-xs font-black text-gray-300">0{index + 1}</p>
+                    <p className="mt-8 text-sm font-black leading-relaxed text-gray-950">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.leaveWith}</p>
+                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{primaryOutput}</h2>
+                </div>
+                <span className="w-fit rounded-full bg-gray-950 px-3 py-1.5 text-xs font-bold text-white">{bestFit}</span>
               </div>
               <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-2">
                 {outcomes.map((outcome) => (
@@ -320,6 +375,7 @@ export default function ProfessionalDetailPage() {
               { label: isDa ? 'Format' : 'Format', value: '60 min' },
               { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
               { label: t.bestFor, value: bestFit },
+              { label: isDa ? 'Output' : 'Output', value: primaryOutput },
               { label: isDa ? 'Fokus' : 'Focus', value: isDa ? 'Du vælger selv' : 'You choose' },
             ].map((item) => (
               <div key={item.label} className="rounded-3xl border border-gray-200 bg-white p-5">
