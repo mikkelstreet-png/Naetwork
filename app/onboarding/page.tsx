@@ -54,8 +54,8 @@ export default function CandidateOnboardingPage() {
             <div className="premium-panel p-5">
               <p className="kicker">{isDa ? 'Readiness' : 'Readiness'}</p>
               <p className="mt-2 text-4xl font-black text-gray-950">{readiness}/3</p>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-200">
-                <div className="h-full rounded-full bg-gray-950 transition-all" style={{ width: `${progress}%` }} />
+              <div className="mt-5 h-2 overflow-hidden bg-gray-200">
+                <div className="h-full bg-gray-950 transition-all" style={{ width: `${progress}%` }} />
               </div>
               <p className="mt-4 text-sm leading-relaxed text-gray-500">
                 {isDa ? 'Et skarpere brief giver den professionelle bedre kontekst og gør de 60 minutter mere værdifulde.' : 'A sharper brief gives the professional better context and makes the 60 minutes more valuable.'}
@@ -75,7 +75,7 @@ export default function CandidateOnboardingPage() {
                     <p className="text-xs font-black text-gray-300">{group.label}</p>
                     <h2 className="mt-5 text-2xl font-black text-gray-950">{group.title}</h2>
                   </div>
-                  {group.value && <span className="rounded-full bg-gray-950 px-3 py-1.5 text-xs font-black text-white">Selected</span>}
+                  {group.value && <span className="rounded-lg bg-gray-950 px-3 py-1.5 text-xs font-black text-white">Selected</span>}
                 </div>
                 <div className="mt-6 grid gap-2 sm:grid-cols-2">
                   {group.options.map((option) => {
@@ -84,7 +84,7 @@ export default function CandidateOnboardingPage() {
                       <button
                         key={option}
                         onClick={() => { group.setValue(option); setSaved(false); }}
-                        className={`rounded-2xl border px-4 py-4 text-left text-sm font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                        className={`rounded-lg border px-4 py-4 text-left text-sm font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
                       >
                         {option}
                       </button>
@@ -113,7 +113,7 @@ export default function CandidateOnboardingPage() {
               <button
                 onClick={savePlan}
                 disabled={readiness < 3}
-                className="mt-6 w-full rounded-full bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+                className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isDa ? 'Gem prep direction' : 'Save prep direction'}
               </button>
