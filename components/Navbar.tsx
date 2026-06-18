@@ -46,8 +46,8 @@ export function Navbar() {
 
   const navLinks = [
     { href: '/professionals', label: tr('nav.find') },
-    { href: '/#how-it-works', label: tr('nav.how') },
-    { href: '/#pricing', label: isDa ? 'Format' : 'Format' },
+    { href: '/match', label: 'Match' },
+    { href: '/impact', label: 'Impact' },
   ];
 
   return (
@@ -99,8 +99,8 @@ export function Navbar() {
                     <p className="truncate text-xs font-medium text-gray-500">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.dashboard')}</Link>
-                  <Link href="/projekter" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.projects')}</Link>
-                  <Link href="/indstillinger" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.settings')}</Link>
+                  <Link href="/onboarding" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Onboarding</Link>
+                  <Link href="/match" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
                   <button onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">{tr('nav.logout')}</button>
                 </div>
               )}
@@ -146,6 +146,9 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link href="/onboarding" className="block rounded-xl px-1 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
+              Onboarding
+            </Link>
           </div>
           <div className="mt-4 grid gap-2">
             <Link href="/professionals" className="inline-flex items-center justify-center rounded-xl bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
