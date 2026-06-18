@@ -110,8 +110,8 @@ export default function MatchPage() {
                 </div>
                 <span className={`mt-1 block h-2 w-20 rounded-full ${recommendation.accent}`} />
               </div>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-gray-200">
-                <div className="h-full rounded-full bg-gray-950 transition-all" style={{ width: `${progress}%` }} />
+              <div className="mt-5 h-2 overflow-hidden bg-gray-200">
+                <div className="h-full bg-gray-950 transition-all" style={{ width: `${progress}%` }} />
               </div>
               <p className="mt-4 text-sm leading-relaxed text-gray-500">
                 {isDa ? 'Jo mere præcist signalet er, jo bedre bliver session briefet.' : 'The sharper the signal, the better the session brief becomes.'}
@@ -131,7 +131,7 @@ export default function MatchPage() {
                     <p className="text-xs font-black text-gray-300">{question.label}</p>
                     <h2 className="mt-5 text-2xl font-black text-gray-950">{question.title}</h2>
                   </div>
-                  {answers[question.key] && <span className="rounded-full bg-gray-950 px-3 py-1.5 text-xs font-black text-white">Selected</span>}
+                  {answers[question.key] && <span className="rounded-lg bg-gray-950 px-3 py-1.5 text-xs font-black text-white">Selected</span>}
                 </div>
                 <div className="mt-6 grid gap-2 sm:grid-cols-2">
                   {question.options.map((option) => {
@@ -140,7 +140,7 @@ export default function MatchPage() {
                       <button
                         key={option}
                         onClick={() => choose(question.key, option)}
-                        className={`rounded-2xl border px-4 py-4 text-left text-sm font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                        className={`rounded-lg border px-4 py-4 text-left text-sm font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
                       >
                         {option}
                       </button>
@@ -163,12 +163,12 @@ export default function MatchPage() {
               <p className="mt-3 text-sm leading-relaxed text-white/60">{recommendation.bestFor}</p>
               <div className="mt-6 space-y-2">
                 {recommendation.notes.map((note) => (
-                  <div key={note} className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-white/80">
+                  <div key={note} className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-white/80">
                     {note}
                   </div>
                 ))}
               </div>
-              <Link href="/professionals" className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
+              <Link href="/professionals" className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
                 {isDa ? 'Se matchende profiler' : 'See matching profiles'}
               </Link>
             </div>
