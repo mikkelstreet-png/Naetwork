@@ -35,11 +35,20 @@ button, a {
   touch-action: manipulation;
 }
 
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #050505;
+  outline-offset: 3px;
+}
+
 input, textarea, select { font-size: 16px; }
 
 ::selection { background: rgba(5, 5, 5, 0.10); }
 
-::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #f7f7f5; }
 ::-webkit-scrollbar-thumb { background: #d7d7d2; border-radius: 999px; border: 2px solid #f7f7f5; }
 ::-webkit-scrollbar-thumb:hover { background: #bcbcb6; }
@@ -55,6 +64,26 @@ input, textarea, select { font-size: 16px; }
 .focus-ring:focus-visible {
   outline: 2px solid #050505;
   outline-offset: 3px;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @layer components {
