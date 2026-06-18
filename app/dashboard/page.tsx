@@ -47,22 +47,71 @@ export default function DashboardPage() {
   const activeRows = isProfessional ? sessions : bookings;
   const totalValue = activeRows.reduce((s, b) => s + ((b.price_dkk as number) || (b.professional_payout_dkk as number) || 0), 0);
   const upcoming = activeRows.filter((b) => b.starts_at && new Date(b.starts_at as string).getTime() > Date.now()).length;
+  const focusAreas = Array.isArray(professional?.focus_areas) ? professional?.focus_areas as unknown[] : [];
+  const industries = Array.isArray(professional?.industries) ? professional?.industries as unknown[] : [];
+  const proChecklist = [
+    { label: 'Profiltekst', done: Boolean((professional?.bio as string | undefined)?.trim()) },
+    { label: 'Fokusområder', done: focusAreas.length > 0 },
+    { label: 'Industri', done: industries.length > 0 },
+    { label: 'Pris sat', done: Boolean(professional?.price_dkk) },
+    { label: 'Synlighed valgt', done: Boolean(professional?.visibility) },
+  ];
+  const proCompletion = isProfessional ? proChecklist.filter((item) => item.done).length : 0;
 
   return (
     <main className="min-h-screen bg-[#f7f7f4] pt-16">
       <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
-        <section className="mb-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <section className="mb-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Dashboard</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-400">Dashboard</p>
               <h1 className="mt-2 text-4xl font-black leading-none tracking-tight text-gray-950">Hej, {displayName}</h1>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500">{isProfessional ? 'Administrer din professionelle profil, sessions og synlighed.' : 'Hold styr på dine 60-minutters karrieresessioner.'}</p>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500">{isProfessional ? 'Administrer din professionelle profil, sessions og synlighed.' : 'Hold styr på dine 60-minutters karrieresessioner og find dit næste bedste match.'}</p>
             </div>
-            <Link href={isProfessional ? '/profil/professionel' : '/professionals'} className="w-fit rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
-              {isProfessional ? 'Rediger profil' : 'Book 60 min'}
-            </Link>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {!isProfessional && <Link href="/match" className="w-fit rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-gray-950 hover:border-gray-950">Find match</Link>}
+              <Link href={isProfessional ? '/profil/professionel' : '/professionals'} className="w-fit rounded-full bg-gray-950 px-5 py-2.5 text-sm font-bold text-white hover:bg-gray-800">
+                {isProfessional ? 'Rediger profil' : 'Book 60 min'}
+              </Link>
+            </div>
           </div>
         </section>
+
+        {!isProfessional && (
+          <section className="mb-8 grid gap-4 md:grid-cols-3">
+            {[
+              { title: 'Candidate onboarding', body: 'Sæt retning for felt, stage og fokus.', href: '/onboarding', cta: 'Start onboarding' },
+              { title: 'Match quiz', body: 'Få anbefalet fokus før du vælger profil.', href: '/match', cta: 'Find match' },
+              { title: 'Marketplace', body: 'Book 60 min med en relevant professionel.', href: '/professionals', cta: 'Se professionals' },
+            ].map((item) => (
+              <Link key={item.title} href={item.href} className="rounded-3xl border border-gray-200 bg-white p-6 transition-colors hover:border-gray-950">
+                <p className="text-xs font-bold uppercase text-gray-400">Next step</p>
+                <h2 className="mt-4 text-xl font-black text-gray-950">{item.title}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.body}</p>
+                <p className="mt-5 text-sm font-black text-gray-950">{item.cta} →</p>
+              </Link>
+            ))}
+          </section>
+        )}
+
+        {isProfessional && (
+          <section className="mb-8 rounded-3xl border border-gray-200 bg-gray-950 p-6 text-white md:p-8">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+              <div>
+                <p className="text-xs font-bold uppercase text-white/40">Professional readiness</p>
+                <h2 className="mt-3 text-3xl font-black">{proCompletion}/5 profile signals ready</h2>
+                <p className="mt-3 text-sm leading-relaxed text-white/55">En stærk profil gør det hurtigere for kandidater at forstå, hvorfor netop du er relevant.</p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {proChecklist.map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                    <p className="text-sm font-bold text-white">{item.done ? '✓' : '○'} {item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         <div className="mb-8 grid gap-3 sm:grid-cols-3">
           <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"><p className="text-xs font-semibold uppercase text-gray-400">Total</p><p className="mt-2 text-2xl font-black text-gray-950">{activeRows.length}</p></div>
@@ -110,6 +159,10 @@ export default function DashboardPage() {
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">Din profil skal være publiceret og godkendt for at være synlig.</p>
               </div>
             )}
+            <Link href={isProfessional ? '/impact' : '/onboarding'} className="block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:border-gray-950">
+              <p className="text-xs font-semibold uppercase text-gray-400">{isProfessional ? 'Impact' : 'Onboarding'}</p>
+              <p className="mt-2 text-lg font-black text-gray-950">{isProfessional ? 'Donation model' : 'Prep direction'}</p>
+            </Link>
             <Link href="/profil" className="block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:border-gray-950">
               <p className="text-xs font-semibold uppercase text-gray-400">Konto</p>
               <p className="mt-2 text-lg font-black text-gray-950">Indstillinger</p>
