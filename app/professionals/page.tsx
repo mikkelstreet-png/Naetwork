@@ -82,10 +82,38 @@ function initials(name: string) {
 }
 
 function toneFor(pro: ProfessionalCard) {
-  if (pro.industries.includes('AI')) return 'bg-[#e8f3ff] border-blue-100 text-blue-950'
-  if (pro.industries.includes('Banking')) return 'bg-[#e8f8ec] border-emerald-100 text-emerald-950'
-  if (pro.industries.includes('Management Consulting')) return 'bg-[#e7fbfa] border-cyan-100 text-cyan-950'
-  return 'bg-[#edf4df] border-lime-100 text-lime-950'
+  if (pro.industries.includes('AI')) return 'bg-[#e8f3ff] border-blue-100'
+  if (pro.industries.includes('Banking')) return 'bg-[#e8f8ec] border-emerald-100'
+  if (pro.industries.includes('Management Consulting')) return 'bg-[#e7fbfa] border-cyan-100'
+  return 'bg-[#edf4df] border-lime-100'
+}
+
+function bestFor(pro: ProfessionalCard, isDa: boolean) {
+  const focus = pro.focus_areas ?? []
+  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) {
+    return isDa ? 'Best for: Banking / PE prep' : 'Best for: Banking / PE prep'
+  }
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
+    return isDa ? 'Best for: consulting cases' : 'Best for: consulting cases'
+  }
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) {
+    return isDa ? 'Best for: AI career strategy' : 'Best for: AI career strategy'
+  }
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) {
+    return isDa ? 'Best for: applications' : 'Best for: applications'
+  }
+  return isDa ? 'Best for: career clarity' : 'Best for: career clarity'
+}
+
+function availabilityFor(pro: ProfessionalCard, isDa: boolean) {
+  if (pro.id.startsWith('demo-')) return isDa ? 'Ledig denne uge' : 'Available this week'
+  return isDa ? 'Anmod om tid' : 'Request availability'
+}
+
+function priceTier(pro: ProfessionalCard, isDa: boolean) {
+  if (pro.price >= 1400) return isDa ? 'Senior sparring' : 'Senior guidance'
+  if (pro.price <= 800) return isDa ? 'Entry access' : 'Entry access'
+  return isDa ? 'Core session' : 'Core session'
 }
 
 export default function ProfessionalsPage() {
@@ -154,10 +182,17 @@ export default function ProfessionalsPage() {
     searchPlaceholder: isDa ? 'Søg efter rolle, firma, fokus eller branche...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
     perSession: '/ 60 min',
-    noResults: isDa ? 'Ingen resultater' : 'No results',
+    noResults: isDa ? 'Ingen præcis match' : 'No exact match',
+    noResultsBody: isDa ? 'Prøv at fjerne søgningen eller se alle brancher.' : 'Try clearing the search or viewing all fields.',
+    clearFilters: isDa ? 'Nulstil filtre' : 'Clear filters',
     readMore: isDa ? 'Læs mere' : 'Read more',
     showLess: isDa ? 'Vis mindre' : 'Show less',
     viewProfile: isDa ? 'Se profil' : 'View profile',
+  }
+
+  function resetFilters() {
+    setSearch('')
+    setIndustryFilter('all')
   }
 
   return (
@@ -219,7 +254,7 @@ export default function ProfessionalsPage() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 md:py-12">
+      <main id="marketplace" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 md:py-12">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-gray-950">{filtered.length} {isDa ? 'professionelle' : 'professionals'}</p>
@@ -229,57 +264,84 @@ export default function ProfessionalsPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center">
-            <p className="text-gray-500">{t.noResults}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
+            <p className="text-xl font-black text-gray-950">{t.noResults}</p>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-gray-500">{t.noResultsBody}</p>
+            <button onClick={resetFilters} className="mt-6 rounded-xl bg-gray-950 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800">
+              {t.clearFilters}
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((pro) => {
               const isExpanded = expandedId === pro.id
-              const focusAreas = (pro.focus_areas ?? []).slice(0, 3)
+              const focusAreas = (pro.focus_areas ?? []).slice(0, 4)
               return (
-                <article key={pro.id} className="group flex min-h-[430px] flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-gray-300 hover:shadow-xl hover:shadow-gray-950/5">
-                  <div className={`mb-5 rounded-2xl border p-4 ${toneFor(pro)}`}>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
-                        {initials(pro.name)}
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[11px] font-semibold uppercase opacity-60">{isDa ? 'Pris' : 'Price'}</p>
-                        <p className="text-sm font-black">DKK {pro.price}</p>
-                      </div>
+                <article key={pro.id} className={`group flex min-h-[520px] flex-col rounded-2xl border p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-950/5 ${toneFor(pro)}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white shadow-sm">
+                      {initials(pro.name)}
                     </div>
-                    <div className="mt-7">
-                      <p className="text-[11px] font-bold uppercase opacity-60">{pro.industries.join(' / ')}</p>
-                      <h2 className="mt-2 text-lg font-black leading-tight text-balance">{pro.name}</h2>
-                      <p className="mt-1 text-sm font-medium opacity-75">{pro.title} · {pro.company}</p>
+                    <div className="rounded-full border border-white/70 bg-white/70 px-3 py-1.5 text-right shadow-sm">
+                      <p className="text-[10px] font-semibold uppercase text-gray-500">{isDa ? 'Pris' : 'Price'}</p>
+                      <p className="text-sm font-black text-gray-950">DKK {pro.price}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-7">
+                    <p className="text-[11px] font-bold uppercase text-gray-500">{pro.industries.join(' / ')}</p>
+                    <h2 className="mt-2 text-xl font-black leading-tight text-gray-950 text-balance">{pro.name}</h2>
+                    <p className="mt-1 text-sm font-medium text-gray-700">{pro.title} · {pro.company}</p>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-gray-950/10 bg-white/60 px-3 py-1.5 text-[11px] font-bold text-gray-800 shadow-sm">
+                      {bestFor(pro, isDa)}
+                    </span>
+                    <span className="rounded-full border border-gray-950/10 bg-white/60 px-3 py-1.5 text-[11px] font-bold text-gray-700 shadow-sm">
+                      {availabilityFor(pro, isDa)}
+                    </span>
+                  </div>
+
+                  <div className="my-5 grid grid-cols-3 gap-3 border-y border-gray-950/10 py-4">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase text-gray-500">Format</p>
+                      <p className="mt-1 text-sm font-black text-gray-950">60 min</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase text-gray-500">Brief</p>
+                      <p className="mt-1 text-sm font-black text-gray-950">{isDa ? 'Før booking' : 'Before booking'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase text-gray-500">Level</p>
+                      <p className="mt-1 text-sm font-black text-gray-950">{priceTier(pro, isDa)}</p>
                     </div>
                   </div>
 
                   <div className="mb-4 flex flex-wrap gap-2">
                     {focusAreas.length > 0 ? focusAreas.map((area) => (
-                      <span key={area} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                      <span key={area} className="rounded-full border border-gray-950/10 bg-white/50 px-2.5 py-1 text-[11px] font-semibold text-gray-700">
                         {FOCUS_LABELS[area] ?? area}
                       </span>
                     )) : pro.industries.map((ind) => (
-                      <span key={ind} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                      <span key={ind} className="rounded-full border border-gray-950/10 bg-white/50 px-2.5 py-1 text-[11px] font-semibold text-gray-700">
                         {ind}
                       </span>
                     ))}
                   </div>
 
                   <div className="flex-1">
-                    <p className={`text-sm leading-relaxed text-gray-600 ${isExpanded ? '' : 'line-clamp-4'}`}>{pro.bio}</p>
+                    <p className={`text-sm leading-relaxed text-gray-700 ${isExpanded ? '' : 'line-clamp-4'}`}>{pro.bio}</p>
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : pro.id)}
-                      className="mt-2 text-xs font-bold text-gray-950 underline decoration-gray-300 underline-offset-4 transition-colors hover:decoration-gray-950"
+                      className="mt-2 text-xs font-bold text-gray-950 underline decoration-gray-400 underline-offset-4 transition-colors hover:decoration-gray-950"
                     >
                       {isExpanded ? t.showLess : t.readMore}
                     </button>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-3 border-t border-gray-100 pt-4">
-                    <Link href={`/professionals/${pro.id}`} className="inline-flex items-center justify-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
+                  <div className="mt-5 grid grid-cols-[1fr_auto] items-center gap-3 border-t border-gray-950/10 pt-4">
+                    <Link href={`/professionals/${pro.id}`} className="inline-flex items-center justify-center rounded-xl border border-gray-950/10 bg-white/50 px-4 py-2.5 text-sm font-semibold text-gray-950 transition-colors hover:border-gray-950 hover:bg-white">
                       {t.viewProfile}
                     </Link>
                     <button
