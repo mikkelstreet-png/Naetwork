@@ -22,8 +22,8 @@ export function Footer() {
                 : '60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.'}
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="/professionals" className="inline-flex w-fit items-center justify-center rounded-full bg-gray-950 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-gray-800">
-                {isDa ? 'Book 60 min' : 'Book 60 min'}
+              <Link href="/match" className="inline-flex w-fit items-center justify-center rounded-full bg-gray-950 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+                Match quiz
               </Link>
               <Link href="/professional/signup" className="inline-flex w-fit items-center justify-center rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
                 {tr('professionals.cta')}
@@ -31,13 +31,21 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 lg:grid-cols-3">
             <div>
               <p className="mb-4 text-xs font-bold uppercase text-gray-400">Platform</p>
               <div className="space-y-3">
                 <Link href="/professionals" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">{tr('nav.find')}</Link>
+                <Link href="/match" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">Match quiz</Link>
+                <Link href="/onboarding" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">Onboarding</Link>
+              </div>
+            </div>
+            <div>
+              <p className="mb-4 text-xs font-bold uppercase text-gray-400">{isDa ? 'Model' : 'Model'}</p>
+              <div className="space-y-3">
                 <Link href="/#how-it-works" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">{tr('nav.how')}</Link>
                 <Link href="/#pricing" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">{isDa ? 'Format' : 'Format'}</Link>
+                <Link href="/impact" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">Impact</Link>
               </div>
             </div>
             <div>
