@@ -9,7 +9,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-gray-200 bg-[#f7f7f4]">
-      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-18">
+      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-20">
         <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-start">
           <div>
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Naetwork home">
