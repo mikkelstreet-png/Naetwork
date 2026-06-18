@@ -45,27 +45,31 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/professionals', label: tr('nav.find') },
-    { href: '/match', label: 'Match' },
-    { href: '/impact', label: 'Impact' },
+    { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles', description: isDa ? 'Find den rette professional' : 'Find the right professional' },
+    { href: '/match', label: 'Match', description: isDa ? 'Vælg fokus hurtigere' : 'Choose focus faster' },
+    { href: '/mission', label: 'Mission', description: isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists' },
+    { href: '/impact', label: 'Impact', description: isDa ? 'Donation og model' : 'Donation and model' },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/92 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/90 backdrop-blur-2xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="group flex items-center gap-3 shrink-0" aria-label="Naetwork home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
+          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
             N
           </span>
-          <span className="text-[15px] font-black tracking-tight text-gray-950">Naetwork</span>
+          <span className="flex flex-col leading-none">
+            <span className="text-[15px] font-black tracking-tight text-gray-950">Naetwork</span>
+            <span className="hidden text-[10px] font-bold uppercase text-gray-400 sm:block">60 min career sessions</span>
+          </span>
         </Link>
 
-        <div className="hidden items-center gap-7 md:flex">
+        <div className="hidden items-center rounded-full border border-gray-200 bg-[#f7f7f4] p-1 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-semibold text-gray-500 transition-colors hover:text-gray-950"
+              className="rounded-full px-4 py-2 text-sm font-bold text-gray-500 transition-colors hover:bg-white hover:text-gray-950"
             >
               {link.label}
             </Link>
@@ -94,14 +98,15 @@ export function Navbar() {
                 {userEmail.charAt(0).toUpperCase()}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-950/10">
-                  <div className="border-b border-gray-100 px-4 py-3">
-                    <p className="truncate text-xs font-medium text-gray-500">{userEmail}</p>
+                <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-[1.5rem] border border-gray-200 bg-white shadow-2xl shadow-gray-950/12">
+                  <div className="border-b border-gray-100 bg-[#f7f7f4] px-4 py-4">
+                    <p className="text-xs font-black uppercase text-gray-400">Account</p>
+                    <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
-                  <Link href="/dashboard" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.dashboard')}</Link>
-                  <Link href="/onboarding" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Onboarding</Link>
-                  <Link href="/match" className="block px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
-                  <button onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">{tr('nav.logout')}</button>
+                  <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.dashboard')}</Link>
+                  <Link href="/onboarding" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Onboarding</Link>
+                  <Link href="/match" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
+                  <button onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{tr('nav.logout')}</button>
                 </div>
               )}
             </div>
@@ -140,23 +145,25 @@ export function Navbar() {
 
       {mobileOpen && (
         <div className="border-t border-gray-100 bg-white px-5 py-4 md:hidden">
-          <div className="space-y-1">
+          <div className="grid gap-2">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="block rounded-xl px-1 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
-                {link.label}
+              <Link key={link.href} href={link.href} className="rounded-2xl border border-gray-100 bg-[#f7f7f4] px-4 py-4" onClick={() => setMobileOpen(false)}>
+                <span className="block text-sm font-black text-gray-950">{link.label}</span>
+                <span className="mt-1 block text-xs font-medium text-gray-500">{link.description}</span>
               </Link>
             ))}
-            <Link href="/onboarding" className="block rounded-xl px-1 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
-              Onboarding
+            <Link href="/onboarding" className="rounded-2xl border border-gray-100 bg-[#f7f7f4] px-4 py-4" onClick={() => setMobileOpen(false)}>
+              <span className="block text-sm font-black text-gray-950">Onboarding</span>
+              <span className="mt-1 block text-xs font-medium text-gray-500">{isDa ? 'Byg dit brief før booking' : 'Build your brief before booking'}</span>
             </Link>
           </div>
           <div className="mt-4 grid gap-2">
-            <Link href="/professionals" className="inline-flex items-center justify-center rounded-xl bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
+            <Link href="/professionals" className="inline-flex items-center justify-center rounded-2xl bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
               {isDa ? 'Book 60 min' : 'Book 60 min'}
             </Link>
             {!session && (
               <>
-                <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
+                <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
                   {tr('professionals.cta')}
                 </Link>
                 <Link href="/login" className="text-center text-sm font-medium text-gray-500 py-2" onClick={() => setMobileOpen(false)}>
