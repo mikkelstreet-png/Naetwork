@@ -21,6 +21,17 @@ interface BookingDrawerProps {
 
 const DEMO_SLOTS = ['09:00', '11:00', '14:00', '16:00']
 
+const FOCUS_OPTIONS = [
+  { id: 'cv_linkedin', da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
+  { id: 'interview_prep', da: 'Interview Prep', en: 'Interview Prep' },
+  { id: 'case_prep', da: 'Case Prep', en: 'Case Prep' },
+  { id: 'career_direction', da: 'Career Direction', en: 'Career Direction' },
+  { id: 'banking_technicals', da: 'Banking Technicals', en: 'Banking Technicals' },
+  { id: 'consulting_cases', da: 'Consulting Cases', en: 'Consulting Cases' },
+  { id: 'pe_investment_case', da: 'PE / Investment Case', en: 'PE / Investment Case' },
+  { id: 'ai_career_strategy', da: 'AI Career Strategy', en: 'AI Career Strategy' },
+]
+
 function getNextTwoWeekdays(): Date[] {
   const days: Date[] = []
   const d = new Date()
@@ -45,6 +56,9 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [reminder, setReminder] = useState(true)
+  const [sessionFocus, setSessionFocus] = useState('')
+  const [sessionGoal, setSessionGoal] = useState('')
+  const [materialLink, setMaterialLink] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,30 +68,45 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
   const t = {
     title: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
-    subtitle: locale === 'da' ? 'Vælg tid, skriv dit fokus, og send bookinganmodningen.' : 'Choose a time, add your focus and send the booking request.',
+    subtitle: locale === 'da' ? 'Vælg tid, lav et kort session brief, og send bookinganmodningen.' : 'Choose a time, create a short session brief and send the booking request.',
     step1Title: locale === 'da' ? 'Vælg et tidspunkt' : 'Choose a time',
-    step2Title: locale === 'da' ? 'Bekræft din session' : 'Confirm your session',
+    step2Title: locale === 'da' ? 'Session brief' : 'Session brief',
     duration: '60 min',
     price: `DKK ${professional.price} / 60 min`,
     reminder: locale === 'da' ? 'Tilføj påmindelse' : 'Add reminder',
-    messageLabel: locale === 'da' ? 'Sessionens fokus' : 'Session focus',
-    messagePlaceholder: locale === 'da'
-      ? 'Hvad vil du bruge sessionen på? F.eks. CV, interview, case, banking technicals eller career direction.'
-      : 'What would you like to use the session for? E.g. CV, interview, case, banking technicals or career direction.',
+    focusLabel: locale === 'da' ? 'Hvad skal sessionen handle om?' : 'What should the session focus on?',
+    goalLabel: locale === 'da' ? 'Hvad vil du gerne opnå?' : 'What would you like to achieve?',
+    goalPlaceholder: locale === 'da'
+      ? 'F.eks. skarpere CV, træne case, forberede banking technicals eller afklare næste karriereskridt.'
+      : 'E.g. sharpen my CV, practice cases, prepare banking technicals or clarify my next career move.',
+    materialLabel: locale === 'da' ? 'Materiale eller link' : 'Material or link',
+    materialPlaceholder: locale === 'da' ? 'Valgfrit: LinkedIn, CV-link, jobopslag eller case-materiale' : 'Optional: LinkedIn, CV link, job post or case material',
+    noteLabel: locale === 'da' ? 'Ekstra note' : 'Extra note',
+    notePlaceholder: locale === 'da' ? 'Valgfrit: andet den professionelle bør vide.' : 'Optional: anything else the professional should know.',
+    focusError: locale === 'da' ? 'Vælg fokus for sessionen.' : 'Choose a session focus.',
     confirm: locale === 'da' ? 'Send bookinganmodning' : 'Send booking request',
     successTitle: locale === 'da' ? 'Booking anmodet' : 'Booking requested',
     successMsg: locale === 'da'
-      ? 'Din booking er modtaget. Du får en e-mail, og den professionelle vender tilbage med bekræftelse.'
-      : 'Your booking has been received. You will get an email, and the professional will confirm the session.',
+      ? 'Din booking og dit session brief er modtaget. Du får en e-mail, og den professionelle vender tilbage med bekræftelse.'
+      : 'Your booking and session brief have been received. You will get an email, and the professional will confirm the session.',
     close: locale === 'da' ? 'Luk' : 'Close',
     back: locale === 'da' ? 'Tilbage' : 'Back',
     authError: locale === 'da' ? 'Log ind for at booke en session.' : 'Log in to book a session.',
     profileError: locale === 'da' ? 'Din profil blev ikke fundet. Prøv at logge ind igen.' : 'Your profile was not found. Please log in again.',
     bookingError: locale === 'da' ? 'Bookingen kunne ikke oprettes. Prøv igen.' : 'The booking could not be created. Please try again.',
+    professional: locale === 'da' ? 'Professionel' : 'Professional',
+    date: locale === 'da' ? 'Dato' : 'Date',
+    time: locale === 'da' ? 'Tid' : 'Time',
+    priceLabel: locale === 'da' ? 'Pris' : 'Price',
   }
 
   async function handleConfirm() {
     if (!selectedDate || !selectedTime) return
+    if (!sessionFocus) {
+      setError(t.focusError)
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -97,6 +126,16 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
       const [h, m] = selectedTime.split(':').map(Number)
       startsAt.setHours(h, m, 0, 0)
       const endsAt = new Date(startsAt.getTime() + 60 * 60 * 1000)
+      const focusLabel = FOCUS_OPTIONS.find((option) => option.id === sessionFocus)?.[locale] ?? sessionFocus
+      const briefLabels = locale === 'da'
+        ? { focus: 'Fokus', goal: 'Mål', material: 'Materiale/link', note: 'Note' }
+        : { focus: 'Focus', goal: 'Goal', material: 'Material/link', note: 'Note' }
+      const brief = [
+        `${briefLabels.focus}: ${focusLabel}`,
+        sessionGoal.trim() ? `${briefLabels.goal}: ${sessionGoal.trim()}` : null,
+        materialLink.trim() ? `${briefLabels.material}: ${materialLink.trim()}` : null,
+        message.trim() ? `${briefLabels.note}: ${message.trim()}` : null,
+      ].filter(Boolean).join('\n')
 
       const { error: bookingError } = await supabase.from('bookings').insert({
         candidate_profile_id: profile.id,
@@ -104,7 +143,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
         starts_at: startsAt.toISOString(),
         ends_at: endsAt.toISOString(),
         price_dkk: professional.price,
-        message_to_professional: message || null,
+        message_to_professional: brief,
         reminder_requested: reminder,
         status: 'requested',
         payment_status: 'pending',
@@ -117,7 +156,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
           candidateEmail: user.email,
           candidateName: (profile.name as string | null) ?? user.email,
           professionalName: professional.name,
-          sessionType: '60 min career session',
+          sessionType: `60 min career session - ${focusLabel}`,
           scheduledAt: startsAt.toISOString(),
           priceDkk: professional.price,
         }).catch(() => false)
@@ -135,6 +174,9 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     setStep(1)
     setSelectedDate(null)
     setSelectedTime(null)
+    setSessionFocus('')
+    setSessionGoal('')
+    setMaterialLink('')
     setMessage('')
     setReminder(true)
     setError(null)
@@ -199,10 +241,10 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
               <h3 className="mb-5 text-base font-bold text-gray-950">{t.step2Title}</h3>
               <div className="mb-5 rounded-2xl border border-gray-200 bg-gray-50 p-4">
                 {[
-                  ['Professionel', professional.name],
-                  ['Dato', formatDate(selectedDate, locale)],
-                  ['Tid', `${selectedTime} (Europe/Copenhagen)`],
-                  ['Varighed', t.duration],
+                  [t.professional, professional.name],
+                  [t.date, formatDate(selectedDate, locale)],
+                  [t.time, `${selectedTime} (Europe/Copenhagen)`],
+                  [locale === 'da' ? 'Varighed' : 'Duration', t.duration],
                 ].map(([label, value]) => (
                   <div key={label} className="flex justify-between gap-4 py-2 text-sm">
                     <span className="text-gray-500">{label}</span>
@@ -210,27 +252,65 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                   </div>
                 ))}
                 <div className="mt-2 flex justify-between gap-4 border-t border-gray-200 pt-4 text-sm">
-                  <span className="text-gray-500">Pris</span>
+                  <span className="text-gray-500">{t.priceLabel}</span>
                   <span className="text-right font-black text-gray-950">{t.price}</span>
                 </div>
               </div>
 
-              <div className="mb-4 flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
+              <div className="mb-5 flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
                 <span className="text-sm font-medium text-gray-700">{t.reminder}</span>
                 <button onClick={() => setReminder(!reminder)} className={`relative h-6 w-11 rounded-full transition-colors ${reminder ? 'bg-gray-950' : 'bg-gray-200'}`} aria-pressed={reminder}>
                   <span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow transition-transform ${reminder ? 'translate-x-5' : ''}`} />
                 </button>
               </div>
 
-              <label className="mb-2 block text-sm font-bold text-gray-950">{t.messageLabel}</label>
+              <div className="mb-5">
+                <label className="mb-3 block text-sm font-bold text-gray-950">{t.focusLabel}</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {FOCUS_OPTIONS.map((option) => {
+                    const label = option[locale]
+                    const selected = sessionFocus === option.id
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => { setSessionFocus(option.id); setError(null) }}
+                        className={`rounded-xl border px-3 py-2.5 text-left text-xs font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <label className="mb-2 block text-sm font-bold text-gray-950">{t.goalLabel}</label>
               <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value.slice(0, 200))}
-                placeholder={t.messagePlaceholder}
+                value={sessionGoal}
+                onChange={(e) => setSessionGoal(e.target.value.slice(0, 260))}
+                placeholder={t.goalPlaceholder}
                 rows={4}
                 className="w-full resize-none rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
               />
-              <p className="mt-1 text-right text-xs text-gray-400">{message.length}/200</p>
+              <p className="mt-1 text-right text-xs text-gray-400">{sessionGoal.length}/260</p>
+
+              <label className="mb-2 mt-4 block text-sm font-bold text-gray-950">{t.materialLabel}</label>
+              <input
+                value={materialLink}
+                onChange={(e) => setMaterialLink(e.target.value.slice(0, 140))}
+                placeholder={t.materialPlaceholder}
+                inputMode="url"
+                className="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
+              />
+
+              <label className="mb-2 mt-4 block text-sm font-bold text-gray-950">{t.noteLabel}</label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value.slice(0, 160))}
+                placeholder={t.notePlaceholder}
+                rows={3}
+                className="w-full resize-none rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
+              />
+              <p className="mt-1 text-right text-xs text-gray-400">{message.length}/160</p>
               {error && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
             </div>
           )}
