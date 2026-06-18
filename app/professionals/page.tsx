@@ -175,6 +175,21 @@ export default function ProfessionalsPage() {
     viewProfile: isDa ? 'Se profil' : 'View profile',
   }
 
+  const marketplaceSignals = [
+    {
+      value: '60 min',
+      label: isDa ? 'Ét format på tværs af alle profiler' : 'One format across all profiles',
+    },
+    {
+      value: isDa ? 'Tydelig pris' : 'Clear price',
+      label: isDa ? 'Prisen vises før booking' : 'Price shown before booking',
+    },
+    {
+      value: 'Brief',
+      label: isDa ? 'Fokus og mål sendes med anmodningen' : 'Focus and goal are sent with the request',
+    },
+  ]
+
   function resetFilters() {
     setSearch('')
     setIndustryFilter('all')
@@ -230,6 +245,15 @@ export default function ProfessionalsPage() {
                 ))}
               </div>
             </div>
+          </div>
+
+          <div className="mt-5 grid gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200 md:grid-cols-3">
+            {marketplaceSignals.map((signal) => (
+              <div key={signal.value} className="bg-white p-5">
+                <p className="text-sm font-black text-gray-950">{signal.value}</p>
+                <p className="mt-1 text-xs font-medium leading-relaxed text-gray-500">{signal.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
