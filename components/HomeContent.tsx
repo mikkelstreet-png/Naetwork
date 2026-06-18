@@ -6,21 +6,19 @@ export function HomeContent() {
   const { tr, lang } = useTranslation();
   const isDa = lang === 'da';
 
+  // Change 9: removed tone classes from heroSignals — cards will use bg-white/border-gray-100
   const heroSignals = [
     {
       title: '60 min',
       body: isDa ? 'Én tydelig 1:1 session med fri fokusretning' : 'One clear 1:1 session with flexible focus',
-      tone: 'tone-cyan',
     },
     {
       title: 'DKK 500-1.800',
       body: isDa ? 'Prisen sættes af den professionelle' : 'Price set by the professional',
-      tone: 'tone-mint',
     },
     {
       title: isDa ? 'Fire fokusområder' : 'Four focus areas',
       body: 'AI, Banking, Management Consulting & Private Equity',
-      tone: 'tone-blue',
     },
   ];
 
@@ -35,11 +33,13 @@ export function HomeContent() {
     { title: 'AI Career Strategy', body: isDa ? 'Afkod roller, portfolio og veje ind i AI.' : 'Decode roles, portfolio and paths into AI.', tone: 'tone-blue' },
   ];
 
+  // Change 7: added taglines + Available badge data; bg-gray-900 initials circle
   const professionalCards = [
     {
       role: 'AI Product Lead',
       field: 'AI',
       price: 'DKK 500-1.800',
+      tagline: 'Helped 3 candidates land PM roles at AI-first companies',
       focus: isDa ? 'Product interviews, AI strategy og career direction' : 'Product interviews, AI strategy and career direction',
       tone: 'tone-blue',
     },
@@ -47,6 +47,7 @@ export function HomeContent() {
       role: 'Investment Banking Associate',
       field: 'Banking',
       price: 'DKK 500-1.800',
+      tagline: 'M&A and ECM — knows what Goldman and Rothschild look for',
       focus: isDa ? 'M&A process, technicals, CV og fit interviews' : 'M&A process, technicals, CV and fit interviews',
       tone: 'tone-mint',
     },
@@ -54,6 +55,7 @@ export function HomeContent() {
       role: 'Management Consultant',
       field: 'Consulting',
       price: 'DKK 500-1.800',
+      tagline: 'Case and fit prep from inside McKinsey and Bain',
       focus: isDa ? 'Case struktur, hypoteser og kommunikation' : 'Case structure, hypotheses and communication',
       tone: 'tone-cyan',
     },
@@ -61,6 +63,7 @@ export function HomeContent() {
       role: 'Private Equity Investor',
       field: 'Private Equity',
       price: 'DKK 500-1.800',
+      tagline: 'PE interviews, investment thinking and what the process actually looks like',
       focus: isDa ? 'Investment cases, diligence og deal thinking' : 'Investment cases, diligence and deal thinking',
       tone: 'tone-sage',
     },
@@ -138,13 +141,6 @@ export function HomeContent() {
     },
   ];
 
-  const pathCards = [
-    { label: isDa ? 'Ambition' : 'Ambition', value: 'AI / Banking / Consulting / PE' },
-    { label: isDa ? 'Fokus' : 'Focus', value: isDa ? 'CV, interview, case eller karrierevalg' : 'CV, interview, case or career choice' },
-    { label: isDa ? 'Session' : 'Session', value: isDa ? '60 min med relevant professionel' : '60 min with a relevant professional' },
-    { label: isDa ? 'Output' : 'Output', value: isDa ? 'Klarere svar og næste skridt' : 'Sharper answers and next steps' },
-  ];
-
   const howSteps = [
     { num: '01', titleKey: 'how.step1_title', bodyKey: 'how.step1_body' },
     { num: '02', titleKey: 'how.step2_title', bodyKey: 'how.step2_body' },
@@ -218,9 +214,9 @@ export function HomeContent() {
         <div className="max-w-6xl mx-auto grid gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
           <div>
             <div className="animate-fade-up">
+              {/* Change 2 & 3: removed green dot, updated label text */}
               <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase text-gray-700 mb-10 border border-gray-200 bg-white px-3 py-1.5 rounded-full shadow-sm">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                {isDa ? 'For ambitiøse kandidater' : 'For ambitious candidates'}
+                {isDa ? 'For kandidater der forbereder sig seriøst' : 'For candidates who prepare seriously'}
               </span>
             </div>
 
@@ -230,10 +226,11 @@ export function HomeContent() {
                 : 'Book 60 minutes with someone who knows the path from inside.'}
             </h1>
 
+            {/* Change 1: updated hero subtitle */}
             <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mb-10 animate-fade-up delay-2">
               {isDa
-                ? 'Én enkel 1:1 session til CV, interviews, cases, technicals, AI strategy eller karrierevalg. Professionelle sætter selv pris mellem DKK 500 og 1.800.'
-                : 'One simple 1:1 session for CVs, interviews, cases, technicals, AI strategy or career decisions. Professionals set their own price between DKK 500 and 1,800.'}
+                ? 'Én 1:1 session med én, der allerede har været igennem processen. Vælg dit fokus, book din tid, og kom skarpere frem.'
+                : 'One 1:1 session with someone who has already been through the process. Choose your focus, book your time, and arrive sharper.'}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-3">
@@ -251,9 +248,10 @@ export function HomeContent() {
               </Link>
             </div>
 
+            {/* Change 9: pure white cards with gray-100 border */}
             <div className="mt-10 grid max-w-3xl gap-3 sm:grid-cols-3 animate-fade-up delay-4">
               {heroSignals.map((item) => (
-                <div key={item.title} className={`premium-card tone-card ${item.tone} rounded-2xl border p-5`}>
+                <div key={item.title} className="premium-card rounded-2xl border border-gray-100 bg-white p-5">
                   <p className="text-sm font-bold text-gray-950">{item.title}</p>
                   <p className="mt-2 text-xs leading-relaxed text-gray-600">{item.body}</p>
                 </div>
@@ -374,7 +372,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* PROFESSIONAL PREVIEW */}
+      {/* PROFESSIONAL PREVIEW — Change 7: Added Available badge + taglines, bg-gray-900 initials */}
       <section className="py-24 md:py-32 bg-gray-950 border-t border-gray-900">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
@@ -383,23 +381,26 @@ export function HomeContent() {
               <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
                 {isDa ? 'Produktet er ikke en artikel. Det er adgang til et menneske.' : 'The product is not an article. It is access to a person.'}
               </h2>
-              <p className="text-gray-400 leading-relaxed max-w-md">
-                {isDa
-                  ? 'Naetwork skal føles kurateret: branche, erfaring, fokus og pris skal kunne aflæses på få sekunder.'
-                  : 'Naetwork should feel curated: field, experience, focus and price should be readable in seconds.'}
-              </p>
+              {/* Change 4: removed internal product language paragraph */}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               {professionalCards.map((card) => (
-                <div key={card.role} className={`premium-card tone-card ${card.tone} rounded-2xl border p-6 min-h-[250px] flex flex-col`}>
-                  <div className="flex items-start justify-between gap-4 mb-8">
-                    <div className="h-10 w-10 rounded-full bg-gray-950 text-white flex items-center justify-center text-xs font-black">
+                <div key={card.role} className={`premium-card tone-card ${card.tone} rounded-2xl border p-6 min-h-[270px] flex flex-col`}>
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    {/* Change 7: bg-gray-900 initials circle */}
+                    <div className="h-10 w-10 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-black">
                       {card.field.slice(0, 2).toUpperCase()}
                     </div>
-                    <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-gray-700 border border-white/80">{card.field}</span>
+                    {/* Change 7: Available badge */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-indigo-600" />
+                      <span className="text-xs font-semibold text-indigo-600">Available</span>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-950 mb-2">{card.role}</h3>
+                  <h3 className="text-lg font-bold text-gray-950 mb-1">{card.role}</h3>
+                  {/* Change 7: tagline */}
+                  <p className="text-xs text-gray-500 leading-relaxed mb-3">{card.tagline}</p>
                   <p className="text-sm text-gray-600 leading-relaxed mb-6">{card.focus}</p>
                   <div className="mt-auto flex items-center justify-between border-t border-gray-950/10 pt-5">
                     <p className="text-xs font-semibold uppercase text-gray-500">{isDa ? 'Prisramme' : 'Price range'}</p>
@@ -458,28 +459,7 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* SIGNATURE FLOW */}
-      <section className="py-24 md:py-32 bg-gray-950 border-t border-gray-900">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div>
-              <p className="text-xs font-semibold uppercase text-cyan-200 mb-4">{isDa ? 'Naetwork flow' : 'Naetwork flow'}</p>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
-                {isDa ? 'Fra usikkerhed til et skarpere næste træk.' : 'From uncertainty to a sharper next move.'}
-              </h2>
-            </div>
-            <div className="grid sm:grid-cols-4 gap-3">
-              {pathCards.map((card, index) => (
-                <div key={card.label} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 min-h-[170px] flex flex-col">
-                  <p className="text-xs font-semibold text-gray-500 mb-5">0{index + 1}</p>
-                  <p className="text-sm font-bold text-white mb-2">{card.label}</p>
-                  <p className="text-xs text-gray-400 leading-relaxed">{card.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Change 8: SIGNATURE FLOW section removed entirely */}
 
       {/* HOW IT WORKS */}
       <section id="how-it-works" className="py-24 md:py-32 bg-white border-t border-gray-100">
@@ -603,7 +583,8 @@ export function HomeContent() {
             </div>
           </div>
 
-          <p className="text-xs text-gray-700 text-center">{tr('impact.kb_legal')}</p>
+          {/* Change 10: hardcoded Danish legal disclaimer */}
+          <p className="text-xs text-gray-700 text-center">Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse.</p>
         </div>
       </section>
 
@@ -619,8 +600,8 @@ export function HomeContent() {
                 <p className="text-gray-600 text-sm leading-relaxed">
                   {item.q === 'faq.q3'
                     ? (isDa
-                        ? 'Alle sessioner er 60 minutter. Den professionelle sætter selv prisen mellem DKK 500 og 1.800, og prisen vises altid før booking.'
-                        : 'All sessions are 60 minutes. The professional sets the price between DKK 500 and 1,800, and the price is always shown before booking.')
+                      ? 'Alle sessioner er 60 minutter. Den professionelle sætter selv prisen mellem DKK 500 og 1.800, og prisen vises altid før booking.'
+                      : 'All sessions are 60 minutes. The professional sets the price between DKK 500 and 1,800, and the price is always shown before booking.')
                     : tr(item.a)}
                 </p>
               </div>
@@ -645,15 +626,17 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
+      {/* FINAL CTA — Changes 5 & 6 */}
       <section className="py-32 text-center bg-gray-950">
         <div className="max-w-6xl mx-auto px-6">
           <p className="mx-auto mb-8 h-px max-w-2xl bg-gradient-to-r from-transparent via-cyan-200/40 to-transparent" aria-hidden="true" />
+          {/* Change 5: updated headline */}
           <h2 className="text-4xl md:text-6xl font-black text-white leading-none mb-4">
-            {isDa ? 'Book 60 minutter tættere på virkeligheden.' : 'Book 60 minutes closer to the real thing.'}
+            {isDa ? 'Book 60 minutter. Kom tættere på jobbet.' : 'Book 60 minutes. Get closer to the job.'}
           </h2>
+          {/* Change 6: updated sub */}
           <p className="text-gray-400 text-lg leading-relaxed mb-12">
-            {isDa ? 'Find en professionel med erfaring fra den karrierevej, du sigter efter.' : 'Find a professional with experience from the career path you are aiming for.'}
+            {isDa ? 'Konkret vejledning fra folk, der allerede forstår processen, kulturen og kravene.' : 'Concrete guidance from people who already understand the process, the culture and the bar.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/professionals" className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-950 font-semibold rounded-xl hover:bg-gray-100 transition-colors text-base">{tr('cta.button')}</Link>
