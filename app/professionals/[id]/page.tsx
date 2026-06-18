@@ -191,30 +191,27 @@ export default function ProfessionalDetailPage() {
   }, [id])
 
   const t = {
-    back: isDa ? 'Tilbage til professionals' : 'Back to professionals',
+    back: isDa ? 'Tilbage til profiler' : 'Back to profiles',
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
     loading: isDa ? 'Indlæser...' : 'Loading...',
     notFound: isDa ? 'Profil ikke fundet' : 'Profile not found',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
-    briefing: isDa ? 'Du vælger selv, hvad sessionen skal handle om, når du booker.' : 'You choose what the session should focus on when you book.',
+    briefing: isDa ? 'Du vælger selv fokus, når du booker.' : 'You choose the focus when you book.',
     bestFor: isDa ? 'Best for' : 'Best for',
     sessionBrief: isDa ? 'Session brief' : 'Session brief',
     sessionBriefBody: isDa
-      ? 'Før du sender bookinganmodningen, vælger du fokus, procesfase, mål og eventuelt materiale. Det giver den professionelle bedre kontekst og gør sessionen mere konkret.'
-      : 'Before sending the booking request, you choose focus, process stage, goal and optional material. That gives the professional better context and makes the session more concrete.',
-    beforeBooking: isDa ? 'Før booking' : 'Before booking',
-    outcomes: isDa ? 'Mulige outcomes' : 'Possible outcomes',
-    trust: isDa ? 'Tryghed før booking' : 'Confidence before booking',
+      ? 'Før du sender bookinganmodningen, vælger du fokus, procesfase, mål og eventuelt materiale. Det giver den professionelle bedre kontekst.'
+      : 'Before sending the booking request, you choose focus, process stage, goal and optional material. That gives the professional better context.',
     profileSignal: isDa ? 'Profil-signal' : 'Profile signal',
-    useThisProfileIf: isDa ? 'Brug denne profil hvis...' : 'Use this profile if...',
-    leaveWith: isDa ? 'Hvad du kan gå fra sessionen med' : 'What you can leave with',
+    useThisProfileIf: isDa ? 'Brug profilen hvis' : 'Use this profile if',
+    leaveWith: isDa ? 'Muligt output' : 'Possible output',
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#f7f7f4]"><p className="text-gray-400">{t.loading}</p></div>
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">{t.loading}</p></div>
 
   if (!professional) return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-6">
+    <div className="flex min-h-screen items-center justify-center bg-white px-6">
       <div className="text-center">
         <p className="mb-4 text-gray-500">{t.notFound}</p>
         <Link href="/professionals" className="text-sm font-semibold text-gray-950 underline decoration-gray-300 underline-offset-4">{t.back}</Link>
@@ -227,65 +224,40 @@ export default function ProfessionalDetailPage() {
   const primaryOutput = primaryOutputFor(professional, isDa)
   const useCases = useCasesFor(professional, isDa)
   const outcomes = outcomesFor(professional, isDa)
-  const prepItems = [
-    {
-      title: isDa ? 'Vælg fokus' : 'Choose focus',
-      body: isDa ? 'CV, interview, case, technicals, AI strategy eller karrierevalg.' : 'CV, interview, case, technicals, AI strategy or career direction.',
-    },
-    {
-      title: isDa ? 'Skriv dit mål' : 'Write your goal',
-      body: isDa ? 'Fortæl hvad du gerne vil stå skarpere på efter de 60 minutter.' : 'Explain what you want to be sharper on after the 60 minutes.',
-    },
-    {
-      title: isDa ? 'Tilføj materiale' : 'Add material',
-      body: isDa ? 'Del LinkedIn, CV, jobopslag eller case-materiale hvis relevant.' : 'Share LinkedIn, CV, job post or case material if relevant.',
-    },
-  ]
-  const trustItems = [
-    { label: isDa ? 'Baggrund' : 'Background', value: `${professional.title} · ${professional.company}` },
-    { label: isDa ? 'Pris før booking' : 'Price before booking', value: `DKK ${professional.price}` },
-    { label: isDa ? 'Primært output' : 'Primary output', value: primaryOutput },
-    { label: isDa ? 'Brief inkluderet' : 'Brief included', value: isDa ? 'Ja' : 'Yes' },
+  const facts = [
+    { label: isDa ? 'Format' : 'Format', value: '60 min' },
+    { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
+    { label: t.bestFor, value: bestFit },
+    { label: isDa ? 'Output' : 'Output', value: primaryOutput },
   ]
 
   return (
-    <div className="min-h-screen bg-[#f7f7f4] pb-24 md:pb-0">
+    <div className="min-h-screen bg-white pb-24 md:pb-0">
       <section className="border-b border-gray-200 bg-white px-5 pt-16 sm:px-8">
-        <div className="mx-auto max-w-6xl py-10 md:py-16">
-          <Link href="/professionals" className="mb-9 inline-flex items-center gap-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950">
+        <div className="mx-auto max-w-6xl py-10 md:py-20">
+          <Link href="/professionals" className="mb-10 inline-flex items-center gap-2 text-sm font-black text-gray-500 transition-colors hover:text-gray-950">
             <span>&larr;</span><span>{t.back}</span>
           </Link>
 
-          <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:items-end">
+          <div className="grid gap-12 lg:grid-cols-[1fr_320px] lg:items-end">
             <div>
-              <span className={`mb-7 block h-2 w-24 rounded-full ${accentFor(professional)}`} />
-              <div className="mb-6 flex flex-wrap gap-2">
-                {professional.industries.map((ind) => (
-                  <span key={ind} className="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold uppercase text-gray-600">{ind}</span>
-                ))}
-                <span className="rounded-full bg-gray-950 px-3 py-1 text-xs font-bold uppercase text-white">{t.bestFor}: {bestFit}</span>
-              </div>
-              <h1 className="max-w-4xl text-5xl font-black leading-[0.96] tracking-tight text-gray-950 text-balance md:text-7xl">{professional.name}</h1>
-              <p className="mt-5 text-lg font-bold text-gray-700">{professional.title} · {professional.company}</p>
+              <span className={`mb-8 block h-2 w-24 rounded-full ${accentFor(professional)}`} />
+              <p className="mb-5 text-xs font-black uppercase text-gray-400">{professional.industries.join(' / ')}</p>
+              <h1 className="max-w-4xl text-6xl font-black leading-[0.92] tracking-tight text-gray-950 text-balance md:text-8xl">{professional.name}</h1>
+              <p className="mt-6 text-lg font-black text-gray-700">{professional.title} · {professional.company}</p>
               <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{professional.bio}</p>
             </div>
 
-            <aside className="rounded-3xl border border-gray-200 bg-[#f7f7f4] p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
-                  {initials(professional.name)}
-                </div>
-                <div className="text-right">
-                  <p className="text-xs font-bold uppercase text-gray-400">{isDa ? 'Pris' : 'Price'}</p>
-                  <p className="text-2xl font-black text-gray-950">DKK {professional.price}</p>
-                  <p className="text-xs font-medium text-gray-400">/ 60 min</p>
-                </div>
+            <aside className="border-t border-gray-200 pt-6 lg:border-t-0 lg:pt-0">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-950 text-sm font-black text-white">
+                {initials(professional.name)}
               </div>
-              <div className="my-5 border-y border-gray-200 py-5">
-                <p className="text-sm font-black text-gray-950">{t.session}</p>
+              <div className="mt-6 border-y border-gray-200 py-5">
+                <p className="text-xs font-black uppercase text-gray-400">{t.session}</p>
+                <p className="mt-2 text-3xl font-black text-gray-950">DKK {professional.price}</p>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{t.briefing}</p>
               </div>
-              <button onClick={() => setDrawerOpen(true)} className="w-full rounded-full bg-gray-950 px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+              <button onClick={() => setDrawerOpen(true)} className="mt-5 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
                 {t.bookCta}
               </button>
             </aside>
@@ -293,36 +265,26 @@ export default function ProfessionalDetailPage() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-14">
-        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="space-y-6">
-            <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.profileSignal}</p>
-                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{t.useThisProfileIf}</h2>
-                </div>
-                <span className={`block h-2 w-20 rounded-full ${accentFor(professional)}`} />
-              </div>
-              <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 md:grid-cols-3">
+      <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-16">
+        <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+          <div className="space-y-14">
+            <section>
+              <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.profileSignal}</p>
+              <h2 className="max-w-2xl text-3xl font-black tracking-tight text-gray-950 md:text-5xl">{t.useThisProfileIf}</h2>
+              <div className="mt-8 border-t border-gray-200">
                 {useCases.map((item, index) => (
-                  <div key={item} className="bg-[#f7f7f4] p-5">
+                  <div key={item} className="grid gap-4 border-b border-gray-200 py-6 md:grid-cols-[80px_1fr]">
                     <p className="text-xs font-black text-gray-300">0{index + 1}</p>
-                    <p className="mt-8 text-sm font-black leading-relaxed text-gray-950">{item}</p>
+                    <p className="max-w-2xl text-base font-black leading-relaxed text-gray-950">{item}</p>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.leaveWith}</p>
-                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{primaryOutput}</h2>
-                </div>
-                <span className="w-fit rounded-full bg-gray-950 px-3 py-1.5 text-xs font-bold text-white">{bestFit}</span>
-              </div>
-              <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-2">
+            <section>
+              <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.leaveWith}</p>
+              <h2 className="text-3xl font-black tracking-tight text-gray-950 md:text-5xl">{primaryOutput}</h2>
+              <div className="mt-8 grid gap-px border border-gray-200 bg-gray-200 sm:grid-cols-2">
                 {outcomes.map((outcome) => (
                   <div key={outcome} className="bg-[#f7f7f4] p-5">
                     <p className="text-sm font-black text-gray-950">{outcome}</p>
@@ -331,14 +293,14 @@ export default function ProfessionalDetailPage() {
               </div>
             </section>
 
-            <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
-              <p className="mb-5 text-xs font-bold uppercase text-gray-400">{t.focusAreas}</p>
+            <section>
+              <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.focusAreas}</p>
               {focusAreas.length > 0 ? (
-                <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-2">
+                <div className="border-t border-gray-200">
                   {focusAreas.map((area) => (
-                    <div key={area} className="bg-[#f7f7f4] p-5">
+                    <div key={area} className="grid gap-3 border-b border-gray-200 py-5 md:grid-cols-[220px_1fr]">
                       <p className="text-sm font-black text-gray-950">{FOCUS_LABELS[area] ?? area}</p>
-                      <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                      <p className="text-sm leading-relaxed text-gray-500">
                         {isDa ? 'Brug sessionen på konkrete spørgsmål, feedback og næste skridt.' : 'Use the session for concrete questions, feedback and next steps.'}
                       </p>
                     </div>
@@ -349,52 +311,24 @@ export default function ProfessionalDetailPage() {
               )}
             </section>
 
-            <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.beforeBooking}</p>
-                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{t.sessionBrief}</h2>
-                </div>
-                <span className="w-fit rounded-full bg-gray-950 px-3 py-1.5 text-xs font-bold text-white">60 min</span>
-              </div>
-              <p className="max-w-2xl text-sm leading-relaxed text-gray-600">{t.sessionBriefBody}</p>
-              <div className="mt-7 grid gap-6 sm:grid-cols-3">
-                {prepItems.map((item, index) => (
-                  <div key={item.title} className="border-t border-gray-200 pt-5">
-                    <p className="text-xs font-black text-gray-300">0{index + 1}</p>
-                    <p className="mt-5 text-sm font-black text-gray-950">{item.title}</p>
-                    <p className="mt-2 text-xs leading-relaxed text-gray-500">{item.body}</p>
-                  </div>
-                ))}
-              </div>
+            <section className="border-y border-gray-200 py-8">
+              <p className="mb-4 text-xs font-black uppercase text-gray-400">{t.sessionBrief}</p>
+              <p className="max-w-2xl text-base leading-relaxed text-gray-600">{t.sessionBriefBody}</p>
             </section>
           </div>
 
-          <aside className="space-y-3">
-            {[
-              { label: isDa ? 'Format' : 'Format', value: '60 min' },
-              { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
-              { label: t.bestFor, value: bestFit },
-              { label: isDa ? 'Output' : 'Output', value: primaryOutput },
-              { label: isDa ? 'Fokus' : 'Focus', value: isDa ? 'Du vælger selv' : 'You choose' },
-            ].map((item) => (
-              <div key={item.label} className="rounded-3xl border border-gray-200 bg-white p-5">
-                <p className="text-xs font-bold uppercase text-gray-400">{item.label}</p>
-                <p className="mt-2 text-lg font-black text-gray-950">{item.value}</p>
-              </div>
-            ))}
-
-            <div className="rounded-3xl border border-gray-200 bg-gray-950 p-5 text-white">
-              <p className="mb-4 text-xs font-bold uppercase text-white/40">{t.trust}</p>
-              <div className="space-y-4">
-                {trustItems.map((item) => (
-                  <div key={item.label} className="border-t border-white/10 pt-4 first:border-t-0 first:pt-0">
-                    <p className="text-xs font-bold uppercase text-white/35">{item.label}</p>
-                    <p className="mt-1 text-sm font-black text-white">{item.value}</p>
-                  </div>
-                ))}
-              </div>
+          <aside className="lg:sticky lg:top-24 lg:h-fit">
+            <div className="border-t border-gray-200">
+              {facts.map((item) => (
+                <div key={item.label} className="border-b border-gray-200 py-5">
+                  <p className="text-xs font-black uppercase text-gray-400">{item.label}</p>
+                  <p className="mt-2 text-lg font-black text-gray-950">{item.value}</p>
+                </div>
+              ))}
             </div>
+            <button onClick={() => setDrawerOpen(true)} className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
+              {t.bookCta}
+            </button>
           </aside>
         </div>
       </main>
@@ -406,7 +340,7 @@ export default function ProfessionalDetailPage() {
               <p className="text-xs font-bold uppercase text-gray-400">{t.session}</p>
               <p className="text-sm font-black text-gray-950">DKK {professional.price}</p>
             </div>
-            <button onClick={() => setDrawerOpen(true)} className="rounded-full bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+            <button onClick={() => setDrawerOpen(true)} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
               {t.bookCta}
             </button>
           </div>
