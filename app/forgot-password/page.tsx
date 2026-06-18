@@ -21,47 +21,35 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center px-6">
-        <div className="w-full max-w-md text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">Tjek din e-mail</h1>
-          <p className="text-gray-500">Hvis kontoen findes, har vi sendt et nulstillingslink til <strong>{email}</strong>.</p>
-          <Link href="/login" className="mt-8 inline-block text-indigo-600 hover:underline text-sm">Tilbage til log ind</Link>
+      <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-6 pt-16">
+        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <h1 className="mb-3 text-2xl font-black text-gray-950">Tjek din e-mail</h1>
+          <p className="leading-relaxed text-gray-500">Hvis kontoen findes, har vi sendt et nulstillingslink til <strong>{email}</strong>.</p>
+          <Link href="/login" className="mt-8 inline-flex rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">Tilbage til log ind</Link>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
-        <div className="mb-8">
-          <Link href="/" className="font-bold text-xl tracking-tight text-gray-900">Naetwork</Link>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Glemt password?</h1>
-        <p className="text-gray-500 mb-8">Skriv din e-mail, så sender vi dig et link til at nulstille dit password.</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-6 pt-16">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+        <Link href="/" className="mb-8 inline-flex items-center gap-2" aria-label="Naetwork home">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white">N</span>
+          <span className="font-black tracking-tight text-gray-950">Naetwork</span>
+        </Link>
+        <h1 className="text-3xl font-black text-gray-950">Glemt password?</h1>
+        <p className="mt-2 text-sm leading-relaxed text-gray-500">Skriv din e-mail, så sender vi et link til at nulstille dit password.</p>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="dit@eksempel.dk"
-            />
+            <label className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
+            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="dit@eksempel.dk" />
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="w-full rounded-xl bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
             {loading ? 'Sender...' : 'Send nulstillingslink'}
           </button>
         </form>
-        <p className="mt-6 text-sm text-center text-gray-500">
-          <Link href="/login" className="text-indigo-600 hover:underline">Tilbage til log ind</Link>
-        </p>
+        <p className="mt-6 text-center text-sm text-gray-500"><Link href="/login" className="font-semibold text-gray-950 underline decoration-gray-300 underline-offset-4 hover:decoration-gray-950">Tilbage til log ind</Link></p>
       </div>
     </main>
   );
