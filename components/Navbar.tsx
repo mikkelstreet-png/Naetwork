@@ -46,28 +46,26 @@ export function Navbar() {
 
   const navLinks = [
     { href: '/professionals', label: tr('nav.find') },
-    { href: '/#pricing', label: isDa ? 'Format' : 'Format' },
     { href: '/#how-it-works', label: tr('nav.how') },
-    { href: '/#candidates', label: tr('nav.candidates') },
-    { href: '/#professionals', label: tr('nav.professionals') },
+    { href: '/#pricing', label: isDa ? 'Format' : 'Format' },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/86 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="group flex items-center gap-2 shrink-0" aria-label="Naetwork home">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
+    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/92 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+        <Link href="/" className="group flex items-center gap-3 shrink-0" aria-label="Naetwork home">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
             N
           </span>
           <span className="text-[15px] font-black tracking-tight text-gray-950">Naetwork</span>
         </Link>
 
-        <div className="hidden items-center gap-1 rounded-full border border-gray-200 bg-white px-1.5 py-1 shadow-sm md:flex">
+        <div className="hidden items-center gap-7 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-950"
+              className="text-sm font-semibold text-gray-500 transition-colors hover:text-gray-950"
             >
               {link.label}
             </Link>
@@ -75,13 +73,13 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden rounded-full border border-gray-200 bg-white px-1 py-1 shadow-sm sm:block">
+          <div className="hidden sm:block">
             <LanguageToggle />
           </div>
 
           <Link
             href="/professionals"
-            className="hidden items-center justify-center rounded-full bg-gray-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-800 md:inline-flex"
+            className="hidden items-center justify-center rounded-full bg-gray-950 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-gray-800 md:inline-flex"
           >
             {isDa ? 'Book 60 min' : 'Book 60 min'}
           </Link>
@@ -108,18 +106,18 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <div className="hidden items-center gap-2 md:flex">
-              <Link href="/login" className="rounded-full px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-950">
+            <div className="hidden items-center gap-1 md:flex">
+              <Link href="/login" className="rounded-full px-3 py-2 text-sm font-semibold text-gray-500 transition-colors hover:text-gray-950">
                 {tr('nav.login')}
               </Link>
-              <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
+              <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-4 py-2.5 text-sm font-bold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
                 {tr('professionals.cta')}
               </Link>
             </div>
           )}
 
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -131,9 +129,8 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <line x1="4" y1="7" x2="20" y2="7" />
-                  <line x1="4" y1="12" x2="20" y2="12" />
-                  <line x1="4" y1="17" x2="20" y2="17" />
+                  <line x1="4" y1="8" x2="20" y2="8" />
+                  <line x1="4" y1="16" x2="20" y2="16" />
                 </>
               )}
             </svg>
@@ -142,21 +139,21 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-gray-100 bg-white px-4 py-4 md:hidden">
-          <div className="space-y-1 rounded-2xl border border-gray-200 bg-gray-50 p-2">
+        <div className="border-t border-gray-100 bg-white px-5 py-4 md:hidden">
+          <div className="space-y-1">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="block rounded-xl px-3 py-3 text-sm font-semibold text-gray-800" onClick={() => setMobileOpen(false)}>
+              <Link key={link.href} href={link.href} className="block rounded-xl px-1 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
                 {link.label}
               </Link>
             ))}
           </div>
-          <div className="mt-3 grid gap-2">
-            <Link href="/professionals" className="inline-flex items-center justify-center rounded-xl bg-gray-950 px-4 py-3 text-sm font-semibold text-white" onClick={() => setMobileOpen(false)}>
+          <div className="mt-4 grid gap-2">
+            <Link href="/professionals" className="inline-flex items-center justify-center rounded-xl bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
               {isDa ? 'Book 60 min' : 'Book 60 min'}
             </Link>
             {!session && (
               <>
-                <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-950" onClick={() => setMobileOpen(false)}>
+                <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
                   {tr('professionals.cta')}
                 </Link>
                 <Link href="/login" className="text-center text-sm font-medium text-gray-500 py-2" onClick={() => setMobileOpen(false)}>
