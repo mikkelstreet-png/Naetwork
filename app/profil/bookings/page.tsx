@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/context/LanguageContext'
 import Link from 'next/link'
+import { StatusBadge } from '@/components/StatusBadge'
 
 interface Booking {
   id: string
@@ -15,32 +17,9 @@ interface Booking {
   candidate_profile_id: string | null
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  requested: 'bg-gray-100 text-gray-600',
-  pending: 'bg-gray-100 text-gray-600',
-  confirmed: 'bg-indigo-100 text-indigo-700',
-  rescheduled: 'bg-indigo-50 text-indigo-600',
-  cancelled: 'bg-red-100 text-red-600',
-  completed: 'bg-green-100 text-green-700',
-  no_show: 'bg-red-50 text-red-500',
-  refunded: 'bg-gray-100 text-gray-500',
-  disputed: 'bg-red-100 text-red-700',
-}
-
-const STATUS_DA: Record<string, string> = {
-  requested: 'Anmodet', pending: 'Afventer', confirmed: 'Bekraeftet',
-  rescheduled: 'Omplanlage', cancelled: 'Aflyst', completed: 'Gennemfoert',
-  no_show: 'Udeblivelse', refunded: 'Refunderet', disputed: 'Tvist',
-}
-
-const STATUS_EN: Record<string, string> = {
-  requested: 'Requested', pending: 'Pending', confirmed: 'Confirmed',
-  rescheduled: 'Rescheduled', cancelled: 'Cancelled', completed: 'Completed',
-  no_show: 'No show', refunded: 'Refunded', disputed: 'Disputed',
-}
-
 export default function BookingsPage() {
-  const [locale, setLocale] = useState<'da' | 'en'>('da')
+  const { lang } = useLanguage()
+  const locale = lang
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -69,7 +48,7 @@ export default function BookingsPage() {
         .from('professional_profiles')
         .select('id')
         .eq('profile_id', profile.id)
-        .single()
+        .maybeSingle()
 
       let professionalBookings: Booking[] = []
       if (proProfile) {
@@ -98,64 +77,58 @@ export default function BookingsPage() {
     })
   }
 
-  const statusLabels = locale === 'da' ? STATUS_DA : STATUS_EN
-  const t = {
-    heading: locale === 'da' ? 'Mine bookinger' : 'My bookings',
-    empty: locale === 'da' ? 'Du har ingen bookinger endnu' : 'You have no bookings yet',
-    findPro: locale === 'da' ? 'Find en professionel' : 'Find a professional',
-    loading: locale === 'da' ? 'Indlaaser...' : 'Loading...',
-    back: locale === 'da' ? 'Min profil' : 'My profile',
-  }
+  const isDa = locale === 'da'
+  const totalValue = bookings.reduce((sum, booking) => sum + (booking.price_dkk ?? 0), 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/profil" className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1">
-            <span>&larr;</span><span>{t.back}</span>
-          </Link>
-          <div className="flex gap-2">
-            <button onClick={() => setLocale('da')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'da' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}>DA</button>
-            <button onClick={() => setLocale('en')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${locale === 'en' ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-900'}`}>EN</button>
-          </div>
+    <main className="min-h-screen bg-[#f7f7f4] pt-16">
+      <div className="mx-auto max-w-5xl px-6 py-10 md:py-14">
+        <div className="mb-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+          <Link href="/profil" className="mb-8 inline-flex rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; {isDa ? 'Min profil' : 'My profile'}</Link>
+          <p className="text-xs font-semibold uppercase text-gray-400">Sessions</p>
+          <h1 className="mt-2 text-4xl font-black leading-none tracking-tight text-gray-950">{isDa ? 'Mine bookinger' : 'My bookings'}</h1>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500">{isDa ? 'Overblik over kommende og tidligere 60-minutters sessioner.' : 'Overview of upcoming and past 60-minute sessions.'}</p>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">{t.heading}</h1>
+        <div className="mb-6 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"><p className="text-xs font-semibold uppercase text-gray-400">Total</p><p className="mt-2 text-2xl font-black text-gray-950">{bookings.length}</p></div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"><p className="text-xs font-semibold uppercase text-gray-400">Format</p><p className="mt-2 text-2xl font-black text-gray-950">60 min</p></div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"><p className="text-xs font-semibold uppercase text-gray-400">Værdi</p><p className="mt-2 text-2xl font-black text-gray-950">DKK {totalValue.toLocaleString('da-DK')}</p></div>
+        </div>
 
         {loading ? (
-          <p className="text-gray-400 text-center py-12">{t.loading}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-400 shadow-sm">{isDa ? 'Indlæser...' : 'Loading...'}</div>
         ) : bookings.length === 0 ? (
-          <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center">
-            <p className="text-gray-500 mb-4">{t.empty}</p>
-            <Link href="/professionals" className="inline-block px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
-              {t.findPro}
+          <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-sm">
+            <h2 className="text-xl font-black text-gray-950">{isDa ? 'Ingen bookinger endnu' : 'No bookings yet'}</h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">{isDa ? 'Find en professionel og book 60 minutter med fokus på dit næste karriereskridt.' : 'Find a professional and book 60 minutes focused on your next career move.'}</p>
+            <Link href="/professionals" className="mt-6 inline-flex rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
+              {isDa ? 'Find en professionel' : 'Find a professional'}
             </Link>
           </div>
         ) : (
           <div className="space-y-3">
             {bookings.map((booking) => (
-              <div key={booking.id} className="bg-white border border-gray-100 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div key={booking.id} className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{formatDateTime(booking.starts_at)}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">60 min</p>
-                  {booking.price_dkk && <p className="text-xs text-gray-500 mt-1">DKK {booking.price_dkk}</p>}
+                  <p className="text-sm font-black text-gray-950">{formatDateTime(booking.starts_at)}</p>
+                  <p className="mt-1 text-xs font-medium text-gray-400">60 min · Europe/Copenhagen</p>
+                  {booking.price_dkk && <p className="mt-2 text-sm font-semibold text-gray-700">DKK {booking.price_dkk.toLocaleString('da-DK')}</p>}
                 </div>
-                <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[booking.status] ?? 'bg-gray-100 text-gray-600'}`}>
-                  {statusLabels[booking.status] ?? booking.status}
-                </span>
+                <StatusBadge status={booking.status} />
               </div>
             ))}
           </div>
         )}
 
         {bookings.length > 0 && (
-          <div className="mt-6 text-center">
-            <Link href="/professionals" className="text-sm text-indigo-600 hover:underline">
-              {locale === 'da' ? '+ Book ny session' : '+ Book new session'}
+          <div className="mt-8 text-center">
+            <Link href="/professionals" className="inline-flex rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
+              {isDa ? 'Book ny session' : 'Book new session'}
             </Link>
           </div>
         )}
       </div>
-    </div>
+    </main>
   )
 }
