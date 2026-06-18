@@ -10,43 +10,95 @@ export function HomeContent() {
   const copy = {
     eyebrow: isDa ? 'For kandidater med høje ambitioner' : 'For ambitious candidates',
     heroTitle: isDa
-      ? 'Karrieresparring fra mennesker, der kender vejen indefra.'
-      : 'Career guidance from people who know the path from inside.',
+      ? 'Forbered dig med folk, der allerede har klaret barren.'
+      : 'Prepare with people who have already passed the bar.',
     heroBody: isDa
-      ? 'Book en 60-minutters 1:1 session med en professionel fra AI, Banking, Management Consulting eller Private Equity. Vælg selv fokus: CV, interview, case, technicals, AI strategy eller karrierevalg.'
-      : 'Book a 60-minute 1:1 session with a professional from AI, Banking, Management Consulting or Private Equity. Choose the focus yourself: CV, interview, case, technicals, AI strategy or career direction.',
-    primaryCta: isDa ? 'Find en professionel' : 'Find a professional',
-    secondaryCta: isDa ? 'Bliv professionel' : 'Become a professional',
-    snapshotTitle: isDa ? 'Sådan føles produktet' : 'What the product feels like',
-    snapshotBody: isDa
-      ? 'En enkel booking, et klart session brief og konkret sparring fra en person, der har stået i miljøet.'
-      : 'A simple booking, a clear session brief and concrete guidance from someone who has been in the environment.',
-    howTitle: isDa ? 'Et simpelt format. Mere skarphed.' : 'A simple format. More clarity.',
-    marketTitle: isDa ? 'Kurateret omkring fire karriereveje.' : 'Curated around four career paths.',
-    impactTitle: isDa ? 'Professionelt format. Men med mening.' : 'Professional format. With purpose.',
+      ? 'Naetwork matcher ambitiøse kandidater med professionals fra AI, Banking, Management Consulting og Private Equity til én fokuseret 60-minutters session.'
+      : 'Naetwork matches ambitious candidates with professionals from AI, Banking, Management Consulting and Private Equity for one focused 60-minute session.',
+    primaryCta: isDa ? 'Find din profil' : 'Find your profile',
+    secondaryCta: isDa ? 'Tag match quiz' : 'Take the match quiz',
+    productTitle: isDa ? 'Én session. Et klart output.' : 'One session. One clear output.',
+    productBody: isDa
+      ? 'Ikke vage råd, lange kurser eller åbne mentorforløb. Bare en konkret time med en person, der forstår den bar, du prøver at komme over.'
+      : 'No vague advice, long courses or open-ended mentoring. Just one concrete hour with someone who understands the bar you are trying to clear.',
+    profileTitle: isDa ? 'Et profil-univers bygget til hurtige, trygge valg.' : 'A profile universe built for fast, confident decisions.',
+    profileBody: isDa
+      ? 'Hver profil skal hurtigt vise, hvem personen er, hvad de er bedst til, hvad du kan bruge sessionen til, og hvad timen koster.'
+      : 'Every profile should quickly show who the person is, what they are best at, what the session can help with, and what the hour costs.',
+    howTitle: isDa ? 'Fra ambition til konkret forberedelse.' : 'From ambition to concrete preparation.',
+    marketTitle: isDa ? 'Kurateret omkring fire krævende karriereveje.' : 'Curated around four demanding career paths.',
+    impactTitle: isDa ? 'Professionelt format. Med mening.' : 'Professional format. With purpose.',
     finalTitle: isDa ? 'Book 60 minutter tættere på virkeligheden.' : 'Book 60 minutes closer to the real thing.',
   };
+
+  const commsPrinciples = [
+    {
+      title: isDa ? 'Specifikt over generelt' : 'Specific over generic',
+      body: isDa ? 'Vælg en profil ud fra branche, rolle og det konkrete problem, du vil løse.' : 'Choose a profile by field, role and the concrete problem you want to solve.',
+    },
+    {
+      title: isDa ? 'Én time, ét fokus' : 'One hour, one focus',
+      body: isDa ? 'Du vælger selv, om timen handler om CV, interview, case, technicals, AI eller retning.' : 'You choose whether the hour is about CV, interview, case, technicals, AI or direction.',
+    },
+    {
+      title: isDa ? 'Kontekst før råd' : 'Context before advice',
+      body: isDa ? 'Session briefet giver den professionelle kontekst, så samtalen starter skarpere.' : 'The session brief gives the professional context, so the conversation starts sharper.',
+    },
+  ];
+
+  const profileCards = [
+    {
+      initials: 'AI',
+      field: 'AI',
+      role: 'AI Product Lead',
+      company: 'Google DeepMind',
+      bestFor: isDa ? 'AI-positionering' : 'AI positioning',
+      output: isDa ? 'Rollevalg, portfolio og interviewvinkler' : 'Role choice, portfolio and interview angles',
+      price: 'DKK 900',
+      accent: 'bg-sky-300',
+    },
+    {
+      initials: 'IB',
+      field: 'Banking',
+      role: 'Associate Director',
+      company: 'Goldman Sachs',
+      bestFor: isDa ? 'Banking technicals' : 'Banking technicals',
+      output: isDa ? 'Technicals, fit og interviewbar' : 'Technicals, fit and interview bar',
+      price: 'DKK 1.200',
+      accent: 'bg-emerald-300',
+    },
+    {
+      initials: 'MC',
+      field: 'Management Consulting',
+      role: 'Senior Consultant',
+      company: 'McKinsey & Company',
+      bestFor: isDa ? 'Cases og fit' : 'Cases and fit',
+      output: isDa ? 'Struktur, hypoteser og kommunikation' : 'Structure, hypotheses and communication',
+      price: 'DKK 1.100',
+      accent: 'bg-cyan-300',
+    },
+  ];
 
   const productSteps = [
     {
       number: '01',
-      title: isDa ? 'Vælg den rette profil' : 'Choose the right profile',
-      body: isDa ? 'Filtrer efter AI, Banking, Consulting eller Private Equity.' : 'Filter by AI, Banking, Consulting or Private Equity.',
+      title: isDa ? 'Find den rette profil' : 'Find the right profile',
+      body: isDa ? 'Se branche, rolle, fokusområder, pris og hvad profilen er bedst til.' : 'See field, role, focus areas, price and what the profile is best for.',
     },
     {
       number: '02',
-      title: isDa ? 'Book 60 minutter' : 'Book 60 minutes',
-      body: isDa ? 'Én ydelse, én varighed, tydelig pris før booking.' : 'One product, one duration, clear price before booking.',
+      title: isDa ? 'Vælg dit fokus' : 'Choose your focus',
+      body: isDa ? 'CV, interview, case, technicals, AI strategy eller karrierevalg.' : 'CV, interview, case, technicals, AI strategy or career direction.',
     },
     {
       number: '03',
-      title: isDa ? 'Lav et session brief' : 'Create a session brief',
-      body: isDa ? 'Vælg fokus og skriv, hvad du vil opnå.' : 'Choose a focus and explain what you want to achieve.',
+      title: isDa ? 'Send et kort brief' : 'Send a short brief',
+      body: isDa ? 'Fortæl hvor du er i processen, og hvad du gerne vil stå skarpere på.' : 'Explain where you are in the process and what you want to be sharper on.',
     },
     {
       number: '04',
-      title: isDa ? 'Mød forberedt op' : 'Show up prepared',
-      body: isDa ? 'Få konkrete svar, feedback og næste skridt.' : 'Get concrete answers, feedback and next steps.',
+      title: isDa ? 'Book 60 minutter' : 'Book 60 minutes',
+      body: isDa ? 'Mød op med kontekst, konkrete spørgsmål og et tydeligt mål.' : 'Show up with context, concrete questions and a clear goal.',
     },
   ];
 
@@ -73,28 +125,26 @@ export function HomeContent() {
     },
   ];
 
-  const focusAreas = ['CV / LinkedIn', 'Interview Prep', 'Case Prep', 'Banking Technicals', 'Consulting Cases', 'PE / Investment Case', 'AI Career Strategy', 'Career Direction'];
-
   const trustSignals = [
     {
-      label: isDa ? 'Baggrund' : 'Background',
-      title: isDa ? 'Se erfaringen før du booker' : 'See the background before booking',
-      body: isDa ? 'Profiler viser rolle, firma, branche, fokusområder og pris, så du kan vælge med ro.' : 'Profiles show role, company, field, focus areas and price so you can choose with confidence.',
+      label: isDa ? 'Profil' : 'Profile',
+      title: isDa ? 'Se fit på få sekunder' : 'See fit in seconds',
+      body: isDa ? 'Rolle, firma, branche, fokus og pris er synligt, før du vælger.' : 'Role, company, field, focus and price are visible before you choose.',
     },
     {
-      label: isDa ? 'Pris' : 'Price',
-      title: isDa ? 'Tydelig pris. Ét format.' : 'Clear price. One format.',
-      body: isDa ? 'Alle sessioner er 60 minutter. Prisen vises tydeligt, før du sender en bookinganmodning.' : 'All sessions are 60 minutes. The price is shown clearly before you send a booking request.',
+      label: isDa ? 'Format' : 'Format',
+      title: isDa ? 'Altid 60 minutter' : 'Always 60 minutes',
+      body: isDa ? 'Én varighed gør det nemt at sammenligne profiler og planlægge sessionen.' : 'One duration makes it easy to compare profiles and plan the session.',
     },
     {
       label: isDa ? 'Brief' : 'Brief',
-      title: isDa ? 'Den professionelle får kontekst' : 'The professional gets context',
-      body: isDa ? 'Du vælger fokus, procesfase, mål og eventuelt materiale, så sessionen starter mere præcist.' : 'You choose focus, process stage, goal and optional material, so the session starts with sharper context.',
+      title: isDa ? 'Bedre kontekst' : 'Better context',
+      body: isDa ? 'Du vælger fokus, mål og relevant materiale, så timen starter mere præcist.' : 'You choose focus, goal and relevant material, so the hour starts more precisely.',
     },
     {
       label: 'Impact',
-      title: isDa ? 'Mulighed for donation' : 'Optional donation model',
-      body: isDa ? 'Professionelle kan vælge en impact-model, hvor en del af indtjeningen går til Kræftens Bekæmpelse.' : 'Professionals can choose an impact model where part of the earnings goes to the Danish Cancer Society.',
+      title: isDa ? 'Mulighed for donation' : 'Optional donation',
+      body: isDa ? 'Professionelle kan vælge en impact-model med donation til Kræftens Bekæmpelse.' : 'Professionals can choose an impact model with donation to the Danish Cancer Society.',
     },
   ];
 
@@ -119,9 +169,9 @@ export function HomeContent() {
         .hero-field {
           background:
             linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0)),
-            radial-gradient(circle at 16% 24%, rgba(125, 211, 252, 0.32), transparent 28%),
-            radial-gradient(circle at 82% 18%, rgba(134, 239, 172, 0.22), transparent 30%),
-            radial-gradient(circle at 54% 78%, rgba(6, 182, 212, 0.22), transparent 34%),
+            radial-gradient(circle at 16% 22%, rgba(125, 211, 252, 0.34), transparent 27%),
+            radial-gradient(circle at 80% 16%, rgba(134, 239, 172, 0.24), transparent 28%),
+            radial-gradient(circle at 56% 78%, rgba(6, 182, 212, 0.20), transparent 34%),
             linear-gradient(135deg, #050505 0%, #101211 52%, #050505 100%);
         }
         .quiet-grid {
@@ -136,7 +186,7 @@ export function HomeContent() {
         <div className="hero-field absolute inset-0" aria-hidden="true" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-gray-950 to-transparent" aria-hidden="true" />
 
-        <div className="relative mx-auto flex min-h-[calc(100vh-64px)] max-w-6xl flex-col justify-end px-5 pb-10 pt-28 sm:px-8 md:min-h-[780px] md:pb-14">
+        <div className="relative mx-auto flex min-h-[calc(100vh-64px)] max-w-6xl flex-col justify-end px-5 pb-8 pt-28 sm:px-8 md:min-h-[780px] md:pb-12">
           <div className="max-w-4xl">
             <p className="home-fade mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase text-white/75 backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-emerald-300" />
@@ -145,25 +195,25 @@ export function HomeContent() {
             <h1 className="home-fade home-delay-1 text-5xl font-black leading-[0.95] tracking-tight text-white text-balance md:text-7xl lg:text-8xl">
               {copy.heroTitle}
             </h1>
-            <p className="home-fade home-delay-2 mt-7 max-w-2xl text-base leading-relaxed text-white/72 md:text-xl">
+            <p className="home-fade home-delay-2 mt-7 max-w-2xl text-base leading-relaxed text-white/74 md:text-xl">
               {copy.heroBody}
             </p>
             <div className="home-fade home-delay-3 mt-9 flex flex-col gap-3 sm:flex-row">
               <Link href="/professionals" className="inline-flex items-center justify-center rounded-full bg-white px-7 py-3.5 text-sm font-bold text-gray-950 transition-colors hover:bg-gray-100">
                 {copy.primaryCta}
               </Link>
-              <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/15">
+              <Link href="/match" className="inline-flex items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-white/15">
                 {copy.secondaryCta}
               </Link>
             </div>
           </div>
 
-          <div className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur md:grid-cols-4">
+          <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur md:grid-cols-4">
             {[
-              ['60 min', isDa ? 'Ét enkelt format' : 'One simple format'],
+              ['60 min', isDa ? 'Ét fokuseret format' : 'One focused format'],
               ['DKK 500-1.800', isDa ? 'Pris sat af profilen' : 'Price set by profile'],
               ['4', isDa ? 'Karriereveje' : 'Career paths'],
-              ['8+', isDa ? 'Mulige fokusområder' : 'Possible focus areas'],
+              ['Brief', isDa ? 'Kontekst før session' : 'Context before session'],
             ].map(([value, label]) => (
               <div key={label} className="bg-gray-950/42 p-5">
                 <p className="text-xl font-black text-white">{value}</p>
@@ -174,12 +224,80 @@ export function HomeContent() {
         </div>
       </section>
 
+      <section className="bg-white px-5 py-20 sm:px-8 md:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-px overflow-hidden rounded-3xl border border-gray-200 bg-gray-200 md:grid-cols-3">
+            {commsPrinciples.map((item) => (
+              <article key={item.title} className="bg-[#f7f7f4] p-6 md:p-8">
+                <p className="text-xs font-black uppercase text-gray-300">Naetwork</p>
+                <h2 className="mt-14 text-2xl font-black leading-tight tracking-tight text-gray-950">{item.title}</h2>
+                <p className="mt-4 text-sm leading-relaxed text-gray-600">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="profile-universe" className="border-y border-gray-200 bg-[#f7f7f4] px-5 py-24 sm:px-8 md:py-32">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="mb-4 text-xs font-bold uppercase text-gray-400">{isDa ? 'Profil-univers' : 'Profile universe'}</p>
+              <h2 className="text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">{copy.profileTitle}</h2>
+            </div>
+            <p className="max-w-xl text-base leading-relaxed text-gray-600 lg:ml-auto">{copy.profileBody}</p>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            {profileCards.map((profile) => (
+              <article key={profile.role} className="group flex min-h-[430px] flex-col justify-between rounded-[2rem] border border-gray-200 bg-white p-6 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-gray-950/8">
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
+                      {profile.initials}
+                    </div>
+                    <span className={`block h-2 w-20 rounded-full ${profile.accent}`} />
+                  </div>
+                  <p className="mt-8 text-xs font-bold uppercase text-gray-400">{profile.field}</p>
+                  <h3 className="mt-2 text-2xl font-black leading-tight tracking-tight text-gray-950">{profile.role}</h3>
+                  <p className="mt-2 text-sm font-semibold text-gray-500">{profile.company}</p>
+                </div>
+
+                <div className="mt-10 space-y-3">
+                  <div className="rounded-2xl bg-[#f7f7f4] p-4">
+                    <p className="text-[10px] font-bold uppercase text-gray-400">Best for</p>
+                    <p className="mt-1 text-sm font-black text-gray-950">{profile.bestFor}</p>
+                  </div>
+                  <div className="rounded-2xl bg-gray-950 p-4 text-white">
+                    <p className="text-[10px] font-bold uppercase text-white/35">{isDa ? 'Output' : 'Output'}</p>
+                    <p className="mt-1 text-sm font-black text-white">{profile.output}</p>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+                    <p className="text-xs font-bold uppercase text-gray-400">60 min</p>
+                    <p className="text-lg font-black text-gray-950">{profile.price}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/professionals" className="inline-flex items-center justify-center rounded-full bg-gray-950 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+              {copy.primaryCta}
+            </Link>
+            <Link href="/match" className="inline-flex items-center justify-center rounded-full border border-gray-300 px-7 py-3.5 text-sm font-bold text-gray-950 transition-colors hover:border-gray-950 hover:bg-white">
+              {copy.secondaryCta}
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="bg-white px-5 py-24 sm:px-8 md:py-32">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <div className="lg:sticky lg:top-28">
-            <p className="mb-4 text-xs font-bold uppercase text-gray-400">{copy.snapshotTitle}</p>
-            <h2 className="text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">{copy.howTitle}</h2>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-gray-600">{copy.snapshotBody}</p>
+            <p className="mb-4 text-xs font-bold uppercase text-gray-400">{isDa ? 'Produktoplevelsen' : 'Product experience'}</p>
+            <h2 className="text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">{copy.productTitle}</h2>
+            <p className="mt-5 max-w-md text-base leading-relaxed text-gray-600">{copy.productBody}</p>
           </div>
 
           <div className="rounded-[2rem] border border-gray-200 bg-[#f7f7f4] p-4 md:p-6">
@@ -194,8 +312,8 @@ export function HomeContent() {
               </div>
 
               <div className="grid gap-3 py-6 sm:grid-cols-2">
-                {focusAreas.slice(0, 6).map((focus, index) => (
-                  <div key={focus} className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${index === 0 ? 'border-white bg-white text-gray-950' : 'border-white/10 bg-white/[0.04] text-white/70'}`}>
+                {['CV / LinkedIn', 'Interview Prep', 'Case Prep', 'AI Career Strategy', 'Career Direction', 'Industry Insight'].map((focus, index) => (
+                  <div key={focus} className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${index === 3 ? 'border-white bg-white text-gray-950' : 'border-white/10 bg-white/[0.04] text-white/70'}`}>
                     {focus}
                   </div>
                 ))}
@@ -264,7 +382,7 @@ export function HomeContent() {
             <div>
               <p className="mb-4 text-xs font-bold uppercase text-gray-400">{isDa ? 'Sådan virker det' : 'How it works'}</p>
               <h2 className="max-w-2xl text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">
-                {isDa ? 'Fra ambition til konkret forberedelse.' : 'From ambition to concrete preparation.'}
+                {copy.howTitle}
               </h2>
             </div>
             <Link href="/professionals" className="inline-flex w-fit items-center justify-center rounded-full bg-gray-950 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
@@ -374,7 +492,7 @@ export function HomeContent() {
             <Link href="/professionals" className="inline-flex items-center justify-center rounded-full bg-gray-950 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-gray-800">
               {copy.primaryCta}
             </Link>
-            <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-full border border-gray-300 px-7 py-3.5 text-sm font-bold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
+            <Link href="/match" className="inline-flex items-center justify-center rounded-full border border-gray-300 px-7 py-3.5 text-sm font-bold text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
               {copy.secondaryCta}
             </Link>
           </div>
