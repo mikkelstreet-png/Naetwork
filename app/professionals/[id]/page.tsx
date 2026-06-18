@@ -94,6 +94,28 @@ function bestFor(pro: Professional, isDa: boolean) {
   return isDa ? 'Career clarity' : 'Career clarity'
 }
 
+function outcomesFor(pro: Professional, isDa: boolean) {
+  const focus = pro.focus_areas ?? []
+  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) {
+    return isDa
+      ? ['Forstå interviewbaren', 'Træn technicals', 'Skærp deal thinking', 'Få ærlig feedback på fit']
+      : ['Understand the interview bar', 'Practice technicals', 'Sharpen deal thinking', 'Get honest fit feedback']
+  }
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
+    return isDa
+      ? ['Strukturer cases bedre', 'Træn hypoteser', 'Kommunikér klarere', 'Forbered fit-svar']
+      : ['Structure cases better', 'Practice hypotheses', 'Communicate more clearly', 'Prepare fit answers']
+  }
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) {
+    return isDa
+      ? ['Afkod AI-roller', 'Positionér din erfaring', 'Byg stærkere portfolio', 'Vælg næste skridt']
+      : ['Decode AI roles', 'Position your experience', 'Build a stronger portfolio', 'Choose next steps']
+  }
+  return isDa
+    ? ['Skarpere CV', 'Bedre LinkedIn', 'Klarere ansøgning', 'Mere retning']
+    : ['Sharper CV', 'Better LinkedIn', 'Clearer application', 'More direction']
+}
+
 export default function ProfessionalDetailPage() {
   const params = useParams()
   const id = params?.id as string
@@ -151,6 +173,8 @@ export default function ProfessionalDetailPage() {
       ? 'Før du sender bookinganmodningen, vælger du fokus og skriver kort, hvad du vil opnå. Det giver den professionelle bedre kontekst og gør sessionen mere konkret.'
       : 'Before sending the booking request, you choose a focus and briefly explain what you want to achieve. That gives the professional better context and makes the session more concrete.',
     beforeBooking: isDa ? 'Før booking' : 'Before booking',
+    outcomes: isDa ? 'Mulige outcomes' : 'Possible outcomes',
+    trust: isDa ? 'Tryghed før booking' : 'Confidence before booking',
   }
 
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#f7f7f4]"><p className="text-gray-400">{t.loading}</p></div>
@@ -166,6 +190,7 @@ export default function ProfessionalDetailPage() {
 
   const focusAreas = professional.focus_areas ?? []
   const bestFit = bestFor(professional, isDa)
+  const outcomes = outcomesFor(professional, isDa)
   const prepItems = [
     {
       title: isDa ? 'Vælg fokus' : 'Choose focus',
@@ -179,6 +204,11 @@ export default function ProfessionalDetailPage() {
       title: isDa ? 'Tilføj materiale' : 'Add material',
       body: isDa ? 'Del LinkedIn, CV, jobopslag eller case-materiale hvis relevant.' : 'Share LinkedIn, CV, job post or case material if relevant.',
     },
+  ]
+  const trustItems = [
+    { label: isDa ? 'Baggrund' : 'Background', value: `${professional.title} · ${professional.company}` },
+    { label: isDa ? 'Pris før booking' : 'Price before booking', value: `DKK ${professional.price}` },
+    { label: isDa ? 'Brief inkluderet' : 'Brief included', value: isDa ? 'Ja' : 'Yes' },
   ]
 
   return (
@@ -230,6 +260,23 @@ export default function ProfessionalDetailPage() {
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div className="space-y-6">
             <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="mb-3 text-xs font-bold uppercase text-gray-400">{t.outcomes}</p>
+                  <h2 className="text-3xl font-black tracking-tight text-gray-950">{bestFit}</h2>
+                </div>
+                <span className={`block h-2 w-20 rounded-full ${accentFor(professional)}`} />
+              </div>
+              <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-2">
+                {outcomes.map((outcome) => (
+                  <div key={outcome} className="bg-[#f7f7f4] p-5">
+                    <p className="text-sm font-black text-gray-950">{outcome}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-8">
               <p className="mb-5 text-xs font-bold uppercase text-gray-400">{t.focusAreas}</p>
               {focusAreas.length > 0 ? (
                 <div className="grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-2">
@@ -280,6 +327,18 @@ export default function ProfessionalDetailPage() {
                 <p className="mt-2 text-lg font-black text-gray-950">{item.value}</p>
               </div>
             ))}
+
+            <div className="rounded-3xl border border-gray-200 bg-gray-950 p-5 text-white">
+              <p className="mb-4 text-xs font-bold uppercase text-white/40">{t.trust}</p>
+              <div className="space-y-4">
+                {trustItems.map((item) => (
+                  <div key={item.label} className="border-t border-white/10 pt-4 first:border-t-0 first:pt-0">
+                    <p className="text-xs font-bold uppercase text-white/35">{item.label}</p>
+                    <p className="mt-1 text-sm font-black text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </aside>
         </div>
       </main>
