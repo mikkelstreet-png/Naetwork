@@ -18,12 +18,13 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    const nextPath = role === 'professional' ? '/profil/professionel' : '/onboarding';
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { name, role },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     });
     if (error) {
@@ -47,7 +48,12 @@ export default function SignupPage() {
           </div>
           <h1 className="mb-3 text-2xl font-black text-gray-950">Bekræft din e-mail</h1>
           <p className="leading-relaxed text-gray-500">Vi har sendt dig en bekræftelsesmail til <strong>{email}</strong>. Klik på linket i mailen for at aktivere din konto.</p>
-          <Link href="/login" className="mt-8 inline-flex rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">Tilbage til log ind</Link>
+          <div className="mt-8 flex flex-col gap-3">
+            <Link href={role === 'professional' ? '/login' : '/onboarding'} className="inline-flex justify-center rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
+              {role === 'professional' ? 'Tilbage til log ind' : 'Se candidate onboarding'}
+            </Link>
+            {role === 'candidate' && <Link href="/match" className="text-sm font-semibold text-gray-950 underline decoration-gray-300 underline-offset-4">Prøv match quiz</Link>}
+          </div>
         </div>
       </main>
     );
@@ -94,6 +100,9 @@ export default function SignupPage() {
                 <button type="button" onClick={() => setRole('candidate')} className={`rounded-xl border py-3 text-sm font-semibold transition-colors ${role === 'candidate' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>Kandidat</button>
                 <button type="button" onClick={() => setRole('professional')} className={`rounded-xl border py-3 text-sm font-semibold transition-colors ${role === 'professional' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>Professionel</button>
               </div>
+              {role === 'candidate' && (
+                <p className="mt-2 text-xs leading-relaxed text-gray-500">Efter bekræftelse sendes du til candidate onboarding og match quiz.</p>
+              )}
               {role === 'professional' && (
                 <p className="mt-2 text-xs leading-relaxed text-gray-500">Du kan også bruge den udvidede professional onboarding med fokusområder og prisramme.</p>
               )}
