@@ -43,7 +43,7 @@ export function Footer() {
             <div>
               <p className="mb-4 text-xs font-bold uppercase text-gray-400">{isDa ? 'Model' : 'Model'}</p>
               <div className="space-y-3">
-                <Link href="/#how-it-works" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">{tr('nav.how')}</Link>
+                <Link href="/mission" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">Mission</Link>
                 <Link href="/#pricing" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">{isDa ? 'Format' : 'Format'}</Link>
                 <Link href="/impact" className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">Impact</Link>
               </div>
