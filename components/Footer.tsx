@@ -12,7 +12,7 @@ export function Footer() {
       title: 'Platform',
       links: [
         { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles' },
-        { href: '/match', label: 'Match quiz' },
+        { href: '/match', label: 'Match' },
         { href: '/onboarding', label: 'Onboarding' },
       ],
     },
@@ -20,8 +20,8 @@ export function Footer() {
       title: isDa ? 'Model' : 'Model',
       links: [
         { href: '/mission', label: 'Mission' },
-        { href: '/#pricing', label: isDa ? 'Format' : 'Format' },
         { href: '/impact', label: 'Impact' },
+        { href: '/professional/signup', label: isDa ? 'Bliv professional' : 'Become a professional' },
       ],
     },
     {
@@ -40,32 +40,27 @@ export function Footer() {
         <div className="grid gap-12 border-b border-gray-200 pb-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <p className="mb-5 text-xs font-black uppercase text-gray-400">Naetwork</p>
-            <h2 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-6xl">
-              {isDa ? 'Én fokuseret time. Mere klarhed.' : 'One focused hour. More clarity.'}
+            <h2 className="max-w-3xl text-5xl font-black leading-none tracking-tight text-gray-950 text-balance md:text-7xl">
+              {isDa ? 'Mere klarhed. Mindre støj.' : 'More clarity. Less noise.'}
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-gray-600 lg:ml-auto">
-            {isDa
-              ? '60-minutters karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
-              : '60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.'}
-          </p>
+          <div className="lg:ml-auto">
+            <p className="max-w-md text-sm leading-relaxed text-gray-600">
+              {isDa
+                ? '60-minutters karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
+                : '60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.'}
+            </p>
+            <Link href="/professionals" className="mt-6 inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
+              {isDa ? 'Se profiler' : 'Browse profiles'}
+            </Link>
+          </div>
         </div>
 
         <div className="grid gap-10 pt-10 lg:grid-cols-[1fr_auto] lg:items-start">
-          <div>
-            <Link href="/" className="inline-flex items-center gap-3" aria-label="Naetwork home">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white">N</span>
-              <span className="block text-lg font-black tracking-tight text-gray-950">Naetwork</span>
-            </Link>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="/professionals" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
-                {isDa ? 'Se profiler' : 'Browse profiles'}
-              </Link>
-              <Link href="/match" className="inline-flex w-fit items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950">
-                Match quiz
-              </Link>
-            </div>
-          </div>
+          <Link href="/" className="inline-flex items-center gap-3" aria-label="Naetwork home">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white">N</span>
+            <span className="block text-lg font-black tracking-tight text-gray-950">Naetwork</span>
+          </Link>
 
           <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 lg:grid-cols-3">
             {columns.map((column) => (
