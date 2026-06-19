@@ -41,7 +41,7 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     id: 'demo-1',
     name: 'Mads Christensen',
     title: 'Associate Director',
-    company: 'Goldman Sachs',
+    company: 'Global investment bank',
     industries: ['Banking', 'Private Equity'],
     price: 1200,
     bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
@@ -51,7 +51,7 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     id: 'demo-2',
     name: 'Sofie Larsen',
     title: 'Senior Consultant',
-    company: 'McKinsey & Company',
+    company: 'Tier-one strategy firm',
     industries: ['Management Consulting'],
     price: 1100,
     bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
@@ -61,7 +61,7 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     id: 'demo-3',
     name: 'Emil Andersen',
     title: 'AI Product Lead',
-    company: 'Google DeepMind',
+    company: 'Leading AI environment',
     industries: ['AI'],
     price: 900,
     bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
@@ -79,9 +79,9 @@ function initials(name: string) {
 }
 
 function accentFor(pro: Professional) {
-  if (pro.industries.includes('AI')) return 'bg-sky-300'
+  if (pro.industries.includes('AI')) return 'bg-cyan-300'
   if (pro.industries.includes('Banking')) return 'bg-emerald-300'
-  if (pro.industries.includes('Management Consulting')) return 'bg-cyan-300'
+  if (pro.industries.includes('Management Consulting')) return 'bg-blue-300'
   return 'bg-lime-300'
 }
 
@@ -318,6 +318,7 @@ export default function ProfessionalDetailPage() {
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:h-fit">
+            <span className={`mb-4 block h-1.5 w-10 rounded-full ${accentFor(professional)}`} />
             <div className="border-t border-gray-200">
               {facts.map((item) => (
                 <div key={item.label} className="border-b border-gray-200 py-5">
