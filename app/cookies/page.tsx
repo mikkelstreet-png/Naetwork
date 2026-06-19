@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Læs hvordan Naetwork bruger nødvendige cookies og lokal lagring.',
 }
 
-const updated = '18. juni 2026'
+const updated = '19. juni 2026'
 
 const cookieRows = [
   ['cookie_consent', 'Gemmer dit valg i cookie-banneret', 'Lokal lagring', 'Nødvendig'],
@@ -53,7 +53,7 @@ export default function CookiesPage() {
     <main className="bg-[#f7f7f4] pt-16">
       <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
-          <Link href="/" className="mb-8 inline-flex rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
+          <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
           <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Legal</p>
           <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Cookiepolitik</h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">En enkel oversigt over cookies og lokal lagring på Naetwork.</p>
@@ -63,7 +63,7 @@ export default function CookiesPage() {
 
       <section className="px-6 py-10 md:py-14">
         <div className="mx-auto max-w-5xl space-y-6">
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="grid grid-cols-4 border-b border-gray-100 bg-gray-50 px-4 py-3 text-xs font-semibold uppercase text-gray-400">
               <span>Navn</span><span>Formål</span><span>Type</span><span>Kategori</span>
             </div>
@@ -79,7 +79,7 @@ export default function CookiesPage() {
 
           <div className="space-y-4">
             {sections.map((section) => (
-              <article key={section.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+              <article key={section.title} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
                 <h2 className="text-xl font-black text-gray-950">{section.title}</h2>
                 <div className="mt-4 space-y-3">
                   {section.body.map((paragraph) => (
@@ -87,7 +87,7 @@ export default function CookiesPage() {
                   ))}
                 </div>
                 {section.link && (
-                  <Link href={section.link.href} className="mt-5 inline-flex rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
+                  <Link href={section.link.href} className="mt-5 inline-flex rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
                     {section.link.label}
                   </Link>
                 )}
