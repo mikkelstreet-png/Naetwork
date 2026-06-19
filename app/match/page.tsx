@@ -79,6 +79,7 @@ export default function MatchPage() {
   const completed = Object.values(answers).filter(Boolean).length;
   const progress = (completed / 4) * 100;
   const recommendation = useMemo(() => recommendationFor(answers, isDa), [answers, isDa]);
+  const profileHref = recommendation.search ? `/professionals?field=${encodeURIComponent(recommendation.search)}` : '/professionals';
 
   function choose(key: keyof Answers, value: string) {
     setAnswers((current) => ({ ...current, [key]: value }));
@@ -110,7 +111,7 @@ export default function MatchPage() {
             <div className="premium-panel p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="kicker">Progress</p>
+                  <p className="kicker">{isDa ? 'Fremskridt' : 'Progress'}</p>
                   <p className="mt-2 text-4xl font-black text-gray-950">{completed}/4</p>
                 </div>
                 <span className={`mt-1 block h-2 w-20 rounded-full ${recommendation.accent}`} />
@@ -122,7 +123,7 @@ export default function MatchPage() {
                 {[
                   ['60', 'min'],
                   ['600+', 'DKK'],
-                  ['40-90%', 'impact'],
+                  ['40-90%', isDa ? 'bidrag' : 'impact'],
                 ].map(([value, label]) => (
                   <div key={label} className="bg-white p-3">
                     <p className="text-sm font-black text-gray-950">{value}</p>
@@ -148,7 +149,7 @@ export default function MatchPage() {
                     <p className="text-xs font-black text-gray-300">{question.label}</p>
                     <h2 className="mt-5 text-2xl font-black text-gray-950">{question.title}</h2>
                   </div>
-                  {answers[question.key] && <span className="rounded-lg bg-gray-950 px-3 py-1.5 text-xs font-black text-white">Selected</span>}
+                  {answers[question.key] && <span className="rounded-lg bg-gray-950 px-3 py-1.5 text-xs font-black text-white">{isDa ? 'Valgt' : 'Selected'}</span>}
                 </div>
                 <div className="mt-6 grid gap-2 sm:grid-cols-2">
                   {question.options.map((option) => {
@@ -186,7 +187,7 @@ export default function MatchPage() {
                 ))}
               </div>
               <div className="mt-6 grid grid-cols-2 gap-2">
-                <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
+                <Link href={profileHref} className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
                   {isDa ? 'Profiler' : 'Profiles'}
                 </Link>
                 <Link href={recommendation.fieldHref} className="inline-flex items-center justify-center rounded-lg border border-white/15 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/10">
