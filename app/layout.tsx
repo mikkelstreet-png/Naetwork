@@ -10,13 +10,13 @@ import { Footer } from '@/components/Footer';
 import { CookieBanner } from '@/components/CookieBanner';
 
 export const metadata: Metadata = {
-  title: 'Naetwork - 60 min career sessions with insiders',
+  title: 'Naetwork - Karrieresparring med mening',
   description:
-    'Book 60-minute 1:1 career sessions with professionals from AI, Banking, Management Consulting and Private Equity.',
+    'Book 60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity. Every paid session contributes to Kræftens Bekæmpelse.',
   openGraph: {
-    title: 'Naetwork - 60 min career sessions with insiders',
+    title: 'Naetwork - Karrieresparring med mening',
     description:
-      'Concrete feedback on CVs, interviews, cases, technicals and career choices from professionals who know the path from inside.',
+      'Focused 60-minute career guidance with concrete pricing, sharp profiles and a 40-90% impact contribution from every paid session.',
     siteName: 'Naetwork',
   },
   icons: {
