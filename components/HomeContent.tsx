@@ -9,12 +9,11 @@ export function HomeContent() {
 
   const copy = {
     eyebrow: 'Naetwork',
-    title: isDa ? 'Én time. Den rigtige kontekst.' : 'One hour. The right context.',
+    title: isDa ? 'Én time. Mere klarhed.' : 'One hour. More clarity.',
     body: isDa
-      ? '60-minutters karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
-      : '60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.',
+      ? 'Fokuserede karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
+      : 'Focused career sessions with professionals from AI, Banking, Management Consulting and Private Equity.',
     primary: isDa ? 'Se profiler' : 'Browse profiles',
-    secondary: isDa ? 'Find dit fokus' : 'Find your focus',
   };
 
   const signals = [
@@ -24,10 +23,10 @@ export function HomeContent() {
   ];
 
   const profiles = [
-    ['AI', 'AI Product Lead', 'Google DeepMind', isDa ? 'Positionering, portfolio, rollevalg' : 'Positioning, portfolio, role choice', 'DKK 900'],
-    ['Banking', 'Associate Director', 'Goldman Sachs', isDa ? 'Technicals, fit, interviewbar' : 'Technicals, fit, interview bar', 'DKK 1.200'],
-    ['Management Consulting', 'Senior Consultant', 'McKinsey & Company', isDa ? 'Casestruktur, hypoteser, fit' : 'Case structure, hypotheses, fit', 'DKK 1.100'],
-    ['Private Equity', 'Investment Professional', 'Nordic PE fund', isDa ? 'Investment case, deal thinking' : 'Investment case, deal thinking', 'DKK 1.500'],
+    ['AI', 'AI Product Lead', isDa ? 'Førende AI-miljø' : 'Leading AI environment', isDa ? 'Positionering, portfolio, rollevalg' : 'Positioning, portfolio, role choice', 'DKK 900'],
+    ['Banking', 'Associate Director', isDa ? 'Global investment bank' : 'Global investment bank', isDa ? 'Technicals, fit, interviewbar' : 'Technicals, fit, interview bar', 'DKK 1.200'],
+    ['Management Consulting', 'Senior Consultant', isDa ? 'Tier-one strategy firm' : 'Tier-one strategy firm', isDa ? 'Casestruktur, hypoteser, fit' : 'Case structure, hypotheses, fit', 'DKK 1.100'],
+    ['Private Equity', 'Investment Professional', isDa ? 'Nordisk PE-fond' : 'Nordic PE fund', isDa ? 'Investment case, deal thinking' : 'Investment case, deal thinking', 'DKK 1.500'],
   ];
 
   const steps = [
@@ -46,14 +45,9 @@ export function HomeContent() {
           </h1>
           <div className="mt-10 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
             <p className="max-w-xl text-base leading-relaxed text-gray-600 md:text-xl">{copy.body}</p>
-            <div className="flex gap-3">
-              <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-6 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800">
-                {copy.primary}
-              </Link>
-              <Link href="/match" className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-black text-gray-950 transition-colors hover:border-gray-950">
-                {copy.secondary}
-              </Link>
-            </div>
+            <Link href="/professionals" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-6 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800">
+              {copy.primary}
+            </Link>
           </div>
 
           <div className="mt-24 grid border-y border-gray-200 md:grid-cols-3">
