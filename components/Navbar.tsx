@@ -47,6 +47,7 @@ export function Navbar() {
   const navLinks = [
     { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles', description: isDa ? 'Find den rette professional' : 'Find the right professional' },
     { href: '/match', label: 'Match', description: isDa ? 'Vælg fokus hurtigere' : 'Choose focus faster' },
+    { href: '/#pricing', label: isDa ? 'Priser' : 'Pricing', description: isDa ? '600-1.800 DKK' : 'DKK 600-1,800' },
     { href: '/impact', label: 'Impact', description: isDa ? '40-90% bidrag' : '40-90% contribution' },
     { href: '/mission', label: 'Mission', description: isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists' },
   ];
@@ -54,14 +55,14 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/94 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="group flex items-center gap-3 shrink-0" aria-label="Naetwork home">
+        <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Naetwork home">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
             N
           </span>
-          <span className="text-[15px] font-black tracking-tight text-gray-950">Naetwork</span>
+          <span className="text-[15px] font-black text-gray-950">Naetwork</span>
         </Link>
 
-        <div className="hidden items-center gap-7 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -150,7 +151,7 @@ export function Navbar() {
               {isDa ? 'Book 60 min' : 'Book 60 min'}
             </Link>
             {!session && (
-              <Link href="/login" className="text-center text-sm font-medium text-gray-500 py-2" onClick={() => setMobileOpen(false)}>
+              <Link href="/login" className="py-2 text-center text-sm font-medium text-gray-500" onClick={() => setMobileOpen(false)}>
                 {tr('nav.login')}
               </Link>
             )}
