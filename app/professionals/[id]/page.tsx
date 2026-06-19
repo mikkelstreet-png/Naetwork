@@ -197,7 +197,7 @@ export default function ProfessionalDetailPage() {
     loading: isDa ? 'Indlæser...' : 'Loading...',
     notFound: isDa ? 'Profil ikke fundet' : 'Profile not found',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
-    briefing: isDa ? 'Du vælger selv fokus, når du booker.' : 'You choose the focus when you book.',
+    briefing: isDa ? 'Du vælger selv fokus, når du booker. Minimum 40% og op til 90% af hver betalt session bidrager til Kræftens Bekæmpelse.' : 'You choose the focus when you book. At least 40% and up to 90% of every paid session contributes to Kræftens Bekæmpelse.',
     bestFor: isDa ? 'Best for' : 'Best for',
     sessionBrief: isDa ? 'Session brief' : 'Session brief',
     sessionBriefBody: isDa
@@ -206,6 +206,8 @@ export default function ProfessionalDetailPage() {
     profileSignal: isDa ? 'Profil-signal' : 'Profile signal',
     useThisProfileIf: isDa ? 'Brug profilen hvis' : 'Use this profile if',
     leaveWith: isDa ? 'Muligt output' : 'Possible output',
+    impact: isDa ? 'Impact' : 'Impact',
+    impactValue: isDa ? '40-90% til Kræftens Bekæmpelse' : '40-90% to Kræftens Bekæmpelse',
   }
 
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">{t.loading}</p></div>
@@ -227,6 +229,7 @@ export default function ProfessionalDetailPage() {
   const facts = [
     { label: isDa ? 'Format' : 'Format', value: '60 min' },
     { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
+    { label: t.impact, value: t.impactValue },
     { label: t.bestFor, value: bestFit },
     { label: isDa ? 'Output' : 'Output', value: primaryOutput },
   ]
@@ -339,7 +342,7 @@ export default function ProfessionalDetailPage() {
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
             <div>
               <p className="text-xs font-bold uppercase text-gray-400">{t.session}</p>
-              <p className="text-sm font-black text-gray-950">DKK {professional.price}</p>
+              <p className="text-sm font-black text-gray-950">DKK {professional.price} · 40-90% impact</p>
             </div>
             <button onClick={() => setDrawerOpen(true)} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
               {t.bookCta}
