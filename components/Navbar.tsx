@@ -47,6 +47,7 @@ export function Navbar() {
   const navLinks = [
     { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles', description: isDa ? 'Find den rette professional' : 'Find the right professional' },
     { href: '/match', label: 'Match', description: isDa ? 'Vælg fokus hurtigere' : 'Choose focus faster' },
+    { href: '/impact', label: 'Impact', description: isDa ? '40-90% bidrag' : '40-90% contribution' },
     { href: '/mission', label: 'Mission', description: isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists' },
   ];
 
@@ -60,7 +61,7 @@ export function Navbar() {
           <span className="text-[15px] font-black tracking-tight text-gray-950">Naetwork</span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-7 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
