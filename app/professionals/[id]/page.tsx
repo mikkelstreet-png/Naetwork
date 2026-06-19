@@ -42,10 +42,10 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     name: 'Mads Christensen',
     title: 'Associate Director',
     company: 'Global investment bank',
-    industries: ['Banking', 'Private Equity'],
+    industries: ['Banking'],
     price: 1200,
     bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
-    focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals', 'pe_investment_case']
+    focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals']
   },
   'demo-2': {
     id: 'demo-2',
@@ -66,6 +66,16 @@ const DEMO_PROFESSIONALS: Record<string, Professional> = {
     price: 900,
     bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
     focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review']
+  },
+  'demo-4': {
+    id: 'demo-4',
+    name: 'Clara Holm',
+    title: 'Investment Professional',
+    company: 'Nordic private equity fund',
+    industries: ['Private Equity'],
+    price: 1500,
+    bio: 'Investment professional med erfaring fra deals, commercial due diligence og investment committee-materiale. Hjælper kandidater med investment cases, deal thinking og PE-interviews.',
+    focus_areas: ['pe_investment_case', 'interview_prep', 'career_direction', 'industry_insight']
   }
 }
 
@@ -85,9 +95,14 @@ function accentFor(pro: Professional) {
   return 'bg-lime-300'
 }
 
+function minimumContribution(price: number) {
+  return Math.round(price * 0.4)
+}
+
 function bestFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) return isDa ? 'Banking / PE prep' : 'Banking / PE prep'
+  if (focus.includes('pe_investment_case')) return isDa ? 'PE / investment case' : 'PE / investment case'
+  if (focus.includes('banking_technicals')) return isDa ? 'Banking technicals' : 'Banking technicals'
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting cases' : 'Consulting cases'
   if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI career strategy' : 'AI career strategy'
   if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Applications' : 'Applications'
@@ -96,7 +111,8 @@ function bestFor(pro: Professional, isDa: boolean) {
 
 function primaryOutputFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
+  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og deal thinking' : 'Investment case and deal thinking'
+  if (focus.includes('banking_technicals')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit'
   if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
   if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
@@ -105,10 +121,15 @@ function primaryOutputFor(pro: Professional, isDa: boolean) {
 
 function useCasesFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) {
+  if (focus.includes('pe_investment_case')) {
     return isDa
-      ? ['Du søger Banking eller Private Equity og vil forstå interviewbaren.', 'Du vil træne technicals, deal thinking eller investment cases.', 'Du har materiale eller processtatus, der skal skærpes hurtigt.']
-      : ['You are targeting Banking or Private Equity and want to understand the interview bar.', 'You want to practice technicals, deal thinking or investment cases.', 'You have materials or process context that needs sharper positioning.']
+      ? ['Du søger Private Equity og vil forstå interviewbaren.', 'Du vil træne investment cases, deal thinking eller diligence-logik.', 'Du vil oversætte banking, consulting eller startup-erfaring til en PE-fortælling.']
+      : ['You are targeting Private Equity and want to understand the interview bar.', 'You want to practice investment cases, deal thinking or diligence logic.', 'You want to translate banking, consulting or startup experience into a PE story.']
+  }
+  if (focus.includes('banking_technicals')) {
+    return isDa
+      ? ['Du søger Banking og vil forstå interviewbaren.', 'Du vil træne technicals, fit eller M&A-proces.', 'Du har materiale eller processtatus, der skal skærpes hurtigt.']
+      : ['You are targeting Banking and want to understand the interview bar.', 'You want to practice technicals, fit or M&A process.', 'You have materials or process context that needs sharper positioning.']
   }
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
     return isDa
@@ -127,10 +148,15 @@ function useCasesFor(pro: Professional, isDa: boolean) {
 
 function outcomesFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) {
+  if (focus.includes('pe_investment_case')) {
     return isDa
-      ? ['Forstå interviewbaren', 'Træn technicals', 'Skærp deal thinking', 'Få ærlig feedback på fit']
-      : ['Understand the interview bar', 'Practice technicals', 'Sharpen deal thinking', 'Get honest fit feedback']
+      ? ['Skærp investment case', 'Træn deal thinking', 'Forstå PE-forventninger', 'Få ærlig feedback på fit']
+      : ['Sharpen investment case', 'Practice deal thinking', 'Understand PE expectations', 'Get honest fit feedback']
+  }
+  if (focus.includes('banking_technicals')) {
+    return isDa
+      ? ['Forstå interviewbaren', 'Træn technicals', 'Skærp M&A-story', 'Få ærlig feedback på fit']
+      : ['Understand the interview bar', 'Practice technicals', 'Sharpen M&A story', 'Get honest fit feedback']
   }
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
     return isDa
@@ -190,14 +216,29 @@ export default function ProfessionalDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">{isDa ? 'Indlæser...' : 'Loading...'}</p></div>
+
+  if (!professional) return (
+    <div className="flex min-h-screen items-center justify-center bg-white px-6">
+      <div className="text-center">
+        <p className="mb-4 text-gray-500">{isDa ? 'Profil ikke fundet' : 'Profile not found'}</p>
+        <Link href="/professionals" className="text-sm font-semibold text-gray-950 underline decoration-gray-300 underline-offset-4">{isDa ? 'Tilbage til profiler' : 'Back to profiles'}</Link>
+      </div>
+    </div>
+  )
+
+  const minimumImpact = minimumContribution(professional.price)
+  const focusAreas = professional.focus_areas ?? []
+  const bestFit = bestFor(professional, isDa)
+  const primaryOutput = primaryOutputFor(professional, isDa)
+  const useCases = useCasesFor(professional, isDa)
+  const outcomes = outcomesFor(professional, isDa)
   const t = {
     back: isDa ? 'Tilbage til profiler' : 'Back to profiles',
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
-    loading: isDa ? 'Indlæser...' : 'Loading...',
-    notFound: isDa ? 'Profil ikke fundet' : 'Profile not found',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
-    briefing: isDa ? 'Du vælger selv fokus, når du booker. Minimum 40% og op til 90% af hver betalt session bidrager til Kræftens Bekæmpelse.' : 'You choose the focus when you book. At least 40% and up to 90% of every paid session contributes to Kræftens Bekæmpelse.',
+    briefing: isDa ? `Du vælger selv fokus, når du booker. Minimum DKK ${minimumImpact} af en betalt session bidrager til Kræftens Bekæmpelse.` : `You choose the focus when you book. At least DKK ${minimumImpact} from a paid session contributes to Kræftens Bekæmpelse.`,
     bestFor: isDa ? 'Best for' : 'Best for',
     sessionBrief: isDa ? 'Session brief' : 'Session brief',
     sessionBriefBody: isDa
@@ -207,29 +248,11 @@ export default function ProfessionalDetailPage() {
     useThisProfileIf: isDa ? 'Brug profilen hvis' : 'Use this profile if',
     leaveWith: isDa ? 'Muligt output' : 'Possible output',
     impact: isDa ? 'Impact' : 'Impact',
-    impactValue: isDa ? '40-90% til Kræftens Bekæmpelse' : '40-90% to Kræftens Bekæmpelse',
   }
-
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">{t.loading}</p></div>
-
-  if (!professional) return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-6">
-      <div className="text-center">
-        <p className="mb-4 text-gray-500">{t.notFound}</p>
-        <Link href="/professionals" className="text-sm font-semibold text-gray-950 underline decoration-gray-300 underline-offset-4">{t.back}</Link>
-      </div>
-    </div>
-  )
-
-  const focusAreas = professional.focus_areas ?? []
-  const bestFit = bestFor(professional, isDa)
-  const primaryOutput = primaryOutputFor(professional, isDa)
-  const useCases = useCasesFor(professional, isDa)
-  const outcomes = outcomesFor(professional, isDa)
   const facts = [
     { label: isDa ? 'Format' : 'Format', value: '60 min' },
     { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
-    { label: t.impact, value: t.impactValue },
+    { label: t.impact, value: `min. DKK ${minimumImpact}` },
     { label: t.bestFor, value: bestFit },
     { label: isDa ? 'Output' : 'Output', value: primaryOutput },
   ]
@@ -342,7 +365,7 @@ export default function ProfessionalDetailPage() {
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
             <div>
               <p className="text-xs font-bold uppercase text-gray-400">{t.session}</p>
-              <p className="text-sm font-black text-gray-950">DKK {professional.price} · 40-90% impact</p>
+              <p className="text-sm font-black text-gray-950">DKK {professional.price} · min. DKK {minimumImpact} impact</p>
             </div>
             <button onClick={() => setDrawerOpen(true)} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
               {t.bookCta}
