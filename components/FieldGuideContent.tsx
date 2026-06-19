@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { FIELD_GUIDES, FieldSlug, profileHrefForField } from '@/lib/fieldGuides';
+import { FIELD_GUIDES, profileHrefForField } from '@/lib/fieldGuides';
+import type { FieldSlug } from '@/lib/fieldGuides';
 
 export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
   const { lang } = useLanguage();
