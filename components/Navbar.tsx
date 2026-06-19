@@ -48,7 +48,6 @@ export function Navbar() {
     { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles', description: isDa ? 'Find den rette professional' : 'Find the right professional' },
     { href: '/match', label: 'Match', description: isDa ? 'Vælg fokus hurtigere' : 'Choose focus faster' },
     { href: '/mission', label: 'Mission', description: isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists' },
-    { href: '/impact', label: 'Impact', description: isDa ? 'Donation og model' : 'Donation and model' },
   ];
 
   return (
@@ -108,14 +107,9 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <div className="hidden items-center gap-2 md:flex">
-              <Link href="/login" className="px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950">
-                {tr('nav.login')}
-              </Link>
-              <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-gray-50">
-                {tr('professionals.cta')}
-              </Link>
-            </div>
+            <Link href="/login" className="hidden px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950 md:block">
+              {tr('nav.login')}
+            </Link>
           )}
 
           <button
@@ -149,24 +143,15 @@ export function Navbar() {
                 <span className="mt-1 block text-xs font-medium text-gray-500">{link.description}</span>
               </Link>
             ))}
-            <Link href="/onboarding" className="bg-white px-4 py-4" onClick={() => setMobileOpen(false)}>
-              <span className="block text-sm font-black text-gray-950">Onboarding</span>
-              <span className="mt-1 block text-xs font-medium text-gray-500">{isDa ? 'Byg dit brief før booking' : 'Build your brief before booking'}</span>
-            </Link>
           </div>
           <div className="mt-4 grid gap-2">
             <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
               {isDa ? 'Book 60 min' : 'Book 60 min'}
             </Link>
             {!session && (
-              <>
-                <Link href="/professional/signup" className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
-                  {tr('professionals.cta')}
-                </Link>
-                <Link href="/login" className="text-center text-sm font-medium text-gray-500 py-2" onClick={() => setMobileOpen(false)}>
-                  {tr('nav.login')}
-                </Link>
-              </>
+              <Link href="/login" className="text-center text-sm font-medium text-gray-500 py-2" onClick={() => setMobileOpen(false)}>
+                {tr('nav.login')}
+              </Link>
             )}
             <div className="mx-auto pt-1"><LanguageToggle /></div>
           </div>
