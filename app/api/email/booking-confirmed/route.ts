@@ -5,6 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   const { candidateEmail, candidateName, professionalName, sessionType, scheduledAt, priceDkk } = await req.json();
+  const minimumContribution = Math.round(priceDkk * 0.4);
 
   const sessionLabels: Record<string, string> = {
     mock_interview: 'Mock Interview',
@@ -27,10 +28,11 @@ export async function POST(req: Request) {
           <div style="margin-bottom: 8px;"><strong>Session:</strong> ${sessionLabels[sessionType] ?? sessionType}</div>
           <div style="margin-bottom: 8px;"><strong>Professionel:</strong> ${professionalName}</div>
           <div style="margin-bottom: 8px;"><strong>Pris:</strong> DKK ${priceDkk}</div>
+          <div style="margin-bottom: 8px;"><strong>Impact:</strong> Minimum DKK ${minimumContribution} til Kræftens Bekæmpelse, når sessionen betales</div>
           ${scheduledAt ? `<div><strong>Ønsket tidspunkt:</strong> ${new Date(scheduledAt).toLocaleString('da-DK')}</div>` : ''}
         </div>
-        <a href="https://naetwork.vercel.app/profil/bookings" style="display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 500;">Se mine bookinger</a>
-        <p style="margin-top: 32px; color: #9ca3af; font-size: 12px;">Naetwork &middot; 1:1 karrieresparring med branchefolk.</p>
+        <a href="https://naetwork.vercel.app/profil/bookings" style="display: inline-block; background: #0a0a0a; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">Se mine bookinger</a>
+        <p style="margin-top: 32px; color: #9ca3af; font-size: 12px;">Naetwork &middot; 1:1 karrieresparring med mening.</p>
       </div>
     `,
   });
