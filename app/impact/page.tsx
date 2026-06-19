@@ -20,6 +20,13 @@ export default function ImpactPage() {
     ['DKK 1.800', 'DKK 720+', 'Minimum contribution'],
   ];
 
+  const clarity = [
+    ['When it applies', 'The impact contribution applies when a session is paid. Requested or cancelled sessions do not count as paid contributions.'],
+    ['What the percentage means', 'The percentage is calculated from the displayed session price before booking. The minimum contribution is always visible in the booking flow.'],
+    ['Who receives it', 'The stated contribution is intended for Kræftens Bekæmpelse. Naetwork is independent and is not officially affiliated unless explicitly stated.'],
+    ['Documentation', 'Naetwork should be able to show a clear overview of paid sessions, contribution levels and total impact as the platform matures.'],
+  ];
+
   return (
     <main className="page-shell">
       <section className="border-b border-gray-200 bg-white px-5 py-14 sm:px-8 md:py-20">
@@ -98,6 +105,24 @@ export default function ImpactPage() {
                   <p className="text-xs font-black uppercase text-gray-400">{price}</p>
                   <p className="mt-5 text-3xl font-black text-gray-950">{amount}</p>
                   <p className="mt-2 text-sm font-semibold text-gray-500">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-12 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <p className="kicker mb-5">Operational clarity</p>
+              <h2 className="text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">Simple enough to understand before booking.</h2>
+            </div>
+            <div className="border-t border-gray-200">
+              {clarity.map(([title, body], index) => (
+                <div key={title} className="grid gap-4 border-b border-gray-200 py-6 md:grid-cols-[70px_1fr]">
+                  <p className="text-xs font-black text-gray-300">0{index + 1}</p>
+                  <div>
+                    <h3 className="text-xl font-black text-gray-950">{title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-600">{body}</p>
+                  </div>
                 </div>
               ))}
             </div>
