@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   description: 'Læs hvordan Naetwork behandler personoplysninger, cookies, bookingdata og e-mails.',
 }
 
-const updated = '18. juni 2026'
+const updated = '19. juni 2026'
 
 const quickFacts = [
   ['Dataansvarlig', 'Naetwork'],
   ['Kontakt', 'kontakt@naetwork.dk'],
-  ['Formål', 'Konto, booking, betaling, kommunikation og sikker drift'],
+  ['Formål', 'Konto, booking, betaling, impact, kommunikation og sikker drift'],
   ['Rettigheder', 'Indsigt, rettelse, sletning, begrænsning, dataportabilitet og indsigelse'],
 ]
 
@@ -27,8 +27,8 @@ const sections = [
     title: '2. Hvilke oplysninger vi behandler',
     body: [
       'Kontooplysninger: navn, e-mail, adgangskodehåndtering, rolle og loginstatus.',
-      'Profiloplysninger: titel, virksomhed, branche, bio, fokusområder, pris, synlighed og professionelle præferencer.',
-      'Bookingoplysninger: valgt professionel, dato, tidspunkt, pris, besked til den professionelle, status og påmindelser.',
+      'Profiloplysninger: titel, virksomhed, branche, bio, fokusområder, pris, valgt impact-niveau, synlighed og professionelle præferencer.',
+      'Bookingoplysninger: valgt professionel, dato, tidspunkt, pris, minimumsbidrag, besked til den professionelle, status og påmindelser.',
       'Kommunikation: service-e-mails, bekræftelser, velkomstmails, kontaktformularbeskeder og eventuelle supporthenvendelser.',
       'Tekniske oplysninger: nødvendige cookies, lokal lagring, sikkerhedslogs og basale oplysninger, der hjælper os med at holde platformen stabil.',
     ],
@@ -36,7 +36,7 @@ const sections = [
   {
     title: '3. Hvorfor vi behandler oplysninger',
     body: [
-      'Vi behandler oplysninger for at kunne oprette og administrere brugerkonti, vise professionelle profiler, modtage bookinganmodninger, sende servicebeskeder og levere platformens kernefunktioner.',
+      'Vi behandler oplysninger for at kunne oprette og administrere brugerkonti, vise professionelle profiler, modtage bookinganmodninger, beregne impact-information, sende servicebeskeder og levere platformens kernefunktioner.',
       'Vi kan også behandle oplysninger for at overholde juridiske forpligtelser, forebygge misbrug, dokumentere aftaler og forbedre sikkerheden.',
     ],
   },
@@ -45,7 +45,7 @@ const sections = [
     body: [
       'Kontrakt: når behandlingen er nødvendig for at oprette konto, administrere profiler og gennemføre bookingrelaterede handlinger.',
       'Retlig forpligtelse: når oplysninger skal opbevares af regnskabs-, skatte- eller dokumentationshensyn.',
-      'Legitim interesse: når vi beskytter platformen, håndterer support og forbedrer drift uden at tilsidesætte dine rettigheder.',
+      'Legitim interesse: når vi beskytter platformen, håndterer support, beregner og dokumenterer impact på aggregeret niveau og forbedrer drift uden at tilsidesætte dine rettigheder.',
       'Samtykke: når vi sender marketing, bruger ikke-nødvendige cookies eller behandler oplysninger på en måde, hvor samtykke er det rigtige grundlag.',
     ],
   },
@@ -60,7 +60,7 @@ const sections = [
     title: '6. Opbevaring og sletning',
     body: [
       'Vi opbevarer oplysninger, så længe de er nødvendige for formålet. Konto- og profiloplysninger opbevares normalt, så længe kontoen er aktiv.',
-      'Booking- og betalingsrelaterede oplysninger kan opbevares længere, hvis det er nødvendigt af juridiske, regnskabsmæssige eller dokumentationsmæssige årsager.',
+      'Booking-, betalings- og impactrelaterede oplysninger kan opbevares længere, hvis det er nødvendigt af juridiske, regnskabsmæssige eller dokumentationsmæssige årsager.',
       'Når du anmoder om sletning, fjerner eller anonymiserer vi oplysninger, hvor det er muligt, medmindre vi er forpligtet til at gemme dem i en begrænset periode.',
     ],
   },
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
     <main className="bg-[#f7f7f4] pt-16">
       <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
-          <Link href="/" className="mb-8 inline-flex rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
+          <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
           <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Legal</p>
           <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Privatlivspolitik</h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">Hvordan vi behandler oplysninger, når du opretter konto, booker en session, bliver professionel eller kontakter Naetwork.</p>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
 
       <section className="px-6 py-10 md:py-14">
         <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[300px_1fr]">
-          <aside className="h-fit rounded-2xl border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+          <aside className="h-fit rounded-lg border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
             <p className="mb-4 text-xs font-semibold uppercase text-gray-400">Overblik</p>
             <div className="space-y-4">
               {quickFacts.map(([label, value]) => (
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
 
           <div className="space-y-4">
             {sections.map((section) => (
-              <article key={section.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+              <article key={section.title} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
                 <h2 className="text-xl font-black text-gray-950">{section.title}</h2>
                 <div className="mt-4 space-y-3">
                   {section.body.map((paragraph) => (
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
                   ))}
                 </div>
                 {section.link && (
-                  <Link href={section.link.href} className="mt-5 inline-flex rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
+                  <Link href={section.link.href} className="mt-5 inline-flex rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
                     {section.link.label}
                   </Link>
                 )}
