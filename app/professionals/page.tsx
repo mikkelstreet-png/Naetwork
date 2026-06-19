@@ -126,6 +126,10 @@ function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
   return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
 }
 
+function isIndustry(value: string | null): value is Industry {
+  return !!value && INDUSTRIES.includes(value as Industry) && value !== 'all'
+}
+
 export default function ProfessionalsPage() {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
@@ -135,6 +139,11 @@ export default function ProfessionalsPage() {
   const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
 
   const supabase = createClient()
+
+  useEffect(() => {
+    const field = new URLSearchParams(window.location.search).get('field')
+    if (isIndustry(field)) setIndustryFilter(field)
+  }, [])
 
   useEffect(() => {
     async function fetchProfessionals() {
@@ -203,9 +212,16 @@ export default function ProfessionalsPage() {
     ['40-90%', isDa ? 'Impact pr. betalt session' : 'Impact per paid session'],
   ] as const
 
+  const standards = [
+    [isDa ? 'Kurateret signal' : 'Curated signal', isDa ? 'Profiler skal være tydelige på rolle, felt, fokus og output.' : 'Profiles should be clear on role, field, focus and output.'],
+    [isDa ? 'Ingen falske garantier' : 'No false guarantees', isDa ? 'Sessioner giver sparring og forberedelse, ikke løfter om job.' : 'Sessions provide guidance and preparation, not job promises.'],
+    [isDa ? 'Klar impact' : 'Clear impact', isDa ? 'Pris og minimumsbidrag vises før booking.' : 'Price and minimum contribution are visible before booking.'],
+  ] as const
+
   function resetFilters() {
     setSearch('')
     setIndustryFilter('all')
+    window.history.replaceState(null, '', '/professionals')
   }
 
   return (
@@ -263,6 +279,15 @@ export default function ProfessionalsPage() {
           <p className="text-sm font-black text-gray-950">{filtered.length} {isDa ? 'profiler' : 'profiles'}</p>
           <p className="text-xs font-bold uppercase text-gray-400">{t.impact}</p>
         </div>
+
+        <section className="mb-10 grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3">
+          {standards.map(([title, body]) => (
+            <div key={title} className="bg-[#f7f7f4] p-5">
+              <p className="text-sm font-black text-gray-950">{title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-gray-500">{body}</p>
+            </div>
+          ))}
+        </section>
 
         {filtered.length === 0 ? (
           <div className="border-y border-gray-200 py-16 text-center">
