@@ -16,18 +16,25 @@ export function HomeContent() {
     primary: isDa ? 'Se profiler' : 'Browse profiles',
   };
 
+  const fields = [
+    ['AI', 'bg-cyan-300'],
+    ['Banking', 'bg-emerald-300'],
+    ['Consulting', 'bg-blue-300'],
+    ['Private Equity', 'bg-lime-300'],
+  ] as const;
+
   const signals = [
-    ['60 min', isDa ? 'Fast format' : 'Fixed format'],
-    ['DKK 500-1.800', isDa ? 'Tydelig pris' : 'Clear price'],
-    ['Brief', isDa ? 'Kontekst før session' : 'Context before session'],
-  ];
+    ['60 min', isDa ? 'Fast format' : 'Fixed format', 'bg-cyan-300'],
+    ['DKK 500-1.800', isDa ? 'Tydelig pris' : 'Clear price', 'bg-emerald-300'],
+    ['Brief', isDa ? 'Kontekst før session' : 'Context before session', 'bg-blue-300'],
+  ] as const;
 
   const profiles = [
-    ['AI', 'AI Product Lead', isDa ? 'Førende AI-miljø' : 'Leading AI environment', isDa ? 'Positionering, portfolio, rollevalg' : 'Positioning, portfolio, role choice', 'DKK 900'],
-    ['Banking', 'Associate Director', isDa ? 'Global investment bank' : 'Global investment bank', isDa ? 'Technicals, fit, interviewbar' : 'Technicals, fit, interview bar', 'DKK 1.200'],
-    ['Management Consulting', 'Senior Consultant', isDa ? 'Tier-one strategy firm' : 'Tier-one strategy firm', isDa ? 'Casestruktur, hypoteser, fit' : 'Case structure, hypotheses, fit', 'DKK 1.100'],
-    ['Private Equity', 'Investment Professional', isDa ? 'Nordisk PE-fond' : 'Nordic PE fund', isDa ? 'Investment case, deal thinking' : 'Investment case, deal thinking', 'DKK 1.500'],
-  ];
+    ['AI', 'AI Product Lead', isDa ? 'Førende AI-miljø' : 'Leading AI environment', isDa ? 'Positionering, portfolio, rollevalg' : 'Positioning, portfolio, role choice', 'DKK 900', 'bg-cyan-300'],
+    ['Banking', 'Associate Director', isDa ? 'Global investment bank' : 'Global investment bank', isDa ? 'Technicals, fit, interviewbar' : 'Technicals, fit, interview bar', 'DKK 1.200', 'bg-emerald-300'],
+    ['Management Consulting', 'Senior Consultant', isDa ? 'Tier-one strategy firm' : 'Tier-one strategy firm', isDa ? 'Casestruktur, hypoteser, fit' : 'Case structure, hypotheses, fit', 'DKK 1.100', 'bg-blue-300'],
+    ['Private Equity', 'Investment Professional', isDa ? 'Nordisk PE-fond' : 'Nordic PE fund', isDa ? 'Investment case, deal thinking' : 'Investment case, deal thinking', 'DKK 1.500', 'bg-lime-300'],
+  ] as const;
 
   const steps = [
     [isDa ? 'Vælg profil' : 'Choose profile', isDa ? 'Rolle, felt, output og pris.' : 'Role, field, output and price.'],
@@ -50,9 +57,26 @@ export function HomeContent() {
             </Link>
           </div>
 
+          <div className="mt-16 max-w-2xl">
+            <div className="grid h-2 grid-cols-4 overflow-hidden rounded-full bg-gray-100">
+              {fields.map(([field, accent]) => (
+                <span key={field} className={accent} />
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+              {fields.map(([field, accent]) => (
+                <div key={field} className="flex items-center gap-2">
+                  <span className={`h-2 w-2 rounded-full ${accent}`} />
+                  <span className="text-xs font-black uppercase text-gray-500">{field}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-24 grid border-y border-gray-200 md:grid-cols-3">
-            {signals.map(([value, label]) => (
+            {signals.map(([value, label, accent]) => (
               <div key={label} className="border-b border-gray-200 py-5 md:border-b-0 md:border-r md:px-6 md:first:pl-0 md:last:border-r-0">
+                <span className={`mb-5 block h-1.5 w-10 rounded-full ${accent}`} />
                 <p className="text-2xl font-black text-gray-950">{value}</p>
                 <p className="mt-1 text-xs font-semibold text-gray-500">{label}</p>
               </div>
@@ -75,9 +99,13 @@ export function HomeContent() {
           </div>
 
           <div className="border-t border-gray-200">
-            {profiles.map(([field, role, company, use, price]) => (
-              <Link key={`${field}-${role}`} href="/professionals" className="group grid gap-4 border-b border-gray-200 py-6 transition-colors hover:bg-[#fafaf8] md:grid-cols-[180px_1fr_1fr_120px] md:items-center md:px-3">
-                <p className="text-xs font-black uppercase text-gray-400">{field}</p>
+            {profiles.map(([field, role, company, use, price, accent]) => (
+              <Link key={`${field}-${role}`} href="/professionals" className="group relative grid gap-4 border-b border-gray-200 py-6 transition-colors hover:bg-[#fafaf8] md:grid-cols-[190px_1fr_1fr_120px] md:items-center md:px-4">
+                <span className={`absolute left-0 top-6 hidden h-10 w-1 rounded-full md:block ${accent}`} />
+                <div className="flex items-center gap-3">
+                  <span className={`h-2 w-8 rounded-full md:hidden ${accent}`} />
+                  <p className="text-xs font-black uppercase text-gray-400">{field}</p>
+                </div>
                 <div>
                   <p className="text-xl font-black tracking-tight text-gray-950">{role}</p>
                   <p className="mt-1 text-sm font-semibold text-gray-500">{company}</p>
@@ -116,14 +144,20 @@ export function HomeContent() {
             <h2 className="max-w-3xl text-5xl font-black leading-none tracking-tight text-white text-balance md:text-7xl">
               {isDa ? 'Tydeligt format. Valgfri impact.' : 'Clear format. Optional impact.'}
             </h2>
+            <div className="mt-8 grid h-2 max-w-xs grid-cols-4 overflow-hidden rounded-full bg-white/10">
+              {fields.map(([field, accent]) => (
+                <span key={field} className={accent} />
+              ))}
+            </div>
           </div>
           <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 md:min-w-[520px]">
             {[
-              ['60 min', isDa ? 'Session' : 'Session'],
-              ['DKK 500+', isDa ? 'Fra' : 'From'],
-              ['50/100%', 'Impact'],
-            ].map(([value, label]) => (
+              ['60 min', isDa ? 'Session' : 'Session', 'bg-cyan-300'],
+              ['DKK 500+', isDa ? 'Fra' : 'From', 'bg-emerald-300'],
+              ['50/100%', 'Impact', 'bg-lime-300'],
+            ].map(([value, label, accent]) => (
               <div key={label} className="bg-gray-950 p-5">
+                <span className={`mb-5 block h-1.5 w-8 rounded-full ${accent}`} />
                 <p className="text-2xl font-black text-white">{value}</p>
                 <p className="mt-1 text-xs font-semibold text-white/45">{label}</p>
               </div>
