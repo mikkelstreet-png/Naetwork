@@ -26,8 +26,9 @@ function recommendationFor(answers: Answers, isDa: boolean) {
       title: 'AI Career Strategy',
       bestFor: isDa ? 'AI product, strategy roles og portfolio-retning' : 'AI product, strategy roles and portfolio direction',
       search: 'AI',
+      fieldHref: '/fields/ai',
       notes: isDa ? ['Afkod AI-roller', 'Positionér din erfaring', 'Vælg de rigtige proof points'] : ['Decode AI roles', 'Position your experience', 'Choose the right proof points'],
-      accent: 'bg-sky-300',
+      accent: 'bg-cyan-300',
     };
   }
   if (answers.field === 'Banking') {
@@ -35,6 +36,7 @@ function recommendationFor(answers: Answers, isDa: boolean) {
       title: answers.pressure.toLowerCase().includes('technical') || answers.pressure.toLowerCase().includes('technicals') ? 'Banking Technicals' : 'Investment Banking Prep',
       bestFor: isDa ? 'M&A-proces, technicals, CV og fit interviews' : 'M&A process, technicals, CV and fit interviews',
       search: 'Banking',
+      fieldHref: '/fields/banking',
       notes: isDa ? ['Skærp technical answers', 'Forstå interviewbaren', 'Forbedr fit story'] : ['Sharpen technical answers', 'Understand the interview bar', 'Improve fit story'],
       accent: 'bg-emerald-300',
     };
@@ -44,8 +46,9 @@ function recommendationFor(answers: Answers, isDa: boolean) {
       title: 'Consulting Case Prep',
       bestFor: isDa ? 'Casestruktur, hypoteser, kommunikation og fit' : 'Case structure, hypotheses, communication and fit',
       search: 'Management Consulting',
+      fieldHref: '/fields/consulting',
       notes: isDa ? ['Strukturer cases bedre', 'Kommunikér klarere', 'Forbered fit-svar'] : ['Structure cases better', 'Communicate clearly', 'Prepare fit answers'],
-      accent: 'bg-cyan-300',
+      accent: 'bg-blue-300',
     };
   }
   if (answers.field === 'Private Equity') {
@@ -53,6 +56,7 @@ function recommendationFor(answers: Answers, isDa: boolean) {
       title: 'PE / Investment Case',
       bestFor: isDa ? 'Investment thinking, diligence og deal discussion' : 'Investment thinking, diligence and deal discussion',
       search: 'Private Equity',
+      fieldHref: '/fields/private-equity',
       notes: isDa ? ['Skærp deal thinking', 'Forbered investment cases', 'Forstå PE-forventninger'] : ['Sharpen deal thinking', 'Prepare investment cases', 'Understand PE expectations'],
       accent: 'bg-lime-300',
     };
@@ -61,6 +65,7 @@ function recommendationFor(answers: Answers, isDa: boolean) {
     title: isDa ? 'Vælg første signal' : 'Choose first signal',
     bestFor: isDa ? 'Start med feltet, så bliver anbefalingen mere præcis.' : 'Start with the field and the recommendation becomes sharper.',
     search: '',
+    fieldHref: '/professionals',
     notes: isDa ? ['Vælg felt', 'Vælg procesfase', 'Vælg output'] : ['Choose field', 'Choose process stage', 'Choose output'],
     accent: 'bg-gray-300',
   };
@@ -98,8 +103,8 @@ export default function MatchPage() {
               </h1>
               <p className="body-lg mt-6 max-w-2xl">
                 {isDa
-                  ? 'Svar på fire korte spørgsmål og få et mere præcist fokus, før du vælger professional. Det gør booking-flowet roligere og sessionen skarpere.'
-                  : 'Answer four quick questions and get a sharper focus before choosing a professional. It makes booking calmer and the session more useful.'}
+                  ? 'Svar på fire korte spørgsmål og få et mere præcist fokus, før du vælger professional. Det gør booking-flowet roligere, sessionen skarpere og impact mere konkret.'
+                  : 'Answer four quick questions and get a sharper focus before choosing a professional. It makes booking calmer, the session sharper and impact more concrete.'}
               </p>
             </div>
             <div className="premium-panel p-5">
@@ -112,6 +117,18 @@ export default function MatchPage() {
               </div>
               <div className="mt-5 h-2 overflow-hidden bg-gray-200">
                 <div className="h-full bg-gray-950 transition-all" style={{ width: `${progress}%` }} />
+              </div>
+              <div className="mt-5 grid grid-cols-3 gap-px border border-gray-200 bg-gray-200">
+                {[
+                  ['60', 'min'],
+                  ['600+', 'DKK'],
+                  ['40-90%', 'impact'],
+                ].map(([value, label]) => (
+                  <div key={label} className="bg-white p-3">
+                    <p className="text-sm font-black text-gray-950">{value}</p>
+                    <p className="mt-1 text-[10px] font-bold uppercase text-gray-400">{label}</p>
+                  </div>
+                ))}
               </div>
               <p className="mt-4 text-sm leading-relaxed text-gray-500">
                 {isDa ? 'Jo mere præcist signalet er, jo bedre bliver session briefet.' : 'The sharper the signal, the better the session brief becomes.'}
@@ -168,9 +185,14 @@ export default function MatchPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/professionals" className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
-                {isDa ? 'Se matchende profiler' : 'See matching profiles'}
-              </Link>
+              <div className="mt-6 grid grid-cols-2 gap-2">
+                <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
+                  {isDa ? 'Profiler' : 'Profiles'}
+                </Link>
+                <Link href={recommendation.fieldHref} className="inline-flex items-center justify-center rounded-lg border border-white/15 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/10">
+                  {isDa ? 'Felt' : 'Field'}
+                </Link>
+              </div>
             </div>
             <Link href="/onboarding" className="block premium-card p-6 transition-colors hover:border-gray-950">
               <p className="kicker">{isDa ? 'Før match' : 'Before matching'}</p>
