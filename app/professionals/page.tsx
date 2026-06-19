@@ -37,7 +37,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     id: 'demo-1',
     name: 'Mads Christensen',
     title: 'Associate Director',
-    company: 'Goldman Sachs',
+    company: 'Global investment bank',
     industries: ['Banking', 'Private Equity'],
     focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals', 'pe_investment_case'],
     price: 1200,
@@ -47,7 +47,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     id: 'demo-2',
     name: 'Sofie Larsen',
     title: 'Senior Consultant',
-    company: 'McKinsey & Company',
+    company: 'Tier-one strategy firm',
     industries: ['Management Consulting'],
     focus_areas: ['case_prep', 'consulting_cases', 'interview_prep', 'career_direction'],
     price: 1100,
@@ -57,7 +57,7 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     id: 'demo-3',
     name: 'Emil Andersen',
     title: 'AI Product Lead',
-    company: 'Google DeepMind',
+    company: 'Leading AI environment',
     industries: ['AI'],
     focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review'],
     price: 900,
@@ -67,9 +67,29 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
 
 const INDUSTRIES: Industry[] = ['all', 'AI', 'Banking', 'Management Consulting', 'Private Equity']
 
+const FIELD_SIGNALS = [
+  ['AI', 'bg-cyan-300'],
+  ['Banking', 'bg-emerald-300'],
+  ['Management Consulting', 'bg-blue-300'],
+  ['Private Equity', 'bg-lime-300'],
+] as const
+
 function industryLabel(industry: Industry, isDa: boolean) {
   if (industry === 'all') return isDa ? 'Alle' : 'All'
   return industry
+}
+
+function accentForIndustry(industry?: string) {
+  if (industry === 'AI') return 'bg-cyan-300'
+  if (industry === 'Banking') return 'bg-emerald-300'
+  if (industry === 'Management Consulting') return 'bg-blue-300'
+  if (industry === 'Private Equity') return 'bg-lime-300'
+  return 'bg-gray-300'
+}
+
+function accentFor(pro: ProfessionalCard) {
+  const primary = FIELD_SIGNALS.find(([industry]) => pro.industries.includes(industry))?.[0]
+  return accentForIndustry(primary ?? pro.industries[0])
 }
 
 function bestFor(pro: ProfessionalCard, isDa: boolean) {
@@ -173,6 +193,15 @@ export default function ProfessionalsPage() {
           <h1 className="max-w-5xl text-6xl font-black leading-[0.92] tracking-tight text-gray-950 text-balance md:text-8xl">{t.heading}</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
 
+          <div className="mt-10 flex flex-wrap gap-x-5 gap-y-2">
+            {FIELD_SIGNALS.map(([field, accent]) => (
+              <div key={field} className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${accent}`} />
+                <span className="text-xs font-black uppercase text-gray-500">{field}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="mt-14 grid gap-5 border-y border-gray-200 py-5 lg:grid-cols-[1fr_auto] lg:items-center">
             <input
               type="text"
@@ -186,8 +215,9 @@ export default function ProfessionalsPage() {
                 <button
                   key={ind}
                   onClick={() => setIndustryFilter(ind)}
-                  className={`whitespace-nowrap rounded-lg border px-3 py-2 text-xs font-black transition-colors ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
+                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-xs font-black transition-colors ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
                 >
+                  <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : accentForIndustry(ind)}`} />
                   {industryLabel(ind, isDa)}
                 </button>
               ))}
@@ -213,8 +243,12 @@ export default function ProfessionalsPage() {
         ) : (
           <div className="border-t border-gray-200">
             {filtered.map((pro) => (
-              <article key={pro.id} className="grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[170px_1.1fr_1fr_110px_150px] md:items-center md:px-3">
-                <p className="text-xs font-black uppercase text-gray-400">{pro.industries[0] ?? 'Profile'}</p>
+              <article key={pro.id} className="relative grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[170px_1.1fr_1fr_110px_150px] md:items-center md:px-3 md:pl-5">
+                <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full md:block ${accentFor(pro)}`} />
+                <div className="flex items-center gap-3">
+                  <span className={`h-2 w-8 rounded-full md:hidden ${accentFor(pro)}`} />
+                  <p className="text-xs font-black uppercase text-gray-400">{pro.industries[0] ?? 'Profile'}</p>
+                </div>
 
                 <div>
                   <h2 className="text-2xl font-black leading-tight tracking-tight text-gray-950">{pro.name}</h2>
