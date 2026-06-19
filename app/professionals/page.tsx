@@ -72,22 +72,6 @@ function industryLabel(industry: Industry, isDa: boolean) {
   return industry
 }
 
-function initials(name: string) {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('') || 'N'
-}
-
-function accentFor(pro: ProfessionalCard) {
-  if (pro.industries.includes('AI')) return 'bg-sky-300'
-  if (pro.industries.includes('Banking')) return 'bg-emerald-300'
-  if (pro.industries.includes('Management Consulting')) return 'bg-cyan-300'
-  return 'bg-lime-300'
-}
-
 function bestFor(pro: ProfessionalCard, isDa: boolean) {
   const focus = pro.focus_areas ?? []
   if (focus.includes('banking_technicals') || focus.includes('pe_investment_case')) return isDa ? 'Banking / PE prep' : 'Banking / PE prep'
@@ -106,11 +90,6 @@ function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
   return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
 }
 
-function availabilityFor(pro: ProfessionalCard, isDa: boolean) {
-  if (pro.id.startsWith('demo-')) return isDa ? 'Ledig denne uge' : 'Available this week'
-  return isDa ? 'Anmod om tid' : 'Request availability'
-}
-
 export default function ProfessionalsPage() {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
@@ -118,7 +97,6 @@ export default function ProfessionalsPage() {
   const [search, setSearch] = useState('')
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>([])
   const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
-  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const supabase = createClient()
 
@@ -170,17 +148,15 @@ export default function ProfessionalsPage() {
   })
 
   const t = {
-    heading: isDa ? 'Profilindeks for ambitiøse kandidater.' : 'Profile index for ambitious candidates.',
+    heading: isDa ? 'Profiler.' : 'Profiles.',
     subheading: isDa
-      ? 'Sammenlign professionals på rolle, branche, fokus, output og pris. Vælg den person, der passer til det næste skridt.'
-      : 'Compare professionals by role, field, focus, output and price. Choose the person that fits your next step.',
-    searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller branche...' : 'Search role, company, focus or field...',
+      ? 'Rolle, felt, output, pris. Vælg den rigtige person uden støj.'
+      : 'Role, field, output, price. Choose the right person without noise.',
+    searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Book' : 'Book',
-    noResults: isDa ? 'Ingen præcis match' : 'No exact match',
-    noResultsBody: isDa ? 'Prøv at fjerne søgningen eller se alle spor.' : 'Try clearing the search or viewing all tracks.',
-    clearFilters: isDa ? 'Nulstil filtre' : 'Clear filters',
-    readMore: isDa ? 'Læs mere' : 'Read more',
-    showLess: isDa ? 'Vis mindre' : 'Show less',
+    noResults: isDa ? 'Ingen match' : 'No match',
+    noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
+    clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
   }
 
@@ -193,23 +169,18 @@ export default function ProfessionalsPage() {
     <div className="min-h-screen bg-white">
       <section className="border-b border-gray-200 bg-white px-5 pt-16 sm:px-8">
         <div className="mx-auto max-w-6xl py-16 md:py-24">
-          <p className="mb-5 text-xs font-black uppercase text-gray-400">Naetwork profiles</p>
-          <h1 className="max-w-5xl text-5xl font-black leading-[0.96] tracking-tight text-gray-950 text-balance md:text-7xl">{t.heading}</h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
+          <p className="mb-5 text-xs font-black uppercase text-gray-400">Naetwork</p>
+          <h1 className="max-w-5xl text-6xl font-black leading-[0.92] tracking-tight text-gray-950 text-balance md:text-8xl">{t.heading}</h1>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
 
           <div className="mt-14 grid gap-5 border-y border-gray-200 py-5 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div className="relative">
-              <svg className="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" />
-              </svg>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                className="w-full border-0 bg-transparent py-3 pl-7 pr-3 text-base font-semibold text-gray-950 outline-none placeholder:text-gray-400"
-              />
-            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              className="w-full border-0 bg-transparent py-3 text-base font-semibold text-gray-950 outline-none placeholder:text-gray-400"
+            />
             <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
               {INDUSTRIES.map((ind) => (
                 <button
@@ -226,16 +197,13 @@ export default function ProfessionalsPage() {
       </section>
 
       <main id="marketplace" className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-14">
-        <div className="mb-7 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-black text-gray-950">{filtered.length} {isDa ? 'professionelle' : 'professionals'}</p>
-            <p className="mt-1 text-sm text-gray-500">{isDa ? 'Alle sessioner er 60 minutter med tydelig pris før booking.' : 'All sessions are 60 minutes with clear price before booking.'}</p>
-          </div>
-          <p className="text-xs font-bold uppercase text-gray-400">AI · Banking · Consulting · PE</p>
+        <div className="mb-7 flex items-end justify-between gap-4">
+          <p className="text-sm font-black text-gray-950">{filtered.length} {isDa ? 'profiler' : 'profiles'}</p>
+          <p className="text-xs font-bold uppercase text-gray-400">60 min</p>
         </div>
 
         {filtered.length === 0 ? (
-          <div className="border border-gray-200 bg-[#f7f7f4] px-6 py-16 text-center">
+          <div className="border-y border-gray-200 py-16 text-center">
             <p className="text-xl font-black text-gray-950">{t.noResults}</p>
             <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-gray-500">{t.noResultsBody}</p>
             <button onClick={resetFilters} className="mt-6 rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
@@ -244,71 +212,38 @@ export default function ProfessionalsPage() {
           </div>
         ) : (
           <div className="border-t border-gray-200">
-            {filtered.map((pro) => {
-              const isExpanded = expandedId === pro.id
-              const focusAreas = (pro.focus_areas ?? []).slice(0, 4)
-              return (
-                <article key={pro.id} className="grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[72px_1.2fr_1fr_120px_160px] md:items-start md:px-3">
-                  <div className="flex items-center gap-3 md:block">
-                    <span className={`block h-2 w-10 rounded-full ${accentFor(pro)}`} />
-                    <div className="mt-0 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-950 text-xs font-black text-white md:mt-5">
-                      {initials(pro.name)}
-                    </div>
-                  </div>
+            {filtered.map((pro) => (
+              <article key={pro.id} className="grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[170px_1.1fr_1fr_110px_150px] md:items-center md:px-3">
+                <p className="text-xs font-black uppercase text-gray-400">{pro.industries[0] ?? 'Profile'}</p>
 
-                  <div>
-                    <p className="text-xs font-black uppercase text-gray-400">{pro.industries.join(' / ')}</p>
-                    <h2 className="mt-2 text-2xl font-black leading-tight tracking-tight text-gray-950">{pro.name}</h2>
-                    <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
-                    <p className={`mt-4 text-sm leading-relaxed text-gray-600 ${isExpanded ? '' : 'line-clamp-2'}`}>{pro.bio}</p>
-                    <button
-                      onClick={() => setExpandedId(isExpanded ? null : pro.id)}
-                      className="mt-2 text-xs font-black text-gray-950 underline decoration-gray-300 underline-offset-4 transition-colors hover:decoration-gray-950"
-                    >
-                      {isExpanded ? t.showLess : t.readMore}
-                    </button>
-                  </div>
+                <div>
+                  <h2 className="text-2xl font-black leading-tight tracking-tight text-gray-950">{pro.name}</h2>
+                  <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
+                </div>
 
-                  <div className="grid gap-4 text-sm sm:grid-cols-2 md:block md:space-y-4">
-                    <div>
-                      <p className="text-[10px] font-black uppercase text-gray-400">Best for</p>
-                      <p className="mt-1 font-black text-gray-950">{bestFor(pro, isDa)}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black uppercase text-gray-400">Output</p>
-                      <p className="mt-1 font-black text-gray-950">{primaryOutputFor(pro, isDa)}</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {(focusAreas.length > 0 ? focusAreas : pro.industries).map((area) => (
-                        <span key={area} className="border border-gray-200 px-2 py-1 text-[10px] font-black uppercase text-gray-500">
-                          {FOCUS_LABELS[area] ?? area}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                <div>
+                  <p className="text-sm font-black text-gray-950">{bestFor(pro, isDa)}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-gray-500">{primaryOutputFor(pro, isDa)}</p>
+                </div>
 
-                  <div>
-                    <p className="text-[10px] font-black uppercase text-gray-400">Status</p>
-                    <p className="mt-1 text-sm font-black text-gray-950">{availabilityFor(pro, isDa)}</p>
-                    <p className="mt-5 text-[10px] font-black uppercase text-gray-400">Price</p>
-                    <p className="mt-1 text-lg font-black text-gray-950">DKK {pro.price}</p>
-                    <p className="text-xs font-medium text-gray-400">/ 60 min</p>
-                  </div>
+                <div>
+                  <p className="text-lg font-black text-gray-950">DKK {pro.price}</p>
+                  <p className="text-xs font-medium text-gray-400">/ 60 min</p>
+                </div>
 
-                  <div className="flex gap-2 md:flex-col">
-                    <Link href={`/professionals/${pro.id}`} className="inline-flex flex-1 items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-white md:flex-none">
-                      {t.viewProfile}
-                    </Link>
-                    <button
-                      onClick={() => setBookTarget(pro)}
-                      className="inline-flex flex-1 items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 md:flex-none"
-                    >
-                      {t.bookCta}
-                    </button>
-                  </div>
-                </article>
-              )
-            })}
+                <div className="flex gap-2 md:justify-end">
+                  <Link href={`/professionals/${pro.id}`} className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-white">
+                    {t.viewProfile}
+                  </Link>
+                  <button
+                    onClick={() => setBookTarget(pro)}
+                    className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800"
+                  >
+                    {t.bookCta}
+                  </button>
+                </div>
+              </article>
+            ))}
           </div>
         )}
       </main>
