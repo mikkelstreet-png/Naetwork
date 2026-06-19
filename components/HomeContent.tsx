@@ -9,10 +9,10 @@ export function HomeContent() {
 
   const copy = {
     eyebrow: 'Naetwork',
-    title: isDa ? 'Én time. Mere klarhed.' : 'One hour. More clarity.',
+    title: isDa ? 'Karrieresparring med mening.' : 'Career guidance with meaning.',
     body: isDa
-      ? 'Fokuserede karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
-      : 'Focused career sessions with professionals from AI, Banking, Management Consulting and Private Equity.',
+      ? 'Fokuserede 60-minutters sessioner med professionals fra AI, Banking, Management Consulting og Private Equity. Hver betalt session bidrager med minimum 40% og op til 90% til Kræftens Bekæmpelse.'
+      : 'Focused 60-minute sessions with professionals from AI, Banking, Management Consulting and Private Equity. Every paid session contributes at least 40% and up to 90% to Kræftens Bekæmpelse.',
     primary: isDa ? 'Se profiler' : 'Browse profiles',
   };
 
@@ -25,8 +25,8 @@ export function HomeContent() {
 
   const signals = [
     ['60 min', isDa ? 'Fast format' : 'Fixed format', 'bg-cyan-300'],
-    ['DKK 500-1.800', isDa ? 'Tydelig pris' : 'Clear price', 'bg-emerald-300'],
-    ['Brief', isDa ? 'Kontekst før session' : 'Context before session', 'bg-blue-300'],
+    ['DKK 600-1.800', isDa ? 'Konkrete priser' : 'Concrete prices', 'bg-emerald-300'],
+    ['40-90%', isDa ? 'Til Kræftens Bekæmpelse' : 'To Kræftens Bekæmpelse', 'bg-lime-300'],
   ] as const;
 
   const profiles = [
@@ -37,10 +37,17 @@ export function HomeContent() {
   ] as const;
 
   const steps = [
-    [isDa ? 'Vælg profil' : 'Choose profile', isDa ? 'Rolle, felt, output og pris.' : 'Role, field, output and price.'],
+    [isDa ? 'Vælg profil' : 'Choose profile', isDa ? 'Rolle, felt, output, pris og impact er tydeligt før booking.' : 'Role, field, output, price and impact are clear before booking.'],
     [isDa ? 'Send brief' : 'Send brief', isDa ? 'Fokus, fase, mål og materiale.' : 'Focus, stage, goal and material.'],
-    [isDa ? 'Book 60 min' : 'Book 60 min', isDa ? 'Brug timen på det vigtigste.' : 'Use the hour on what matters most.'],
+    [isDa ? 'Book 60 min' : 'Book 60 min', isDa ? 'Brug timen på det vigtigste, mens sessionen også bidrager.' : 'Use the hour on what matters most, while the session also contributes.'],
   ];
+
+  const priceAnchors = [
+    ['DKK 600', isDa ? 'Entry' : 'Entry'],
+    ['DKK 900', isDa ? 'Core' : 'Core'],
+    ['DKK 1.200', isDa ? 'Senior' : 'Senior'],
+    ['DKK 1.800', isDa ? 'Expert' : 'Expert'],
+  ] as const;
 
   return (
     <>
@@ -51,7 +58,7 @@ export function HomeContent() {
             {copy.title}
           </h1>
           <div className="mt-10 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
-            <p className="max-w-xl text-base leading-relaxed text-gray-600 md:text-xl">{copy.body}</p>
+            <p className="max-w-2xl text-base leading-relaxed text-gray-600 md:text-xl">{copy.body}</p>
             <Link href="/professionals" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-6 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800">
               {copy.primary}
             </Link>
@@ -93,8 +100,8 @@ export function HomeContent() {
             </h2>
             <p className="max-w-lg text-sm leading-relaxed text-gray-600 md:ml-auto md:text-base">
               {isDa
-                ? 'Et roligt indeks over hvem personen er, hvad sessionen kan bruges til, og hvad timen koster.'
-                : 'A calm index of who the person is, what the session can be used for, and what the hour costs.'}
+                ? 'Et roligt indeks over hvem personen er, hvad sessionen kan bruges til, hvad timen koster, og hvordan den bidrager.'
+                : 'A calm index of who the person is, what the session can be used for, what the hour costs, and how it contributes.'}
             </p>
           </div>
 
@@ -111,7 +118,10 @@ export function HomeContent() {
                   <p className="mt-1 text-sm font-semibold text-gray-500">{company}</p>
                 </div>
                 <p className="text-sm leading-relaxed text-gray-600">{use}</p>
-                <p className="text-sm font-black text-gray-950 md:text-right">{price}</p>
+                <div className="md:text-right">
+                  <p className="text-sm font-black text-gray-950">{price}</p>
+                  <p className="mt-1 text-[11px] font-black uppercase text-gray-400">40-90% impact</p>
+                </div>
               </Link>
             ))}
           </div>
@@ -138,28 +148,45 @@ export function HomeContent() {
       </section>
 
       <section id="pricing" className="bg-gray-950 px-5 py-20 text-white sm:px-8 md:py-28">
-        <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1fr_auto] md:items-end">
-          <div>
-            <p className="mb-5 text-xs font-black uppercase text-white/35">{isDa ? 'Model' : 'Model'}</p>
-            <h2 className="max-w-3xl text-5xl font-black leading-none tracking-tight text-white text-balance md:text-7xl">
-              {isDa ? 'Tydeligt format. Valgfri impact.' : 'Clear format. Optional impact.'}
-            </h2>
-            <div className="mt-8 grid h-2 max-w-xs grid-cols-4 overflow-hidden rounded-full bg-white/10">
-              {fields.map(([field, accent]) => (
-                <span key={field} className={accent} />
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-end">
+            <div>
+              <p className="mb-5 text-xs font-black uppercase text-white/35">{isDa ? 'Pris og impact' : 'Price and impact'}</p>
+              <h2 className="max-w-3xl text-5xl font-black leading-none tracking-tight text-white text-balance md:text-7xl">
+                {isDa ? 'Konkret pris. Konkret bidrag.' : 'Concrete price. Concrete contribution.'}
+              </h2>
+              <p className="mt-6 max-w-2xl text-sm leading-relaxed text-white/55 md:text-base">
+                {isDa
+                  ? 'Professionals vælger en pris for 60 minutter. Af hver betalt session går minimum 40% og op til 90% til Kræftens Bekæmpelse.'
+                  : 'Professionals choose a price for 60 minutes. From every paid session, at least 40% and up to 90% goes to Kræftens Bekæmpelse.'}
+              </p>
+              <div className="mt-8 grid h-2 max-w-xs grid-cols-4 overflow-hidden rounded-full bg-white/10">
+                {fields.map(([field, accent]) => (
+                  <span key={field} className={accent} />
+                ))}
+              </div>
+            </div>
+            <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 md:min-w-[520px]">
+              {[
+                ['60 min', isDa ? 'Session' : 'Session', 'bg-cyan-300'],
+                ['DKK 600+', isDa ? 'Fra' : 'From', 'bg-emerald-300'],
+                ['40-90%', isDa ? 'Impact' : 'Impact', 'bg-lime-300'],
+              ].map(([value, label, accent]) => (
+                <div key={label} className="bg-gray-950 p-5">
+                  <span className={`mb-5 block h-1.5 w-8 rounded-full ${accent}`} />
+                  <p className="text-2xl font-black text-white">{value}</p>
+                  <p className="mt-1 text-xs font-semibold text-white/45">{label}</p>
+                </div>
               ))}
             </div>
           </div>
-          <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3 md:min-w-[520px]">
-            {[
-              ['60 min', isDa ? 'Session' : 'Session', 'bg-cyan-300'],
-              ['DKK 500+', isDa ? 'Fra' : 'From', 'bg-emerald-300'],
-              ['50/100%', 'Impact', 'bg-lime-300'],
-            ].map(([value, label, accent]) => (
-              <div key={label} className="bg-gray-950 p-5">
-                <span className={`mb-5 block h-1.5 w-8 rounded-full ${accent}`} />
-                <p className="text-2xl font-black text-white">{value}</p>
-                <p className="mt-1 text-xs font-semibold text-white/45">{label}</p>
+
+          <div className="mt-10 grid gap-px border border-white/10 bg-white/10 md:grid-cols-4">
+            {priceAnchors.map(([price, label]) => (
+              <div key={price} className="bg-gray-950 p-5">
+                <p className="text-xs font-black uppercase text-white/35">{label}</p>
+                <p className="mt-5 text-3xl font-black text-white">{price}</p>
+                <p className="mt-2 text-sm text-white/50">{isDa ? '40-90% bidrag pr. betalt session' : '40-90% contribution per paid session'}</p>
               </div>
             ))}
           </div>
@@ -170,7 +197,7 @@ export function HomeContent() {
         <div className="mx-auto max-w-6xl border-t border-gray-200 pt-10">
           <div className="grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
             <h2 className="max-w-4xl text-5xl font-black leading-none tracking-tight text-gray-950 text-balance md:text-7xl">
-              {isDa ? 'Find profilen. Book timen.' : 'Find the profile. Book the hour.'}
+              {isDa ? 'Find profilen. Book timen. Bidrag med mening.' : 'Find the profile. Book the hour. Contribute with meaning.'}
             </h2>
             <Link href="/professionals" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-6 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800">
               {copy.primary}
