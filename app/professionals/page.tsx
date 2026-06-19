@@ -170,14 +170,15 @@ export default function ProfessionalsPage() {
   const t = {
     heading: isDa ? 'Profiler.' : 'Profiles.',
     subheading: isDa
-      ? 'Rolle, felt, output, pris. Vælg den rigtige person uden støj.'
-      : 'Role, field, output, price. Choose the right person without noise.',
+      ? 'Rolle, felt, output, pris og impact. Vælg den rigtige person uden støj.'
+      : 'Role, field, output, price and impact. Choose the right person without noise.',
     searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Book' : 'Book',
     noResults: isDa ? 'Ingen match' : 'No match',
     noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
+    impact: isDa ? 'Min. 40% til Kræftens Bekæmpelse' : 'Min. 40% to Kræftens Bekæmpelse',
   }
 
   function resetFilters() {
@@ -198,6 +199,19 @@ export default function ProfessionalsPage() {
               <div key={field} className="flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${accent}`} />
                 <span className="text-xs font-black uppercase text-gray-500">{field}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 grid max-w-2xl gap-px border border-gray-200 bg-gray-200 sm:grid-cols-3">
+            {[
+              ['60 min', isDa ? 'Fast format' : 'Fixed format'],
+              ['DKK 600+', isDa ? 'Fra' : 'From'],
+              ['40-90%', isDa ? 'Impact' : 'Impact'],
+            ].map(([value, label]) => (
+              <div key={label} className="bg-white p-4">
+                <p className="text-xl font-black text-gray-950">{value}</p>
+                <p className="mt-1 text-xs font-bold uppercase text-gray-400">{label}</p>
               </div>
             ))}
           </div>
@@ -229,7 +243,7 @@ export default function ProfessionalsPage() {
       <main id="marketplace" className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-14">
         <div className="mb-7 flex items-end justify-between gap-4">
           <p className="text-sm font-black text-gray-950">{filtered.length} {isDa ? 'profiler' : 'profiles'}</p>
-          <p className="text-xs font-bold uppercase text-gray-400">60 min</p>
+          <p className="text-xs font-bold uppercase text-gray-400">{t.impact}</p>
         </div>
 
         {filtered.length === 0 ? (
@@ -262,7 +276,7 @@ export default function ProfessionalsPage() {
 
                 <div>
                   <p className="text-lg font-black text-gray-950">DKK {pro.price}</p>
-                  <p className="text-xs font-medium text-gray-400">/ 60 min</p>
+                  <p className="text-xs font-medium text-gray-400">40-90% impact</p>
                 </div>
 
                 <div className="flex gap-2 md:justify-end">
