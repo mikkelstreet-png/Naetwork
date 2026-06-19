@@ -41,14 +41,14 @@ export function Footer() {
           <div>
             <p className="mb-5 text-xs font-black uppercase text-gray-400">Naetwork</p>
             <h2 className="max-w-3xl text-5xl font-black leading-none tracking-tight text-gray-950 text-balance md:text-7xl">
-              {isDa ? 'Mere klarhed. Mindre støj.' : 'More clarity. Less noise.'}
+              {isDa ? 'Mere klarhed. Mere mening.' : 'More clarity. More meaning.'}
             </h2>
           </div>
           <div className="lg:ml-auto">
             <p className="max-w-md text-sm leading-relaxed text-gray-600">
               {isDa
-                ? '60-minutters karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity.'
-                : '60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity.'}
+                ? '60-minutters karrieresessioner med professionals fra AI, Banking, Management Consulting og Private Equity. Hver betalt session bidrager med minimum 40% og op til 90% til Kræftens Bekæmpelse.'
+                : '60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity. Every paid session contributes at least 40% and up to 90% to Kræftens Bekæmpelse.'}
             </p>
             <Link href="/professionals" className="mt-6 inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
               {isDa ? 'Se profiler' : 'Browse profiles'}
