@@ -17,6 +17,15 @@ export function Footer() {
       ],
     },
     {
+      title: isDa ? 'Felter' : 'Fields',
+      links: [
+        { href: '/fields/ai', label: 'AI' },
+        { href: '/fields/banking', label: 'Banking' },
+        { href: '/fields/consulting', label: 'Consulting' },
+        { href: '/fields/private-equity', label: 'Private Equity' },
+      ],
+    },
+    {
       title: isDa ? 'Model' : 'Model',
       links: [
         { href: '/mission', label: 'Mission' },
@@ -62,7 +71,7 @@ export function Footer() {
             <span className="block text-lg font-black tracking-tight text-gray-950">Naetwork</span>
           </Link>
 
-          <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-4 lg:grid-cols-4">
             {columns.map((column) => (
               <div key={column.title}>
                 <p className="mb-4 text-xs font-bold uppercase text-gray-400">{column.title}</p>
