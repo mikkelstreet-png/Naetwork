@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FieldGuideContent } from '@/components/FieldGuideContent';
-import { FIELD_GUIDES, FIELD_SLUGS, FieldSlug } from '@/lib/fieldGuides';
+import { FIELD_GUIDES, FIELD_SLUGS } from '@/lib/fieldGuides';
+import type { FieldSlug } from '@/lib/fieldGuides';
 
 export function generateStaticParams() {
   return FIELD_SLUGS.map((slug) => ({ slug }));
