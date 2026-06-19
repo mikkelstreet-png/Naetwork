@@ -75,14 +75,21 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const days = getNextTwoWeekdays()
   const focusLabel = FOCUS_OPTIONS.find((option) => option.id === sessionFocus)?.[locale] ?? ''
   const stageLabel = STAGE_OPTIONS.find((option) => option.id === candidateStage)?.[locale] ?? ''
+  const minimumContribution = Math.round(professional.price * 0.4)
 
   const t = {
     title: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
-    subtitle: locale === 'da' ? 'Vælg tid, lav et kort session brief, og send bookinganmodningen.' : 'Choose a time, create a short session brief and send the booking request.',
+    subtitle: locale === 'da'
+      ? 'Vælg tid, lav et kort session brief, og send bookinganmodningen. Minimum 40% og op til 90% af betalingen bidrager til Kræftens Bekæmpelse.'
+      : 'Choose a time, create a short session brief and send the booking request. At least 40% and up to 90% of the payment contributes to Kræftens Bekæmpelse.',
     step1Title: locale === 'da' ? 'Vælg et tidspunkt' : 'Choose a time',
     step2Title: locale === 'da' ? 'Session brief' : 'Session brief',
     duration: '60 min',
     price: `DKK ${professional.price} / 60 min`,
+    impactLabel: locale === 'da' ? 'Impact' : 'Impact',
+    impactValue: locale === 'da'
+      ? `Min. DKK ${minimumContribution} til Kræftens Bekæmpelse`
+      : `Min. DKK ${minimumContribution} to Kræftens Bekæmpelse`,
     reminder: locale === 'da' ? 'Tilføj påmindelse' : 'Add reminder',
     focusLabel: locale === 'da' ? 'Hvad skal sessionen handle om?' : 'What should the session focus on?',
     stageLabel: locale === 'da' ? 'Hvor er du i processen?' : 'Where are you in the process?',
@@ -99,8 +106,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     confirm: locale === 'da' ? 'Send bookinganmodning' : 'Send booking request',
     successTitle: locale === 'da' ? 'Booking anmodet' : 'Booking requested',
     successMsg: locale === 'da'
-      ? 'Din booking og dit session brief er modtaget. Du får en e-mail, og den professionelle vender tilbage med bekræftelse.'
-      : 'Your booking and session brief have been received. You will get an email, and the professional will confirm the session.',
+      ? 'Din booking og dit session brief er modtaget. Du får en e-mail, og den professionelle vender tilbage med bekræftelse. Når sessionen betales, bidrager den til Kræftens Bekæmpelse.'
+      : 'Your booking and session brief have been received. You will get an email, and the professional will confirm the session. Once the session is paid, it contributes to Kræftens Bekæmpelse.',
     close: locale === 'da' ? 'Luk' : 'Close',
     back: locale === 'da' ? 'Tilbage' : 'Back',
     authError: locale === 'da' ? 'Log ind for at booke en session.' : 'Log in to book a session.',
@@ -268,6 +275,10 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 <div className="mt-2 flex justify-between gap-4 border-t border-gray-200 pt-4 text-sm">
                   <span className="text-gray-500">{t.priceLabel}</span>
                   <span className="text-right font-black text-gray-950">{t.price}</span>
+                </div>
+                <div className="mt-2 flex justify-between gap-4 border-t border-gray-200 pt-4 text-sm">
+                  <span className="text-gray-500">{t.impactLabel}</span>
+                  <span className="max-w-[13rem] text-right font-black text-gray-950">{t.impactValue}</span>
                 </div>
               </div>
 
