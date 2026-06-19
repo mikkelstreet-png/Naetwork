@@ -40,7 +40,7 @@ export async function sendWelcomeProfessional(params: {
   email: string;
   name: string;
   priceDkk: number;
-  donatesToCharity: boolean;
+  contributionPercent: number;
 }) {
   return sendEmail('welcome-professional', params);
 }
