@@ -119,9 +119,9 @@ input, textarea, select { font-size: 16px; }
 
   .kicker { @apply text-xs font-black uppercase text-gray-400; }
 
-  .display-xl { @apply text-5xl font-black leading-[0.96] tracking-tight text-gray-950 md:text-7xl; text-wrap: balance; }
+  .display-xl { @apply text-5xl font-black leading-[0.96] text-gray-950 md:text-7xl; text-wrap: balance; }
 
-  .display-lg { @apply text-4xl font-black leading-tight tracking-tight text-gray-950 md:text-5xl; text-wrap: balance; }
+  .display-lg { @apply text-4xl font-black leading-tight text-gray-950 md:text-5xl; text-wrap: balance; }
 
   .body-lg { @apply text-base leading-relaxed text-gray-600 md:text-lg; }
 
