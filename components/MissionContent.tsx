@@ -1,20 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useLanguage } from '@/context/LanguageContext';
+import { ECONOMICS } from '@/lib/economics';
 
 export function MissionContent() {
-  const { lang } = useLanguage();
-  const isDa = lang === 'da';
-
   const principles = [
-    [isDa ? 'Adgang bør være mindre tilfældig' : 'Access should be less random', isDa ? 'Stærke kandidater bør ikke være afhængige af en varm intro for at forstå krævende karriereveje.' : 'Strong candidates should not need a warm introduction to understand demanding career paths.'],
-    [isDa ? 'Sparring bør være specifik' : 'Guidance should be specific', isDa ? 'Værdien er ikke generel inspiration. Det er kontekst fra en person, der kender barren.' : 'The value is not generic inspiration. It is context from someone who knows the bar.'],
-    [isDa ? 'Forberedelse bør være konkret' : 'Preparation should be concrete', isDa ? 'En god session skal skabe skarpere materiale, bedre svar, mere ro eller et klarere næste skridt.' : 'A good session should create sharper materials, better answers, more calm or a clearer next step.'],
-    [isDa ? 'Karrieresparring bør have mening' : 'Career guidance should have meaning', isDa ? 'Hver betalt session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse.' : 'Every paid session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse.'],
+    ['Adgang bør være mindre tilfældig', 'Stærke kandidater bør ikke være afhængige af en varm intro for at forstå krævende karriereveje.'],
+    ['Sparring bør være specifik', 'Værdien er ikke generel inspiration. Det er kontekst fra en person, der kender barren.'],
+    ['Forberedelse bør være konkret', 'En god session skal skabe skarpere materiale, bedre svar, mere ro eller et klarere næste skridt.'],
+    ['Karrieresparring bør have mening', `Hver betalt session fordeles med ${ECONOMICS.charityPercent}% til ${ECONOMICS.charityName}, ${ECONOMICS.professionalPercent}% til eksperten og ${ECONOMICS.platformPercent}% til platformen.`],
   ] as const;
 
-  const product = ['60 min', 'AI', 'Banking', 'Consulting', 'Private Equity', '40-90%'] as const;
+  const product = ['60 min', 'AI', 'Banking', 'Consulting', 'Private Equity', `${ECONOMICS.charityPercent}/${ECONOMICS.professionalPercent}/${ECONOMICS.platformPercent}`] as const;
 
   return (
     <main className="page-shell">
@@ -22,20 +19,12 @@ export function MissionContent() {
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_380px] lg:items-end">
           <div>
             <p className="kicker mb-5">Mission</p>
-            <h1 className="display-xl max-w-5xl">
-              {isDa ? 'Adgang til karrieresparring bør ikke afhænge af hvem du kender.' : 'Career access should not depend on who you happen to know.'}
-            </h1>
-            <p className="body-lg mt-7 max-w-2xl">
-              {isDa
-                ? 'Naetwork gør uformel insider-sparring til et fokuseret produkt: én professional, ét brief, én 60-minutters session, ét klarere næste skridt og ét konkret bidrag.'
-                : 'Naetwork turns informal insider guidance into a focused product: one professional, one brief, one 60-minute session, one clearer next step and one concrete contribution.'}
-            </p>
+            <h1 className="display-xl max-w-5xl">Adgang til karrieresparring bør ikke afhænge af hvem du kender.</h1>
+            <p className="body-lg mt-7 max-w-2xl">Naetwork gør uformel insider-sparring til et fokuseret produkt: én professional, ét brief, én 60-minutters session, ét klarere næste skridt og én transparent fordeling.</p>
           </div>
           <aside className="premium-panel p-5">
-            <p className="kicker">{isDa ? 'Produktstandpunkt' : 'Product stance'}</p>
-            <p className="mt-4 text-3xl font-black leading-tight text-gray-950">
-              {isDa ? 'Simpelt på overfladen. Seriøst nedenunder.' : 'Simple on the surface. Serious underneath.'}
-            </p>
+            <p className="kicker">Produktstandpunkt</p>
+            <p className="mt-4 text-3xl font-black leading-tight text-gray-950">Simpelt på overfladen. Seriøst nedenunder.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {product.map((item) => (
                 <span key={item} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-black text-gray-600">{item}</span>
@@ -48,10 +37,8 @@ export function MissionContent() {
       <section className="px-5 py-12 sm:px-8 md:py-16">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
-            <p className="kicker mb-5">{isDa ? 'Principper' : 'Principles'}</p>
-            <h2 className="display-lg">
-              {isDa ? 'Det skal være nemt at forstå, svært at forveksle.' : 'It should be easy to understand, hard to confuse.'}
-            </h2>
+            <p className="kicker mb-5">Principper</p>
+            <h2 className="display-lg">Det skal være nemt at forstå, svært at forveksle.</h2>
           </div>
           <div className="border-t border-gray-200">
             {principles.map(([title, body], index) => (
@@ -67,8 +54,8 @@ export function MissionContent() {
         </div>
 
         <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-3 sm:flex-row">
-          <Link href="/match" className="pill-dark">{isDa ? 'Prøv match' : 'Try match'}</Link>
-          <Link href="/professionals" className="pill-light">{isDa ? 'Se profiler' : 'Browse profiles'}</Link>
+          <Link href="/match" className="pill-dark">Prøv match</Link>
+          <Link href="/professionals" className="pill-light">Se profiler</Link>
         </div>
       </section>
     </main>
