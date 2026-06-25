@@ -10,10 +10,10 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const field = FIELD_GUIDES[params.slug as FieldSlug];
-  if (!field) return { title: 'Field - Naetwork' };
+  if (!field) return { title: 'Felt - Naetwork' };
   return {
-    title: `${field.label} career sessions - Naetwork`,
-    description: field.description.en,
+    title: `${field.label} karrieresessioner - Naetwork`,
+    description: field.description.da,
   };
 }
 
