@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/context/LanguageContext'
 import BookingDrawer from '@/components/BookingDrawer'
-import { ECONOMICS, economicsSummary, formatDkk, splitPayment } from '@/lib/economics'
 
 type Industry = 'all' | 'AI' | 'Banking' | 'Management Consulting' | 'Private Equity'
-type VerificationStatus = 'pending' | 'verified' | 'placeholder'
 
 interface ProfessionalCard {
   id: string
@@ -18,74 +17,61 @@ interface ProfessionalCard {
   focus_areas?: string[]
   price: number
   bio: string
-  photoUrl?: string
-  linkedinUrl?: string
-  verificationStatus?: VerificationStatus
-  outputPromise?: string
-  sessionsCompleted?: number
 }
 
 const FOCUS_LABELS: Record<string, string> = {
   cv_linkedin: 'CV / LinkedIn',
-  application_review: 'Ansøgning',
-  interview_prep: 'Interviewtræning',
-  case_prep: 'Case prep',
-  banking_technicals: 'Banking technicals',
-  consulting_cases: 'Consulting cases',
-  pe_investment_case: 'PE / investment case',
-  career_direction: 'Karriereretning',
-  ai_career_strategy: 'AI career strategy',
-  industry_insight: 'Industriindsigt',
+  application_review: 'Application Review',
+  interview_prep: 'Interview Prep',
+  case_prep: 'Case Prep',
+  banking_technicals: 'Banking Technicals',
+  consulting_cases: 'Consulting Cases',
+  pe_investment_case: 'PE / Investment Case',
+  career_direction: 'Career Direction',
+  ai_career_strategy: 'AI Career Strategy',
+  industry_insight: 'Industry Insight',
 }
 
 const DEMO_PROFESSIONALS: ProfessionalCard[] = [
   {
     id: 'demo-1',
-    name: 'Pladsholder: Banking',
+    name: 'Mads Christensen',
     title: 'Associate Director',
-    company: 'TODO: Danske Bank',
+    company: 'Global investment bank',
     industries: ['Banking'],
     focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals'],
     price: 1200,
-    bio: 'Pladsholderprofil til at demonstrere strukturen. Skal erstattes af en rigtig, samtykket professional før lancering.',
-    verificationStatus: 'placeholder',
-    outputPromise: '1-sides action-plan med technicals, fit-story og tre prioriterede næste skridt.',
+    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.'
   },
   {
     id: 'demo-2',
-    name: 'Pladsholder: Consulting',
+    name: 'Sofie Larsen',
     title: 'Senior Consultant',
-    company: 'TODO: McKinsey & Company',
+    company: 'Tier-one strategy firm',
     industries: ['Management Consulting'],
     focus_areas: ['case_prep', 'consulting_cases', 'interview_prep', 'career_direction'],
     price: 1100,
-    bio: 'Pladsholderprofil til consulting-sporet. Skal erstattes af en rigtig, samtykket professional før lancering.',
-    verificationStatus: 'placeholder',
-    outputPromise: '1-sides action-plan med casestruktur, fit-svar og træningsprioriteter.',
+    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.'
   },
   {
     id: 'demo-3',
-    name: 'Pladsholder: AI',
+    name: 'Emil Andersen',
     title: 'AI Product Lead',
-    company: 'TODO: Synthesia',
+    company: 'Leading AI environment',
     industries: ['AI'],
     focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review'],
     price: 900,
-    bio: 'Pladsholderprofil til AI-sporet. Skal erstattes af en rigtig, samtykket professional før lancering.',
-    verificationStatus: 'placeholder',
-    outputPromise: '1-sides action-plan med rolle-shortlist, portfolio-prioriteter og proof points.',
+    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.'
   },
   {
     id: 'demo-4',
-    name: 'Pladsholder: Private Equity',
+    name: 'Clara Holm',
     title: 'Investment Professional',
-    company: 'TODO: Nordic Capital',
+    company: 'Nordic private equity fund',
     industries: ['Private Equity'],
     focus_areas: ['pe_investment_case', 'interview_prep', 'career_direction', 'industry_insight'],
     price: 1500,
-    bio: 'Pladsholderprofil til PE-sporet. Skal erstattes af en rigtig, samtykket professional før lancering.',
-    verificationStatus: 'placeholder',
-    outputPromise: '1-sides action-plan med investment case, deal thinking og diligence-spørgsmål.',
+    bio: 'Investment professional med erfaring fra deals, commercial due diligence og investment committee-materiale. Hjælper kandidater med investment cases, deal thinking og PE-interviews.'
   },
 ]
 
@@ -98,8 +84,8 @@ const FIELD_SIGNALS = [
   ['Private Equity', 'bg-lime-300'],
 ] as const
 
-function industryLabel(industry: Industry) {
-  if (industry === 'all') return 'Alle'
+function industryLabel(industry: Industry, isDa: boolean) {
+  if (industry === 'all') return isDa ? 'Alle' : 'All'
   return industry
 }
 
@@ -116,40 +102,28 @@ function accentFor(pro: ProfessionalCard) {
   return accentForIndustry(primary ?? pro.industries[0])
 }
 
-function initials(name: string) {
-  return name
-    .replace('Pladsholder:', '')
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('') || 'N'
+function minimumContribution(price: number) {
+  return Math.round(price * 0.4)
 }
 
-function verificationLabel(status?: VerificationStatus) {
-  if (status === 'verified') return 'Verificeret profil'
-  if (status === 'placeholder') return 'Pladsholder - ikke verificeret'
-  return 'Afventer verifikation'
-}
-
-function bestFor(pro: ProfessionalCard) {
+function bestFor(pro: ProfessionalCard, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return 'PE / investment case'
-  if (focus.includes('banking_technicals')) return 'Banking technicals'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return 'AI career strategy'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return 'Ansøgninger'
-  return 'Karriereretning'
+  if (focus.includes('pe_investment_case')) return isDa ? 'PE / investment case' : 'PE / investment case'
+  if (focus.includes('banking_technicals')) return isDa ? 'Banking technicals' : 'Banking technicals'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting cases' : 'Consulting cases'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI career strategy' : 'AI career strategy'
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Applications' : 'Applications'
+  return isDa ? 'Career clarity' : 'Career clarity'
 }
 
-function primaryOutputFor(pro: ProfessionalCard) {
-  if (pro.outputPromise) return pro.outputPromise
+function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return '1-sides action-plan med investment case og deal thinking.'
-  if (focus.includes('banking_technicals')) return '1-sides action-plan med technicals, fit-story og interviewbar.'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return '1-sides action-plan med casestruktur, hypoteser og fit-svar.'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return '1-sides action-plan med AI-positionering, rollevalg og portfolio-prioriteter.'
-  return '1-sides action-plan med næste skridt, tre prioriteter og konkrete ressourcer.'
+  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og deal thinking' : 'Investment case and deal thinking'
+  if (focus.includes('banking_technicals')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
+  return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
 }
 
 function isIndustry(value: string | null): value is Industry {
@@ -157,6 +131,8 @@ function isIndustry(value: string | null): value is Industry {
 }
 
 export default function ProfessionalsPage() {
+  const { lang } = useLanguage()
+  const isDa = lang === 'da'
   const [industryFilter, setIndustryFilter] = useState<Industry>('all')
   const [search, setSearch] = useState('')
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>([])
@@ -173,7 +149,7 @@ export default function ProfessionalsPage() {
     async function fetchProfessionals() {
       const { data, error } = await supabase
         .from('professional_profiles')
-        .select('id, title, company, bio, price_dkk, industries, focus_areas, photo_url, linkedin_url, verification_status, output_promise, sessions_completed, profiles!inner(name)')
+        .select('id, title, company, bio, price_dkk, industries, focus_areas, profiles!inner(name)')
         .eq('visibility', 'published')
 
       if (error || !data) return
@@ -186,11 +162,6 @@ export default function ProfessionalsPage() {
         price_dkk: number | null
         industries: string[] | null
         focus_areas: string[] | null
-        photo_url?: string | null
-        linkedin_url?: string | null
-        verification_status?: VerificationStatus | null
-        output_promise?: string | null
-        sessions_completed?: number | null
         profiles: { name?: string | null } | null
       }>).map((p) => ({
         id: p.id,
@@ -201,11 +172,6 @@ export default function ProfessionalsPage() {
         focus_areas: p.focus_areas ?? [],
         price: p.price_dkk ?? 1200,
         bio: p.bio ?? '',
-        photoUrl: p.photo_url ?? undefined,
-        linkedinUrl: p.linkedin_url ?? undefined,
-        verificationStatus: p.verification_status ?? 'pending',
-        outputPromise: p.output_promise ?? undefined,
-        sessionsCompleted: p.sessions_completed ?? 0,
       }))
       setDbProfessionals(mapped)
     }
@@ -219,23 +185,37 @@ export default function ProfessionalsPage() {
     const matchesIndustry = industryFilter === 'all' || p.industries.includes(industryFilter)
     const searchLower = search.toLowerCase()
     const focusText = (p.focus_areas ?? []).map((area) => FOCUS_LABELS[area] ?? area).join(' ')
-    const matchesSearch = !search || [p.name, p.title, p.company, p.bio, p.industries.join(' '), focusText, primaryOutputFor(p)]
+    const matchesSearch = !search || [p.name, p.title, p.company, p.bio, p.industries.join(' '), focusText]
       .join(' ')
       .toLowerCase()
       .includes(searchLower)
     return matchesIndustry && matchesSearch
   })
 
+  const t = {
+    heading: isDa ? 'Profiler.' : 'Profiles.',
+    subheading: isDa
+      ? 'Rolle, felt, output, pris og impact. Vælg den rigtige person uden støj.'
+      : 'Role, field, output, price and impact. Choose the right person without noise.',
+    searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
+    bookCta: isDa ? 'Book' : 'Book',
+    noResults: isDa ? 'Ingen match' : 'No match',
+    noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
+    clearFilters: isDa ? 'Nulstil' : 'Clear',
+    viewProfile: isDa ? 'Profil' : 'Profile',
+    impact: isDa ? 'Min. 40% til Kræftens Bekæmpelse' : 'Min. 40% to Kræftens Bekæmpelse',
+  }
+
   const qualitySignals = [
-    [`${ECONOMICS.sessionMinutes} min`, 'Fast format'],
-    [`${ECONOMICS.charityPercent}/${ECONOMICS.professionalPercent}/${ECONOMICS.platformPercent}`, 'Fast fordeling'],
-    [ECONOMICS.sessionsCompletedLabel, 'Sessioner gennemført'],
+    ['60 min', isDa ? 'Fast format' : 'Fixed format'],
+    ['Brief', isDa ? 'Kontekst før session' : 'Context before session'],
+    ['40-90%', isDa ? 'Impact pr. betalt session' : 'Impact per paid session'],
   ] as const
 
   const standards = [
-    ['Verificerbart signal', 'Profilen viser rolle, konkret firma, LinkedIn-flade og verificeringsstatus.'],
-    ['Konkret output', 'Hver session lover en 1-sides action-plan med næste skridt, tre prioriteter og ressourcer.'],
-    ['Synlig økonomi', 'Prisfordelingen vises direkte fra én fælles konfiguration.'],
+    [isDa ? 'Kurateret signal' : 'Curated signal', isDa ? 'Profiler skal være tydelige på rolle, felt, fokus og output.' : 'Profiles should be clear on role, field, focus and output.'],
+    [isDa ? 'Ingen falske garantier' : 'No false guarantees', isDa ? 'Sessioner giver sparring og forberedelse, ikke løfter om job.' : 'Sessions provide guidance and preparation, not job promises.'],
+    [isDa ? 'Klar impact' : 'Clear impact', isDa ? 'Pris og minimumsbidrag vises før booking.' : 'Price and minimum contribution are visible before booking.'],
   ] as const
 
   function resetFilters() {
@@ -249,8 +229,8 @@ export default function ProfessionalsPage() {
       <section className="border-b border-gray-200 bg-white px-5 pt-16 sm:px-8">
         <div className="mx-auto max-w-6xl py-16 md:py-24">
           <p className="mb-5 text-xs font-black uppercase text-gray-400">Naetwork</p>
-          <h1 className="max-w-5xl text-5xl font-black leading-[0.92] text-gray-950 text-balance md:text-8xl">Profiler.</h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Rolle, felt, output, pris og fordeling. Vælg den rigtige person uden støj.</p>
+          <h1 className="max-w-5xl text-6xl font-black leading-[0.92] tracking-tight text-gray-950 text-balance md:text-8xl">{t.heading}</h1>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
 
           <div className="mt-10 flex flex-wrap gap-x-5 gap-y-2">
             {FIELD_SIGNALS.map(([field, accent]) => (
@@ -275,7 +255,7 @@ export default function ProfessionalsPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Søg rolle, firma, fokus eller felt..."
+              placeholder={t.searchPlaceholder}
               className="w-full border-0 bg-transparent py-3 text-base font-semibold text-gray-950 outline-none placeholder:text-gray-400"
             />
             <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
@@ -286,7 +266,7 @@ export default function ProfessionalsPage() {
                   className={`inline-flex items-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-xs font-black transition-colors ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
                 >
                   <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : accentForIndustry(ind)}`} />
-                  {industryLabel(ind)}
+                  {industryLabel(ind, isDa)}
                 </button>
               ))}
             </div>
@@ -295,9 +275,9 @@ export default function ProfessionalsPage() {
       </section>
 
       <main id="marketplace" className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-14">
-        <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-          <p className="text-sm font-black text-gray-950">{filtered.length} profiler</p>
-          <p className="text-xs font-bold uppercase text-gray-400">{ECONOMICS.charityPercent}% til {ECONOMICS.charityName}</p>
+        <div className="mb-7 flex items-end justify-between gap-4">
+          <p className="text-sm font-black text-gray-950">{filtered.length} {isDa ? 'profiler' : 'profiles'}</p>
+          <p className="text-xs font-bold uppercase text-gray-400">{t.impact}</p>
         </div>
 
         <section className="mb-10 grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3">
@@ -311,78 +291,56 @@ export default function ProfessionalsPage() {
 
         {filtered.length === 0 ? (
           <div className="border-y border-gray-200 py-16 text-center">
-            <p className="text-xl font-black text-gray-950">Ingen match</p>
-            <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-gray-500">Nulstil søgning eller vælg alle felter.</p>
+            <p className="text-xl font-black text-gray-950">{t.noResults}</p>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-gray-500">{t.noResultsBody}</p>
             <button onClick={resetFilters} className="mt-6 rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
-              Nulstil
+              {t.clearFilters}
             </button>
           </div>
         ) : (
           <div className="border-t border-gray-200">
-            {filtered.map((pro) => {
-              const split = splitPayment(pro.price)
-              return (
-                <article key={pro.id} className="relative grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[86px_1.05fr_1.05fr_210px_150px] md:items-center md:px-3 md:pl-5">
-                  <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full md:block ${accentFor(pro)}`} />
-                  <div className="flex items-center gap-3">
-                    {pro.photoUrl ? (
-                      <img src={pro.photoUrl} alt={`Foto af ${pro.name}`} className="h-14 w-14 rounded-lg object-cover" />
-                    ) : (
-                      <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-950 text-sm font-black text-white">{initials(pro.name)}</span>
-                    )}
-                  </div>
+            {filtered.map((pro) => (
+              <article key={pro.id} className="relative grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[170px_1.1fr_1fr_130px_150px] md:items-center md:px-3 md:pl-5">
+                <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full md:block ${accentFor(pro)}`} />
+                <div className="flex items-center gap-3">
+                  <span className={`h-2 w-8 rounded-full md:hidden ${accentFor(pro)}`} />
+                  <p className="text-xs font-black uppercase text-gray-400">{pro.industries[0] ?? 'Profile'}</p>
+                </div>
 
-                  <div>
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <span className={`h-2 w-8 rounded-full ${accentFor(pro)}`} />
-                      <span className="text-[11px] font-black uppercase text-gray-400">{verificationLabel(pro.verificationStatus)}</span>
-                    </div>
-                    <h2 className="text-2xl font-black leading-tight text-gray-950">{pro.name}</h2>
-                    <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
-                    {pro.linkedinUrl ? (
-                      <a href={pro.linkedinUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex text-xs font-black uppercase text-gray-500 underline decoration-gray-300 underline-offset-4 hover:text-gray-950">
-                        Verificér på LinkedIn
-                      </a>
-                    ) : (
-                      <p className="mt-2 text-xs font-semibold text-gray-400">LinkedIn tilføjes ved verifikation</p>
-                    )}
-                  </div>
+                <div>
+                  <h2 className="text-2xl font-black leading-tight tracking-tight text-gray-950">{pro.name}</h2>
+                  <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
+                </div>
 
-                  <div>
-                    <p className="text-sm font-black text-gray-950">{bestFor(pro)}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-gray-500">{primaryOutputFor(pro)}</p>
-                  </div>
+                <div>
+                  <p className="text-sm font-black text-gray-950">{bestFor(pro, isDa)}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-gray-500">{primaryOutputFor(pro, isDa)}</p>
+                </div>
 
-                  <div>
-                    <p className="text-lg font-black text-gray-950">{formatDkk(pro.price)}</p>
-                    <div className="mt-2 space-y-1 text-xs font-semibold text-gray-500">
-                      <p>{formatDkk(split.charity)} til {ECONOMICS.charityName}</p>
-                      <p>{formatDkk(split.professional)} til eksperten</p>
-                      <p>{formatDkk(split.platform)} til platformen</p>
-                    </div>
-                  </div>
+                <div>
+                  <p className="text-lg font-black text-gray-950">DKK {pro.price}</p>
+                  <p className="text-xs font-medium text-gray-400">min. DKK {minimumContribution(pro.price)} impact</p>
+                </div>
 
-                  <div className="flex gap-2 md:justify-end">
-                    <Link href={`/professionals/${pro.id}`} className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-white">
-                      Profil
-                    </Link>
-                    <button
-                      onClick={() => setBookTarget(pro)}
-                      className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800"
-                      aria-label={`Book 60 minutter med ${pro.name}. ${economicsSummary(pro.price)}`}
-                    >
-                      Book
-                    </button>
-                  </div>
-                </article>
-              )
-            })}
+                <div className="flex gap-2 md:justify-end">
+                  <Link href={`/professionals/${pro.id}`} className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-white">
+                    {t.viewProfile}
+                  </Link>
+                  <button
+                    onClick={() => setBookTarget(pro)}
+                    className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800"
+                  >
+                    {t.bookCta}
+                  </button>
+                </div>
+              </article>
+            ))}
           </div>
         )}
       </main>
 
       {bookTarget && (
-        <BookingDrawer professional={bookTarget} open={!!bookTarget} onClose={() => setBookTarget(null)} locale="da" />
+        <BookingDrawer professional={bookTarget} open={!!bookTarget} onClose={() => setBookTarget(null)} locale={lang} />
       )}
     </div>
   )
