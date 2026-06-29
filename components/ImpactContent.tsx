@@ -1,16 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { ECONOMICS, formatDkk, splitPayment } from '@/lib/economics';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function ImpactContent() {
-  const examples = [600, 900, 1200, 1800] as const;
+  const { lang } = useLanguage();
+  const isDa = lang === 'da';
+
+  const examples = [
+    ['DKK 600', 'DKK 240+', '40%'],
+    ['DKK 900', 'DKK 360+', '40%'],
+    ['DKK 1.200', 'DKK 480+', '40%'],
+    ['DKK 1.800', 'DKK 720+', '40%'],
+  ] as const;
 
   const clarity = [
-    ['Hvornår bidraget gælder', 'Fordelingen gælder for betalte sessioner. Anmodede, aflyste eller ikke-betalte sessioner tæller ikke som bidrag.'],
-    ['Hvordan reglen fungerer', `Fordelingen er ${ECONOMICS.charityPercent}% til ${ECONOMICS.charityName}, ${ECONOMICS.professionalPercent}% til eksperten og ${ECONOMICS.platformPercent}% til platformen.`],
-    ['Hvem formålet er', `Bidraget er tiltænkt ${ECONOMICS.charityName}. Naetwork er uafhængig og ikke officielt tilknyttet, medmindre det fremgår eksplicit.`],
-    ['Hvad der skal dokumenteres', 'Når platformen modnes, bør betalte sessioner, fordelingsniveauer og samlet impact kunne vises klart.'],
+    [isDa ? 'Hvornår bidraget gælder' : 'When it applies', isDa ? 'Bidraget gælder for betalte sessioner. Anmodede, aflyste eller ikke-betalte sessioner tæller ikke som bidrag.' : 'The contribution applies to paid sessions. Requested, cancelled or unpaid sessions do not count as contributions.'],
+    [isDa ? 'Hvordan procenten forstås' : 'How the percentage works', isDa ? 'Procenten beregnes ud fra den viste sessionspris. Minimumsbidraget vises før booking.' : 'The percentage is calculated from the displayed session price. The minimum contribution is visible before booking.'],
+    [isDa ? 'Hvem formålet er' : 'Who it supports', isDa ? 'Bidraget er tiltænkt Kræftens Bekæmpelse. Naetwork er uafhængig og ikke officielt tilknyttet, medmindre det fremgår eksplicit.' : 'The contribution is intended for Kræftens Bekæmpelse. Naetwork is independent and not officially affiliated unless explicitly stated.'],
+    [isDa ? 'Hvad der skal dokumenteres' : 'What should be documented', isDa ? 'Når platformen modnes, bør betalte sessioner, bidragsniveauer og samlet impact kunne vises klart.' : 'As the platform matures, paid sessions, contribution levels and total impact should be shown clearly.'],
   ] as const;
 
   return (
@@ -19,23 +27,29 @@ export function ImpactContent() {
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_390px] lg:items-end">
           <div>
             <p className="kicker mb-5">Impact model</p>
-            <h1 className="display-xl max-w-5xl">Én fast regel for hver betalt session.</h1>
+            <h1 className="display-xl max-w-5xl">
+              {isDa ? 'Karrieresparring skal skabe værdi efter timen.' : 'Career guidance should create value beyond the hour.'}
+            </h1>
             <p className="body-lg mt-7 max-w-2xl">
-              Naetwork viser samme fordeling alle steder: {ECONOMICS.charityPercent}% til {ECONOMICS.charityName}, {ECONOMICS.professionalPercent}% til eksperten og {ECONOMICS.platformPercent}% til platformen.
+              {isDa
+                ? 'Hver betalt Naetwork-session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse. Det gør impact konkret, før kandidaten booker.'
+                : 'Every paid Naetwork session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse. That makes impact concrete before the candidate books.'}
             </p>
           </div>
           <aside className="dark-panel p-6">
-            <p className="text-xs font-black uppercase text-white/40">Fast fordeling</p>
-            <p className="mt-5 text-6xl font-black">{ECONOMICS.charityPercent}/{ECONOMICS.professionalPercent}/{ECONOMICS.platformPercent}</p>
-            <p className="mt-4 text-sm leading-relaxed text-white/60">Tallene styres fra én konfiguration, så Mikkel kan justere modellen ét sted.</p>
+            <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
+            <p className="mt-5 text-6xl font-black">40-90%</p>
+            <p className="mt-4 text-sm leading-relaxed text-white/60">
+              {isDa ? 'Minimum 40% fra hver betalt session. Professionals kan vælge et højere bidragsniveau.' : 'Minimum 40% from every paid session. Professionals can choose a higher contribution level.'}
+            </p>
             <div className="mt-7 grid grid-cols-2 gap-px border border-white/10 bg-white/10">
               <div className="bg-gray-950 p-4">
                 <p className="text-2xl font-black">60 min</p>
                 <p className="mt-1 text-xs font-bold uppercase text-white/35">Format</p>
               </div>
               <div className="bg-white p-4 text-gray-950">
-                <p className="text-2xl font-black">{formatDkk(ECONOMICS.minPriceDkk)}+</p>
-                <p className="mt-1 text-xs font-bold uppercase text-gray-400">Fra</p>
+                <p className="text-2xl font-black">DKK 600+</p>
+                <p className="mt-1 text-xs font-bold uppercase text-gray-400">{isDa ? 'Fra' : 'From'}</p>
               </div>
             </div>
           </aside>
@@ -45,23 +59,21 @@ export function ImpactContent() {
       <section className="px-5 py-12 sm:px-8 md:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-4">
-            {examples.map((price) => {
-              const split = splitPayment(price)
-              return (
-                <div key={price} className="bg-white p-6">
-                  <p className="text-xs font-black uppercase text-gray-400">{formatDkk(price)}</p>
-                  <p className="mt-5 text-3xl font-black text-gray-950">{formatDkk(split.charity)}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">til {ECONOMICS.charityName}</p>
-                  <p className="mt-4 text-xs leading-relaxed text-gray-400">{formatDkk(split.professional)} til eksperten · {formatDkk(split.platform)} til platformen</p>
-                </div>
-              )
-            })}
+            {examples.map(([price, impact, percent]) => (
+              <div key={price} className="bg-white p-6">
+                <p className="text-xs font-black uppercase text-gray-400">{price}</p>
+                <p className="mt-5 text-3xl font-black text-gray-950">{impact}</p>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">{percent} {isDa ? 'som minimumsbidrag' : 'minimum contribution'}</p>
+              </div>
+            ))}
           </div>
 
           <div className="mt-14 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div>
-              <p className="kicker mb-5">Transparens</p>
-              <h2 className="display-lg">Impact skal være let at forstå før betaling.</h2>
+              <p className="kicker mb-5">{isDa ? 'Transparens' : 'Transparency'}</p>
+              <h2 className="display-lg">
+                {isDa ? 'Impact skal være let at forstå før betaling.' : 'Impact should be easy to understand before payment.'}
+              </h2>
             </div>
             <div className="border-t border-gray-200">
               {clarity.map(([title, body], index) => (
@@ -77,8 +89,8 @@ export function ImpactContent() {
           </div>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link href="/professionals" className="pill-dark">Book 60 min</Link>
-            <Link href="/professional/signup" className="pill-light">Bliv professional</Link>
+            <Link href="/professionals" className="pill-dark">{isDa ? 'Book 60 min' : 'Book 60 min'}</Link>
+            <Link href="/professional/signup" className="pill-light">{isDa ? 'Bliv professional' : 'Become a professional'}</Link>
           </div>
         </div>
       </section>
