@@ -3,7 +3,7 @@ import { MissionContent } from '@/components/MissionContent';
 
 export const metadata: Metadata = {
   title: 'Mission - Naetwork',
-  description: 'Hvorfor Naetwork findes, og hvordan platformen gør konkret karrieresparring mere tilgængelig og meningsfuld.',
+  description: 'Why Naetwork exists and how the platform makes insider career guidance more accessible and meaningful.',
 };
 
 export default function MissionPage() {
