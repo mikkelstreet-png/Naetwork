@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useTranslation } from '@/context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
-import { ECONOMICS } from '@/lib/economics';
 
 export function Navbar() {
   const { tr, lang } = useTranslation();
@@ -46,38 +45,54 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/professionals', label: isDa ? 'Profiler' : 'Profiler', description: 'Find den rette professional' },
-    { href: '/match', label: 'Match', description: 'Vælg fokus hurtigere' },
-    { href: '/#pricing', label: isDa ? 'Priser' : 'Priser', description: '600-1.800 DKK' },
-    { href: '/impact', label: 'Impact', description: `${ECONOMICS.charityPercent}/${ECONOMICS.professionalPercent}/${ECONOMICS.platformPercent} fordeling` },
-    { href: '/mission', label: 'Mission', description: 'Hvorfor Naetwork findes' },
+    { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles', description: isDa ? 'Find den rette professional' : 'Find the right professional' },
+    { href: '/match', label: 'Match', description: isDa ? 'Vælg fokus hurtigere' : 'Choose focus faster' },
+    { href: '/#pricing', label: isDa ? 'Priser' : 'Pricing', description: isDa ? '600-1.800 DKK' : 'DKK 600-1,800' },
+    { href: '/impact', label: 'Impact', description: isDa ? '40-90% bidrag' : '40-90% contribution' },
+    { href: '/mission', label: 'Mission', description: isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists' },
   ];
 
   return (
     <nav className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/94 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Naetwork home">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">N</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
+            N
+          </span>
           <span className="text-[15px] font-black text-gray-950">Naetwork</span>
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-sm font-bold text-gray-500 transition-colors hover:text-gray-950">
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm font-bold text-gray-500 transition-colors hover:text-gray-950"
+            >
               {link.label}
             </Link>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:block"><LanguageToggle /></div>
-          <Link href="/professionals" className="hidden items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 md:inline-flex">
-            Book 60 min
+          <div className="hidden sm:block">
+            <LanguageToggle />
+          </div>
+
+          <Link
+            href="/professionals"
+            className="hidden items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 md:inline-flex"
+          >
+            {isDa ? 'Book 60 min' : 'Book 60 min'}
           </Link>
 
           {session === null ? null : session ? (
             <div className="relative" ref={dropdownRef}>
-              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950 text-xs font-bold text-white transition-transform hover:scale-105" aria-label="Open account menu">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950 text-xs font-bold text-white transition-transform hover:scale-105"
+                aria-label="Open account menu"
+              >
                 {userEmail.charAt(0).toUpperCase()}
               </button>
               {dropdownOpen && (
@@ -94,12 +109,28 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950 md:block">{tr('nav.login')}</Link>
+            <Link href="/login" className="hidden px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950 md:block">
+              {tr('nav.login')}
+            </Link>
           )}
 
-          <button className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 md:hidden" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+          <button
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 md:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {mobileOpen ? (<><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>) : (<><line x1="4" y1="8" x2="20" y2="8" /><line x1="4" y1="16" x2="20" y2="16" /></>)}
+              {mobileOpen ? (
+                <>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="4" y1="8" x2="20" y2="8" />
+                  <line x1="4" y1="16" x2="20" y2="16" />
+                </>
+              )}
             </svg>
           </button>
         </div>
@@ -116,8 +147,14 @@ export function Navbar() {
             ))}
           </div>
           <div className="mt-4 grid gap-2">
-            <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>Book 60 min</Link>
-            {!session && <Link href="/login" className="py-2 text-center text-sm font-medium text-gray-500" onClick={() => setMobileOpen(false)}>{tr('nav.login')}</Link>}
+            <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
+              {isDa ? 'Book 60 min' : 'Book 60 min'}
+            </Link>
+            {!session && (
+              <Link href="/login" className="py-2 text-center text-sm font-medium text-gray-500" onClick={() => setMobileOpen(false)}>
+                {tr('nav.login')}
+              </Link>
+            )}
             <div className="mx-auto pt-1"><LanguageToggle /></div>
           </div>
         </div>
