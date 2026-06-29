@@ -30,6 +30,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+h1, h2, h3 { letter-spacing: 0; }
+
 * { min-width: 0; }
 
 button, a, input, textarea, select {
@@ -113,7 +115,7 @@ input, textarea, select { font-size: 16px; }
 @layer components {
   .wrap { @apply mx-auto w-full max-w-[76rem] px-5 sm:px-8; }
 
-  .page-shell { @apply min-h-screen bg-[#f7f7f4] pt-16; }
+  .page-shell { @apply min-h-screen bg-[#f7f7f4]; }
 
   .section-pad { @apply px-5 py-14 sm:px-8 md:py-20; }
 

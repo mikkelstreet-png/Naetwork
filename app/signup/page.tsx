@@ -32,7 +32,7 @@ export default function SignupPage() {
       setLoading(false);
     } else {
       const welcomeEmail = role === 'professional'
-        ? sendWelcomeProfessional({ email, name, priceDkk: 1200, donatesToCharity: false })
+        ? sendWelcomeProfessional({ email, name, priceDkk: 1200, contributionPercent: 40 })
         : sendWelcomeCandidate({ email, name });
       await welcomeEmail.catch(() => false);
       setDone(true);

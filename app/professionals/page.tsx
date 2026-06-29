@@ -17,6 +17,7 @@ interface ProfessionalCard {
   focus_areas?: string[]
   price: number
   bio: string
+  isDemo?: boolean
 }
 
 const FOCUS_LABELS: Record<string, string> = {
@@ -41,7 +42,8 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     industries: ['Banking'],
     focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals'],
     price: 1200,
-    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.'
+    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
+    isDemo: true,
   },
   {
     id: 'demo-2',
@@ -51,7 +53,8 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     industries: ['Management Consulting'],
     focus_areas: ['case_prep', 'consulting_cases', 'interview_prep', 'career_direction'],
     price: 1100,
-    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.'
+    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
+    isDemo: true,
   },
   {
     id: 'demo-3',
@@ -61,7 +64,8 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     industries: ['AI'],
     focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review'],
     price: 900,
-    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.'
+    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
+    isDemo: true,
   },
   {
     id: 'demo-4',
@@ -71,7 +75,8 @@ const DEMO_PROFESSIONALS: ProfessionalCard[] = [
     industries: ['Private Equity'],
     focus_areas: ['pe_investment_case', 'interview_prep', 'career_direction', 'industry_insight'],
     price: 1500,
-    bio: 'Investment professional med erfaring fra deals, commercial due diligence og investment committee-materiale. Hjælper kandidater med investment cases, deal thinking og PE-interviews.'
+    bio: 'Investment professional med erfaring fra deals, commercial due diligence og investment committee-materiale. Hjælper kandidater med investment cases, deal thinking og PE-interviews.',
+    isDemo: true,
   },
 ]
 
@@ -204,19 +209,9 @@ export default function ProfessionalsPage() {
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
     impact: isDa ? 'Min. 40% til Kræftens Bekæmpelse' : 'Min. 40% to Kræftens Bekæmpelse',
+    preview: isDa ? 'Eksempelprofil' : 'Example profile',
+    comingSoon: isDa ? 'Kommer snart' : 'Coming soon',
   }
-
-  const qualitySignals = [
-    ['60 min', isDa ? 'Fast format' : 'Fixed format'],
-    ['Brief', isDa ? 'Kontekst før session' : 'Context before session'],
-    ['40-90%', isDa ? 'Impact pr. betalt session' : 'Impact per paid session'],
-  ] as const
-
-  const standards = [
-    [isDa ? 'Kurateret signal' : 'Curated signal', isDa ? 'Profiler skal være tydelige på rolle, felt, fokus og output.' : 'Profiles should be clear on role, field, focus and output.'],
-    [isDa ? 'Ingen falske garantier' : 'No false guarantees', isDa ? 'Sessioner giver sparring og forberedelse, ikke løfter om job.' : 'Sessions provide guidance and preparation, not job promises.'],
-    [isDa ? 'Klar impact' : 'Clear impact', isDa ? 'Pris og minimumsbidrag vises før booking.' : 'Price and minimum contribution are visible before booking.'],
-  ] as const
 
   function resetFilters() {
     setSearch('')
@@ -226,31 +221,13 @@ export default function ProfessionalsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="border-b border-gray-200 bg-white px-5 pt-16 sm:px-8">
-        <div className="mx-auto max-w-6xl py-16 md:py-24">
-          <p className="mb-5 text-xs font-black uppercase text-gray-400">Naetwork</p>
-          <h1 className="max-w-5xl text-6xl font-black leading-[0.92] tracking-tight text-gray-950 text-balance md:text-8xl">{t.heading}</h1>
+      <section className="border-b border-gray-200 bg-white px-5 sm:px-8">
+        <div className="mx-auto max-w-6xl py-12 md:py-16">
+          <p className="mb-4 text-xs font-black uppercase text-gray-400">Naetwork</p>
+          <h1 className="max-w-5xl text-5xl font-black leading-[0.96] text-gray-950 text-balance md:text-7xl">{t.heading}</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
 
-          <div className="mt-10 flex flex-wrap gap-x-5 gap-y-2">
-            {FIELD_SIGNALS.map(([field, accent]) => (
-              <div key={field} className="flex items-center gap-2">
-                <span className={`h-2 w-2 rounded-full ${accent}`} />
-                <span className="text-xs font-black uppercase text-gray-500">{field}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 grid max-w-2xl gap-px border border-gray-200 bg-gray-200 sm:grid-cols-3">
-            {qualitySignals.map(([value, label]) => (
-              <div key={label} className="bg-white p-4">
-                <p className="text-xl font-black text-gray-950">{value}</p>
-                <p className="mt-1 text-xs font-bold uppercase text-gray-400">{label}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-14 grid gap-5 border-y border-gray-200 py-5 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="mt-10 grid gap-4 border-y border-gray-200 py-4 lg:grid-cols-[1fr_auto] lg:items-center">
             <input
               type="text"
               value={search}
@@ -280,15 +257,6 @@ export default function ProfessionalsPage() {
           <p className="text-xs font-bold uppercase text-gray-400">{t.impact}</p>
         </div>
 
-        <section className="mb-10 grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3">
-          {standards.map(([title, body]) => (
-            <div key={title} className="bg-[#f7f7f4] p-5">
-              <p className="text-sm font-black text-gray-950">{title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-500">{body}</p>
-            </div>
-          ))}
-        </section>
-
         {filtered.length === 0 ? (
           <div className="border-y border-gray-200 py-16 text-center">
             <p className="text-xl font-black text-gray-950">{t.noResults}</p>
@@ -300,15 +268,17 @@ export default function ProfessionalsPage() {
         ) : (
           <div className="border-t border-gray-200">
             {filtered.map((pro) => (
-              <article key={pro.id} className="relative grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] md:grid-cols-[170px_1.1fr_1fr_130px_150px] md:items-center md:px-3 md:pl-5">
-                <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full md:block ${accentFor(pro)}`} />
+              <article key={pro.id} className="relative grid gap-5 border-b border-gray-200 py-7 transition-colors hover:bg-[#fafaf8] lg:grid-cols-[170px_1.1fr_1fr_130px_150px] lg:items-center lg:px-3 lg:pl-5">
+                <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full lg:block ${accentFor(pro)}`} />
                 <div className="flex items-center gap-3">
-                  <span className={`h-2 w-8 rounded-full md:hidden ${accentFor(pro)}`} />
-                  <p className="text-xs font-black uppercase text-gray-400">{pro.industries[0] ?? 'Profile'}</p>
+                  <span className={`h-2 w-8 rounded-full lg:hidden ${accentFor(pro)}`} />
+                  <p className="text-xs font-black uppercase text-gray-400">
+                    {pro.industries[0] ?? 'Profile'}{pro.isDemo ? ` · ${t.preview}` : ''}
+                  </p>
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-black leading-tight tracking-tight text-gray-950">{pro.name}</h2>
+                  <h2 className="text-2xl font-black leading-tight text-gray-950">{pro.name}</h2>
                   <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
                 </div>
 
@@ -322,15 +292,16 @@ export default function ProfessionalsPage() {
                   <p className="text-xs font-medium text-gray-400">min. DKK {minimumContribution(pro.price)} impact</p>
                 </div>
 
-                <div className="flex gap-2 md:justify-end">
+                <div className="flex gap-2 lg:justify-end">
                   <Link href={`/professionals/${pro.id}`} className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-white">
                     {t.viewProfile}
                   </Link>
                   <button
-                    onClick={() => setBookTarget(pro)}
-                    className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800"
+                    onClick={() => !pro.isDemo && setBookTarget(pro)}
+                    disabled={pro.isDemo}
+                    className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
                   >
-                    {t.bookCta}
+                    {pro.isDemo ? t.comingSoon : t.bookCta}
                   </button>
                 </div>
               </article>

@@ -1,207 +1,180 @@
 'use client';
 
-import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { ArrowRight, Check } from 'lucide-react';
+import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
-type Answers = {
-  field: string;
-  stage: string;
-  pressure: string;
-  output: string;
+type Need = 'direction' | 'materials' | 'interview' | 'case';
+
+const FIELDS = ['AI', 'Banking', 'Management Consulting', 'Private Equity'] as const;
+
+const FIELD_PATHS: Record<string, string> = {
+  AI: '/fields/ai',
+  Banking: '/fields/banking',
+  'Management Consulting': '/fields/consulting',
+  'Private Equity': '/fields/private-equity',
 };
 
-function optionsFor(isDa: boolean) {
-  return {
-    field: ['AI', 'Banking', 'Management Consulting', 'Private Equity'],
-    stage: isDa ? ['Afklarer muligheder', 'Ansøger nu', 'Interview på vej', 'Finalerunder'] : ['Exploring options', 'Applying now', 'Interview coming up', 'Final rounds'],
-    pressure: isDa ? ['Jeg mangler retning', 'Mit materiale skal være skarpere', 'Jeg skal træne interview', 'Jeg skal træne case/technicals'] : ['I need direction', 'I need better materials', 'I need interview practice', 'I need case/technical prep'],
-    output: isDa ? ['Skarpere CV / LinkedIn', 'Bedre svar', 'Casestruktur', 'Karriereklarhed'] : ['Sharper CV / LinkedIn', 'Better answers', 'Case structure', 'Career clarity'],
-  };
+const FIELD_ACCENTS: Record<string, string> = {
+  AI: 'bg-cyan-300',
+  Banking: 'bg-emerald-300',
+  'Management Consulting': 'bg-blue-300',
+  'Private Equity': 'bg-lime-300',
+};
+
+function needOptions(isDa: boolean): Array<{ id: Need; label: string; body: string }> {
+  return [
+    { id: 'direction', label: isDa ? 'Retning' : 'Direction', body: isDa ? 'Felt, rolle og næste skridt' : 'Field, role and next step' },
+    { id: 'materials', label: isDa ? 'Materiale' : 'Materials', body: isDa ? 'CV, LinkedIn eller ansøgning' : 'CV, LinkedIn or application' },
+    { id: 'interview', label: 'Interview', body: isDa ? 'Svar, fit og personlig fortælling' : 'Answers, fit and personal story' },
+    { id: 'case', label: isDa ? 'Case / technicals' : 'Case / technicals', body: isDa ? 'Cases, technicals eller portfolio' : 'Cases, technicals or portfolio' },
+  ];
 }
 
-function recommendationFor(answers: Answers, isDa: boolean) {
-  if (answers.field === 'AI') {
-    return {
-      title: 'AI Career Strategy',
-      bestFor: isDa ? 'AI product, strategy roles og portfolio-retning' : 'AI product, strategy roles and portfolio direction',
-      search: 'AI',
-      fieldHref: '/fields/ai',
-      notes: isDa ? ['Afkod AI-roller', 'Positionér din erfaring', 'Vælg de rigtige proof points'] : ['Decode AI roles', 'Position your experience', 'Choose the right proof points'],
-      accent: 'bg-cyan-300',
-    };
-  }
-  if (answers.field === 'Banking') {
-    return {
-      title: answers.pressure.toLowerCase().includes('technical') || answers.pressure.toLowerCase().includes('technicals') ? 'Banking Technicals' : 'Investment Banking Prep',
-      bestFor: isDa ? 'M&A-proces, technicals, CV og fit interviews' : 'M&A process, technicals, CV and fit interviews',
-      search: 'Banking',
-      fieldHref: '/fields/banking',
-      notes: isDa ? ['Skærp technical answers', 'Forstå interviewbaren', 'Forbedr fit story'] : ['Sharpen technical answers', 'Understand the interview bar', 'Improve fit story'],
-      accent: 'bg-emerald-300',
-    };
-  }
-  if (answers.field === 'Management Consulting') {
-    return {
-      title: 'Consulting Case Prep',
-      bestFor: isDa ? 'Casestruktur, hypoteser, kommunikation og fit' : 'Case structure, hypotheses, communication and fit',
-      search: 'Management Consulting',
-      fieldHref: '/fields/consulting',
-      notes: isDa ? ['Strukturer cases bedre', 'Kommunikér klarere', 'Forbered fit-svar'] : ['Structure cases better', 'Communicate clearly', 'Prepare fit answers'],
-      accent: 'bg-blue-300',
-    };
-  }
-  if (answers.field === 'Private Equity') {
-    return {
-      title: 'PE / Investment Case',
-      bestFor: isDa ? 'Investment thinking, diligence og deal discussion' : 'Investment thinking, diligence and deal discussion',
-      search: 'Private Equity',
-      fieldHref: '/fields/private-equity',
-      notes: isDa ? ['Skærp deal thinking', 'Forbered investment cases', 'Forstå PE-forventninger'] : ['Sharpen deal thinking', 'Prepare investment cases', 'Understand PE expectations'],
-      accent: 'bg-lime-300',
-    };
-  }
+function recommendationFor(field: string, need: Need | '', isDa: boolean) {
+  const needTitles: Record<Need, string> = {
+    direction: isDa ? `Karriereretning i ${field}` : `Career direction in ${field}`,
+    materials: isDa ? `CV og profil til ${field}` : `CV and profile for ${field}`,
+    interview: isDa ? `Interviewforberedelse til ${field}` : `Interview preparation for ${field}`,
+    case: field === 'Banking'
+      ? 'Banking Technicals'
+      : field === 'Management Consulting'
+        ? 'Consulting Case Prep'
+        : field === 'Private Equity'
+          ? 'PE / Investment Case'
+          : 'AI Portfolio & Case',
+  };
+
+  const fieldNotes: Record<string, string[]> = {
+    AI: isDa ? ['Afkod relevante roller', 'Positionér din erfaring', 'Vælg stærke proof points'] : ['Decode relevant roles', 'Position your experience', 'Choose strong proof points'],
+    Banking: isDa ? ['Forstå interviewbaren', 'Skærp technicals', 'Styrk din fit story'] : ['Understand the interview bar', 'Sharpen technicals', 'Strengthen your fit story'],
+    'Management Consulting': isDa ? ['Strukturér cases', 'Kommunikér klart', 'Forbered fit-svar'] : ['Structure cases', 'Communicate clearly', 'Prepare fit answers'],
+    'Private Equity': isDa ? ['Skærp deal thinking', 'Træn investment cases', 'Forstå PE-forventninger'] : ['Sharpen deal thinking', 'Practice investment cases', 'Understand PE expectations'],
+  };
+
   return {
-    title: isDa ? 'Vælg første signal' : 'Choose first signal',
-    bestFor: isDa ? 'Start med feltet, så bliver anbefalingen mere præcis.' : 'Start with the field and the recommendation becomes sharper.',
-    search: '',
-    fieldHref: '/professionals',
-    notes: isDa ? ['Vælg felt', 'Vælg procesfase', 'Vælg output'] : ['Choose field', 'Choose process stage', 'Choose output'],
-    accent: 'bg-gray-300',
+    title: field && need ? needTitles[need] : isDa ? 'Dit anbefalede fokus' : 'Your recommended focus',
+    body: field && need
+      ? isDa ? `Find en profil med relevant erfaring og brug de 60 minutter på ${needOptions(true).find((option) => option.id === need)?.label.toLowerCase()}.` : `Find a profile with relevant experience and use the 60 minutes on ${needOptions(false).find((option) => option.id === need)?.label.toLowerCase()}.`
+      : isDa ? 'Vælg felt og behov. Så viser vi den korteste vej til relevante profiler.' : 'Choose a field and need. We will show the shortest route to relevant profiles.',
+    notes: fieldNotes[field] ?? [],
+    accent: FIELD_ACCENTS[field] ?? 'bg-gray-300',
   };
 }
 
 export default function MatchPage() {
   const { lang } = useLanguage();
   const isDa = lang === 'da';
-  const options = optionsFor(isDa);
-  const [answers, setAnswers] = useState<Answers>({ field: '', stage: '', pressure: '', output: '' });
-  const completed = Object.values(answers).filter(Boolean).length;
-  const progress = (completed / 4) * 100;
-  const recommendation = useMemo(() => recommendationFor(answers, isDa), [answers, isDa]);
-  const profileHref = recommendation.search ? `/professionals?field=${encodeURIComponent(recommendation.search)}` : '/professionals';
-
-  function choose(key: keyof Answers, value: string) {
-    setAnswers((current) => ({ ...current, [key]: value }));
-  }
-
-  const questions = [
-    { key: 'field' as const, label: '01', title: isDa ? 'Hvilket felt sigter du mod?' : 'Which field are you aiming for?', options: options.field },
-    { key: 'stage' as const, label: '02', title: isDa ? 'Hvor er du i processen?' : 'Where are you in the process?', options: options.stage },
-    { key: 'pressure' as const, label: '03', title: isDa ? 'Hvad haster mest?' : 'What feels most urgent?', options: options.pressure },
-    { key: 'output' as const, label: '04', title: isDa ? 'Hvad skal du gå derfra med?' : 'What should you leave with?', options: options.output },
-  ];
+  const needs = needOptions(isDa);
+  const [field, setField] = useState('');
+  const [need, setNeed] = useState<Need | ''>('');
+  const completed = Number(Boolean(field)) + Number(Boolean(need));
+  const recommendation = recommendationFor(field, need, isDa);
+  const profileHref = field ? `/professionals?field=${encodeURIComponent(field)}` : '/professionals';
 
   return (
-    <main className="page-shell">
-      <section className="border-b border-gray-200 bg-white px-5 py-14 sm:px-8 md:py-20">
+    <main className="min-h-screen bg-[#f7f7f4]">
+      <section className="border-b border-gray-200 bg-white px-5 py-12 sm:px-8 md:py-16">
         <div className="mx-auto max-w-6xl">
-          <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-end">
-            <div>
-              <p className="kicker mb-5">Match intelligence</p>
-              <h1 className="display-xl max-w-4xl">
-                {isDa ? 'Find den rigtige 60-minutters session før du booker.' : 'Find the right 60-minute session before you book.'}
-              </h1>
-              <p className="body-lg mt-6 max-w-2xl">
-                {isDa
-                  ? 'Svar på fire korte spørgsmål og få et mere præcist fokus, før du vælger professional. Det gør booking-flowet roligere, sessionen skarpere og impact mere konkret.'
-                  : 'Answer four quick questions and get a sharper focus before choosing a professional. It makes booking calmer, the session sharper and impact more concrete.'}
-              </p>
-            </div>
-            <div className="premium-panel p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="kicker">{isDa ? 'Fremskridt' : 'Progress'}</p>
-                  <p className="mt-2 text-4xl font-black text-gray-950">{completed}/4</p>
-                </div>
-                <span className={`mt-1 block h-2 w-20 rounded-full ${recommendation.accent}`} />
-              </div>
-              <div className="mt-5 h-2 overflow-hidden bg-gray-200">
-                <div className="h-full bg-gray-950 transition-all" style={{ width: `${progress}%` }} />
-              </div>
-              <div className="mt-5 grid grid-cols-3 gap-px border border-gray-200 bg-gray-200">
-                {[
-                  ['60', 'min'],
-                  ['600+', 'DKK'],
-                  ['40-90%', isDa ? 'bidrag' : 'impact'],
-                ].map(([value, label]) => (
-                  <div key={label} className="bg-white p-3">
-                    <p className="text-sm font-black text-gray-950">{value}</p>
-                    <p className="mt-1 text-[10px] font-bold uppercase text-gray-400">{label}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-gray-500">
-                {isDa ? 'Jo mere præcist signalet er, jo bedre bliver session briefet.' : 'The sharper the signal, the better the session brief becomes.'}
-              </p>
-            </div>
-          </div>
+          <p className="mb-4 text-xs font-black uppercase text-gray-400">Match</p>
+          <h1 className="max-w-4xl text-5xl font-black leading-[0.96] text-gray-950 text-balance md:text-7xl">
+            {isDa ? 'Hvad skal de 60 minutter løse?' : 'What should the 60 minutes solve?'}
+          </h1>
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
+            {isDa ? 'To valg er nok. Vælg dit felt og det vigtigste behov.' : 'Two choices are enough. Choose your field and your most important need.'}
+          </p>
         </div>
       </section>
 
       <section className="px-5 py-10 sm:px-8 md:py-14">
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_400px]">
-          <div className="space-y-5">
-            {questions.map((question) => (
-              <section key={question.key} className="premium-card p-6 md:p-8">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-black text-gray-300">{question.label}</p>
-                    <h2 className="mt-5 text-2xl font-black text-gray-950">{question.title}</h2>
-                  </div>
-                  {answers[question.key] && <span className="rounded-lg bg-gray-950 px-3 py-1.5 text-xs font-black text-white">{isDa ? 'Valgt' : 'Selected'}</span>}
-                </div>
-                <div className="mt-6 grid gap-2 sm:grid-cols-2">
-                  {question.options.map((option) => {
-                    const selected = answers[question.key] === option;
-                    return (
-                      <button
-                        key={option}
-                        onClick={() => choose(question.key, option)}
-                        className={`rounded-lg border px-4 py-4 text-left text-sm font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
-                      >
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
-
-          <aside className="space-y-4 lg:sticky lg:top-24 lg:h-fit">
-            <div className="dark-panel p-6">
-              <div className="flex items-start justify-between gap-4">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_380px]">
+          <div className="border-t border-gray-300 bg-white">
+            <section className="border-b border-gray-300 p-5 md:p-7">
+              <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Anbefalet fokus' : 'Recommended focus'}</p>
-                  <h2 className="mt-4 text-3xl font-black leading-tight">{recommendation.title}</h2>
+                  <p className="text-xs font-black text-gray-400">01</p>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">{isDa ? 'Vælg felt' : 'Choose field'}</h2>
                 </div>
-                <span className={`mt-1 block h-2 w-16 rounded-full ${recommendation.accent}`} />
+                {field && <Check size={20} aria-label={isDa ? 'Valgt' : 'Selected'} />}
               </div>
-              <p className="mt-3 text-sm leading-relaxed text-white/60">{recommendation.bestFor}</p>
-              <div className="mt-6 space-y-2">
-                {recommendation.notes.map((note) => (
-                  <div key={note} className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-white/80">
-                    {note}
-                  </div>
+              <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                {FIELDS.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setField(option)}
+                    aria-pressed={field === option}
+                    className={`flex min-h-14 items-center justify-between rounded-lg border px-4 py-3 text-left text-sm font-black transition-colors ${field === option ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                  >
+                    {option}
+                    <span className={`h-2 w-8 rounded-full ${FIELD_ACCENTS[option]}`} aria-hidden="true" />
+                  </button>
                 ))}
               </div>
-              <div className="mt-6 grid grid-cols-2 gap-2">
-                <Link href={profileHref} className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
-                  {isDa ? 'Profiler' : 'Profiles'}
-                </Link>
-                <Link href={recommendation.fieldHref} className="inline-flex items-center justify-center rounded-lg border border-white/15 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-white/10">
-                  {isDa ? 'Felt' : 'Field'}
-                </Link>
+            </section>
+
+            <section className="border-b border-gray-300 p-5 md:p-7">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black text-gray-400">02</p>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">{isDa ? 'Vælg behov' : 'Choose need'}</h2>
+                </div>
+                {need && <Check size={20} aria-label={isDa ? 'Valgt' : 'Selected'} />}
               </div>
+              <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                {needs.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => setNeed(option.id)}
+                    aria-pressed={need === option.id}
+                    className={`min-h-20 rounded-lg border px-4 py-3 text-left transition-colors ${need === option.id ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                  >
+                    <span className="block text-sm font-black">{option.label}</span>
+                    <span className={`mt-1 block text-xs ${need === option.id ? 'text-white/60' : 'text-gray-500'}`}>{option.body}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <aside className="h-fit bg-gray-950 p-6 text-white lg:sticky lg:top-24">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Anbefaling' : 'Recommendation'}</p>
+              <span className={`h-2 w-16 rounded-full ${recommendation.accent}`} aria-hidden="true" />
             </div>
-            <Link href="/onboarding" className="block premium-card p-6 transition-colors hover:border-gray-950">
-              <p className="kicker">{isDa ? 'Før match' : 'Before matching'}</p>
-              <p className="mt-2 text-xl font-black text-gray-950">{isDa ? 'Byg dit brief' : 'Build your prep direction'}</p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                {isDa ? 'Gør din booking mere præcis med et kort kandidat-brief.' : 'Make your booking sharper with a short candidate brief.'}
-              </p>
-            </Link>
+            <p className="mt-5 text-xs font-black text-white/40">{completed}/2</p>
+            <h2 className="mt-2 text-3xl font-black leading-tight">{recommendation.title}</h2>
+            <p className="mt-4 text-sm leading-relaxed text-white/60">{recommendation.body}</p>
+
+            {recommendation.notes.length > 0 && (
+              <ul className="mt-6 border-t border-white/15">
+                {recommendation.notes.map((note) => (
+                  <li key={note} className="flex items-center gap-3 border-b border-white/15 py-3 text-sm font-semibold text-white/80">
+                    <Check size={15} aria-hidden="true" />
+                    {note}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {completed === 2 ? (
+              <Link href={profileHref} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
+                {isDa ? 'Se relevante profiler' : 'View relevant profiles'}
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            ) : (
+              <button type="button" disabled className="mt-6 inline-flex w-full cursor-not-allowed items-center justify-center rounded-lg bg-white/10 px-5 py-3 text-sm font-black text-white/40">
+                {isDa ? 'Vælg begge ovenfor' : 'Choose both above'}
+              </button>
+            )}
+
+            {field && (
+              <Link href={FIELD_PATHS[field]} className="mt-4 block text-center text-sm font-semibold text-white/60 hover:text-white">
+                {isDa ? 'Læs om feltet' : 'Read about the field'}
+              </Link>
+            )}
           </aside>
         </div>
       </section>

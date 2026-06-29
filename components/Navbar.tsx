@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import { useTranslation } from '@/context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
+import { Menu, X } from 'lucide-react';
 
 export function Navbar() {
   const { tr, lang } = useTranslation();
@@ -45,11 +46,9 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles', description: isDa ? 'Find den rette professional' : 'Find the right professional' },
-    { href: '/match', label: 'Match', description: isDa ? 'Vælg fokus hurtigere' : 'Choose focus faster' },
-    { href: '/#pricing', label: isDa ? 'Priser' : 'Pricing', description: isDa ? '600-1.800 DKK' : 'DKK 600-1,800' },
-    { href: '/impact', label: 'Impact', description: isDa ? '40-90% bidrag' : '40-90% contribution' },
-    { href: '/mission', label: 'Mission', description: isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists' },
+    { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles' },
+    { href: '/#how-it-works', label: isDa ? 'Sådan fungerer det' : 'How it works' },
+    { href: '/#pricing', label: isDa ? 'Priser' : 'Pricing' },
   ];
 
   return (
@@ -83,7 +82,7 @@ export function Navbar() {
             href="/professionals"
             className="hidden items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 md:inline-flex"
           >
-            {isDa ? 'Book 60 min' : 'Book 60 min'}
+            {isDa ? 'Se profiler' : 'Browse profiles'}
           </Link>
 
           {session === null ? null : session ? (
@@ -119,36 +118,24 @@ export function Navbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {mobileOpen ? (
-                <>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </>
-              ) : (
-                <>
-                  <line x1="4" y1="8" x2="20" y2="8" />
-                  <line x1="4" y1="16" x2="20" y2="16" />
-                </>
-              )}
-            </svg>
+            {mobileOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-gray-100 bg-white px-5 py-4 md:hidden">
-          <div className="grid gap-px border border-gray-200 bg-gray-200">
+        <div className="border-t border-gray-100 bg-white px-5 py-5 md:hidden">
+          <div className="border-t border-gray-200">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="bg-white px-4 py-4" onClick={() => setMobileOpen(false)}>
-                <span className="block text-sm font-black text-gray-950">{link.label}</span>
-                <span className="mt-1 block text-xs font-medium text-gray-500">{link.description}</span>
+              <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 text-sm font-black text-gray-950" onClick={() => setMobileOpen(false)}>
+                <span>{link.label}</span>
+                <span aria-hidden="true">→</span>
               </Link>
             ))}
           </div>
           <div className="mt-4 grid gap-2">
             <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
-              {isDa ? 'Book 60 min' : 'Book 60 min'}
+              {isDa ? 'Se profiler' : 'Browse profiles'}
             </Link>
             {!session && (
               <Link href="/login" className="py-2 text-center text-sm font-medium text-gray-500" onClick={() => setMobileOpen(false)}>

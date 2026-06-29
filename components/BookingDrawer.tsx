@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { sendBookingConfirmed } from '@/lib/email'
+import { Check, X } from 'lucide-react'
 
 interface Professional {
   id: string
@@ -23,27 +24,16 @@ const DEMO_SLOTS = ['09:00', '11:00', '14:00', '16:00']
 
 const FOCUS_OPTIONS = [
   { id: 'cv_linkedin', da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
-  { id: 'interview_prep', da: 'Interview Prep', en: 'Interview Prep' },
-  { id: 'case_prep', da: 'Case Prep', en: 'Case Prep' },
-  { id: 'career_direction', da: 'Career Direction', en: 'Career Direction' },
-  { id: 'banking_technicals', da: 'Banking Technicals', en: 'Banking Technicals' },
-  { id: 'consulting_cases', da: 'Consulting Cases', en: 'Consulting Cases' },
-  { id: 'pe_investment_case', da: 'PE / Investment Case', en: 'PE / Investment Case' },
-  { id: 'ai_career_strategy', da: 'AI Career Strategy', en: 'AI Career Strategy' },
+  { id: 'interview_prep', da: 'Interview', en: 'Interview' },
+  { id: 'case_prep', da: 'Case / technicals', en: 'Case / technicals' },
+  { id: 'career_direction', da: 'Karriereretning', en: 'Career direction' },
 ]
 
-const STAGE_OPTIONS = [
-  { id: 'exploring', da: 'Udforsker muligheder', en: 'Exploring options' },
-  { id: 'applying', da: 'Sender ansøgninger', en: 'Applying now' },
-  { id: 'interviewing', da: 'Interview snart', en: 'Interview coming up' },
-  { id: 'final_rounds', da: 'Sidste runder', en: 'Final rounds' },
-]
-
-function getNextTwoWeekdays(): Date[] {
+function getNextWeekdays(): Date[] {
   const days: Date[] = []
   const d = new Date()
   d.setDate(d.getDate() + 1)
-  while (days.length < 10) {
+  while (days.length < 5) {
     const dow = d.getDay()
     if (dow !== 0 && dow !== 6) days.push(new Date(d))
     d.setDate(d.getDate() + 1)
@@ -62,26 +52,22 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const [step, setStep] = useState(1)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
-  const [reminder, setReminder] = useState(true)
   const [sessionFocus, setSessionFocus] = useState('')
-  const [candidateStage, setCandidateStage] = useState('')
   const [sessionGoal, setSessionGoal] = useState('')
   const [materialLink, setMaterialLink] = useState('')
-  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const supabase = createClient()
-  const days = getNextTwoWeekdays()
+  const days = getNextWeekdays()
   const focusLabel = FOCUS_OPTIONS.find((option) => option.id === sessionFocus)?.[locale] ?? ''
-  const stageLabel = STAGE_OPTIONS.find((option) => option.id === candidateStage)?.[locale] ?? ''
   const minimumContribution = Math.round(professional.price * 0.4)
 
   const t = {
     title: locale === 'da' ? 'Book 60 min' : 'Book 60 min',
     subtitle: locale === 'da'
-      ? 'Vælg tid, lav et kort session brief, og send bookinganmodningen. Minimum 40% og op til 90% af betalingen bidrager til Kræftens Bekæmpelse.'
-      : 'Choose a time, create a short session brief and send the booking request. At least 40% and up to 90% of the payment contributes to Kræftens Bekæmpelse.',
+      ? 'Vælg tid og fortæl kort, hvad sessionen skal handle om.'
+      : 'Choose a time and briefly describe what the session should cover.',
     step1Title: locale === 'da' ? 'Vælg et tidspunkt' : 'Choose a time',
     step2Title: locale === 'da' ? 'Session brief' : 'Session brief',
     duration: '60 min',
@@ -90,18 +76,13 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     impactValue: locale === 'da'
       ? `Min. DKK ${minimumContribution} til Kræftens Bekæmpelse`
       : `Min. DKK ${minimumContribution} to Kræftens Bekæmpelse`,
-    reminder: locale === 'da' ? 'Tilføj påmindelse' : 'Add reminder',
     focusLabel: locale === 'da' ? 'Hvad skal sessionen handle om?' : 'What should the session focus on?',
-    stageLabel: locale === 'da' ? 'Hvor er du i processen?' : 'Where are you in the process?',
     goalLabel: locale === 'da' ? 'Hvad vil du gerne opnå?' : 'What would you like to achieve?',
     goalPlaceholder: locale === 'da'
       ? 'F.eks. skarpere CV, træne case, forberede banking technicals eller afklare næste karriereskridt.'
       : 'E.g. sharpen my CV, practice cases, prepare banking technicals or clarify my next career move.',
     materialLabel: locale === 'da' ? 'Materiale eller link' : 'Material or link',
     materialPlaceholder: locale === 'da' ? 'Valgfrit: LinkedIn, CV-link, jobopslag eller case-materiale' : 'Optional: LinkedIn, CV link, job post or case material',
-    noteLabel: locale === 'da' ? 'Ekstra note' : 'Extra note',
-    notePlaceholder: locale === 'da' ? 'Valgfrit: andet den professionelle bør vide.' : 'Optional: anything else the professional should know.',
-    summaryTitle: locale === 'da' ? 'Brief summary' : 'Brief summary',
     focusError: locale === 'da' ? 'Vælg fokus for sessionen.' : 'Choose a session focus.',
     confirm: locale === 'da' ? 'Send bookinganmodning' : 'Send booking request',
     successTitle: locale === 'da' ? 'Booking anmodet' : 'Booking requested',
@@ -117,7 +98,6 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     date: locale === 'da' ? 'Dato' : 'Date',
     time: locale === 'da' ? 'Tid' : 'Time',
     priceLabel: locale === 'da' ? 'Pris' : 'Price',
-    notAdded: locale === 'da' ? 'Ikke tilføjet' : 'Not added',
   }
 
   async function handleConfirm() {
@@ -147,14 +127,12 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
       startsAt.setHours(h, m, 0, 0)
       const endsAt = new Date(startsAt.getTime() + 60 * 60 * 1000)
       const briefLabels = locale === 'da'
-        ? { focus: 'Fokus', stage: 'Procesfase', goal: 'Mål', material: 'Materiale/link', note: 'Note' }
-        : { focus: 'Focus', stage: 'Process stage', goal: 'Goal', material: 'Material/link', note: 'Note' }
+        ? { focus: 'Fokus', goal: 'Mål', material: 'Materiale/link' }
+        : { focus: 'Focus', goal: 'Goal', material: 'Material/link' }
       const brief = [
         `${briefLabels.focus}: ${focusLabel}`,
-        stageLabel ? `${briefLabels.stage}: ${stageLabel}` : null,
         sessionGoal.trim() ? `${briefLabels.goal}: ${sessionGoal.trim()}` : null,
         materialLink.trim() ? `${briefLabels.material}: ${materialLink.trim()}` : null,
-        message.trim() ? `${briefLabels.note}: ${message.trim()}` : null,
       ].filter(Boolean).join('\n')
 
       const { error: bookingError } = await supabase.from('bookings').insert({
@@ -164,7 +142,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
         ends_at: endsAt.toISOString(),
         price_dkk: professional.price,
         message_to_professional: brief,
-        reminder_requested: reminder,
+        reminder_requested: true,
         status: 'requested',
         payment_status: 'pending',
       })
@@ -195,11 +173,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     setSelectedDate(null)
     setSelectedTime(null)
     setSessionFocus('')
-    setCandidateStage('')
     setSessionGoal('')
     setMaterialLink('')
-    setMessage('')
-    setReminder(true)
     setError(null)
     onClose()
   }
@@ -218,7 +193,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
               <p className="mt-1 text-sm text-gray-500">{professional.title} · {professional.company}</p>
             </div>
             <button onClick={handleClose} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-950" aria-label={t.close}>
-              x
+              <X size={18} aria-hidden="true" />
             </button>
           </div>
           <p className="mt-4 text-sm leading-relaxed text-gray-500">{t.subtitle}</p>
@@ -282,13 +257,6 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 </div>
               </div>
 
-              <div className="mb-5 flex items-center justify-between border border-gray-200 bg-white px-4 py-3">
-                <span className="text-sm font-medium text-gray-700">{t.reminder}</span>
-                <button onClick={() => setReminder(!reminder)} className={`relative h-6 w-11 rounded-full transition-colors ${reminder ? 'bg-gray-950' : 'bg-gray-200'}`} aria-pressed={reminder}>
-                  <span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow transition-transform ${reminder ? 'translate-x-5' : ''}`} />
-                </button>
-              </div>
-
               <div className="mb-5">
                 <label className="mb-3 block text-sm font-black text-gray-950">{t.focusLabel}</label>
                 <div className="grid grid-cols-2 gap-2">
@@ -299,25 +267,6 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                       <button
                         key={option.id}
                         onClick={() => { setSessionFocus(option.id); setError(null) }}
-                        className={`rounded-lg border px-3 py-2.5 text-left text-xs font-black transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
-                      >
-                        {label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="mb-5">
-                <label className="mb-3 block text-sm font-black text-gray-950">{t.stageLabel}</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {STAGE_OPTIONS.map((option) => {
-                    const label = option[locale]
-                    const selected = candidateStage === option.id
-                    return (
-                      <button
-                        key={option.id}
-                        onClick={() => setCandidateStage(selected ? '' : option.id)}
                         className={`rounded-lg border px-3 py-2.5 text-left text-xs font-black transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
                       >
                         {label}
@@ -346,30 +295,6 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
               />
 
-              <label className="mb-2 mt-4 block text-sm font-black text-gray-950">{t.noteLabel}</label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value.slice(0, 160))}
-                placeholder={t.notePlaceholder}
-                rows={3}
-                className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
-              />
-              <p className="mt-1 text-right text-xs text-gray-400">{message.length}/160</p>
-
-              <div className="mt-5 border border-gray-200 bg-[#f7f7f4] p-4">
-                <p className="mb-3 text-xs font-black uppercase text-gray-400">{t.summaryTitle}</p>
-                {[
-                  [locale === 'da' ? 'Fokus' : 'Focus', focusLabel || t.notAdded],
-                  [locale === 'da' ? 'Procesfase' : 'Process stage', stageLabel || t.notAdded],
-                  [locale === 'da' ? 'Mål' : 'Goal', sessionGoal.trim() || t.notAdded],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex justify-between gap-4 border-t border-gray-200 py-2 text-xs first:border-t-0 first:pt-0">
-                    <span className="font-black uppercase text-gray-400">{label}</span>
-                    <span className="max-w-[12rem] text-right font-semibold text-gray-700 line-clamp-2">{value}</span>
-                  </div>
-                ))}
-              </div>
-
               {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
             </div>
           )}
@@ -377,9 +302,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
           {step === 3 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-lg bg-gray-950 text-white">
-                <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+                <Check size={28} aria-hidden="true" />
               </div>
               <h3 className="mb-2 text-2xl font-black text-gray-950">{t.successTitle}</h3>
               <p className="max-w-xs text-sm leading-relaxed text-gray-500">{t.successMsg}</p>

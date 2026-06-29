@@ -25,8 +25,8 @@ export function CookieBanner() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-5">
-      <div className="mx-auto max-w-4xl rounded-2xl border border-gray-200 bg-white/95 p-4 shadow-2xl shadow-gray-950/10 backdrop-blur-xl sm:p-5">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white/95 p-4 shadow-2xl shadow-gray-950/10 backdrop-blur-xl sm:p-5">
+      <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-bold text-gray-950">Cookies på Naetwork</p>
@@ -36,8 +36,8 @@ export function CookieBanner() {
             </p>
           </div>
           <div className="flex shrink-0 gap-2">
-            <button onClick={decline} className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-950 hover:text-gray-950">Afvis</button>
-            <button onClick={accept} className="rounded-full bg-gray-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800">Accepter</button>
+            <button onClick={decline} className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:border-gray-950 hover:text-gray-950">Afvis</button>
+            <button onClick={accept} className="rounded-lg bg-gray-950 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800">Accepter</button>
           </div>
         </div>
       </div>

@@ -228,6 +228,7 @@ export default function ProfessionalDetailPage() {
   )
 
   const minimumImpact = minimumContribution(professional.price)
+  const isDemo = professional.id.startsWith('demo-')
   const focusAreas = professional.focus_areas ?? []
   const bestFit = bestFor(professional, isDa)
   const primaryOutput = primaryOutputFor(professional, isDa)
@@ -237,13 +238,15 @@ export default function ProfessionalDetailPage() {
     back: isDa ? 'Tilbage til profiler' : 'Back to profiles',
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
+    comingSoon: isDa ? 'Kommer snart' : 'Coming soon',
+    preview: isDa ? 'Eksempelprofil' : 'Example profile',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
     briefing: isDa ? `Du vælger selv fokus, når du booker. Minimum DKK ${minimumImpact} af en betalt session bidrager til Kræftens Bekæmpelse.` : `You choose the focus when you book. At least DKK ${minimumImpact} from a paid session contributes to Kræftens Bekæmpelse.`,
     bestFor: isDa ? 'Best for' : 'Best for',
     sessionBrief: isDa ? 'Session brief' : 'Session brief',
     sessionBriefBody: isDa
-      ? 'Før du sender bookinganmodningen, vælger du fokus, procesfase, mål og eventuelt materiale. Det giver den professionelle bedre kontekst.'
-      : 'Before sending the booking request, you choose focus, process stage, goal and optional material. That gives the professional better context.',
+      ? 'Før du sender bookinganmodningen, vælger du fokus, beskriver dit mål og kan tilføje relevant materiale.'
+      : 'Before sending the booking request, choose a focus, describe your goal and optionally add relevant material.',
     profileSignal: isDa ? 'Profil-signal' : 'Profile signal',
     useThisProfileIf: isDa ? 'Brug profilen hvis' : 'Use this profile if',
     leaveWith: isDa ? 'Muligt output' : 'Possible output',
@@ -259,8 +262,8 @@ export default function ProfessionalDetailPage() {
 
   return (
     <div className="min-h-screen bg-white pb-24 md:pb-0">
-      <section className="border-b border-gray-200 bg-white px-5 pt-16 sm:px-8">
-        <div className="mx-auto max-w-6xl py-10 md:py-20">
+      <section className="border-b border-gray-200 bg-white px-5 sm:px-8">
+        <div className="mx-auto max-w-6xl py-10 md:py-16">
           <Link href="/professionals" className="mb-10 inline-flex items-center gap-2 text-sm font-black text-gray-500 transition-colors hover:text-gray-950">
             <span>&larr;</span><span>{t.back}</span>
           </Link>
@@ -268,8 +271,10 @@ export default function ProfessionalDetailPage() {
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] lg:items-end">
             <div>
               <span className={`mb-8 block h-2 w-24 rounded-full ${accentFor(professional)}`} />
-              <p className="mb-5 text-xs font-black uppercase text-gray-400">{professional.industries.join(' / ')}</p>
-              <h1 className="max-w-4xl text-6xl font-black leading-[0.92] tracking-tight text-gray-950 text-balance md:text-8xl">{professional.name}</h1>
+              <p className="mb-5 text-xs font-black uppercase text-gray-400">
+                {professional.industries.join(' / ')}{isDemo ? ` · ${t.preview}` : ''}
+              </p>
+              <h1 className="max-w-4xl text-5xl font-black leading-[0.96] text-gray-950 text-balance md:text-7xl">{professional.name}</h1>
               <p className="mt-6 text-lg font-black text-gray-700">{professional.title} · {professional.company}</p>
               <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{professional.bio}</p>
             </div>
@@ -283,8 +288,8 @@ export default function ProfessionalDetailPage() {
                 <p className="mt-2 text-3xl font-black text-gray-950">DKK {professional.price}</p>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{t.briefing}</p>
               </div>
-              <button onClick={() => setDrawerOpen(true)} className="mt-5 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
-                {t.bookCta}
+              <button onClick={() => !isDemo && setDrawerOpen(true)} disabled={isDemo} className="mt-5 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500">
+                {isDemo ? t.comingSoon : t.bookCta}
               </button>
             </aside>
           </div>
@@ -296,7 +301,7 @@ export default function ProfessionalDetailPage() {
           <div className="space-y-14">
             <section>
               <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.profileSignal}</p>
-              <h2 className="max-w-2xl text-3xl font-black tracking-tight text-gray-950 md:text-5xl">{t.useThisProfileIf}</h2>
+              <h2 className="max-w-2xl text-3xl font-black text-gray-950 md:text-5xl">{t.useThisProfileIf}</h2>
               <div className="mt-8 border-t border-gray-200">
                 {useCases.map((item, index) => (
                   <div key={item} className="grid gap-4 border-b border-gray-200 py-6 md:grid-cols-[80px_1fr]">
@@ -309,7 +314,7 @@ export default function ProfessionalDetailPage() {
 
             <section>
               <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.leaveWith}</p>
-              <h2 className="text-3xl font-black tracking-tight text-gray-950 md:text-5xl">{primaryOutput}</h2>
+              <h2 className="text-3xl font-black text-gray-950 md:text-5xl">{primaryOutput}</h2>
               <div className="mt-8 grid gap-px border border-gray-200 bg-gray-200 sm:grid-cols-2">
                 {outcomes.map((outcome) => (
                   <div key={outcome} className="bg-[#f7f7f4] p-5">
@@ -353,8 +358,8 @@ export default function ProfessionalDetailPage() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setDrawerOpen(true)} className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
-              {t.bookCta}
+            <button onClick={() => !isDemo && setDrawerOpen(true)} disabled={isDemo} className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500">
+              {isDemo ? t.comingSoon : t.bookCta}
             </button>
           </aside>
         </div>
@@ -367,14 +372,14 @@ export default function ProfessionalDetailPage() {
               <p className="text-xs font-bold uppercase text-gray-400">{t.session}</p>
               <p className="text-sm font-black text-gray-950">DKK {professional.price} · min. DKK {minimumImpact} impact</p>
             </div>
-            <button onClick={() => setDrawerOpen(true)} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
-              {t.bookCta}
+            <button onClick={() => !isDemo && setDrawerOpen(true)} disabled={isDemo} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500">
+              {isDemo ? t.comingSoon : t.bookCta}
             </button>
           </div>
         </div>
       )}
 
-      <BookingDrawer professional={professional} open={drawerOpen} onClose={() => setDrawerOpen(false)} locale={lang} />
+      {!isDemo && <BookingDrawer professional={professional} open={drawerOpen} onClose={() => setDrawerOpen(false)} locale={lang} />}
     </div>
   )
 }
