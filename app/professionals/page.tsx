@@ -112,7 +112,7 @@ export default function ProfessionalsPage() {
     async function fetchProfessionals() {
       const { data, error } = await supabase
         .from('professional_profiles')
-        .select('id, title, company, bio, price_dkk, industries, focus_areas, profiles!inner(name)')
+        .select('id, profile_id, title, company, bio, price_dkk, industries, focus_areas')
         .eq('visibility', 'published')
 
       if (error || !data) {
@@ -121,18 +121,25 @@ export default function ProfessionalsPage() {
         return
       }
 
-      const mapped: ProfessionalCard[] = (data as Array<{
+      const rows = data as Array<{
         id: string
+        profile_id: string
         title: string | null
         company: string | null
         bio: string | null
         price_dkk: number | null
         industries: string[] | null
         focus_areas: string[] | null
-        profiles: { name?: string | null } | null
-      }>).map((p) => ({
+      }>
+      const profileIds = rows.map((profile) => profile.profile_id)
+      const { data: names } = profileIds.length
+        ? await supabase.from('profiles').select('id, name').in('id', profileIds)
+        : { data: [] }
+      const namesById = new Map((names ?? []).map((profile) => [profile.id, profile.name ?? '']))
+
+      const mapped: ProfessionalCard[] = rows.map((p) => ({
         id: p.id,
-        name: p.profiles?.name ?? '',
+        name: namesById.get(p.profile_id) ?? '',
         title: p.title ?? '',
         company: p.company ?? '',
         industries: p.industries ?? [],

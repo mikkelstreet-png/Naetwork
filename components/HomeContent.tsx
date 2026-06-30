@@ -48,22 +48,29 @@ export function HomeContent() {
     async function fetchFeatured() {
       const { data } = await supabase
         .from('professional_profiles')
-        .select('id, title, company, price_dkk, industries, focus_areas, profiles!inner(name)')
+        .select('id, profile_id, title, company, price_dkk, industries, focus_areas')
         .eq('visibility', 'published')
         .limit(3);
 
       if (data) {
-        setFeatured((data as Array<{
+        const rows = data as Array<{
           id: string;
+          profile_id: string;
           title: string | null;
           company: string | null;
           price_dkk: number | null;
           industries: string[] | null;
           focus_areas: string[] | null;
-          profiles: { name?: string | null } | null;
-        }>).map((profile) => ({
+        }>;
+        const profileIds = rows.map((profile) => profile.profile_id);
+        const { data: names } = profileIds.length
+          ? await supabase.from('profiles').select('id, name').in('id', profileIds)
+          : { data: [] };
+        const namesById = new Map((names ?? []).map((profile) => [profile.id, profile.name ?? '']));
+
+        setFeatured(rows.map((profile) => ({
           id: profile.id,
-          name: profile.profiles?.name ?? '',
+          name: namesById.get(profile.profile_id) ?? '',
           title: profile.title ?? '',
           company: profile.company ?? '',
           industries: profile.industries ?? [],

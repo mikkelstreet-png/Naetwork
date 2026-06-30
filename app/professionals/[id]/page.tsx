@@ -146,17 +146,17 @@ export default function ProfessionalDetailPage() {
     async function fetchProfessional() {
       const { data } = await supabase
         .from('professional_profiles')
-        .select('id, title, company, bio, price_dkk, industries, focus_areas, profiles!inner(name)')
+        .select('id, profile_id, title, company, bio, price_dkk, industries, focus_areas')
         .eq('id', id)
         .single()
       if (data) {
         const row = data as {
-          id: string; title: string | null; company: string | null; bio: string | null
+          id: string; profile_id: string; title: string | null; company: string | null; bio: string | null
           price_dkk: number | null; industries: string[] | null; focus_areas: string[] | null
-          profiles: { name?: string | null } | null
         }
+        const { data: profile } = await supabase.from('profiles').select('name').eq('id', row.profile_id).maybeSingle()
         setProfessional({
-          id: row.id, name: row.profiles?.name ?? '',
+          id: row.id, name: profile?.name ?? '',
           title: row.title ?? '', company: row.company ?? '',
           industries: row.industries ?? [], price: row.price_dkk ?? 1200,
           bio: row.bio ?? '', focus_areas: row.focus_areas ?? [],
