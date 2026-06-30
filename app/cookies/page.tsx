@@ -50,7 +50,7 @@ const sections = [
 
 export default function CookiesPage() {
   return (
-    <main className="bg-[#f7f7f4] pt-16">
+    <main className="bg-[#f7f7f4]">
       <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>

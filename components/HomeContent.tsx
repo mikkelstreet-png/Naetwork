@@ -2,11 +2,81 @@
 
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Search, Target } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { createClient } from '@/lib/supabase/client';
+
+interface FeaturedProfessional {
+  id: string;
+  name: string;
+  title: string;
+  company: string;
+  industries: string[];
+  focusAreas: string[];
+  price: number;
+}
+
+function accentForIndustry(industry?: string) {
+  if (industry === 'AI') return 'bg-cyan-300';
+  if (industry === 'Banking') return 'bg-emerald-300';
+  if (industry === 'Management Consulting') return 'bg-blue-300';
+  if (industry === 'Private Equity') return 'bg-lime-300';
+  return 'bg-gray-300';
+}
+
+function initials(name: string) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'N';
+}
+
+function primaryFocus(focusAreas: string[], isDa: boolean) {
+  if (focusAreas.includes('pe_investment_case')) return isDa ? 'Investment case og deal thinking' : 'Investment cases and deal thinking';
+  if (focusAreas.includes('banking_technicals')) return isDa ? 'Technicals og interview' : 'Technicals and interviews';
+  if (focusAreas.includes('consulting_cases') || focusAreas.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit';
+  if (focusAreas.includes('ai_career_strategy') || focusAreas.includes('industry_insight')) return isDa ? 'AI-positionering og rollevalg' : 'AI positioning and role choice';
+  return isDa ? 'Karriereretning og materiale' : 'Career direction and materials';
+}
 
 export function HomeContent() {
   const { lang } = useLanguage();
   const isDa = lang === 'da';
+  const [featured, setFeatured] = useState<FeaturedProfessional[]>([]);
+  const [profilesLoading, setProfilesLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function fetchFeatured() {
+      const { data } = await supabase
+        .from('professional_profiles')
+        .select('id, title, company, price_dkk, industries, focus_areas, profiles!inner(name)')
+        .eq('visibility', 'published')
+        .limit(3);
+
+      if (data) {
+        setFeatured((data as Array<{
+          id: string;
+          title: string | null;
+          company: string | null;
+          price_dkk: number | null;
+          industries: string[] | null;
+          focus_areas: string[] | null;
+          profiles: { name?: string | null } | null;
+        }>).map((profile) => ({
+          id: profile.id,
+          name: profile.profiles?.name ?? '',
+          title: profile.title ?? '',
+          company: profile.company ?? '',
+          industries: profile.industries ?? [],
+          focusAreas: profile.focus_areas ?? [],
+          price: profile.price_dkk ?? 600,
+        })).filter((profile) => profile.name));
+      }
+
+      setProfilesLoading(false);
+    }
+
+    fetchFeatured();
+  }, []);
 
   const fields = [
     ['AI', '/fields/ai', 'bg-cyan-300', isDa ? 'Produkt, strategi, portfolio og rollevalg.' : 'Product, strategy, portfolio and role choice.'],
@@ -21,18 +91,11 @@ export function HomeContent() {
     [CalendarDays, isDa ? 'Book 60 minutter' : 'Book 60 minutes', isDa ? 'Vælg et tidspunkt og send dit korte brief.' : 'Choose a time and send your short brief.'],
   ] as const;
 
-  const profileRows = [
-    ['AI', 'AI Product Lead', isDa ? 'Portfolio og AI-positionering' : 'Portfolio and AI positioning', 'DKK 900', 'bg-cyan-300'],
-    ['Banking', 'Associate Director', isDa ? 'Technicals, fit og interview' : 'Technicals, fit and interviews', 'DKK 1.200', 'bg-emerald-300'],
-    ['Consulting', 'Senior Consultant', isDa ? 'Casestruktur og fit' : 'Case structure and fit', 'DKK 1.100', 'bg-blue-300'],
-    ['Private Equity', 'Investment Professional', isDa ? 'Investment case og deal thinking' : 'Investment cases and deal thinking', 'DKK 1.500', 'bg-lime-300'],
-  ] as const;
-
   const priceAnchors = [
     ['DKK 600', isDa ? 'Fra' : 'From', 'DKK 240'],
-    ['DKK 900', 'Core', 'DKK 360'],
-    ['DKK 1.200', 'Senior', 'DKK 480'],
-    ['DKK 1.800', 'Expert', 'DKK 720'],
+    ['DKK 900', isDa ? 'Standard' : 'Standard', 'DKK 360'],
+    ['DKK 1.200', isDa ? 'Erfaren' : 'Senior', 'DKK 480'],
+    ['DKK 1.800', isDa ? 'Specialist' : 'Specialist', 'DKK 720'],
   ] as const;
 
   return (
@@ -42,7 +105,7 @@ export function HomeContent() {
           <div className="grid gap-12 lg:grid-cols-[1fr_360px] lg:items-end">
             <div>
               <p className="mb-6 text-xs font-black uppercase text-gray-400">Naetwork</p>
-              <h1 className="max-w-4xl text-5xl font-black leading-[0.94] text-gray-950 text-balance sm:text-6xl md:text-7xl">
+              <h1 className="max-w-4xl text-4xl font-black leading-[0.96] text-gray-950 text-balance sm:text-6xl md:text-7xl">
                 {isDa ? 'Karrieresparring med mening.' : 'Career guidance with meaning.'}
               </h1>
               <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-600 md:text-xl">
@@ -141,20 +204,40 @@ export function HomeContent() {
             </Link>
           </div>
 
-          <div className="border-t border-gray-200">
-            {profileRows.map(([field, role, output, price, accent]) => (
-              <Link key={`${field}-${role}`} href={`/professionals?field=${encodeURIComponent(field === 'Consulting' ? 'Management Consulting' : field)}`} className="relative grid gap-3 border-b border-gray-200 py-5 transition-colors hover:bg-gray-50 md:grid-cols-[170px_1fr_1fr_130px] md:items-center md:px-4">
-                <span className={`absolute left-0 top-5 hidden h-9 w-1 rounded-full md:block ${accent}`} />
-                <p className="text-xs font-black uppercase text-gray-400">{field}</p>
-                <div>
-                  <p className="text-lg font-black text-gray-950">{role}</p>
-                  <p className="mt-1 text-xs font-semibold text-gray-500">60 min</p>
-                </div>
-                <p className="text-sm leading-relaxed text-gray-600">{output}</p>
-                <p className="text-sm font-black text-gray-950 md:text-right">{price}</p>
+          {profilesLoading ? (
+            <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3" aria-label={isDa ? 'Indlæser profiler' : 'Loading profiles'}>
+              {[0, 1, 2].map((item) => <div key={item} className="h-32 animate-pulse bg-[#f7f7f4]" />)}
+            </div>
+          ) : featured.length > 0 ? (
+            <div className="border-t border-gray-200">
+              {featured.map((profile) => (
+                <Link key={profile.id} href={`/professionals/${profile.id}`} className="grid gap-4 border-b border-gray-200 py-5 transition-colors hover:bg-gray-50 md:grid-cols-[52px_170px_1fr_1fr_130px] md:items-center md:px-4">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-lg text-xs font-black text-gray-950 ${accentForIndustry(profile.industries[0])}`}>{initials(profile.name)}</span>
+                  <p className="text-xs font-black uppercase text-gray-400">{profile.industries[0] ?? (isDa ? 'Professional' : 'Professional')}</p>
+                  <div>
+                    <p className="text-lg font-black text-gray-950">{profile.name}</p>
+                    <p className="mt-1 text-xs font-semibold text-gray-500">{profile.title}{profile.company ? ` · ${profile.company}` : ''}</p>
+                  </div>
+                  <p className="text-sm leading-relaxed text-gray-600">{primaryFocus(profile.focusAreas, isDa)}</p>
+                  <div className="md:text-right">
+                    <p className="text-sm font-black text-gray-950">DKK {profile.price.toLocaleString('da-DK')}</p>
+                    <p className="mt-1 text-xs text-gray-400">60 min</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-6 border-y border-gray-200 bg-[#f7f7f4] p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+              <div>
+                <p className="text-xl font-black text-gray-950">{isDa ? 'De første profiler er på vej.' : 'The first profiles are on their way.'}</p>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.'}</p>
+              </div>
+              <Link href="/professional/signup" className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
+                {isDa ? 'Bliv professional' : 'Become a professional'}
+                <ArrowRight size={16} aria-hidden="true" />
               </Link>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 

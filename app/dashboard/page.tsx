@@ -40,7 +40,7 @@ export default function DashboardPage() {
     });
   }, [router]);
 
-  if (loading) return <main className="min-h-screen bg-[#f7f7f4] pt-32 text-center text-gray-400">Indlæser...</main>;
+  if (loading) return <main className="min-h-[calc(100vh-4rem)] bg-[#f7f7f4] pt-24 text-center text-gray-400">Indlæser...</main>;
 
   const isProfessional = profile?.role === 'professional';
   const displayName = ((profile?.name || profile?.full_name || user?.email || 'der') as string).split(' ')[0];
@@ -59,18 +59,18 @@ export default function DashboardPage() {
   const proCompletion = isProfessional ? proChecklist.filter((item) => item.done).length : 0;
 
   return (
-    <main className="min-h-screen bg-[#f7f7f4] pt-16">
+    <main className="min-h-screen bg-[#f7f7f4]">
       <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
         <section className="mb-8 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-gray-400">Dashboard</p>
-              <h1 className="mt-2 text-4xl font-black leading-none tracking-tight text-gray-950">Hej, {displayName}</h1>
+              <h1 className="mt-2 text-4xl font-black leading-none text-gray-950">Hej, {displayName}</h1>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500">{isProfessional ? 'Administrer din professionelle profil, sessions og synlighed.' : 'Hold styr på dine 60-minutters karrieresessioner og find dit næste bedste match.'}</p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              {!isProfessional && <Link href="/match" className="w-fit rounded-full border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-gray-950 hover:border-gray-950">Find match</Link>}
-              <Link href={isProfessional ? '/profil/professionel' : '/professionals'} className="w-fit rounded-full bg-gray-950 px-5 py-2.5 text-sm font-bold text-white hover:bg-gray-800">
+              {!isProfessional && <Link href="/match" className="w-fit rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-bold text-gray-950 hover:border-gray-950">Find fokus</Link>}
+              <Link href={isProfessional ? '/profil/professionel' : '/professionals'} className="w-fit rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-bold text-white hover:bg-gray-800">
                 {isProfessional ? 'Rediger profil' : 'Book 60 min'}
               </Link>
             </div>
@@ -80,12 +80,12 @@ export default function DashboardPage() {
         {!isProfessional && (
           <section className="mb-8 grid gap-4 md:grid-cols-3">
             {[
-              { title: 'Candidate onboarding', body: 'Sæt retning for felt, stage og fokus.', href: '/onboarding', cta: 'Start onboarding' },
-              { title: 'Match quiz', body: 'Få anbefalet fokus før du vælger profil.', href: '/match', cta: 'Find match' },
-              { title: 'Marketplace', body: 'Book 60 min med en relevant professionel.', href: '/professionals', cta: 'Se professionals' },
+              { title: 'Kort onboarding', body: 'Vælg felt, procesfase og fokus.', href: '/onboarding', cta: 'Start onboarding' },
+              { title: 'Find fokus', body: 'Afklar behovet, før du vælger profil.', href: '/match', cta: 'Find fokus' },
+              { title: 'Profiler', body: 'Find en relevant sparringspartner.', href: '/professionals', cta: 'Se profiler' },
             ].map((item) => (
               <Link key={item.title} href={item.href} className="rounded-3xl border border-gray-200 bg-white p-6 transition-colors hover:border-gray-950">
-                <p className="text-xs font-bold uppercase text-gray-400">Next step</p>
+                <p className="text-xs font-bold uppercase text-gray-400">Næste skridt</p>
                 <h2 className="mt-4 text-xl font-black text-gray-950">{item.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.body}</p>
                 <p className="mt-5 text-sm font-black text-gray-950">{item.cta} →</p>

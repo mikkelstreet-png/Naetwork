@@ -12,8 +12,8 @@ export function Footer() {
       title: 'Platform',
       links: [
         { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles' },
-        { href: '/match', label: 'Match' },
-        { href: '/onboarding', label: 'Onboarding' },
+        { href: '/match', label: isDa ? 'Find fokus' : 'Find focus' },
+        { href: '/onboarding', label: isDa ? 'Kom i gang' : 'Get started' },
       ],
     },
     {
@@ -26,10 +26,10 @@ export function Footer() {
       ],
     },
     {
-      title: isDa ? 'Model' : 'Model',
+      title: isDa ? 'Om Naetwork' : 'About Naetwork',
       links: [
         { href: '/mission', label: 'Mission' },
-        { href: '/impact', label: 'Impact' },
+        { href: '/impact', label: isDa ? 'Bidrag' : 'Impact' },
         { href: '/professional/signup', label: isDa ? 'Bliv professional' : 'Become a professional' },
       ],
     },

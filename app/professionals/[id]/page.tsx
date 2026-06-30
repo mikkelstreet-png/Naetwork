@@ -36,49 +36,6 @@ const FOCUS_LABELS: Record<string, string> = {
   informal_chat: 'Industry Insight',
 }
 
-const DEMO_PROFESSIONALS: Record<string, Professional> = {
-  'demo-1': {
-    id: 'demo-1',
-    name: 'Mads Christensen',
-    title: 'Associate Director',
-    company: 'Global investment bank',
-    industries: ['Banking'],
-    price: 1200,
-    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
-    focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals']
-  },
-  'demo-2': {
-    id: 'demo-2',
-    name: 'Sofie Larsen',
-    title: 'Senior Consultant',
-    company: 'Tier-one strategy firm',
-    industries: ['Management Consulting'],
-    price: 1100,
-    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
-    focus_areas: ['case_prep', 'consulting_cases', 'interview_prep', 'career_direction']
-  },
-  'demo-3': {
-    id: 'demo-3',
-    name: 'Emil Andersen',
-    title: 'AI Product Lead',
-    company: 'Leading AI environment',
-    industries: ['AI'],
-    price: 900,
-    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
-    focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review']
-  },
-  'demo-4': {
-    id: 'demo-4',
-    name: 'Clara Holm',
-    title: 'Investment Professional',
-    company: 'Nordic private equity fund',
-    industries: ['Private Equity'],
-    price: 1500,
-    bio: 'Investment professional med erfaring fra deals, commercial due diligence og investment committee-materiale. Hjælper kandidater med investment cases, deal thinking og PE-interviews.',
-    focus_areas: ['pe_investment_case', 'interview_prep', 'career_direction', 'industry_insight']
-  }
-}
-
 function initials(name: string) {
   return name
     .split(' ')
@@ -186,11 +143,6 @@ export default function ProfessionalDetailPage() {
 
   useEffect(() => {
     if (!id) return
-    if (id.startsWith('demo-')) {
-      setProfessional(DEMO_PROFESSIONALS[id] ?? null)
-      setLoading(false)
-      return
-    }
     async function fetchProfessional() {
       const { data } = await supabase
         .from('professional_profiles')
@@ -228,7 +180,6 @@ export default function ProfessionalDetailPage() {
   )
 
   const minimumImpact = minimumContribution(professional.price)
-  const isDemo = professional.id.startsWith('demo-')
   const focusAreas = professional.focus_areas ?? []
   const bestFit = bestFor(professional, isDa)
   const primaryOutput = primaryOutputFor(professional, isDa)
@@ -238,8 +189,6 @@ export default function ProfessionalDetailPage() {
     back: isDa ? 'Tilbage til profiler' : 'Back to profiles',
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
-    comingSoon: isDa ? 'Kommer snart' : 'Coming soon',
-    preview: isDa ? 'Eksempelprofil' : 'Example profile',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
     briefing: isDa ? `Du vælger selv fokus, når du booker. Minimum DKK ${minimumImpact} af en betalt session bidrager til Kræftens Bekæmpelse.` : `You choose the focus when you book. At least DKK ${minimumImpact} from a paid session contributes to Kræftens Bekæmpelse.`,
     bestFor: isDa ? 'Best for' : 'Best for',
@@ -272,7 +221,7 @@ export default function ProfessionalDetailPage() {
             <div>
               <span className={`mb-8 block h-2 w-24 rounded-full ${accentFor(professional)}`} />
               <p className="mb-5 text-xs font-black uppercase text-gray-400">
-                {professional.industries.join(' / ')}{isDemo ? ` · ${t.preview}` : ''}
+                {professional.industries.join(' / ')}
               </p>
               <h1 className="max-w-4xl text-5xl font-black leading-[0.96] text-gray-950 text-balance md:text-7xl">{professional.name}</h1>
               <p className="mt-6 text-lg font-black text-gray-700">{professional.title} · {professional.company}</p>
@@ -288,8 +237,8 @@ export default function ProfessionalDetailPage() {
                 <p className="mt-2 text-3xl font-black text-gray-950">DKK {professional.price}</p>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{t.briefing}</p>
               </div>
-              <button onClick={() => !isDemo && setDrawerOpen(true)} disabled={isDemo} className="mt-5 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500">
-                {isDemo ? t.comingSoon : t.bookCta}
+              <button onClick={() => setDrawerOpen(true)} className="mt-5 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
+                {t.bookCta}
               </button>
             </aside>
           </div>
@@ -358,8 +307,8 @@ export default function ProfessionalDetailPage() {
                 </div>
               ))}
             </div>
-            <button onClick={() => !isDemo && setDrawerOpen(true)} disabled={isDemo} className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500">
-              {isDemo ? t.comingSoon : t.bookCta}
+            <button onClick={() => setDrawerOpen(true)} className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
+              {t.bookCta}
             </button>
           </aside>
         </div>
@@ -372,14 +321,14 @@ export default function ProfessionalDetailPage() {
               <p className="text-xs font-bold uppercase text-gray-400">{t.session}</p>
               <p className="text-sm font-black text-gray-950">DKK {professional.price} · min. DKK {minimumImpact} impact</p>
             </div>
-            <button onClick={() => !isDemo && setDrawerOpen(true)} disabled={isDemo} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500">
-              {isDemo ? t.comingSoon : t.bookCta}
+            <button onClick={() => setDrawerOpen(true)} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+              {t.bookCta}
             </button>
           </div>
         </div>
       )}
 
-      {!isDemo && <BookingDrawer professional={professional} open={drawerOpen} onClose={() => setDrawerOpen(false)} locale={lang} />}
+      <BookingDrawer professional={professional} open={drawerOpen} onClose={() => setDrawerOpen(false)} locale={lang} />
     </div>
   )
 }

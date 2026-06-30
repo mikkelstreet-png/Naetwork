@@ -32,6 +32,13 @@ body {
 
 h1, h2, h3 { letter-spacing: 0; }
 
+.tracking-tight,
+.tracking-wide { letter-spacing: 0 !important; }
+
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl { border-radius: 0.5rem !important; }
+
 * { min-width: 0; }
 
 button, a, input, textarea, select {

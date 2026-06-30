@@ -64,12 +64,12 @@ export default function ProfilPage() {
   }
 
   if (loading) {
-    return <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] pt-16"><div className="text-gray-400">Indlæser...</div></main>;
+    return <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f4]"><div className="text-gray-400">Indlæser...</div></main>;
   }
 
   if (deleteDone) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-6 pt-16">
+      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f4] px-6">
         <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
           <h1 className="mb-3 text-2xl font-black text-gray-950">Anmodning modtaget</h1>
           <p className="leading-relaxed text-gray-500">Din konto er markeret til sletning. Vi behandler din anmodning inden for 30 dage.</p>
@@ -80,16 +80,12 @@ export default function ProfilPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f7f4] pt-16">
+    <main className="min-h-screen bg-[#f7f7f4]">
       <div className="mx-auto max-w-5xl px-6 py-10 md:py-14">
         <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between md:p-8">
           <div>
-            <Link href="/" className="mb-8 inline-flex items-center gap-2" aria-label="Naetwork home">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-950 text-[11px] font-black text-white">N</span>
-              <span className="font-black tracking-tight text-gray-950">Naetwork</span>
-            </Link>
-            <p className="text-xs font-semibold uppercase text-gray-400">Account</p>
-            <h1 className="mt-2 text-4xl font-black leading-none tracking-tight text-gray-950">Min profil</h1>
+            <p className="text-xs font-semibold uppercase text-gray-400">Konto</p>
+            <h1 className="mt-2 text-4xl font-black leading-none text-gray-950">Min profil</h1>
             <p className="mt-3 text-sm text-gray-500">{user?.email}</p>
           </div>
           <button onClick={handleSignOut} className="w-fit rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:border-gray-950 hover:text-gray-950">Log ud</button>

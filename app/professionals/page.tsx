@@ -17,7 +17,6 @@ interface ProfessionalCard {
   focus_areas?: string[]
   price: number
   bio: string
-  isDemo?: boolean
 }
 
 const FOCUS_LABELS: Record<string, string> = {
@@ -32,53 +31,6 @@ const FOCUS_LABELS: Record<string, string> = {
   ai_career_strategy: 'AI Career Strategy',
   industry_insight: 'Industry Insight',
 }
-
-const DEMO_PROFESSIONALS: ProfessionalCard[] = [
-  {
-    id: 'demo-1',
-    name: 'Mads Christensen',
-    title: 'Associate Director',
-    company: 'Global investment bank',
-    industries: ['Banking'],
-    focus_areas: ['cv_linkedin', 'interview_prep', 'banking_technicals'],
-    price: 1200,
-    bio: 'Tidligere Associate Director med 8 års erfaring i M&A og kapitalmarkeder. Jeg hjælper dig med interviewforberedelse, CV-feedback og at forstå, hvad der faktisk kræves i investment banking.',
-    isDemo: true,
-  },
-  {
-    id: 'demo-2',
-    name: 'Sofie Larsen',
-    title: 'Senior Consultant',
-    company: 'Tier-one strategy firm',
-    industries: ['Management Consulting'],
-    focus_areas: ['case_prep', 'consulting_cases', 'interview_prep', 'career_direction'],
-    price: 1100,
-    bio: 'Senior Consultant med fokus på strategi og organisationsudvikling. Har hjulpet kandidater med case-forberedelse, interviewtræning og karrierevalg.',
-    isDemo: true,
-  },
-  {
-    id: 'demo-3',
-    name: 'Emil Andersen',
-    title: 'AI Product Lead',
-    company: 'Leading AI environment',
-    industries: ['AI'],
-    focus_areas: ['ai_career_strategy', 'industry_insight', 'career_direction', 'application_review'],
-    price: 900,
-    bio: 'Produktleder med baggrund i machine learning og AI-strategi. Hjælper kandidater med at forstå roller, portfolio og veje ind i AI-industrien.',
-    isDemo: true,
-  },
-  {
-    id: 'demo-4',
-    name: 'Clara Holm',
-    title: 'Investment Professional',
-    company: 'Nordic private equity fund',
-    industries: ['Private Equity'],
-    focus_areas: ['pe_investment_case', 'interview_prep', 'career_direction', 'industry_insight'],
-    price: 1500,
-    bio: 'Investment professional med erfaring fra deals, commercial due diligence og investment committee-materiale. Hjælper kandidater med investment cases, deal thinking og PE-interviews.',
-    isDemo: true,
-  },
-]
 
 const INDUSTRIES: Industry[] = ['all', 'AI', 'Banking', 'Management Consulting', 'Private Equity']
 
@@ -111,14 +63,18 @@ function minimumContribution(price: number) {
   return Math.round(price * 0.4)
 }
 
+function initials(name: string) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'N'
+}
+
 function bestFor(pro: ProfessionalCard, isDa: boolean) {
   const focus = pro.focus_areas ?? []
   if (focus.includes('pe_investment_case')) return isDa ? 'PE / investment case' : 'PE / investment case'
   if (focus.includes('banking_technicals')) return isDa ? 'Banking technicals' : 'Banking technicals'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting cases' : 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI career strategy' : 'AI career strategy'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Applications' : 'Applications'
-  return isDa ? 'Career clarity' : 'Career clarity'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting-cases' : 'Consulting cases'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-karrierestrategi' : 'AI career strategy'
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Ansøgning og profil' : 'Applications'
+  return isDa ? 'Karriereretning' : 'Career clarity'
 }
 
 function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
@@ -142,6 +98,8 @@ export default function ProfessionalsPage() {
   const [search, setSearch] = useState('')
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>([])
   const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   const supabase = createClient()
 
@@ -157,7 +115,11 @@ export default function ProfessionalsPage() {
         .select('id, title, company, bio, price_dkk, industries, focus_areas, profiles!inner(name)')
         .eq('visibility', 'published')
 
-      if (error || !data) return
+      if (error || !data) {
+        setLoadError(true)
+        setLoading(false)
+        return
+      }
 
       const mapped: ProfessionalCard[] = (data as Array<{
         id: string
@@ -178,15 +140,14 @@ export default function ProfessionalsPage() {
         price: p.price_dkk ?? 1200,
         bio: p.bio ?? '',
       }))
-      setDbProfessionals(mapped)
+      setDbProfessionals(mapped.filter((profile) => profile.name))
+      setLoading(false)
     }
     fetchProfessionals()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const allProfessionals = dbProfessionals.length > 0 ? dbProfessionals : DEMO_PROFESSIONALS
-
-  const filtered = allProfessionals.filter((p) => {
+  const filtered = dbProfessionals.filter((p) => {
     const matchesIndustry = industryFilter === 'all' || p.industries.includes(industryFilter)
     const searchLower = search.toLowerCase()
     const focusText = (p.focus_areas ?? []).map((area) => FOCUS_LABELS[area] ?? area).join(' ')
@@ -200,7 +161,7 @@ export default function ProfessionalsPage() {
   const t = {
     heading: isDa ? 'Profiler.' : 'Profiles.',
     subheading: isDa
-      ? 'Rolle, felt, output, pris og impact. Vælg den rigtige person uden støj.'
+      ? 'Sammenlign rolle, erfaring, fokus, pris og minimumsbidrag.'
       : 'Role, field, output, price and impact. Choose the right person without noise.',
     searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Book' : 'Book',
@@ -209,8 +170,9 @@ export default function ProfessionalsPage() {
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
     impact: isDa ? 'Min. 40% til Kræftens Bekæmpelse' : 'Min. 40% to Kræftens Bekæmpelse',
-    preview: isDa ? 'Eksempelprofil' : 'Example profile',
-    comingSoon: isDa ? 'Kommer snart' : 'Coming soon',
+    emptyTitle: isDa ? 'De første profiler er på vej' : 'The first profiles are on their way',
+    emptyBody: isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.',
+    errorTitle: isDa ? 'Profilerne kunne ikke indlæses' : 'Profiles could not be loaded',
   }
 
   function resetFilters() {
@@ -253,11 +215,28 @@ export default function ProfessionalsPage() {
 
       <main id="marketplace" className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-14">
         <div className="mb-7 flex items-end justify-between gap-4">
-          <p className="text-sm font-black text-gray-950">{filtered.length} {isDa ? 'profiler' : 'profiles'}</p>
+          <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser profiler' : 'Loading profiles') : `${filtered.length} ${isDa ? 'profiler' : 'profiles'}`}</p>
           <p className="text-xs font-bold uppercase text-gray-400">{t.impact}</p>
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-2" aria-label={isDa ? 'Indlæser profiler' : 'Loading profiles'}>
+            {[0, 1, 2, 3].map((item) => <div key={item} className="h-36 animate-pulse bg-[#f7f7f4]" />)}
+          </div>
+        ) : loadError ? (
+          <div className="border-y border-gray-200 py-16 text-center">
+            <p className="text-xl font-black text-gray-950">{t.errorTitle}</p>
+            <button onClick={() => window.location.reload()} className="mt-6 rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white hover:bg-gray-800">{isDa ? 'Prøv igen' : 'Try again'}</button>
+          </div>
+        ) : dbProfessionals.length === 0 ? (
+          <div className="grid gap-6 border-y border-gray-200 bg-[#f7f7f4] p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+            <div>
+              <p className="text-xl font-black text-gray-950">{t.emptyTitle}</p>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-gray-600">{t.emptyBody}</p>
+            </div>
+            <Link href="/professional/signup" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">{isDa ? 'Bliv professional' : 'Become a professional'}</Link>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="border-y border-gray-200 py-16 text-center">
             <p className="text-xl font-black text-gray-950">{t.noResults}</p>
             <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-gray-500">{t.noResultsBody}</p>
@@ -273,13 +252,16 @@ export default function ProfessionalsPage() {
                 <div className="flex items-center gap-3">
                   <span className={`h-2 w-8 rounded-full lg:hidden ${accentFor(pro)}`} />
                   <p className="text-xs font-black uppercase text-gray-400">
-                    {pro.industries[0] ?? 'Profile'}{pro.isDemo ? ` · ${t.preview}` : ''}
+                    {pro.industries[0] ?? (isDa ? 'Professional' : 'Professional')}
                   </p>
                 </div>
 
-                <div>
-                  <h2 className="text-2xl font-black leading-tight text-gray-950">{pro.name}</h2>
-                  <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title} · {pro.company}</p>
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xs font-black text-gray-950 ${accentFor(pro)}`}>{initials(pro.name)}</span>
+                  <div>
+                    <h2 className="text-2xl font-black leading-tight text-gray-950">{pro.name}</h2>
+                    <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title}{pro.company ? ` · ${pro.company}` : ''}</p>
+                  </div>
                 </div>
 
                 <div>
@@ -288,8 +270,8 @@ export default function ProfessionalsPage() {
                 </div>
 
                 <div>
-                  <p className="text-lg font-black text-gray-950">DKK {pro.price}</p>
-                  <p className="text-xs font-medium text-gray-400">min. DKK {minimumContribution(pro.price)} impact</p>
+                  <p className="text-lg font-black text-gray-950">DKK {pro.price.toLocaleString('da-DK')}</p>
+                  <p className="text-xs font-medium text-gray-400">{isDa ? `Min. DKK ${minimumContribution(pro.price).toLocaleString('da-DK')} til kræftsagen` : `Min. DKK ${minimumContribution(pro.price).toLocaleString('da-DK')} contribution`}</p>
                 </div>
 
                 <div className="flex gap-2 lg:justify-end">
@@ -297,11 +279,10 @@ export default function ProfessionalsPage() {
                     {t.viewProfile}
                   </Link>
                   <button
-                    onClick={() => !pro.isDemo && setBookTarget(pro)}
-                    disabled={pro.isDemo}
-                    className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-500"
+                    onClick={() => setBookTarget(pro)}
+                    className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800"
                   >
-                    {pro.isDemo ? t.comingSoon : t.bookCta}
+                    {t.bookCta}
                   </button>
                 </div>
               </article>

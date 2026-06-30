@@ -81,12 +81,12 @@ export default function BookingsPage() {
   const totalValue = bookings.reduce((sum, booking) => sum + (booking.price_dkk ?? 0), 0)
 
   return (
-    <main className="min-h-screen bg-[#f7f7f4] pt-16">
+    <main className="min-h-screen bg-[#f7f7f4]">
       <div className="mx-auto max-w-5xl px-6 py-10 md:py-14">
         <div className="mb-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <Link href="/profil" className="mb-8 inline-flex rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; {isDa ? 'Min profil' : 'My profile'}</Link>
           <p className="text-xs font-semibold uppercase text-gray-400">Sessions</p>
-          <h1 className="mt-2 text-4xl font-black leading-none tracking-tight text-gray-950">{isDa ? 'Mine bookinger' : 'My bookings'}</h1>
+          <h1 className="mt-2 text-4xl font-black leading-none text-gray-950">{isDa ? 'Mine bookinger' : 'My bookings'}</h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500">{isDa ? 'Overblik over kommende og tidligere 60-minutters sessioner.' : 'Overview of upcoming and past 60-minute sessions.'}</p>
         </div>
 
@@ -102,7 +102,7 @@ export default function BookingsPage() {
           <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-sm">
             <h2 className="text-xl font-black text-gray-950">{isDa ? 'Ingen bookinger endnu' : 'No bookings yet'}</h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">{isDa ? 'Find en professionel og book 60 minutter med fokus på dit næste karriereskridt.' : 'Find a professional and book 60 minutes focused on your next career move.'}</p>
-            <Link href="/professionals" className="mt-6 inline-flex rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
+            <Link href="/professionals" className="mt-6 inline-flex rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
               {isDa ? 'Find en professionel' : 'Find a professional'}
             </Link>
           </div>
@@ -123,7 +123,7 @@ export default function BookingsPage() {
 
         {bookings.length > 0 && (
           <div className="mt-8 text-center">
-            <Link href="/professionals" className="inline-flex rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
+            <Link href="/professionals" className="inline-flex rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">
               {isDa ? 'Book ny session' : 'Book new session'}
             </Link>
           </div>
