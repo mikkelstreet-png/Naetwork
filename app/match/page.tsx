@@ -71,14 +71,18 @@ export default function MatchPage() {
   const [need, setNeed] = useState<Need | ''>('');
   const completed = Number(Boolean(field)) + Number(Boolean(need));
   const recommendation = recommendationFor(field, need, isDa);
-  const profileHref = field ? `/professionals?field=${encodeURIComponent(field)}` : '/professionals';
+  const profileHref = field && need
+    ? `/professionals?field=${encodeURIComponent(field)}&need=${need}`
+    : field
+      ? `/professionals?field=${encodeURIComponent(field)}`
+      : '/professionals';
 
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
-      <section className="border-b border-gray-200 bg-white px-5 py-12 sm:px-8 md:py-16">
+      <section className="border-b border-gray-200 bg-white px-5 py-8 sm:px-8 md:py-14">
         <div className="mx-auto max-w-6xl">
           <p className="mb-4 text-xs font-black uppercase text-gray-400">Match</p>
-          <h1 className="max-w-4xl text-5xl font-black leading-[0.96] text-gray-950 text-balance md:text-7xl">
+          <h1 className="max-w-4xl text-4xl font-black leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">
             {isDa ? 'Hvad skal de 60 minutter løse?' : 'What should the 60 minutes solve?'}
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
@@ -87,7 +91,7 @@ export default function MatchPage() {
         </div>
       </section>
 
-      <section className="px-5 py-10 sm:px-8 md:py-14">
+      <section className="px-5 py-7 sm:px-8 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_380px]">
           <div className="border-t border-gray-300 bg-white">
             <section className="border-b border-gray-300 p-5 md:p-7">

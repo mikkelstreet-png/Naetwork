@@ -1,8 +1,1 @@
-import { createClient as supabaseCreateClient } from '@supabase/supabase-js';
-
-export function createClient() {
-  return supabaseCreateClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://not-configured.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'not-configured'
-  );
-}
+export { createClient } from './supabase/client';

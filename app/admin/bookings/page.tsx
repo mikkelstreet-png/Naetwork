@@ -109,8 +109,8 @@ export default function BookingsPage() {
   const filtered = filter === 'all' ? bookings : bookings.filter(b => b.status === filter);
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <aside className="w-60 bg-gray-900 flex-shrink-0 flex flex-col">
+    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
+      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
         <div className="px-6 py-5 border-b border-gray-800">
           <Link href="/admin" className="text-white font-bold text-lg tracking-tight">Admin</Link>
           <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">Naetwork</Link>

@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { safeInternalPath } from '@/lib/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,6 +14,15 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
+  useEffect(() => {
+    const errorCode = new URLSearchParams(window.location.search).get('error');
+    if (errorCode === 'service_unavailable') {
+      setError('Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.');
+    } else if (errorCode === 'auth_callback_error') {
+      setError('Linket er udløbet eller ugyldigt. Prøv at logge ind, eller bed om et nyt link.');
+    }
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -20,13 +30,15 @@ export default function LoginPage() {
 
     const { error: authError } = await createClient().auth.signInWithPassword({ email, password });
     if (authError) {
-      setError('Forkert e-mail eller adgangskode. Prøv igen.');
+      setError(/fetch|network/i.test(authError.message)
+        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
+        : 'Forkert e-mail eller adgangskode. Prøv igen.');
       setLoading(false);
       return;
     }
 
     const requestedPath = new URLSearchParams(window.location.search).get('next');
-    const nextPath = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/profil';
+    const nextPath = safeInternalPath(requestedPath, '/profil');
     router.push(nextPath);
   }
 

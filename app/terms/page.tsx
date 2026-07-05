@@ -6,7 +6,11 @@ export const metadata: Metadata = {
   description: 'Vilkår for brug af Naetwork, booking af 60-minutters sessioner og professionelle profiler.',
 }
 
-const updated = '19. juni 2026'
+const updated = '30. juni 2026'
+const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
+const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
+const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
+const operator = [legalName, legalRegistration, legalAddress].filter(Boolean).join(', ')
 
 const keyPoints = [
   ['Format', '60 min 1:1 career session'],
@@ -20,6 +24,7 @@ const sections = [
     title: '1. Om Naetwork',
     body: [
       'Naetwork er en platform, der forbinder ambitiøse kandidater med professionelle fra AI, Banking, Management Consulting og Private Equity.',
+      `Platformen drives af ${operator}.`,
       'Kerneproduktet er en 60-minutters 1:1 session, hvor kandidaten vælger fokus før booking. Det kan eksempelvis være CV, interview, case prep, technicals, AI career strategy eller karrierevalg.',
     ],
   },
@@ -49,8 +54,8 @@ const sections = [
     title: '5. Priser og betaling',
     body: [
       'Professionelle sætter selv prisen for en 60-minutters session inden for den ramme, Naetwork viser på platformen. Aktuelt er rammen DKK 600-1.800.',
-      'Den konkrete pris vises før booking. Eventuelle platformgebyrer, udbetalinger og bidrag håndteres efter de modeller, der er beskrevet i platformen på booking- eller profilniveau.',
-      'Naetwork kan ændre prisrammer, gebyrer og betalingsmodeller fremadrettet. Ændringer påvirker ikke allerede bekræftede sessioner, medmindre andet er nødvendigt af tekniske eller juridiske årsager.',
+      'Betaling er ikke aktiveret endnu. En bookinganmodning eller bekræftelse trækker derfor ikke et beløb og udgør ikke dokumentation for en betaling eller donation.',
+      'Når betaling aktiveres, vil den konkrete pris, eventuelle gebyrer, udbetaling og bidrag fremgå før bindende betaling. Vilkårene opdateres inden aktivering.',
     ],
   },
   {
@@ -107,7 +112,7 @@ export default function TermsPage() {
           <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
           <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Legal</p>
           <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Vilkår for brug</h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">De klare spilleregler for kandidater, professionelle, booking, betaling og impact på Naetwork.</p>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">De klare spilleregler for kandidater, professionelle, booking og impact på Naetwork.</p>
           <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>
         </div>
       </section>

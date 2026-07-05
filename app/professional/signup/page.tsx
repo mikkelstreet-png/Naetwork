@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { sendWelcomeProfessional } from '@/lib/email';
+import { Mail } from 'lucide-react';
 
 const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'];
 const FOCUS_AREAS = [
@@ -33,6 +33,7 @@ export default function ProfessionalSignupPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   const estimatedContribution = Math.round(form.priceDkk * (form.contributionPercent / 100));
   const estimatedProfessionalShare = form.priceDkk - estimatedContribution;
@@ -67,7 +68,7 @@ export default function ProfessionalSignupPage() {
 
     await supabase
       .from('profiles')
-      .update({ name: form.name, role: 'professional' })
+      .update({ name: form.name })
       .eq('id', profile.id);
 
     await supabase.from('professional_profiles').upsert({
@@ -78,12 +79,19 @@ export default function ProfessionalSignupPage() {
       industries: form.industry ? [form.industry] : [],
       focus_areas: form.sessionTypes,
       price_dkk: form.priceDkk,
+      linkedin_url: form.linkedin,
+      contribution_percent: form.contributionPercent,
+      review_status: 'pending',
       visibility: 'hidden',
     }, { onConflict: 'profile_id' });
   }
 
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2)) return;
+    if (!accepted) {
+      setError('Accepter vilkår og privatlivspolitik for at oprette profilen.');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -104,13 +112,16 @@ export default function ProfessionalSignupPage() {
           priceDkk: form.priceDkk,
           donatesToCharity: true,
           contributionPercent: form.contributionPercent,
+          termsAcceptedAt: new Date().toISOString(),
         },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/profil/professionel`,
       },
     });
 
     if (authErr || !authData.user) {
-      setError(authErr?.message || 'Kunne ikke oprette konto.');
+      setError(authErr && /fetch|network/i.test(authErr.message)
+        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
+        : authErr?.message || 'Kunne ikke oprette konto.');
       setLoading(false);
       return;
     }
@@ -119,25 +130,16 @@ export default function ProfessionalSignupPage() {
       await createDraftProfessionalProfile(authData.user.id).catch(() => undefined);
     }
 
-    await sendWelcomeProfessional({
-      email: form.email,
-      name: form.name,
-      priceDkk: form.priceDkk,
-      contributionPercent: form.contributionPercent,
-    }).catch(() => false);
-
     setSubmitted(true);
     setLoading(false);
   };
 
   if (submitted) {
     return (
-      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f4] px-6 py-12">
-        <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
+      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f4] px-5 py-10 sm:px-6 sm:py-12">
+        <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 text-center shadow-sm sm:p-8">
           <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-gray-950 text-white">
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7l8 6 8-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+            <Mail size={24} aria-hidden="true" />
           </div>
           <h1 className="mb-3 text-2xl font-black text-gray-950">Bekræft din e-mail</h1>
           <p className="leading-relaxed text-gray-500">
@@ -151,14 +153,14 @@ export default function ProfessionalSignupPage() {
 
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
-        <aside className="rounded-lg border border-gray-900 bg-gray-950 p-8 text-white shadow-2xl shadow-gray-950/10 lg:sticky lg:top-24 lg:h-fit">
-          <p className="mb-6 text-xs font-semibold uppercase text-cyan-200">For professionals</p>
-          <h1 className="text-4xl font-black leading-none text-white text-balance">Gør din erfaring bookbar med mening.</h1>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-gray-400">
+      <div className="mx-auto grid max-w-6xl gap-5 px-5 py-6 sm:gap-8 sm:px-6 sm:py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
+        <aside className="rounded-lg border border-gray-900 bg-gray-950 p-5 text-white lg:sticky lg:top-24 lg:h-fit lg:p-8">
+          <p className="mb-3 text-[11px] font-semibold uppercase text-cyan-200 sm:mb-6 sm:text-xs">For professionals</p>
+          <h1 className="text-2xl font-black leading-tight text-white text-balance sm:text-4xl sm:leading-none">Gør din erfaring bookbar med mening.</h1>
+          <p className="mt-3 max-w-md text-xs leading-relaxed text-gray-400 sm:mt-6 sm:text-sm">
             Ansøg med din nuværende rolle, virksomhed og LinkedIn. Profiler gennemgås før publicering. Du vælger selv fokus, pris og et konkret bidrag mellem 40% og 90%.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-3">
+          <div className="mt-5 hidden grid-cols-3 gap-3 sm:grid lg:mt-8">
             <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
               <p className="text-lg font-black">60</p>
               <p className="mt-1 text-[11px] text-gray-500">min</p>
@@ -175,11 +177,11 @@ export default function ProfessionalSignupPage() {
         </aside>
 
         <section>
-          <div className="mb-5 grid grid-cols-4 gap-2">
+          <div className="mb-4 grid grid-cols-4 gap-1.5 sm:mb-5 sm:gap-2">
             {STEP_LABELS.map((label, index) => {
               const n = index + 1;
               return (
-                <div key={label} className={`rounded-lg border px-3 py-3 ${n <= step ? 'border-gray-950 bg-white' : 'border-gray-200 bg-white/60'}`}>
+                <div key={label} className={`rounded-lg border px-2 py-2.5 sm:px-3 sm:py-3 ${n <= step ? 'border-gray-950 bg-white' : 'border-gray-200 bg-white/60'}`}>
                   <p className={`text-xs font-black ${n <= step ? 'text-gray-950' : 'text-gray-400'}`}>0{n}</p>
                   <p className={`mt-1 hidden text-xs font-semibold sm:block ${n <= step ? 'text-gray-700' : 'text-gray-400'}`}>{label}</p>
                 </div>
@@ -187,47 +189,47 @@ export default function ProfessionalSignupPage() {
             })}
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+          <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm sm:p-6 md:p-8">
             {step === 1 && (
               <div className="space-y-5">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 01</p>
-                  <h1 className="mt-2 text-2xl font-black text-gray-950">Grundlæggende information</h1>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Grundlæggende information</h2>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">Fulde navn</label>
-                    <input value={form.name} onChange={e => set('name', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Mikkel Jensen" />
+                    <label htmlFor="professional-name" className="mb-1 block text-sm font-semibold text-gray-700">Fulde navn</label>
+                    <input id="professional-name" autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Mikkel Jensen" />
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
-                    <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="mikkel@firma.dk" />
+                    <label htmlFor="professional-email" className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
+                    <input id="professional-email" type="email" autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="mikkel@firma.dk" />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">Adgangskode</label>
-                  <input type="password" value={form.password} onChange={e => set('password', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Min. 8 tegn" />
+                  <label htmlFor="professional-password" className="mb-1 block text-sm font-semibold text-gray-700">Adgangskode</label>
+                  <input id="professional-password" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Min. 8 tegn" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">Jobtitel</label>
-                    <input value={form.title} onChange={e => set('title', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Senior Manager" />
+                    <label htmlFor="professional-title" className="mb-1 block text-sm font-semibold text-gray-700">Jobtitel</label>
+                    <input id="professional-title" value={form.title} onChange={e => set('title', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Senior Manager" />
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-semibold text-gray-700">Virksomhed</label>
-                    <input value={form.company} onChange={e => set('company', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Nordea" />
+                    <label htmlFor="professional-company" className="mb-1 block text-sm font-semibold text-gray-700">Virksomhed</label>
+                    <input id="professional-company" value={form.company} onChange={e => set('company', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Nordea" />
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
-                  <select value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950">
+                  <label htmlFor="professional-industry" className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
+                  <select id="professional-industry" value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950">
                     <option value="">Vælg industri</option>
                     {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
-                  <input type="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="https://linkedin.com/in/..." />
+                  <label htmlFor="professional-linkedin" className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
+                  <input id="professional-linkedin" type="url" inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="https://linkedin.com/in/..." />
                   <p className="mt-1 text-xs text-gray-400">Bruges til at gennemgå din professionelle baggrund.</p>
                 </div>
               </div>
@@ -237,14 +239,14 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 02</p>
-                  <h1 className="mt-2 text-2xl font-black text-gray-950">Fokusområder og pris</h1>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Fokusområder og pris</h2>
                   <p className="mt-2 text-sm leading-relaxed text-gray-500">Alle sessioner er 60 minutter. Kandidaten vælger fokus før booking.</p>
                 </div>
                 <div>
                   <label className="mb-3 block text-sm font-semibold text-gray-700">Hvad kan kandidater bruge din session på?</label>
                   <div className="grid grid-cols-2 gap-2">
                     {FOCUS_AREAS.map(s => (
-                      <button key={s.type} onClick={() => toggleSessionType(s.type)}
+                      <button key={s.type} type="button" aria-pressed={form.sessionTypes.includes(s.type)} onClick={() => toggleSessionType(s.type)}
                         className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${form.sessionTypes.includes(s.type) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>
                         {s.label}
                       </button>
@@ -252,14 +254,14 @@ export default function ProfessionalSignupPage() {
                   </div>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                  <label className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
-                  <input type="range" min={600} max={1800} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
+                  <label htmlFor="professional-price" className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
+                  <input id="professional-price" type="range" min={600} max={1800} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
                     className="w-full accent-gray-950" />
                   <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>DKK 600</span><span>DKK 1.800</span></div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-semibold text-gray-700">Bio (valgfri)</label>
-                  <textarea value={form.bio} maxLength={500} onChange={e => set('bio', e.target.value)} rows={4} className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Fortæl konkret, hvad du kan hjælpe med i en 60-minutters session..." />
+                  <label htmlFor="professional-bio" className="mb-1 block text-sm font-semibold text-gray-700">Bio (valgfri)</label>
+                  <textarea id="professional-bio" value={form.bio} maxLength={500} onChange={e => set('bio', e.target.value)} rows={4} className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Fortæl konkret, hvad du kan hjælpe med i en 60-minutters session..." />
                 </div>
               </div>
             )}
@@ -268,12 +270,12 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 03</p>
-                  <h1 className="mt-2 text-2xl font-black text-gray-950">Bidrag pr. session</h1>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Bidrag pr. session</h2>
                   <p className="mt-2 text-sm leading-relaxed text-gray-500">Hver betalt session bidrager med minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse.</p>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
-                  <label className="mb-4 block text-sm font-semibold text-gray-700">Impact pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
-                  <input type="range" min={40} max={90} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
+                  <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Impact pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
+                  <input id="professional-contribution" type="range" min={40} max={90} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
                     className="w-full accent-gray-950" />
                   <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
                 </div>
@@ -296,7 +298,7 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-5">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 04</p>
-                  <h1 className="mt-2 text-2xl font-black text-gray-950">Bekræft og opret profil</h1>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Bekræft og opret profil</h2>
                 </div>
                 <div className="overflow-hidden rounded-lg border border-gray-200">
                   {[
@@ -313,6 +315,10 @@ export default function ProfessionalSignupPage() {
                     </div>
                   ))}
                 </div>
+                <label className="flex items-start gap-3 text-sm leading-relaxed text-gray-600">
+                  <input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-1 h-4 w-4 accent-gray-950" />
+                  <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitik</Link>.</span>
+                </label>
               </div>
             )}
 

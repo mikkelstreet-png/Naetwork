@@ -6,10 +6,9 @@ export const metadata: Metadata = {
   description: 'Læs hvordan Naetwork bruger nødvendige cookies og lokal lagring.',
 }
 
-const updated = '19. juni 2026'
+const updated = '30. juni 2026'
 
 const cookieRows = [
-  ['cookie_consent', 'Gemmer dit valg i cookie-banneret', 'Lokal lagring', 'Nødvendig'],
   ['naetwork_lang', 'Gemmer dit valgte sprog', 'Lokal lagring', 'Funktionel'],
   ['Supabase auth/session', 'Holder dig logget ind og beskytter din konto', 'Cookie eller lokal lagring', 'Nødvendig'],
 ]
@@ -18,7 +17,7 @@ const sections = [
   {
     title: '1. Kort fortalt',
     body: [
-      'Naetwork bruger kun cookies og lokal lagring, når det hjælper platformen med at fungere, holde dig logget ind, huske sprogvalg eller gemme dine cookiepræferencer.',
+      'Naetwork bruger kun cookies og lokal lagring, når det er nødvendigt for at holde dig logget ind, beskytte din konto eller huske dit sprogvalg.',
       'Vi bruger ikke reklamecookies på nuværende tidspunkt. Hvis vi senere tilføjer analytics eller marketingcookies, skal det beskrives tydeligt og kræve samtykke, hvor loven kræver det.',
     ],
   },
@@ -31,13 +30,13 @@ const sections = [
   {
     title: '3. Funktionelle valg',
     body: [
-      'Vi kan gemme valg som sprog og cookiepræference lokalt i browseren. Det gør oplevelsen mere stabil uden at bruge oplysningerne til reklameprofilering.',
+      'Vi gemmer dit sprogvalg lokalt i browseren. Det gør oplevelsen mere stabil uden at bruge oplysningerne til reklameprofilering.',
     ],
   },
   {
     title: '4. Sådan ændrer du valg',
     body: [
-      'Du kan altid slette cookies og lokal lagring i din browser. Hvis du gør det, kan du blive logget ud, og Naetwork kan spørge om dine valg igen.',
+      'Du kan altid slette cookies og lokal lagring i din browser. Hvis du gør det, kan du blive logget ud, og sprogvalget kan blive nulstillet.',
       'Hvis Naetwork senere bruger ikke-nødvendige cookies, skal du kunne ændre eller trække samtykke tilbage på en tilsvarende enkel måde.',
     ],
   },

@@ -23,12 +23,22 @@ CREATE POLICY "Admin can read all bookings" ON bookings FOR SELECT USING (
   EXISTS (SELECT 1 FROM profiles WHERE auth_user_id = auth.uid() AND role = 'admin')
 );
 
+-- Contact inbox
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT,
+  email TEXT,
+  subject TEXT,
+  message TEXT,
+  status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'read')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Admin can read all contact messages
 ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin can read contact messages" ON contact_messages FOR SELECT USING (
   EXISTS (SELECT 1 FROM profiles WHERE auth_user_id = auth.uid() AND role = 'admin')
 );
-CREATE POLICY "Anyone can insert contact message" ON contact_messages FOR INSERT WITH CHECK (true);
 
 -- Admin audit log table
 CREATE TABLE IF NOT EXISTS admin_audit_log (

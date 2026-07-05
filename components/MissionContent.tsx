@@ -18,7 +18,7 @@ export function MissionContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-gray-200 bg-white px-5 py-14 sm:px-8 md:py-20">
+      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_380px] lg:items-end">
           <div>
             <p className="kicker mb-5">Mission</p>
@@ -45,7 +45,7 @@ export function MissionContent() {
         </div>
       </section>
 
-      <section className="px-5 py-12 sm:px-8 md:py-16">
+      <section className="px-5 py-10 sm:px-8 md:py-16">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
             <p className="kicker mb-5">{isDa ? 'Principper' : 'Principles'}</p>

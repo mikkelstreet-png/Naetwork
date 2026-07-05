@@ -23,7 +23,7 @@ export function ImpactContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-gray-200 bg-white px-5 py-14 sm:px-8 md:py-20">
+      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_390px] lg:items-end">
           <div>
             <p className="kicker mb-5">Impact model</p>
@@ -38,7 +38,7 @@ export function ImpactContent() {
           </div>
           <aside className="dark-panel p-6">
             <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
-            <p className="mt-5 text-6xl font-black">40-90%</p>
+            <p className="mt-5 text-5xl font-black sm:text-6xl">40-90%</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               {isDa ? 'Minimum 40% fra hver betalt session. Professionals kan vælge et højere bidragsniveau.' : 'Minimum 40% from every paid session. Professionals can choose a higher contribution level.'}
             </p>
@@ -56,7 +56,7 @@ export function ImpactContent() {
         </div>
       </section>
 
-      <section className="px-5 py-12 sm:px-8 md:py-16">
+      <section className="px-5 py-10 sm:px-8 md:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-4">
             {examples.map(([price, impact, percent]) => (

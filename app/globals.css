@@ -124,13 +124,13 @@ input, textarea, select { font-size: 16px; }
 
   .page-shell { @apply min-h-screen bg-[#f7f7f4]; }
 
-  .section-pad { @apply px-5 py-14 sm:px-8 md:py-20; }
+  .section-pad { @apply px-5 py-10 sm:px-8 sm:py-14 md:py-20; }
 
   .kicker { @apply text-xs font-black uppercase text-gray-400; }
 
-  .display-xl { @apply text-5xl font-black leading-[0.96] text-gray-950 md:text-7xl; text-wrap: balance; }
+  .display-xl { @apply text-4xl font-black leading-none text-gray-950 sm:text-5xl md:text-7xl; text-wrap: balance; }
 
-  .display-lg { @apply text-4xl font-black leading-tight text-gray-950 md:text-5xl; text-wrap: balance; }
+  .display-lg { @apply text-3xl font-black leading-tight text-gray-950 sm:text-4xl md:text-5xl; text-wrap: balance; }
 
   .body-lg { @apply text-base leading-relaxed text-gray-600 md:text-lg; }
 

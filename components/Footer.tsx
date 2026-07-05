@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { usePathname } from 'next/navigation';
 
 export function Footer() {
   const { tr, lang } = useLanguage();
   const isDa = lang === 'da';
+  const pathname = usePathname();
 
   const columns = [
     {
@@ -13,7 +15,7 @@ export function Footer() {
       links: [
         { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles' },
         { href: '/match', label: isDa ? 'Find fokus' : 'Find focus' },
-        { href: '/onboarding', label: isDa ? 'Kom i gang' : 'Get started' },
+        { href: '/contact', label: isDa ? 'Kontakt' : 'Contact' },
       ],
     },
     {
@@ -42,6 +44,8 @@ export function Footer() {
       ],
     },
   ];
+
+  if (pathname.startsWith('/admin')) return null;
 
   return (
     <footer className="border-t border-gray-200 bg-white">

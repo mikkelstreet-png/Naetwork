@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -10,8 +10,18 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [sessionState, setSessionState] = useState<'checking' | 'ready' | 'invalid'>('checking');
   const router = useRouter();
-  const supabase = createClient();
+
+  useEffect(() => {
+    let active = true;
+    createClient().auth.getUser().then(({ data }) => {
+      if (active) setSessionState(data.user ? 'ready' : 'invalid');
+    }).catch(() => {
+      if (active) setSessionState('invalid');
+    });
+    return () => { active = false; };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,7 +30,8 @@ export default function ResetPasswordPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    setError('');
+    const { error } = await createClient().auth.updateUser({ password });
     if (error) {
       setError(error.message);
       setLoading(false);
@@ -28,6 +39,22 @@ export default function ResetPasswordPage() {
       setDone(true);
       setTimeout(() => router.push('/profil'), 2000);
     }
+  }
+
+  if (sessionState === 'checking') {
+    return <main className="min-h-[calc(100vh-4rem)] bg-[#f7f7f4] px-5 py-16 text-center text-sm text-gray-400">Kontrollerer nulstillingslink...</main>;
+  }
+
+  if (sessionState === 'invalid') {
+    return (
+      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f4] px-6">
+        <div className="w-full max-w-md border-y border-gray-200 bg-white py-10 text-center">
+          <h1 className="text-2xl font-black text-gray-950">Linket er udløbet eller ugyldigt</h1>
+          <p className="mt-3 text-sm leading-relaxed text-gray-500">Bed om et nyt nulstillingslink for at fortsætte sikkert.</p>
+          <Link href="/forgot-password" className="mt-7 inline-flex rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white">Nyt nulstillingslink</Link>
+        </div>
+      </main>
+    );
   }
 
   if (done) {
@@ -52,14 +79,14 @@ export default function ResetPasswordPage() {
         <p className="mt-2 text-sm leading-relaxed text-gray-500">Vælg et nyt password til din konto.</p>
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">Nyt password</label>
-            <input type="password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Mindst 8 tegn" />
+            <label htmlFor="new-password" className="mb-1 block text-sm font-semibold text-gray-700">Nyt password</label>
+            <input id="new-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Mindst 8 tegn" />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">Bekræft password</label>
-            <input type="password" required value={confirm} onChange={e => setConfirm(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Gentag password" />
+            <label htmlFor="confirm-password" className="mb-1 block text-sm font-semibold text-gray-700">Bekræft password</label>
+            <input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={e => setConfirm(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Gentag password" />
           </div>
-          {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+          {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
           <button type="submit" disabled={loading} className="w-full rounded-xl bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
             {loading ? 'Gemmer...' : 'Gem nyt password'}
           </button>

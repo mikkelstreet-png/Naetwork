@@ -15,15 +15,19 @@ export default function SystemPage() {
   const [dbStatus, setDbStatus] = useState<'checking' | 'ok' | 'error'>('checking');
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [environment, setEnvironment] = useState<Record<string, boolean>>({});
+  const [integrations, setIntegrations] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const supabase = createClient();
 
     async function load() {
-      // Test DB connection
       try {
-        const { error } = await supabase.from('profiles').select('id').limit(1);
-        setDbStatus(error ? 'error' : 'ok');
+        const response = await fetch('/api/admin/system');
+        const health = await response.json();
+        setDbStatus(response.ok && health.database === 'ok' ? 'ok' : 'error');
+        setEnvironment(health.environment ?? {});
+        setIntegrations(health.integrations ?? {});
       } catch {
         setDbStatus('error');
       }
@@ -41,14 +45,11 @@ export default function SystemPage() {
     load();
   }, []);
 
-  const envVars = [
-    { name: 'NEXT_PUBLIC_SUPABASE_URL', set: !!process.env.NEXT_PUBLIC_SUPABASE_URL },
-    { name: 'NEXT_PUBLIC_SUPABASE_ANON_KEY', set: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY },
-  ];
+  const envVars = Object.entries(environment).map(([name, set]) => ({ name, set }));
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <aside className="w-60 bg-gray-900 flex-shrink-0 flex flex-col">
+    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
+      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
         <div className="px-6 py-5 border-b border-gray-800">
           <Link href="/admin" className="text-white font-bold text-lg tracking-tight">Admin</Link>
           <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">Naetwork</Link>
@@ -87,6 +88,18 @@ export default function SystemPage() {
                 {dbStatus === 'checking' ? 'Tjekker...' : dbStatus === 'ok' ? 'Forbundet' : 'Fejl'}
               </span>
             </div>
+          </div>
+
+          <div className="rounded-lg border border-gray-100 bg-white px-5 py-4 shadow-sm">
+            <h2 className="mb-3 text-sm font-semibold text-gray-900">Integrationer</h2>
+            <ul className="space-y-2">
+              {Object.entries(integrations).map(([name, status]) => (
+                <li key={name} className="flex items-center justify-between gap-4 text-sm">
+                  <span className="font-mono text-xs text-gray-600">{name}</span>
+                  <span className="font-semibold text-amber-700">{status}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Env vars */}

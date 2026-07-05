@@ -49,6 +49,10 @@ export default function AdminPage() {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.email) setUserEmail(user.email);
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const startOfTomorrow = new Date(startOfToday);
+      startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
 
       const [
         { count: users },
@@ -59,8 +63,8 @@ export default function AdminPage() {
         { data: audit },
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('professional_profiles').select('*', { count: 'exact', head: true }).eq('approval_status', 'approved'),
-        supabase.from('bookings').select('*', { count: 'exact', head: true }).gte('date', new Date().toISOString().split('T')[0]).lt('date', new Date(Date.now() + 86400000).toISOString().split('T')[0]),
+        supabase.from('professional_profiles').select('*', { count: 'exact', head: true }).eq('review_status', 'approved').eq('visibility', 'published'),
+        supabase.from('bookings').select('*', { count: 'exact', head: true }).gte('starts_at', startOfToday.toISOString()).lt('starts_at', startOfTomorrow.toISOString()),
         supabase.from('legal_blockers').select('*', { count: 'exact', head: true }).eq('status', 'open'),
         supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
         supabase.from('admin_audit_log').select('id, action, target_table, notes, created_at').order('created_at', { ascending: false }).limit(5),
@@ -82,9 +86,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
       {/* Sidebar */}
-      <aside className="w-60 bg-gray-900 flex-shrink-0 flex flex-col">
+      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
         <div className="px-6 py-5 border-b border-gray-800">
           <span className="text-white font-bold text-lg tracking-tight">Admin</span>
           <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">

@@ -7,9 +7,11 @@ import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { CookieBanner } from '@/components/CookieBanner';
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? 'https://naetwork.dk';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
   title: 'Naetwork - Karrieresparring med mening',
   description:
     'Book 60-minute career sessions with professionals from AI, Banking, Management Consulting and Private Equity. Every paid session contributes to Kræftens Bekæmpelse.',
@@ -18,7 +20,17 @@ export const metadata: Metadata = {
     description:
       'Focused 60-minute career guidance with concrete pricing, sharp profiles and a 40-90% impact contribution from every paid session.',
     siteName: 'Naetwork',
+    type: 'website',
+    locale: 'da_DK',
+    url: '/',
   },
+  alternates: { canonical: '/' },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Naetwork - Karrieresparring med mening',
+    description: '60 minutters fokuseret karrieresparring med professionals fra AI, Banking, Management Consulting og Private Equity.',
+  },
+  robots: { index: true, follow: true },
   icons: {
     icon: '/naetwork-logo.svg',
     apple: '/naetwork-logo.svg',
@@ -30,10 +42,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="da">
       <body className="bg-white text-gray-900 antialiased">
         <LanguageProvider>
+          <a href="#main-content" className="sr-only z-[100] bg-white px-4 py-3 font-bold text-gray-950 focus:not-sr-only focus:fixed focus:left-3 focus:top-3">
+            Spring til indhold
+          </a>
           <Navbar />
-          {children}
+          <div id="main-content" tabIndex={-1}>{children}</div>
           <Footer />
-          <CookieBanner />
         </LanguageProvider>
       </body>
     </html>

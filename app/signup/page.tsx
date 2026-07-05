@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowRight, Mail } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { sendWelcomeCandidate } from '@/lib/email';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -13,28 +12,36 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [accepted, setAccepted] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    const { error: authError } = await createClient().auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name, role: 'candidate' },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
-      },
-    });
-
-    if (authError) {
-      setError(authError.message);
+    if (!accepted) {
+      setError('Accepter vilkår og privatlivspolitik for at oprette en konto.');
       setLoading(false);
       return;
     }
 
-    await sendWelcomeCandidate({ email, name }).catch(() => false);
+    const { error: authError } = await createClient().auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name: name.trim(), role: 'candidate', termsAcceptedAt: new Date().toISOString() },
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/match`,
+      },
+    });
+
+    if (authError) {
+      setError(/fetch|network/i.test(authError.message)
+        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
+        : authError.message);
+      setLoading(false);
+      return;
+    }
+
     setDone(true);
     setLoading(false);
   }
@@ -45,7 +52,7 @@ export default function SignupPage() {
         <section className="w-full max-w-lg border-y border-gray-200 py-10 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-gray-950 text-white"><Mail size={20} aria-hidden="true" /></div>
           <h1 className="mt-6 text-3xl font-black text-gray-950">Bekræft din e-mail</h1>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">Vi har sendt et bekræftelseslink til <strong className="text-gray-950">{email}</strong>. Linket aktiverer din konto og fører dig videre til dit korte onboardingforløb.</p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">Vi har sendt et bekræftelseslink til <strong className="text-gray-950">{email}</strong>. Linket aktiverer din konto og fører dig videre til at finde det rette fokus.</p>
           <Link href="/login" className="mt-7 inline-flex items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">Til log ind <ArrowRight size={16} aria-hidden="true" /></Link>
         </section>
       </main>
@@ -83,6 +90,11 @@ export default function SignupPage() {
               <input id="signup-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Mindst 8 tegn" />
             </div>
 
+            <label className="flex items-start gap-3 text-sm leading-relaxed text-gray-600">
+              <input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-1 h-4 w-4 accent-gray-950" />
+              <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitik</Link>.</span>
+            </label>
+
             {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
             <button type="submit" disabled={loading} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-wait disabled:opacity-60">
@@ -91,7 +103,6 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="mt-5 text-xs leading-relaxed text-gray-400">Ved at oprette en konto accepterer du Naetworks <Link href="/terms" className="underline underline-offset-2">vilkår</Link> og <Link href="/privacy" className="underline underline-offset-2">privatlivspolitik</Link>.</p>
           <p className="mt-5 border-t border-gray-200 pt-5 text-center text-sm text-gray-500">Har du allerede en konto? <Link href="/login" className="font-black text-gray-950 underline decoration-gray-300 underline-offset-4">Log ind</Link></p>
         </section>
       </div>

@@ -8,8 +8,9 @@ export function generateStaticParams() {
   return FIELD_SLUGS.map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const field = FIELD_GUIDES[params.slug as FieldSlug];
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const field = FIELD_GUIDES[slug as FieldSlug];
   if (!field) return { title: 'Field - Naetwork' };
   return {
     title: `${field.label} career sessions - Naetwork`,
@@ -17,8 +18,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function FieldPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug as FieldSlug;
+export default async function FieldPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug: rawSlug } = await params;
+  const slug = rawSlug as FieldSlug;
   if (!FIELD_GUIDES[slug]) notFound();
 
   return <FieldGuideContent slug={slug} />;

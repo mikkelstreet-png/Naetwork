@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
 type Visibility = 'hidden' | 'published';
+type ReviewStatus = 'pending' | 'approved' | 'rejected';
 
 interface Professional {
   id: string;
@@ -13,34 +14,38 @@ interface Professional {
   company: string | null;
   industries: string[] | null;
   visibility: Visibility;
+  review_status: ReviewStatus;
   created_at: string;
 }
 
-const STATUS_TABS: { label: string; value: Visibility | 'all' }[] = [
+const STATUS_TABS: { label: string; value: ReviewStatus | 'all' }[] = [
   { label: 'Alle', value: 'all' },
-  { label: 'Skjult', value: 'hidden' },
-  { label: 'Publiceret', value: 'published' },
+  { label: 'Afventer', value: 'pending' },
+  { label: 'Godkendt', value: 'approved' },
+  { label: 'Afvist', value: 'rejected' },
 ];
 
-const statusBadge = (visibility: Visibility) => {
-  const map: Record<Visibility, string> = {
-    hidden: 'bg-yellow-100 text-yellow-800',
-    published: 'bg-indigo-100 text-indigo-800',
+const statusBadge = (status: ReviewStatus, visibility: Visibility) => {
+  const map: Record<ReviewStatus, string> = {
+    pending: 'bg-amber-100 text-amber-800',
+    approved: 'bg-emerald-100 text-emerald-800',
+    rejected: 'bg-red-100 text-red-800',
   };
-  const labels: Record<Visibility, string> = {
-    hidden: 'Skjult',
-    published: 'Publiceret',
+  const labels: Record<ReviewStatus, string> = {
+    pending: 'Afventer',
+    approved: visibility === 'published' ? 'Godkendt · synlig' : 'Godkendt · skjult',
+    rejected: 'Afvist',
   };
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[visibility]}`}>
-      {labels[visibility]}
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[status]}`}>
+      {labels[status]}
     </span>
   );
 };
 
 export default function ProfessionalsPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [filter, setFilter] = useState<Visibility | 'all'>('all');
+  const [filter, setFilter] = useState<ReviewStatus | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -54,7 +59,7 @@ export default function ProfessionalsPage() {
     setLoading(true);
     const { data } = await supabase
       .from('professional_profiles')
-      .select('id, profile_id, title, company, industries, visibility, created_at')
+      .select('id, profile_id, title, company, industries, visibility, review_status, created_at')
       .order('created_at', { ascending: false });
 
     const rows = (data as Array<Omit<Professional, 'name'>> | null) || [];
@@ -68,21 +73,36 @@ export default function ProfessionalsPage() {
     setLoading(false);
   }
 
-  async function updateVisibility(id: string, visibility: Visibility) {
-    setActionLoading(id + visibility);
+  async function updateReview(id: string, reviewStatus: ReviewStatus, visibility: Visibility) {
+    setActionLoading(id + reviewStatus);
+    const { data: { user } } = await supabase.auth.getUser();
     await supabase
       .from('professional_profiles')
-      .update({ visibility })
+      .update({
+        review_status: reviewStatus,
+        visibility,
+        approved_at: reviewStatus === 'approved' ? new Date().toISOString() : null,
+      })
       .eq('id', id);
+    if (user) {
+      const { data: adminProfile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).maybeSingle();
+      if (adminProfile) await supabase.from('admin_audit_log').insert({
+        admin_user_id: adminProfile.id,
+        action: `professional_${reviewStatus}`,
+        target_table: 'professional_profiles',
+        target_id: id,
+        notes: `Review status: ${reviewStatus}; visibility: ${visibility}`,
+      });
+    }
     await loadProfessionals();
     setActionLoading(null);
   }
 
-  const filtered = filter === 'all' ? professionals : professionals.filter(p => p.visibility === filter);
+  const filtered = filter === 'all' ? professionals : professionals.filter(p => p.review_status === filter);
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      <aside className="w-60 bg-gray-900 flex-shrink-0 flex flex-col">
+    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
+      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
         <div className="px-6 py-5 border-b border-gray-800">
           <Link href="/admin" className="text-white font-bold text-lg tracking-tight">Admin</Link>
           <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">Naetwork</Link>
@@ -153,27 +173,30 @@ export default function ProfessionalsPage() {
                         {p.industries?.slice(0, 2).join(', ') || '—'}
                         {(p.industries?.length ?? 0) > 2 && <span className="text-gray-400"> +{(p.industries?.length ?? 0) - 2}</span>}
                       </td>
-                      <td className="px-4 py-3">{statusBadge(p.visibility)}</td>
+                      <td className="px-4 py-3">{statusBadge(p.review_status, p.visibility)}</td>
                       <td className="px-4 py-3 text-xs text-gray-400">{new Date(p.created_at).toLocaleDateString('da-DK')}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1.5">
-                          {p.visibility !== 'published' && (
+                          {p.review_status !== 'approved' && (
                             <button
-                              onClick={() => updateVisibility(p.id, 'published')}
-                              disabled={actionLoading === p.id + 'published'}
-                              className="text-xs px-2 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+                              onClick={() => updateReview(p.id, 'approved', 'published')}
+                              disabled={actionLoading === p.id + 'approved'}
+                              className="text-xs px-2 py-1 rounded bg-gray-950 text-white hover:bg-gray-800 disabled:opacity-50"
                             >
-                              Publicer
+                              Godkend
                             </button>
                           )}
-                          {p.visibility !== 'hidden' && (
+                          {p.review_status !== 'rejected' && (
                             <button
-                              onClick={() => updateVisibility(p.id, 'hidden')}
-                              disabled={actionLoading === p.id + 'hidden'}
+                              onClick={() => updateReview(p.id, 'rejected', 'hidden')}
+                              disabled={actionLoading === p.id + 'rejected'}
                               className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50"
                             >
-                              Skjul
+                              Afvis
                             </button>
+                          )}
+                          {p.review_status === 'approved' && p.visibility === 'published' && (
+                            <button onClick={() => updateReview(p.id, 'approved', 'hidden')} disabled={actionLoading !== null} className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50">Skjul</button>
                           )}
                           <Link href={`/professionals/${p.id}`} className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200">
                             Se profil

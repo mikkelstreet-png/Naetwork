@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import Link from 'next/link'
 import BookingDrawer from '@/components/BookingDrawer'
+import { RefreshCw } from 'lucide-react'
 
 interface Professional {
   id: string
@@ -14,6 +15,7 @@ interface Professional {
   company: string
   industries: string[]
   price: number
+  contributionPercent: number
   bio: string
   focus_areas?: string[]
 }
@@ -52,8 +54,8 @@ function accentFor(pro: Professional) {
   return 'bg-lime-300'
 }
 
-function minimumContribution(price: number) {
-  return Math.round(price * 0.4)
+function contributionAmount(price: number, percentage: number) {
+  return Math.round(price * percentage / 100)
 }
 
 function bestFor(pro: Professional, isDa: boolean) {
@@ -137,38 +139,63 @@ export default function ProfessionalDetailPage() {
   const isDa = lang === 'da'
   const [professional, setProfessional] = useState<Professional | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const supabase = createClient()
-
-  useEffect(() => {
+  const fetchProfessional = useCallback(async () => {
     if (!id) return
-    async function fetchProfessional() {
-      const { data } = await supabase
-        .from('professional_profiles')
-        .select('id, profile_id, title, company, bio, price_dkk, industries, focus_areas')
-        .eq('id', id)
-        .single()
+    setLoading(true)
+    setLoadError(false)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase.rpc('get_public_professionals', { requested_id: id }).maybeSingle()
+      if (error) {
+        setLoadError(true)
+        return
+      }
       if (data) {
         const row = data as {
-          id: string; profile_id: string; title: string | null; company: string | null; bio: string | null
-          price_dkk: number | null; industries: string[] | null; focus_areas: string[] | null
+          id: string; name: string | null; title: string | null; company: string | null; bio: string | null
+          price_dkk: number | null; contribution_percent: number | null; industries: string[] | null; focus_areas: string[] | null
         }
-        const { data: profile } = await supabase.from('profiles').select('name').eq('id', row.profile_id).maybeSingle()
         setProfessional({
-          id: row.id, name: profile?.name ?? '',
+          id: row.id, name: row.name ?? '',
           title: row.title ?? '', company: row.company ?? '',
           industries: row.industries ?? [], price: row.price_dkk ?? 1200,
+          contributionPercent: row.contribution_percent ?? 40,
           bio: row.bio ?? '', focus_areas: row.focus_areas ?? [],
         })
+      } else {
+        setProfessional(null)
       }
+    } catch {
+      setLoadError(true)
+    } finally {
       setLoading(false)
     }
-    fetchProfessional()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
+  useEffect(() => {
+    void fetchProfessional()
+  }, [fetchProfessional])
+
   if (loading) return <div className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">{isDa ? 'Indlæser...' : 'Loading...'}</p></div>
+
+  if (loadError) return (
+    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white px-5 py-10">
+      <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-[#f7f7f4] p-6">
+        <span className="block h-2 w-10 rounded-full bg-cyan-300" aria-hidden="true" />
+        <h1 className="mt-5 text-2xl font-black text-gray-950">{isDa ? 'Profilen kunne ikke indlæses' : 'The profile could not be loaded'}</h1>
+        <p className="mt-2 text-sm leading-relaxed text-gray-600">{isDa ? 'Forbindelsen svarede ikke. Prøv igen om et øjeblik.' : 'The connection did not respond. Please try again in a moment.'}</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button type="button" onClick={() => void fetchProfessional()} className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-3 text-sm font-black text-white">
+            <RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}
+          </button>
+          <Link href="/professionals" className="inline-flex items-center px-2 py-3 text-sm font-black text-gray-600">{isDa ? 'Alle profiler' : 'All profiles'}</Link>
+        </div>
+      </div>
+    </main>
+  )
 
   if (!professional) return (
     <div className="flex min-h-screen items-center justify-center bg-white px-6">
@@ -179,7 +206,7 @@ export default function ProfessionalDetailPage() {
     </div>
   )
 
-  const minimumImpact = minimumContribution(professional.price)
+  const minimumImpact = contributionAmount(professional.price, professional.contributionPercent)
   const focusAreas = professional.focus_areas ?? []
   const bestFit = bestFor(professional, isDa)
   const primaryOutput = primaryOutputFor(professional, isDa)
@@ -190,7 +217,7 @@ export default function ProfessionalDetailPage() {
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
-    briefing: isDa ? `Du vælger selv fokus, når du booker. Minimum DKK ${minimumImpact} af en betalt session bidrager til Kræftens Bekæmpelse.` : `You choose the focus when you book. At least DKK ${minimumImpact} from a paid session contributes to Kræftens Bekæmpelse.`,
+    briefing: isDa ? `Du vælger selv fokus, når du booker. ${professional.contributionPercent}% / DKK ${minimumImpact} af en betalt session bidrager til Kræftens Bekæmpelse.` : `You choose the focus when you book. ${professional.contributionPercent}% / DKK ${minimumImpact} from a paid session contributes to Kræftens Bekæmpelse.`,
     bestFor: isDa ? 'Best for' : 'Best for',
     sessionBrief: isDa ? 'Session brief' : 'Session brief',
     sessionBriefBody: isDa
@@ -204,7 +231,7 @@ export default function ProfessionalDetailPage() {
   const facts = [
     { label: isDa ? 'Format' : 'Format', value: '60 min' },
     { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
-    { label: t.impact, value: `min. DKK ${minimumImpact}` },
+    { label: t.impact, value: `${professional.contributionPercent}% / DKK ${minimumImpact}` },
     { label: t.bestFor, value: bestFit },
     { label: isDa ? 'Output' : 'Output', value: primaryOutput },
   ]
@@ -212,23 +239,23 @@ export default function ProfessionalDetailPage() {
   return (
     <div className="min-h-screen bg-white pb-24 md:pb-0">
       <section className="border-b border-gray-200 bg-white px-5 sm:px-8">
-        <div className="mx-auto max-w-6xl py-10 md:py-16">
-          <Link href="/professionals" className="mb-10 inline-flex items-center gap-2 text-sm font-black text-gray-500 transition-colors hover:text-gray-950">
+        <div className="mx-auto max-w-6xl py-7 md:py-16">
+          <Link href="/professionals" className="mb-7 inline-flex items-center gap-2 text-sm font-black text-gray-500 transition-colors hover:text-gray-950 md:mb-10">
             <span>&larr;</span><span>{t.back}</span>
           </Link>
 
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] lg:items-end">
             <div>
-              <span className={`mb-8 block h-2 w-24 rounded-full ${accentFor(professional)}`} />
-              <p className="mb-5 text-xs font-black uppercase text-gray-400">
+              <span className={`mb-5 block h-1.5 w-16 rounded-full md:mb-8 md:h-2 md:w-24 ${accentFor(professional)}`} />
+              <p className="mb-3 text-xs font-black uppercase text-gray-400 md:mb-5">
                 {professional.industries.join(' / ')}
               </p>
-              <h1 className="max-w-4xl text-5xl font-black leading-[0.96] text-gray-950 text-balance md:text-7xl">{professional.name}</h1>
-              <p className="mt-6 text-lg font-black text-gray-700">{professional.title} · {professional.company}</p>
-              <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{professional.bio}</p>
+              <h1 className="max-w-4xl text-4xl font-black leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">{professional.name}</h1>
+              <p className="mt-4 text-base font-black text-gray-700 md:mt-6 md:text-lg">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-gray-600 md:mt-7 md:text-lg">{professional.bio}</p>
             </div>
 
-            <aside className="border-t border-gray-200 pt-6 lg:border-t-0 lg:pt-0">
+            <aside className="hidden lg:block">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-950 text-sm font-black text-white">
                 {initials(professional.name)}
               </div>
@@ -245,12 +272,12 @@ export default function ProfessionalDetailPage() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-16">
+      <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 md:py-16">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
-          <div className="space-y-14">
+          <div className="space-y-10 md:space-y-14">
             <section>
               <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.profileSignal}</p>
-              <h2 className="max-w-2xl text-3xl font-black text-gray-950 md:text-5xl">{t.useThisProfileIf}</h2>
+              <h2 className="max-w-2xl text-2xl font-black text-gray-950 sm:text-3xl md:text-5xl">{t.useThisProfileIf}</h2>
               <div className="mt-8 border-t border-gray-200">
                 {useCases.map((item, index) => (
                   <div key={item} className="grid gap-4 border-b border-gray-200 py-6 md:grid-cols-[80px_1fr]">
@@ -263,7 +290,7 @@ export default function ProfessionalDetailPage() {
 
             <section>
               <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.leaveWith}</p>
-              <h2 className="text-3xl font-black text-gray-950 md:text-5xl">{primaryOutput}</h2>
+              <h2 className="text-2xl font-black text-gray-950 sm:text-3xl md:text-5xl">{primaryOutput}</h2>
               <div className="mt-8 grid gap-px border border-gray-200 bg-gray-200 sm:grid-cols-2">
                 {outcomes.map((outcome) => (
                   <div key={outcome} className="bg-[#f7f7f4] p-5">
@@ -297,7 +324,7 @@ export default function ProfessionalDetailPage() {
             </section>
           </div>
 
-          <aside className="lg:sticky lg:top-24 lg:h-fit">
+          <aside className="hidden lg:sticky lg:top-24 lg:block lg:h-fit">
             <span className={`mb-4 block h-1.5 w-10 rounded-full ${accentFor(professional)}`} />
             <div className="border-t border-gray-200">
               {facts.map((item) => (
@@ -317,11 +344,11 @@ export default function ProfessionalDetailPage() {
       {!drawerOpen && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-2xl shadow-gray-950/10 backdrop-blur md:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-bold uppercase text-gray-400">{t.session}</p>
-              <p className="text-sm font-black text-gray-950">DKK {professional.price} · min. DKK {minimumImpact} impact</p>
+            <div className="min-w-0">
+              <p className="text-sm font-black text-gray-950">DKK {professional.price} · 60 min</p>
+              <p className="truncate text-[11px] font-semibold text-gray-500">{isDa ? `Min. DKK ${minimumImpact} til kræftsagen` : `Min. DKK ${minimumImpact} contribution`}</p>
             </div>
-            <button onClick={() => setDrawerOpen(true)} className="rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+            <button onClick={() => setDrawerOpen(true)} className="shrink-0 rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
               {t.bookCta}
             </button>
           </div>

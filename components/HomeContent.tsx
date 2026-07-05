@@ -41,36 +41,29 @@ export function HomeContent() {
   const isDa = lang === 'da';
   const [featured, setFeatured] = useState<FeaturedProfessional[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
+  const [profilesError, setProfilesError] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
 
     async function fetchFeatured() {
-      const { data } = await supabase
-        .from('professional_profiles')
-        .select('id, profile_id, title, company, price_dkk, industries, focus_areas')
-        .eq('visibility', 'published')
-        .limit(3);
+      const { data, error } = await supabase.rpc('get_public_professionals').limit(3);
+
+      if (error) setProfilesError(true);
 
       if (data) {
         const rows = data as Array<{
           id: string;
-          profile_id: string;
+          name: string | null;
           title: string | null;
           company: string | null;
           price_dkk: number | null;
           industries: string[] | null;
           focus_areas: string[] | null;
         }>;
-        const profileIds = rows.map((profile) => profile.profile_id);
-        const { data: names } = profileIds.length
-          ? await supabase.from('profiles').select('id, name').in('id', profileIds)
-          : { data: [] };
-        const namesById = new Map((names ?? []).map((profile) => [profile.id, profile.name ?? '']));
-
         setFeatured(rows.map((profile) => ({
           id: profile.id,
-          name: namesById.get(profile.profile_id) ?? '',
+          name: profile.name ?? '',
           title: profile.title ?? '',
           company: profile.company ?? '',
           industries: profile.industries ?? [],
@@ -107,7 +100,7 @@ export function HomeContent() {
 
   return (
     <>
-      <section id="home" className="bg-white px-5 pb-16 pt-16 sm:px-8 md:pb-20 md:pt-20">
+      <section id="home" className="bg-white px-5 pb-12 pt-10 sm:px-8 sm:pt-14 md:pb-20 md:pt-20">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-12 lg:grid-cols-[1fr_360px] lg:items-end">
             <div>
@@ -136,7 +129,7 @@ export function HomeContent() {
               </div>
             </div>
 
-            <aside className="border border-gray-200 bg-[#f7f7f4] p-5">
+            <aside className="hidden border border-gray-200 bg-[#f7f7f4] p-5 lg:block">
               <div className="grid h-1.5 grid-cols-4 overflow-hidden rounded-full bg-gray-200">
                 {fields.map(([field, , accent]) => <span key={field} className={accent} />)}
               </div>
@@ -159,24 +152,24 @@ export function HomeContent() {
             </aside>
           </div>
 
-          <div className="mt-16 grid border-y border-gray-200 md:grid-cols-4">
+          <div className="mt-12 grid grid-cols-2 border-y border-gray-200 md:mt-16 md:grid-cols-4">
             {fields.map(([field, href, accent, body]) => (
-              <Link key={field} href={href} className="group border-b border-gray-200 py-6 transition-colors hover:bg-gray-50 md:border-b-0 md:border-r md:px-5 md:first:pl-0 md:last:border-r-0">
-                <span className={`mb-6 block h-1.5 w-10 rounded-full ${accent}`} />
-                <p className="text-lg font-black text-gray-950">{field}</p>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">{body}</p>
+              <Link key={field} href={href} className="group border-b border-r border-gray-200 p-4 transition-colors even:border-r-0 hover:bg-gray-50 md:border-b-0 md:border-r md:px-5 md:py-6 md:even:border-r md:first:pl-0 md:last:border-r-0">
+                <span className={`mb-4 block h-1.5 w-8 rounded-full md:mb-6 md:w-10 ${accent}`} />
+                <p className="text-base font-black leading-tight text-gray-950 md:text-lg">{field}</p>
+                <p className="mt-2 hidden text-sm leading-relaxed text-gray-600 sm:block">{body}</p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="how-it-works" className="border-y border-gray-200 bg-[#f7f7f4] px-5 py-16 sm:px-8 md:py-20">
+      <section id="how-it-works" className="border-y border-gray-200 bg-[#f7f7f4] px-5 py-12 sm:px-8 md:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
             <div>
               <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Sådan fungerer det' : 'How it works'}</p>
-              <h2 className="text-4xl font-black leading-tight text-gray-950 text-balance md:text-5xl">
+              <h2 className="text-3xl font-black leading-tight text-gray-950 text-balance sm:text-4xl md:text-5xl">
                 {isDa ? 'Fra spørgsmål til klarhed.' : 'From question to clarity.'}
               </h2>
             </div>
@@ -196,12 +189,12 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="profile-universe" className="bg-white px-5 py-16 sm:px-8 md:py-20">
+      <section id="profile-universe" className="bg-white px-5 py-12 sm:px-8 md:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Profiler' : 'Profiles'}</p>
-              <h2 className="text-4xl font-black leading-tight text-gray-950 text-balance md:text-5xl">
+              <h2 className="text-3xl font-black leading-tight text-gray-950 text-balance sm:text-4xl md:text-5xl">
                 {isDa ? 'Find erfaring, der passer til dit mål.' : 'Find experience that fits your goal.'}
               </h2>
             </div>
@@ -215,18 +208,29 @@ export function HomeContent() {
             <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3" aria-label={isDa ? 'Indlæser profiler' : 'Loading profiles'}>
               {[0, 1, 2].map((item) => <div key={item} className="h-32 animate-pulse bg-[#f7f7f4]" />)}
             </div>
+          ) : profilesError ? (
+            <div className="grid gap-6 border-y border-gray-200 bg-[#f7f7f4] p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+              <div>
+                <p className="text-xl font-black text-gray-950">{isDa ? 'Profiluniverset bliver gjort klar.' : 'The profile experience is being prepared.'}</p>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{isDa ? 'Imens kan du se, hvordan 60 minutters sparring og bidraget til Kræftens Bekæmpelse hænger sammen.' : 'In the meantime, see how a 60-minute session and the contribution to Kræftens Bekæmpelse work together.'}</p>
+              </div>
+              <Link href="/impact" className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
+                {isDa ? 'Se modellen' : 'See the model'}
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
           ) : featured.length > 0 ? (
             <div className="border-t border-gray-200">
               {featured.map((profile) => (
-                <Link key={profile.id} href={`/professionals/${profile.id}`} className="grid gap-4 border-b border-gray-200 py-5 transition-colors hover:bg-gray-50 md:grid-cols-[52px_170px_1fr_1fr_130px] md:items-center md:px-4">
+                <Link key={profile.id} href={`/professionals/${profile.id}`} className="grid grid-cols-[44px_1fr] gap-x-3 gap-y-3 border-b border-gray-200 py-5 transition-colors hover:bg-gray-50 md:grid-cols-[52px_170px_1fr_1fr_130px] md:items-center md:gap-4 md:px-4">
                   <span className={`flex h-11 w-11 items-center justify-center rounded-lg text-xs font-black text-gray-950 ${accentForIndustry(profile.industries[0])}`}>{initials(profile.name)}</span>
-                  <p className="text-xs font-black uppercase text-gray-400">{profile.industries[0] ?? (isDa ? 'Professional' : 'Professional')}</p>
-                  <div>
+                  <p className="self-center text-xs font-black uppercase text-gray-400 md:self-auto">{profile.industries[0] ?? (isDa ? 'Professional' : 'Professional')}</p>
+                  <div className="col-span-2 md:col-span-1">
                     <p className="text-lg font-black text-gray-950">{profile.name}</p>
                     <p className="mt-1 text-xs font-semibold text-gray-500">{profile.title}{profile.company ? ` · ${profile.company}` : ''}</p>
                   </div>
-                  <p className="text-sm leading-relaxed text-gray-600">{primaryFocus(profile.focusAreas, isDa)}</p>
-                  <div className="md:text-right">
+                  <p className="col-span-2 text-sm leading-relaxed text-gray-600 md:col-span-1">{primaryFocus(profile.focusAreas, isDa)}</p>
+                  <div className="col-span-2 flex items-center justify-between border-t border-gray-100 pt-3 md:col-span-1 md:block md:border-0 md:pt-0 md:text-right">
                     <p className="text-sm font-black text-gray-950">DKK {profile.price.toLocaleString('da-DK')}</p>
                     <p className="mt-1 text-xs text-gray-400">60 min</p>
                   </div>
@@ -248,12 +252,12 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="pricing" className="bg-gray-950 px-5 py-16 text-white sm:px-8 md:py-20">
+      <section id="pricing" className="bg-gray-950 px-5 py-12 text-white sm:px-8 md:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
             <div>
               <p className="mb-4 text-xs font-black uppercase text-white/40">{isDa ? 'Priser' : 'Pricing'}</p>
-              <h2 className="text-4xl font-black leading-tight text-white text-balance md:text-5xl">
+              <h2 className="text-3xl font-black leading-tight text-white text-balance sm:text-4xl md:text-5xl">
                 {isDa ? '60 minutter. En tydelig pris.' : '60 minutes. One clear price.'}
               </h2>
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
@@ -261,8 +265,9 @@ export function HomeContent() {
                   ? 'Den enkelte professional fastsætter prisen mellem DKK 600 og DKK 1.800. Du ser altid pris og minimumsbidrag før booking.'
                   : 'Each professional sets a price between DKK 600 and DKK 1,800. You always see the price and minimum contribution before booking.'}
               </p>
+              <p className="mt-4 max-w-xl text-xs leading-relaxed text-white/40">{isDa ? 'Bookinganmodninger er aktive. Betaling er ikke aktiveret endnu, og der trækkes ingen beløb.' : 'Booking requests are active. Payments are not enabled yet, and no amount is charged.'}</p>
             </div>
-            <div className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10 md:grid-cols-4">
               {priceAnchors.map(([price, label, impact]) => (
                 <div key={price} className="bg-gray-950 p-5">
                   <p className="text-xs font-black uppercase text-white/40">{label}</p>

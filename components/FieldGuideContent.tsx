@@ -18,13 +18,13 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
   ] as const;
 
   return (
-    <main className="bg-white pt-16">
-      <section className="border-b border-gray-200 bg-white px-5 py-16 sm:px-8 md:py-24">
+    <main className="bg-white">
+      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-20">
         <div className="mx-auto max-w-6xl">
-          <Link href="/" className="mb-10 inline-flex text-sm font-black text-gray-500 transition-colors hover:text-gray-950">&larr; Naetwork</Link>
-          <span className={`mb-8 block h-2 w-24 rounded-full ${field.accent}`} />
-          <p className="mb-5 text-xs font-black uppercase text-gray-400">{isDa ? 'Feltguide' : 'Field guide'}</p>
-          <h1 className="max-w-5xl text-6xl font-black leading-[0.9] tracking-tight text-gray-950 text-balance md:text-8xl">{field.title[locale]}</h1>
+          <Link href="/" className="mb-7 inline-flex text-sm font-black text-gray-500 transition-colors hover:text-gray-950 md:mb-10">&larr; Naetwork</Link>
+          <span className={`mb-6 block h-1.5 w-16 rounded-full md:mb-8 md:h-2 md:w-24 ${field.accent}`} />
+          <p className="mb-3 text-xs font-black uppercase text-gray-400 md:mb-5">{isDa ? 'Feltguide' : 'Field guide'}</p>
+          <h1 className="max-w-5xl text-4xl font-black leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">{field.title[locale]}</h1>
           <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{field.description[locale]}</p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Link href={profileHrefForField(slug)} className="inline-flex rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800">
@@ -37,11 +37,11 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-8 md:py-20">
+      <section className="px-5 py-10 sm:px-8 md:py-20">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <aside className="lg:sticky lg:top-24 lg:h-fit">
             <p className="mb-5 text-xs font-black uppercase text-gray-400">{isDa ? 'Sessionens fokus' : 'Session focus'}</p>
-            <h2 className="text-4xl font-black leading-tight tracking-tight text-gray-950 text-balance md:text-5xl">
+            <h2 className="text-3xl font-black leading-tight text-gray-950 text-balance sm:text-4xl md:text-5xl">
               {isDa ? 'Én fokuseret time, bygget omkring din næste beslutning.' : 'One focused hour, built around your next decision.'}
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-gray-600">{field.sessionFocus[locale]}</p>

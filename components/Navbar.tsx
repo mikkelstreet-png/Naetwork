@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase';
 import { useTranslation } from '@/context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
 import { Menu, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export function Navbar() {
   const { tr, lang } = useTranslation();
@@ -15,6 +16,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isDa = lang === 'da';
+  const pathname = usePathname();
 
   useEffect(() => {
     const supabase = createClient();
@@ -35,8 +37,18 @@ export function Navbar() {
         setDropdownOpen(false);
       }
     }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setDropdownOpen(false);
+        setMobileOpen(false);
+      }
+    }
     document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   async function handleLogout() {
@@ -46,13 +58,15 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles' },
     { href: '/#how-it-works', label: isDa ? 'Sådan fungerer det' : 'How it works' },
     { href: '/#pricing', label: isDa ? 'Priser' : 'Pricing' },
+    { href: '/impact', label: 'Impact' },
   ];
 
+  if (pathname.startsWith('/admin')) return null;
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/94 backdrop-blur-xl">
+    <nav aria-label={isDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/94 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Naetwork home">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
@@ -90,18 +104,19 @@ export function Navbar() {
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950 text-xs font-bold text-white transition-transform hover:scale-105"
-                aria-label="Open account menu"
+                aria-label={isDa ? 'Åbn kontomenu' : 'Open account menu'}
+                aria-expanded={dropdownOpen}
+                aria-controls="account-menu"
               >
                 {userEmail.charAt(0).toUpperCase()}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-2xl shadow-gray-950/12">
+                <div id="account-menu" className="absolute right-0 mt-3 w-64 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-2xl shadow-gray-950/12">
                   <div className="border-b border-gray-100 bg-[#f7f7f4] px-4 py-4">
                     <p className="text-xs font-black uppercase text-gray-400">Account</p>
                     <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.dashboard')}</Link>
-                  <Link href="/onboarding" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Onboarding</Link>
                   <Link href="/match" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
                   <button onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{tr('nav.logout')}</button>
                 </div>
@@ -116,7 +131,9 @@ export function Navbar() {
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+            aria-label={isDa ? 'Åbn menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
           >
             {mobileOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>
@@ -124,7 +141,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-gray-100 bg-white px-5 py-5 md:hidden">
+        <div id="mobile-navigation" className="border-t border-gray-100 bg-white px-5 py-5 md:hidden">
           <div className="border-t border-gray-200">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 text-sm font-black text-gray-950" onClick={() => setMobileOpen(false)}>
@@ -137,7 +154,16 @@ export function Navbar() {
             <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
               {isDa ? 'Se profiler' : 'Browse profiles'}
             </Link>
-            {!session && (
+            {session ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/dashboard" className="rounded-lg border border-gray-200 px-4 py-3 text-center text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
+                  {tr('nav.dashboard')}
+                </Link>
+                <Link href="/profil/bookings" className="rounded-lg border border-gray-200 px-4 py-3 text-center text-sm font-bold text-gray-950" onClick={() => setMobileOpen(false)}>
+                  {isDa ? 'Bookinger' : 'Bookings'}
+                </Link>
+              </div>
+            ) : (
               <Link href="/login" className="py-2 text-center text-sm font-medium text-gray-500" onClick={() => setMobileOpen(false)}>
                 {tr('nav.login')}
               </Link>

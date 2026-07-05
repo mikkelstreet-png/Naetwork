@@ -6,12 +6,17 @@ export const metadata: Metadata = {
   description: 'Læs hvordan Naetwork behandler personoplysninger, cookies, bookingdata og e-mails.',
 }
 
-const updated = '19. juni 2026'
+const updated = '30. juni 2026'
+const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
+const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
+const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
 
 const quickFacts = [
-  ['Dataansvarlig', 'Naetwork'],
+  ['Dataansvarlig', legalName],
+  ...(legalRegistration ? [['Registrering', legalRegistration]] : []),
+  ...(legalAddress ? [['Adresse', legalAddress]] : []),
   ['Kontakt', 'kontakt@naetwork.dk'],
-  ['Formål', 'Konto, booking, betaling, impact, kommunikation og sikker drift'],
+  ['Formål', 'Konto, booking, profiler, kommunikation og sikker drift'],
   ['Rettigheder', 'Indsigt, rettelse, sletning, begrænsning, dataportabilitet og indsigelse'],
 ]
 
@@ -19,7 +24,7 @@ const sections = [
   {
     title: '1. Kort fortalt',
     body: [
-      'Naetwork behandler kun de oplysninger, der er nødvendige for at drive platformen, oprette profiler, håndtere 60-minutters sessioner, sende relevante e-mails og sikre en tryg brugeroplevelse.',
+      `${legalName} er dataansvarlig og behandler kun de oplysninger, der er nødvendige for at drive platformen, oprette profiler, håndtere 60-minutters sessioner, sende relevante e-mails og sikre en tryg brugeroplevelse.`,
       'Vi sælger ikke personoplysninger. Vi bruger ikke oplysninger til skjult profilering, og vi forsøger at holde databehandlingen enkel, gennemsigtig og proportionel.',
     ],
   },
@@ -28,7 +33,7 @@ const sections = [
     body: [
       'Kontooplysninger: navn, e-mail, adgangskodehåndtering, rolle og loginstatus.',
       'Profiloplysninger: titel, virksomhed, branche, bio, fokusområder, pris, valgt impact-niveau, synlighed og professionelle præferencer.',
-      'Bookingoplysninger: valgt professionel, dato, tidspunkt, pris, minimumsbidrag, besked til den professionelle, status og påmindelser.',
+      'Bookingoplysninger: valgt professionel, dato, tidspunkt, oplyst pris, forventet bidrag, besked til den professionelle, status og påmindelser. Betaling er ikke aktiveret endnu, og Naetwork behandler derfor ikke betalingskort eller gennemførte betalinger på nuværende tidspunkt.',
       'Kommunikation: service-e-mails, bekræftelser, velkomstmails, kontaktformularbeskeder og eventuelle supporthenvendelser.',
       'Tekniske oplysninger: nødvendige cookies, lokal lagring, sikkerhedslogs og basale oplysninger, der hjælper os med at holde platformen stabil.',
     ],
@@ -60,7 +65,7 @@ const sections = [
     title: '6. Opbevaring og sletning',
     body: [
       'Vi opbevarer oplysninger, så længe de er nødvendige for formålet. Konto- og profiloplysninger opbevares normalt, så længe kontoen er aktiv.',
-      'Booking-, betalings- og impactrelaterede oplysninger kan opbevares længere, hvis det er nødvendigt af juridiske, regnskabsmæssige eller dokumentationsmæssige årsager.',
+      'Booking- og impactrelaterede oplysninger kan opbevares længere, hvis det er nødvendigt af juridiske eller dokumentationsmæssige årsager. Når betaling senere aktiveres, opdateres politikken med de relevante betalings- og regnskabsoplysninger.',
       'Når du anmoder om sletning, fjerner eller anonymiserer vi oplysninger, hvor det er muligt, medmindre vi er forpligtet til at gemme dem i en begrænset periode.',
     ],
   },
@@ -75,7 +80,7 @@ const sections = [
   {
     title: '8. Cookies og lokal lagring',
     body: [
-      'Vi bruger nødvendige cookies og lokal lagring til funktioner som login, sprogvalg og cookiepræferencer. Ikke-nødvendige cookies bruges kun, hvis de aktiveres med samtykke.',
+      'Vi bruger nødvendige cookies og lokal lagring til login, sikkerhed og sprogvalg. Ikke-nødvendige cookies bruges kun, hvis de senere aktiveres med et gyldigt samtykke.',
       'Læs mere på vores cookiepolitik.',
     ],
     link: { href: '/cookies', label: 'Læs cookiepolitik' },

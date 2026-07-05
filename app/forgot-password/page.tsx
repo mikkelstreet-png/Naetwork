@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
@@ -7,14 +7,26 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const supabase = createClient();
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('error') === 'invalid_link') {
+      setError('Nulstillingslinket er udløbet eller allerede brugt. Bed om et nyt link.');
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+    setError('');
+    const { error: resetError } = await createClient().auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
     });
+    if (resetError) {
+      setError('Nulstillingsmailen kunne ikke sendes. Vent et øjeblik, og prøv igen.');
+      setLoading(false);
+      return;
+    }
     setSent(true);
     setLoading(false);
   }
@@ -42,9 +54,10 @@ export default function ForgotPasswordPage() {
         <p className="mt-2 text-sm leading-relaxed text-gray-500">Skriv din e-mail, så sender vi et link til at nulstille dit password.</p>
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="dit@eksempel.dk" />
+            <label htmlFor="recovery-email" className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
+            <input id="recovery-email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="dit@eksempel.dk" />
           </div>
+          {error && <p role="alert" className="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
           <button type="submit" disabled={loading} className="w-full rounded-xl bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
             {loading ? 'Sender...' : 'Send nulstillingslink'}
           </button>
