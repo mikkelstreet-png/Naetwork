@@ -129,7 +129,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
       ? 'Vælg et ønsket tidspunkt og fortæl kort, hvad sessionen skal handle om. Tiden bekræftes af den professionelle.'
       : 'Choose a preferred time and briefly describe the session. The professional confirms the time.',
     step1Title: locale === 'da' ? 'Vælg et ønsket tidspunkt' : 'Choose a preferred time',
-    step2Title: locale === 'da' ? 'Session brief' : 'Session brief',
+    step2Title: locale === 'da' ? 'Brief til sessionen' : 'Session brief',
     duration: '60 min',
     price: `DKK ${professional.price} / 60 min`,
     impactLabel: locale === 'da' ? 'Minimumsbidrag' : 'Minimum contribution',

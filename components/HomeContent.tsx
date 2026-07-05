@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, Search, Target } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowRight, CalendarDays, RefreshCw, Search, Target } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { createClient } from '@/lib/supabase/client';
 
@@ -43,13 +43,17 @@ export function HomeContent() {
   const [profilesLoading, setProfilesLoading] = useState(true);
   const [profilesError, setProfilesError] = useState(false);
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function fetchFeatured() {
+  const fetchFeatured = useCallback(async () => {
+    setProfilesLoading(true);
+    setProfilesError(false);
+    try {
+      const supabase = createClient();
       const { data, error } = await supabase.rpc('get_public_professionals').limit(3);
 
-      if (error) setProfilesError(true);
+      if (error) {
+        setProfilesError(true);
+        return;
+      }
 
       if (data) {
         const rows = data as Array<{
@@ -72,11 +76,16 @@ export function HomeContent() {
         })).filter((profile) => profile.name));
       }
 
+    } catch {
+      setProfilesError(true);
+    } finally {
       setProfilesLoading(false);
     }
-
-    fetchFeatured();
   }, []);
+
+  useEffect(() => {
+    void fetchFeatured();
+  }, [fetchFeatured]);
 
   const fields = [
     ['AI', '/fields/ai', 'bg-cyan-300', isDa ? 'Produkt, strategi, portfolio og rollevalg.' : 'Product, strategy, portfolio and role choice.'],
@@ -110,7 +119,7 @@ export function HomeContent() {
               </h1>
               <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-600 md:text-xl">
                 {isDa
-                  ? 'Book en fokuseret session med en erfaren professional fra AI, Banking, Management Consulting eller Private Equity.'
+                  ? 'Book en fokuseret session med en erfaren professionel fra AI, Banking, Management Consulting eller Private Equity.'
                   : 'Book a focused session with an experienced professional from AI, Banking, Management Consulting or Private Equity.'}
               </p>
               <p className="mt-3 max-w-2xl text-sm font-semibold leading-relaxed text-gray-500 md:text-base">
@@ -118,6 +127,12 @@ export function HomeContent() {
                   ? '60 minutter fra DKK 600. Minimum 40% af betalingen går til Kræftens Bekæmpelse.'
                   : '60 minutes from DKK 600. At least 40% of the payment goes to Kræftens Bekæmpelse.'}
               </p>
+              <div className="mt-6 grid h-1.5 w-40 grid-cols-4 overflow-hidden rounded-full" aria-hidden="true">
+                <span className="bg-cyan-300" />
+                <span className="bg-emerald-300" />
+                <span className="bg-blue-300" />
+                <span className="bg-lime-300" />
+              </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/professionals" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800">
                   {isDa ? 'Se profiler' : 'Browse profiles'}
@@ -209,22 +224,22 @@ export function HomeContent() {
               {[0, 1, 2].map((item) => <div key={item} className="h-32 animate-pulse bg-[#f7f7f4]" />)}
             </div>
           ) : profilesError ? (
-            <div className="grid gap-6 border-y border-gray-200 bg-[#f7f7f4] p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+            <div className="grid gap-6 rounded-lg border border-gray-200 bg-[#f7f7f4] p-5 md:grid-cols-[1fr_auto] md:items-center md:p-7">
               <div>
-                <p className="text-xl font-black text-gray-950">{isDa ? 'Profiluniverset bliver gjort klar.' : 'The profile experience is being prepared.'}</p>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{isDa ? 'Imens kan du se, hvordan 60 minutters sparring og bidraget til Kræftens Bekæmpelse hænger sammen.' : 'In the meantime, see how a 60-minute session and the contribution to Kræftens Bekæmpelse work together.'}</p>
+                <p className="text-xl font-black text-gray-950">{isDa ? 'Profilerne kunne ikke indlæses.' : 'The profiles could not be loaded.'}</p>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{isDa ? 'Forbindelsen svarede ikke. Prøv igen om et øjeblik.' : 'The connection did not respond. Please try again in a moment.'}</p>
               </div>
-              <Link href="/impact" className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
-                {isDa ? 'Se modellen' : 'See the model'}
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
+              <button type="button" onClick={() => void fetchFeatured()} className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
+                <RefreshCw size={16} aria-hidden="true" />
+                {isDa ? 'Prøv igen' : 'Try again'}
+              </button>
             </div>
           ) : featured.length > 0 ? (
             <div className="border-t border-gray-200">
               {featured.map((profile) => (
                 <Link key={profile.id} href={`/professionals/${profile.id}`} className="grid grid-cols-[44px_1fr] gap-x-3 gap-y-3 border-b border-gray-200 py-5 transition-colors hover:bg-gray-50 md:grid-cols-[52px_170px_1fr_1fr_130px] md:items-center md:gap-4 md:px-4">
                   <span className={`flex h-11 w-11 items-center justify-center rounded-lg text-xs font-black text-gray-950 ${accentForIndustry(profile.industries[0])}`}>{initials(profile.name)}</span>
-                  <p className="self-center text-xs font-black uppercase text-gray-400 md:self-auto">{profile.industries[0] ?? (isDa ? 'Professional' : 'Professional')}</p>
+                  <p className="self-center text-xs font-black uppercase text-gray-400 md:self-auto">{profile.industries[0] ?? (isDa ? 'Professionel' : 'Professional')}</p>
                   <div className="col-span-2 md:col-span-1">
                     <p className="text-lg font-black text-gray-950">{profile.name}</p>
                     <p className="mt-1 text-xs font-semibold text-gray-500">{profile.title}{profile.company ? ` · ${profile.company}` : ''}</p>
@@ -244,7 +259,7 @@ export function HomeContent() {
                 <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.'}</p>
               </div>
               <Link href="/professional/signup" className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
-                {isDa ? 'Bliv professional' : 'Become a professional'}
+                {isDa ? 'Bliv professionel' : 'Become a professional'}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
@@ -262,7 +277,7 @@ export function HomeContent() {
               </h2>
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
                 {isDa
-                  ? 'Den enkelte professional fastsætter prisen mellem DKK 600 og DKK 1.800. Du ser altid pris og minimumsbidrag før booking.'
+                  ? 'Den enkelte professionelle fastsætter prisen mellem DKK 600 og DKK 1.800. Du ser altid pris og minimumsbidrag før booking.'
                   : 'Each professional sets a price between DKK 600 and DKK 1,800. You always see the price and minimum contribution before booking.'}
               </p>
               <p className="mt-4 max-w-xl text-xs leading-relaxed text-white/40">{isDa ? 'Bookinganmodninger er aktive. Betaling er ikke aktiveret endnu, og der trækkes ingen beløb.' : 'Booking requests are active. Payments are not enabled yet, and no amount is charged.'}</p>

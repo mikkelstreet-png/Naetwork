@@ -19,7 +19,7 @@ const FOCUS_AREAS = [
   { type: 'industry_insight', label: 'Indsigt i branchen' },
 ];
 
-const STEP_LABELS = ['Profil', 'Session', 'Impact', 'Bekræft'];
+const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
 
 export default function ProfessionalSignupPage() {
   const [step, setStep] = useState(1);
@@ -155,7 +155,7 @@ export default function ProfessionalSignupPage() {
     <main className="min-h-screen bg-[#f7f7f4]">
       <div className="mx-auto grid max-w-6xl gap-5 px-5 py-6 sm:gap-8 sm:px-6 sm:py-10 lg:grid-cols-[0.92fr_1.08fr] lg:py-16">
         <aside className="rounded-lg border border-gray-900 bg-gray-950 p-5 text-white lg:sticky lg:top-24 lg:h-fit lg:p-8">
-          <p className="mb-3 text-[11px] font-semibold uppercase text-cyan-200 sm:mb-6 sm:text-xs">For professionals</p>
+          <p className="mb-3 text-[11px] font-semibold uppercase text-cyan-200 sm:mb-6 sm:text-xs">For professionelle</p>
           <h1 className="text-2xl font-black leading-tight text-white text-balance sm:text-4xl sm:leading-none">Gør din erfaring bookbar med mening.</h1>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-gray-400 sm:mt-6 sm:text-sm">
             Ansøg med din nuværende rolle, virksomhed og LinkedIn. Profiler gennemgås før publicering. Du vælger selv fokus, pris og et konkret bidrag mellem 40% og 90%.
@@ -171,7 +171,7 @@ export default function ProfessionalSignupPage() {
             </div>
             <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
               <p className="text-lg font-black">40-90%</p>
-              <p className="mt-1 text-[11px] text-gray-500">impact</p>
+              <p className="mt-1 text-[11px] text-gray-500">bidrag</p>
             </div>
           </div>
         </aside>
@@ -183,7 +183,7 @@ export default function ProfessionalSignupPage() {
               return (
                 <div key={label} className={`rounded-lg border px-2 py-2.5 sm:px-3 sm:py-3 ${n <= step ? 'border-gray-950 bg-white' : 'border-gray-200 bg-white/60'}`}>
                   <p className={`text-xs font-black ${n <= step ? 'text-gray-950' : 'text-gray-400'}`}>0{n}</p>
-                  <p className={`mt-1 hidden text-xs font-semibold sm:block ${n <= step ? 'text-gray-700' : 'text-gray-400'}`}>{label}</p>
+                  <p className={`mt-1 block text-[10px] font-semibold leading-tight sm:text-xs ${n <= step ? 'text-gray-700' : 'text-gray-400'}`}>{label}</p>
                 </div>
               );
             })}
@@ -274,7 +274,7 @@ export default function ProfessionalSignupPage() {
                   <p className="mt-2 text-sm leading-relaxed text-gray-500">Hver betalt session bidrager med minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse.</p>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
-                  <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Impact pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
+                  <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
                   <input id="professional-contribution" type="range" min={40} max={90} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
                     className="w-full accent-gray-950" />
                   <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
@@ -306,7 +306,7 @@ export default function ProfessionalSignupPage() {
                     ['Titel', form.title],
                     ['Industri', form.industry],
                     ['Pris', `DKK ${form.priceDkk.toLocaleString('da-DK')}/60 min`],
-                    ['Impact', `${form.contributionPercent}% / ca. DKK ${estimatedContribution.toLocaleString('da-DK')}`],
+                    ['Bidrag', `${form.contributionPercent}% / ca. DKK ${estimatedContribution.toLocaleString('da-DK')}`],
                     ['Fokusområder', `${form.sessionTypes.length} valgt`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">

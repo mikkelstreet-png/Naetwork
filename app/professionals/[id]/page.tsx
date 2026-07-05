@@ -20,22 +20,22 @@ interface Professional {
   focus_areas?: string[]
 }
 
-const FOCUS_LABELS: Record<string, string> = {
-  cv_linkedin: 'CV / LinkedIn',
-  application_review: 'Application Review',
-  interview_prep: 'Interview Prep',
-  case_prep: 'Case Prep',
-  banking_technicals: 'Banking Technicals',
-  consulting_cases: 'Consulting Cases',
-  pe_investment_case: 'PE / Investment Case',
-  career_direction: 'Career Direction',
-  ai_career_strategy: 'AI Career Strategy',
-  industry_insight: 'Industry Insight',
-  mock_interview: 'Interview Prep',
-  cv_review: 'CV / LinkedIn',
-  career_strategy: 'Career Direction',
-  career_advice: 'Career Direction',
-  informal_chat: 'Industry Insight',
+const FOCUS_LABELS: Record<string, { da: string; en: string }> = {
+  cv_linkedin: { da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
+  application_review: { da: 'Ansøgning', en: 'Application review' },
+  interview_prep: { da: 'Interviewforberedelse', en: 'Interview preparation' },
+  case_prep: { da: 'Case-træning', en: 'Case preparation' },
+  banking_technicals: { da: 'Banking technicals', en: 'Banking technicals' },
+  consulting_cases: { da: 'Consulting-cases', en: 'Consulting cases' },
+  pe_investment_case: { da: 'PE / investment case', en: 'PE / investment case' },
+  career_direction: { da: 'Karriereretning', en: 'Career direction' },
+  ai_career_strategy: { da: 'AI-karrierestrategi', en: 'AI career strategy' },
+  industry_insight: { da: 'Brancheindsigt', en: 'Industry insight' },
+  mock_interview: { da: 'Prøveinterview', en: 'Mock interview' },
+  cv_review: { da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
+  career_strategy: { da: 'Karriereretning', en: 'Career direction' },
+  career_advice: { da: 'Karriereretning', en: 'Career direction' },
+  informal_chat: { da: 'Brancheindsigt', en: 'Industry insight' },
 }
 
 function initials(name: string) {
@@ -63,9 +63,9 @@ function bestFor(pro: Professional, isDa: boolean) {
   if (focus.includes('pe_investment_case')) return isDa ? 'PE / investment case' : 'PE / investment case'
   if (focus.includes('banking_technicals')) return isDa ? 'Banking technicals' : 'Banking technicals'
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting cases' : 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI career strategy' : 'AI career strategy'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Applications' : 'Applications'
-  return isDa ? 'Career clarity' : 'Career clarity'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-karrierestrategi' : 'AI career strategy'
+  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Ansøgningsmateriale' : 'Applications'
+  return isDa ? 'Karriereafklaring' : 'Career clarity'
 }
 
 function primaryOutputFor(pro: Professional, isDa: boolean) {
@@ -218,15 +218,15 @@ export default function ProfessionalDetailPage() {
     bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
     briefing: isDa ? `Du vælger selv fokus, når du booker. ${professional.contributionPercent}% / DKK ${minimumImpact} af en betalt session bidrager til Kræftens Bekæmpelse.` : `You choose the focus when you book. ${professional.contributionPercent}% / DKK ${minimumImpact} from a paid session contributes to Kræftens Bekæmpelse.`,
-    bestFor: isDa ? 'Best for' : 'Best for',
-    sessionBrief: isDa ? 'Session brief' : 'Session brief',
+    bestFor: isDa ? 'Bedst til' : 'Best for',
+    sessionBrief: isDa ? 'Brief til sessionen' : 'Session brief',
     sessionBriefBody: isDa
       ? 'Før du sender bookinganmodningen, vælger du fokus, beskriver dit mål og kan tilføje relevant materiale.'
       : 'Before sending the booking request, choose a focus, describe your goal and optionally add relevant material.',
-    profileSignal: isDa ? 'Profil-signal' : 'Profile signal',
+    profileSignal: isDa ? 'Profilmatch' : 'Profile signal',
     useThisProfileIf: isDa ? 'Brug profilen hvis' : 'Use this profile if',
     leaveWith: isDa ? 'Muligt output' : 'Possible output',
-    impact: isDa ? 'Impact' : 'Impact',
+    impact: isDa ? 'Bidrag' : 'Impact',
   }
   const facts = [
     { label: isDa ? 'Format' : 'Format', value: '60 min' },
@@ -306,7 +306,7 @@ export default function ProfessionalDetailPage() {
                 <div className="border-t border-gray-200">
                   {focusAreas.map((area) => (
                     <div key={area} className="grid gap-3 border-b border-gray-200 py-5 md:grid-cols-[220px_1fr]">
-                      <p className="text-sm font-black text-gray-950">{FOCUS_LABELS[area] ?? area}</p>
+                      <p className="text-sm font-black text-gray-950">{FOCUS_LABELS[area]?.[isDa ? 'da' : 'en'] ?? area}</p>
                       <p className="text-sm leading-relaxed text-gray-500">
                         {isDa ? 'Brug sessionen på konkrete spørgsmål, feedback og næste skridt.' : 'Use the session for concrete questions, feedback and next steps.'}
                       </p>

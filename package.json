@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@11.7.0",
-  "engines": { "node": ">=20.0.0" },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit --incremental false",
     "preflight": "node scripts/preflight.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=mobile-small --project=mobile-standard",
     "check": "pnpm typecheck && pnpm build",
-    "check:release": "pnpm preflight && pnpm check"
+    "check:release": "pnpm preflight && pnpm check && pnpm test:e2e"
   },
   "dependencies": {
     "@fontsource/bodoni-moda": "^5.2.7",
@@ -21,7 +25,7 @@
     "@fontsource/lora": "^5.2.8",
     "@fontsource/space-grotesk": "^5.2.10",
     "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "2.49.1",
     "lucide-react": "0.469.0",
     "next": "^15.5.19",
     "react": "19.0.0",
@@ -29,6 +33,7 @@
     "resend": "^4.1.2"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",

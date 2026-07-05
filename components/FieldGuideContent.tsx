@@ -14,7 +14,7 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
   const stats = [
     ['60 min', isDa ? 'Fast format' : 'Fixed format'],
     ['DKK 600+', isDa ? 'Konkrete priser' : 'Concrete price'],
-    ['40-90%', isDa ? 'Impact-bidrag' : 'Impact contribution'],
+    ['40-90%', isDa ? 'Bidrag til kræftsagen' : 'Impact contribution'],
   ] as const;
 
   return (
@@ -81,7 +81,7 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
             </section>
 
             <section className="border-y border-gray-200 py-8">
-              <p className="mb-4 text-xs font-black uppercase text-gray-400">Impact</p>
+              <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Bidrag' : 'Impact'}</p>
               <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
                 {isDa
                   ? 'Hver betalt Naetwork-session bidrager med minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse. Den konkrete pris og minimumsbidraget vises før booking.'

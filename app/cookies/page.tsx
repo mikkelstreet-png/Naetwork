@@ -53,7 +53,7 @@ export default function CookiesPage() {
       <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Legal</p>
+          <p className="mb-4 text-xs font-semibold uppercase text-gray-500">Juridisk</p>
           <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Cookiepolitik</h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">En enkel oversigt over cookies og lokal lagring på Naetwork.</p>
           <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>

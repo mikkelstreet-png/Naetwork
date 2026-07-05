@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
             title: isProfessional ? 'Din profil er klar til gennemgang' : 'Velkommen til Naetwork',
             intro: isProfessional
               ? `Hej ${text(metadata.name) ?? 'der'}. Din konto er bekræftet. Færdiggør profilen, og send den til gennemgang, før den bliver synlig.`
-              : `Hej ${text(metadata.name) ?? 'der'}. Din konto er bekræftet, og du kan nu finde en relevant professional og sende en bookinganmodning.`,
+              : `Hej ${text(metadata.name) ?? 'der'}. Din konto er bekræftet, og du kan nu finde en relevant professionel og sende en bookinganmodning.`,
             rows: isProfessional ? [
               { label: 'Session', value: '60 minutter' },
               { label: 'Pris', value: `DKK ${sessionPrice.toLocaleString('da-DK')}` },
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
             ] : undefined,
             note: 'Betaling er ikke aktiveret endnu. Der trækkes ikke noget beløb ved bookinganmodninger.',
             cta: {
-              label: isProfessional ? 'Færdiggør profil' : 'Find en professional',
+              label: isProfessional ? 'Færdiggør profil' : 'Find en professionel',
               href: appUrl(isProfessional ? '/profil/professionel' : '/professionals'),
             },
           }).catch(() => undefined);

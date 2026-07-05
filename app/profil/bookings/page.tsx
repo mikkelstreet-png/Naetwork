@@ -102,7 +102,7 @@ export default function BookingsPage() {
       <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-14">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-black uppercase text-gray-400">Sessions</p>
+            <p className="text-xs font-black uppercase text-gray-400">{isDa ? 'Sessioner' : 'Sessions'}</p>
             <h1 className="mt-3 text-4xl font-black leading-none text-gray-950 md:text-6xl">{isDa ? 'Dine bookinger.' : 'Your bookings.'}</h1>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-600 md:text-base">{isDa ? 'Anmodninger, bekræftede tider og tidligere 60-minutters sessioner.' : 'Requests, confirmed times and previous 60-minute sessions.'}</p>
           </div>
@@ -148,7 +148,7 @@ export default function BookingsPage() {
           <div className="border-y border-gray-300 bg-white px-5 py-12 text-center">
             <CalendarDays size={22} className="mx-auto text-gray-300" aria-hidden="true" />
             <h2 className="mt-5 text-xl font-black text-gray-950">{view === 'upcoming' ? (isDa ? 'Ingen kommende bookinger' : 'No upcoming bookings') : (isDa ? 'Ingen bookinger i denne visning' : 'No bookings in this view')}</h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">{isDa ? 'Find en professional og book 60 minutter med fokus på dit næste karriereskridt.' : 'Find a professional and book 60 minutes focused on your next career move.'}</p>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">{isDa ? 'Find en professionel og book 60 minutter med fokus på dit næste karriereskridt.' : 'Find a professional and book 60 minutes focused on your next career move.'}</p>
             <Link href="/professionals" className="mt-6 inline-flex rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white">{isDa ? 'Se profiler' : 'Browse profiles'}</Link>
           </div>
         ) : (

@@ -204,7 +204,7 @@ export default function DashboardPage() {
         <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
           <section>
             <div className="mb-5 flex items-end justify-between gap-4">
-              <div><p className="text-xs font-black uppercase text-gray-400">Sessions</p><h2 className="mt-2 text-2xl font-black text-gray-950">Seneste bookinger</h2></div>
+              <div><p className="text-xs font-black uppercase text-gray-400">Sessioner</p><h2 className="mt-2 text-2xl font-black text-gray-950">Seneste bookinger</h2></div>
               <Link href="/profil/bookings" className="text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">Se alle</Link>
             </div>
 

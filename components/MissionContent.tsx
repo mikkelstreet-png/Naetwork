@@ -27,7 +27,7 @@ export function MissionContent() {
             </h1>
             <p className="body-lg mt-7 max-w-2xl">
               {isDa
-                ? 'Naetwork gør uformel insider-sparring til et fokuseret produkt: én professional, ét brief, én 60-minutters session, ét klarere næste skridt og ét konkret bidrag.'
+                ? 'Naetwork gør uformel insider-sparring til et fokuseret produkt: én professionel, ét brief, én 60-minutters session, ét klarere næste skridt og ét konkret bidrag.'
                 : 'Naetwork turns informal insider guidance into a focused product: one professional, one brief, one 60-minute session, one clearer next step and one concrete contribution.'}
             </p>
           </div>

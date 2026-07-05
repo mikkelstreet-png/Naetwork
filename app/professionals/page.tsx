@@ -24,15 +24,15 @@ interface ProfessionalCard {
 
 const FOCUS_LABELS: Record<string, string> = {
   cv_linkedin: 'CV / LinkedIn',
-  application_review: 'Application Review',
-  interview_prep: 'Interview Prep',
-  case_prep: 'Case Prep',
+  application_review: 'Ansøgning Application Review',
+  interview_prep: 'Interviewforberedelse Interview Prep',
+  case_prep: 'Case-træning Case Prep',
   banking_technicals: 'Banking Technicals',
   consulting_cases: 'Consulting Cases',
   pe_investment_case: 'PE / Investment Case',
-  career_direction: 'Career Direction',
-  ai_career_strategy: 'AI Career Strategy',
-  industry_insight: 'Industry Insight',
+  career_direction: 'Karriereretning Career Direction',
+  ai_career_strategy: 'AI-karrierestrategi AI Career Strategy',
+  industry_insight: 'Brancheindsigt Industry Insight',
 }
 
 const INDUSTRIES: Industry[] = ['all', 'AI', 'Banking', 'Management Consulting', 'Private Equity']
@@ -343,7 +343,7 @@ export default function ProfessionalsPage() {
               <p className="text-xl font-black text-gray-950">{t.emptyTitle}</p>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-gray-600">{t.emptyBody}</p>
             </div>
-            <Link href="/professional/signup" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">{isDa ? 'Bliv professional' : 'Become a professional'}</Link>
+            <Link href="/professional/signup" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">{isDa ? 'Bliv professionel' : 'Become a professional'}</Link>
           </div>
         ) : filtered.length === 0 ? (
           <div className="border-y border-gray-200 py-16 text-center">

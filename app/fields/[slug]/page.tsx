@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const field = FIELD_GUIDES[slug as FieldSlug];
   if (!field) return { title: 'Field - Naetwork' };
   return {
-    title: `${field.label} career sessions - Naetwork`,
+    title: `${field.label} karrieresparring - Naetwork`,
     description: field.description.en,
   };
 }

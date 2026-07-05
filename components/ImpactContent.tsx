@@ -26,13 +26,13 @@ export function ImpactContent() {
       <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-20">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_390px] lg:items-end">
           <div>
-            <p className="kicker mb-5">Impact model</p>
+            <p className="kicker mb-5">{isDa ? 'Bidragsmodel' : 'Impact model'}</p>
             <h1 className="display-xl max-w-5xl">
               {isDa ? 'Karrieresparring skal skabe værdi efter timen.' : 'Career guidance should create value beyond the hour.'}
             </h1>
             <p className="body-lg mt-7 max-w-2xl">
               {isDa
-                ? 'Hver betalt Naetwork-session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse. Det gør impact konkret, før kandidaten booker.'
+                ? 'Hver betalt Naetwork-session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse. Det gør bidraget konkret, før kandidaten booker.'
                 : 'Every paid Naetwork session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse. That makes impact concrete before the candidate books.'}
             </p>
           </div>
@@ -40,7 +40,7 @@ export function ImpactContent() {
             <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
             <p className="mt-5 text-5xl font-black sm:text-6xl">40-90%</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
-              {isDa ? 'Minimum 40% fra hver betalt session. Professionals kan vælge et højere bidragsniveau.' : 'Minimum 40% from every paid session. Professionals can choose a higher contribution level.'}
+              {isDa ? 'Minimum 40% fra hver betalt session. Professionelle kan vælge et højere bidragsniveau.' : 'Minimum 40% from every paid session. Professionals can choose a higher contribution level.'}
             </p>
             <div className="mt-7 grid grid-cols-2 gap-px border border-white/10 bg-white/10">
               <div className="bg-gray-950 p-4">
@@ -72,7 +72,7 @@ export function ImpactContent() {
             <div>
               <p className="kicker mb-5">{isDa ? 'Transparens' : 'Transparency'}</p>
               <h2 className="display-lg">
-                {isDa ? 'Impact skal være let at forstå før betaling.' : 'Impact should be easy to understand before payment.'}
+                {isDa ? 'Bidraget skal være let at forstå før betaling.' : 'Impact should be easy to understand before payment.'}
               </h2>
             </div>
             <div className="border-t border-gray-200">
@@ -90,7 +90,7 @@ export function ImpactContent() {
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Link href="/professionals" className="pill-dark">{isDa ? 'Book 60 min' : 'Book 60 min'}</Link>
-            <Link href="/professional/signup" className="pill-light">{isDa ? 'Bliv professional' : 'Become a professional'}</Link>
+            <Link href="/professional/signup" className="pill-light">{isDa ? 'Bliv professionel' : 'Become a professional'}</Link>
           </div>
         </div>
       </section>

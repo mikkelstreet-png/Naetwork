@@ -7,15 +7,15 @@ import { MemberNav } from '@/components/MemberNav';
 const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'];
 const FOCUS_AREAS = [
   { type: 'cv_linkedin', label: 'CV / LinkedIn' },
-  { type: 'application_review', label: 'Application Review' },
-  { type: 'interview_prep', label: 'Interview Prep' },
-  { type: 'case_prep', label: 'Case Prep' },
+  { type: 'application_review', label: 'Ansøgning' },
+  { type: 'interview_prep', label: 'Interviewforberedelse' },
+  { type: 'case_prep', label: 'Case-træning' },
   { type: 'banking_technicals', label: 'Banking Technicals' },
   { type: 'consulting_cases', label: 'Consulting Cases' },
   { type: 'pe_investment_case', label: 'PE / Investment Case' },
-  { type: 'career_direction', label: 'Career Direction' },
-  { type: 'ai_career_strategy', label: 'AI Career Strategy' },
-  { type: 'industry_insight', label: 'Industry Insight' },
+  { type: 'career_direction', label: 'Karriereretning' },
+  { type: 'ai_career_strategy', label: 'AI-karrierestrategi' },
+  { type: 'industry_insight', label: 'Brancheindsigt' },
 ];
 
 export default function ProfessionalProfilePage() {
@@ -119,7 +119,7 @@ export default function ProfessionalProfilePage() {
     <main className="min-h-screen bg-[#f7f7f4]">
       <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <p className="text-xs font-black uppercase text-gray-400">Professional</p>
+          <p className="text-xs font-black uppercase text-gray-400">Professionel</p>
           <h1 className="mt-3 text-4xl font-black leading-none text-gray-950 md:text-6xl">Din profil.</h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-600 md:text-base">Gør din erfaring, dit fokus og kandidatens konkrete udbytte let at forstå.</p>
         </div>
@@ -141,7 +141,7 @@ export default function ProfessionalProfilePage() {
 
         <section className="border border-gray-200 bg-white p-5 sm:p-6 md:p-8">
           <div className="mb-8">
-            <p className="text-xs font-semibold uppercase text-gray-400">Edit profile</p>
+            <p className="text-xs font-semibold uppercase text-gray-400">Rediger profil</p>
             <h2 className="mt-2 text-2xl font-black text-gray-950 sm:text-3xl">Profiloplysninger</h2>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">Denne profil er synlig for kandidater, når du publicerer den og Naetwork har godkendt den.</p>
           </div>
@@ -180,7 +180,7 @@ export default function ProfessionalProfilePage() {
 
             <div>
               <label className="mb-3 block text-sm font-semibold text-gray-700">Fokusområder</label>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+              <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
                 {FOCUS_AREAS.map(st => (
                   <button key={st.type} type="button" aria-pressed={data.focus_areas.includes(st.type)} onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, st.type) }))} className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold transition-colors ${data.focus_areas.includes(st.type) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>{st.label}</button>
                 ))}

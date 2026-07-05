@@ -68,7 +68,7 @@ export default function SignupPage() {
           <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Opret en kandidatkonto for at sende bookinganmodninger og samle dine sessioner ét sted.</p>
           <div className="mt-10 border-t border-gray-200 pt-5">
             <p className="text-sm font-semibold text-gray-500">Vil du tilbyde sparring?</p>
-            <Link href="/professional/signup" className="mt-2 inline-flex items-center gap-2 text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">Ansøg som professional <ArrowRight size={15} aria-hidden="true" /></Link>
+            <Link href="/professional/signup" className="mt-2 inline-flex items-center gap-2 text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">Ansøg som professionel <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
         </section>
 

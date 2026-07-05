@@ -1,4 +1,5 @@
 allowBuilds:
   sharp: true
 overrides:
+  '@supabase/auth-js': 2.70.0
   postcss: 8.5.16

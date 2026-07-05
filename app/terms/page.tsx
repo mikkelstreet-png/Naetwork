@@ -13,10 +13,10 @@ const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
 const operator = [legalName, legalRegistration, legalAddress].filter(Boolean).join(', ')
 
 const keyPoints = [
-  ['Format', '60 min 1:1 career session'],
+  ['Format', '60 min 1:1 karrieresparring'],
   ['Pris', 'DKK 600-1.800, sat af den professionelle'],
   ['Platform', 'Naetwork forbinder kandidater og professionelle'],
-  ['Impact', 'Minimum 40% og op til 90% af betalte sessioner'],
+  ['Bidrag', 'Minimum 40% og op til 90% af betalte sessioner'],
 ]
 
 const sections = [
@@ -25,7 +25,7 @@ const sections = [
     body: [
       'Naetwork er en platform, der forbinder ambitiøse kandidater med professionelle fra AI, Banking, Management Consulting og Private Equity.',
       `Platformen drives af ${operator}.`,
-      'Kerneproduktet er en 60-minutters 1:1 session, hvor kandidaten vælger fokus før booking. Det kan eksempelvis være CV, interview, case prep, technicals, AI career strategy eller karrierevalg.',
+      'Kerneproduktet er en 60-minutters 1:1-session, hvor kandidaten vælger fokus før booking. Det kan eksempelvis være CV, interview, case-træning, tekniske spørgsmål, AI-karrierestrategi eller karrierevalg.',
     ],
   },
   {
@@ -61,7 +61,7 @@ const sections = [
   {
     title: '6. Professionelle profiler',
     body: [
-      'Professionelle skal give korrekte oplysninger om rolle, erfaring, virksomhed, fokusområder, pris og valgt impact-niveau.',
+      'Professionelle skal give korrekte oplysninger om rolle, erfaring, virksomhed, fokusområder, pris og valgt bidragsniveau.',
       'Naetwork kan skjule, afvise eller justere synlighed for profiler, hvis kvaliteten, dokumentationen eller indholdet ikke matcher platformens standarder.',
       'Professionelle må ikke love ansættelse, intern adgang, fortrolige oplysninger fra arbejdsgivere eller resultater, som de ikke kan kontrollere.',
     ],
@@ -74,11 +74,11 @@ const sections = [
     ],
   },
   {
-    title: '8. Impact og Kræftens Bekæmpelse',
+    title: '8. Bidrag og Kræftens Bekæmpelse',
     body: [
       'For hver betalt session bidrager minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse. Den konkrete minimumsandel vises i booking-flowet, før en bookinganmodning sendes.',
       'Bidraget gælder for betalte sessioner. Anmodede, aflyste eller refunderede sessioner tæller ikke som betalte bidrag, medmindre andet fremgår eksplicit.',
-      'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse, medmindre det fremgår eksplicit. Modellen beskriver Naetworks impact-forpligtelse og er ikke personlig skatte- eller donationsrådgivning.',
+      'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse, medmindre det fremgår eksplicit. Modellen beskriver Naetworks bidragsforpligtelse og er ikke personlig skatte- eller donationsrådgivning.',
     ],
   },
   {
@@ -110,9 +110,9 @@ export default function TermsPage() {
       <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Legal</p>
+          <p className="mb-4 text-xs font-semibold uppercase text-gray-500">Juridisk</p>
           <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Vilkår for brug</h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">De klare spilleregler for kandidater, professionelle, booking og impact på Naetwork.</p>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">De klare spilleregler for kandidater, professionelle, booking og bidrag på Naetwork.</p>
           <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>
         </div>
       </section>

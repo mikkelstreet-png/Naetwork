@@ -32,6 +32,18 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
+    setMobileOpen(false);
+    setDropdownOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [mobileOpen]);
+
+  useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
@@ -60,7 +72,7 @@ export function Navbar() {
   const navLinks = [
     { href: '/#how-it-works', label: isDa ? 'Sådan fungerer det' : 'How it works' },
     { href: '/#pricing', label: isDa ? 'Priser' : 'Pricing' },
-    { href: '/impact', label: 'Impact' },
+    { href: '/impact', label: isDa ? 'Bidrag' : 'Impact' },
   ];
 
   if (pathname.startsWith('/admin')) return null;
@@ -80,7 +92,8 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-bold text-gray-500 transition-colors hover:text-gray-950"
+              aria-current={link.href.startsWith('/#') ? undefined : pathname === link.href ? 'page' : undefined}
+              className={`text-sm font-bold transition-colors hover:text-gray-950 ${pathname === link.href ? 'text-gray-950' : 'text-gray-500'}`}
             >
               {link.label}
             </Link>
@@ -113,7 +126,7 @@ export function Navbar() {
               {dropdownOpen && (
                 <div id="account-menu" className="absolute right-0 mt-3 w-64 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-2xl shadow-gray-950/12">
                   <div className="border-b border-gray-100 bg-[#f7f7f4] px-4 py-4">
-                    <p className="text-xs font-black uppercase text-gray-400">Account</p>
+                    <p className="text-xs font-black uppercase text-gray-400">{isDa ? 'Konto' : 'Account'}</p>
                     <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{tr('nav.dashboard')}</Link>
@@ -141,7 +154,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div id="mobile-navigation" className="border-t border-gray-100 bg-white px-5 py-5 md:hidden">
+        <div id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 py-5 md:hidden">
           <div className="border-t border-gray-200">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 text-sm font-black text-gray-950" onClick={() => setMobileOpen(false)}>

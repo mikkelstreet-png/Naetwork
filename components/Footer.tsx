@@ -32,7 +32,7 @@ export function Footer() {
       links: [
         { href: '/mission', label: 'Mission' },
         { href: '/impact', label: isDa ? 'Bidrag' : 'Impact' },
-        { href: '/professional/signup', label: isDa ? 'Bliv professional' : 'Become a professional' },
+        { href: '/professional/signup', label: isDa ? 'Bliv professionel' : 'Become a professional' },
       ],
     },
     {

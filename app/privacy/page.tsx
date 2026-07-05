@@ -32,7 +32,7 @@ const sections = [
     title: '2. Hvilke oplysninger vi behandler',
     body: [
       'Kontooplysninger: navn, e-mail, adgangskodehåndtering, rolle og loginstatus.',
-      'Profiloplysninger: titel, virksomhed, branche, bio, fokusområder, pris, valgt impact-niveau, synlighed og professionelle præferencer.',
+      'Profiloplysninger: titel, virksomhed, branche, bio, fokusområder, pris, valgt bidragsniveau, synlighed og professionelle præferencer.',
       'Bookingoplysninger: valgt professionel, dato, tidspunkt, oplyst pris, forventet bidrag, besked til den professionelle, status og påmindelser. Betaling er ikke aktiveret endnu, og Naetwork behandler derfor ikke betalingskort eller gennemførte betalinger på nuværende tidspunkt.',
       'Kommunikation: service-e-mails, bekræftelser, velkomstmails, kontaktformularbeskeder og eventuelle supporthenvendelser.',
       'Tekniske oplysninger: nødvendige cookies, lokal lagring, sikkerhedslogs og basale oplysninger, der hjælper os med at holde platformen stabil.',
@@ -99,7 +99,7 @@ export default function PrivacyPage() {
       <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">Legal</p>
+          <p className="mb-4 text-xs font-semibold uppercase text-gray-500">Juridisk</p>
           <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Privatlivspolitik</h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">Hvordan vi behandler oplysninger, når du opretter konto, booker en session, bliver professionel eller kontakter Naetwork.</p>
           <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>

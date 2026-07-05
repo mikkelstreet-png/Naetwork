@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Naetwork - Karrieresparring med mening',
-    description: '60 minutters fokuseret karrieresparring med professionals fra AI, Banking, Management Consulting og Private Equity.',
+    description: '60 minutters fokuseret karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity.',
   },
   robots: { index: true, follow: true },
   icons: {
