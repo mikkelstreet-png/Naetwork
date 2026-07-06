@@ -10,3 +10,13 @@ export function safeInternalPath(value: string | null | undefined, fallback = '/
     return fallback;
   }
 }
+
+export function isBilingualPublicRoute(pathname: string) {
+  return pathname === '/'
+    || pathname === '/match'
+    || pathname === '/impact'
+    || pathname === '/mission'
+    || pathname === '/contact'
+    || pathname.startsWith('/fields/')
+    || pathname.startsWith('/professionals')
+}
