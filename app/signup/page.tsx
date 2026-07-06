@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowRight, Mail } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -29,7 +30,13 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        data: { name: name.trim(), role: 'candidate', termsAcceptedAt: new Date().toISOString() },
+        data: {
+          name: name.trim(),
+          role: 'candidate',
+          termsAcceptedAt: new Date().toISOString(),
+          termsVersion: TERMS_VERSION,
+          privacyVersion: PRIVACY_VERSION,
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/match`,
       },
     });
