@@ -12,6 +12,7 @@ const required = [
 
 const missing = required.filter((name) => !process.env[name]?.trim())
 const errors = []
+const placeholder = /^(?:pending|todo|tbd|build-check|copenhagen|example)$/i
 
 for (const name of ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_APP_URL', 'APP_BASE_URL']) {
   const value = process.env[name]
@@ -30,6 +31,23 @@ if (
   process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '') !== process.env.APP_BASE_URL.replace(/\/$/, '')
 ) {
   errors.push('NEXT_PUBLIC_APP_URL and APP_BASE_URL must point to the same canonical origin')
+}
+
+for (const name of ['NEXT_PUBLIC_LEGAL_NAME', 'NEXT_PUBLIC_LEGAL_ADDRESS', 'NEXT_PUBLIC_LEGAL_REGISTRATION']) {
+  const value = process.env[name]?.trim()
+  if (value && placeholder.test(value)) errors.push(`${name} must not be a placeholder`)
+}
+
+if (process.env.NEXT_PUBLIC_LEGAL_ADDRESS && !/\d/.test(process.env.NEXT_PUBLIC_LEGAL_ADDRESS)) {
+  errors.push('NEXT_PUBLIC_LEGAL_ADDRESS must include a complete street address')
+}
+
+if (process.env.NEXT_PUBLIC_LEGAL_REGISTRATION && !/\d{8}/.test(process.env.NEXT_PUBLIC_LEGAL_REGISTRATION.replace(/\s/g, ''))) {
+  errors.push('NEXT_PUBLIC_LEGAL_REGISTRATION must include an 8-digit CVR number')
+}
+
+if (process.env.SUPPORT_EMAIL && !/^\S+@\S+\.\S+$/.test(process.env.SUPPORT_EMAIL)) {
+  errors.push('SUPPORT_EMAIL must be a valid email address')
 }
 
 if (missing.length || errors.length) {
