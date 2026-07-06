@@ -148,7 +148,9 @@ export function Navbar() {
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={displayDa ? 'Åbn menu' : 'Open menu'}
+            aria-label={mobileOpen
+              ? (displayDa ? 'Luk menu' : 'Close menu')
+              : (displayDa ? 'Åbn menu' : 'Open menu')}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
           >
