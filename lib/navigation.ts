@@ -20,3 +20,13 @@ export function isBilingualPublicRoute(pathname: string) {
     || pathname.startsWith('/fields/')
     || pathname.startsWith('/professionals')
 }
+
+export function isFocusedAppRoute(pathname: string) {
+  return pathname.startsWith('/admin')
+    || pathname.startsWith('/dashboard')
+    || pathname.startsWith('/profil')
+    || pathname === '/login'
+    || pathname === '/signup'
+    || pathname === '/forgot-password'
+    || pathname === '/reset-password'
+}
