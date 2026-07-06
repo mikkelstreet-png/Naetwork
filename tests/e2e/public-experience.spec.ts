@@ -14,6 +14,7 @@ const publicRoutes = [
   '/professional/signup',
   '/login',
   '/signup',
+  '/forgot-password',
   '/terms',
   '/privacy',
   '/cookies',
@@ -36,10 +37,11 @@ for (const route of publicRoutes) {
   })
 }
 
-test('mobile navigation exposes the primary journeys', async ({ page, isMobile }) => {
-  test.skip(!isMobile, 'Mobile navigation contract')
+test('responsive navigation exposes the primary journeys', async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) >= 1024, 'Compact navigation contract')
   await page.goto('/')
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
+  await expect(page.getByRole('button', { name: /luk menu|close menu/i })).toHaveAttribute('aria-expanded', 'true')
   await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Priser|Pricing/)
   await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Find en professionel|Find a professional/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
@@ -84,6 +86,19 @@ test('core public actions remain clear', async ({ page }) => {
   await expect(page.locator('#home').getByRole('link', { name: /Find en professionel|Find a professional/i })).toBeVisible()
   await page.goto('/match')
   await expect(page.getByRole('heading', { name: /Hvad skal de 60 minutter løse|What should the 60 minutes solve/i })).toBeVisible()
+})
+
+test('contact flow explains privacy without claiming consent', async ({ page }) => {
+  await page.goto('/contact')
+  await expect(page.getByRole('link', { name: /privatlivspolitikken|privacy policy/i })).toBeVisible()
+  await expect(page.locator('body')).not.toContainText('Ved at sende formularen accepterer du')
+})
+
+test('focused account pages omit the marketing footer', async ({ page }) => {
+  for (const route of ['/login', '/signup', '/forgot-password']) {
+    await page.goto(route)
+    await expect(page.locator('footer')).toHaveCount(0)
+  }
 })
 
 test('protected member pages redirect to login', async ({ page }) => {
