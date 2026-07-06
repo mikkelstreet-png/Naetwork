@@ -1,144 +1,128 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { LegalDocument, type LegalSection } from '@/components/LegalDocument'
 
 export const metadata: Metadata = {
   title: 'Privatlivspolitik - Naetwork',
-  description: 'Læs hvordan Naetwork behandler personoplysninger, cookies, bookingdata og e-mails.',
+  description: 'Sådan indsamler, bruger, deler, opbevarer og sletter Naetwork personoplysninger.',
 }
 
-const updated = '30. juni 2026'
+const updated = '6. juli 2026'
 const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
 const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
 const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
+const supportEmail = process.env.SUPPORT_EMAIL ?? 'kontakt@naetwork.dk'
+const controller = [legalName, legalRegistration, legalAddress].filter(Boolean).join(', ')
 
-const quickFacts = [
-  ['Dataansvarlig', legalName],
-  ...(legalRegistration ? [['Registrering', legalRegistration]] : []),
-  ...(legalAddress ? [['Adresse', legalAddress]] : []),
-  ['Kontakt', 'kontakt@naetwork.dk'],
-  ['Formål', 'Konto, booking, profiler, kommunikation og sikker drift'],
-  ['Rettigheder', 'Indsigt, rettelse, sletning, begrænsning, dataportabilitet og indsigelse'],
+const facts: Array<[string, string]> = [
+  ['Dataansvarlig', controller],
+  ['Kontakt', supportEmail],
+  ['Målgruppe', 'Personer over 18 år'],
+  ['Tilsyn', 'Datatilsynet'],
 ]
 
-const sections = [
+const sections: LegalSection[] = [
   {
-    title: '1. Kort fortalt',
+    id: 'dataansvarlig',
+    title: '1. Dataansvarlig og kontakt',
     body: [
-      `${legalName} er dataansvarlig og behandler kun de oplysninger, der er nødvendige for at drive platformen, oprette profiler, håndtere 60-minutters sessioner, sende relevante e-mails og sikre en tryg brugeroplevelse.`,
-      'Vi sælger ikke personoplysninger. Vi bruger ikke oplysninger til skjult profilering, og vi forsøger at holde databehandlingen enkel, gennemsigtig og proportionel.',
+      `${controller} er dataansvarlig for den behandling, der beskrives her. Spørgsmål om personoplysninger og rettigheder kan sendes til ${supportEmail}.`,
+      'Politikken gælder for besøgende, kandidater, professionelle, kontaktpersoner og andre, der bruger Naetworks hjemmeside og platform.',
     ],
   },
   {
-    title: '2. Hvilke oplysninger vi behandler',
-    body: [
-      'Kontooplysninger: navn, e-mail, adgangskodehåndtering, rolle og loginstatus.',
-      'Profiloplysninger: titel, virksomhed, branche, bio, fokusområder, pris, valgt bidragsniveau, synlighed og professionelle præferencer.',
-      'Bookingoplysninger: valgt professionel, dato, tidspunkt, oplyst pris, forventet bidrag, besked til den professionelle, status og påmindelser. Betaling er ikke aktiveret endnu, og Naetwork behandler derfor ikke betalingskort eller gennemførte betalinger på nuværende tidspunkt.',
-      'Kommunikation: service-e-mails, bekræftelser, velkomstmails, kontaktformularbeskeder og eventuelle supporthenvendelser.',
-      'Tekniske oplysninger: nødvendige cookies, lokal lagring, sikkerhedslogs og basale oplysninger, der hjælper os med at holde platformen stabil.',
+    id: 'oplysninger',
+    title: '2. Oplysninger vi behandler',
+    body: ['Vi begrænser indsamlingen til oplysninger, der er relevante for platformens konkrete funktioner.'],
+    bullets: [
+      'Konto: navn, e-mail, bruger-ID, rolle, loginstatus og sikkerhedsrelaterede hændelser.',
+      'Professionel profil: titel, virksomhed, bio, LinkedIn-link, brancher, fokusområder, pris, bidragsniveau, synlighed og gennemgangsstatus.',
+      'Booking: valgte parter, ønsket dato og tid, fokus, mål, eventuelt materialelink, status, pris og forventet bidrag.',
+      'Kommunikation: kontaktformular, service-e-mails, supporthenvendelser og leveringsstatus for e-mails.',
+      'Teknik: nødvendige cookies, lokal lagring, IP- og enhedsoplysninger i sikkerheds- og hostinglogs samt fejldata.',
     ],
   },
   {
-    title: '3. Hvorfor vi behandler oplysninger',
-    body: [
-      'Vi behandler oplysninger for at kunne oprette og administrere brugerkonti, vise professionelle profiler, modtage bookinganmodninger, beregne impact-information, sende servicebeskeder og levere platformens kernefunktioner.',
-      'Vi kan også behandle oplysninger for at overholde juridiske forpligtelser, forebygge misbrug, dokumentere aftaler og forbedre sikkerheden.',
+    id: 'formaal-og-grundlag',
+    title: '3. Formål og behandlingsgrundlag',
+    body: ['Vi kobler hvert formål til et relevant behandlingsgrundlag efter databeskyttelsesforordningens artikel 6.'],
+    bullets: [
+      'Aftale eller skridt før aftale: konto, profil, bookinganmodninger, bookingstatus og nødvendig servicekommunikation.',
+      'Legitim interesse: platformsikkerhed, misbrugsforebyggelse, support, kvalitetskontrol og forbedring af stabilitet. Interessen afvejes mod dine rettigheder.',
+      'Retlig forpligtelse: dokumentation, myndighedskrav og senere regnskabsoplysninger, når betaling aktiveres.',
+      'Samtykke: markedsføring og eventuelle ikke-nødvendige cookies. Samtykke kan trækkes tilbage uden at påvirke tidligere lovlig behandling.',
     ],
   },
   {
-    title: '4. Behandlingsgrundlag',
+    id: 'kilder',
+    title: '4. Hvor oplysningerne kommer fra',
     body: [
-      'Kontrakt: når behandlingen er nødvendig for at oprette konto, administrere profiler og gennemføre bookingrelaterede handlinger.',
-      'Retlig forpligtelse: når oplysninger skal opbevares af regnskabs-, skatte- eller dokumentationshensyn.',
-      'Legitim interesse: når vi beskytter platformen, håndterer support, beregner og dokumenterer impact på aggregeret niveau og forbedrer drift uden at tilsidesætte dine rettigheder.',
-      'Samtykke: når vi sender marketing, bruger ikke-nødvendige cookies eller behandler oplysninger på en måde, hvor samtykke er det rigtige grundlag.',
+      'De fleste oplysninger kommer direkte fra dig. Bookingdata opstår, når en kandidat og en professionel bruger platformen. Profiloplysninger kan desuden kontrolleres mod offentligt tilgængelige professionelle kilder, eksempelvis det LinkedIn-link, den professionelle selv har indsendt.',
+      'Vi køber ikke lister med personoplysninger og bruger ikke platformdata til skjult annonceprofilering.',
     ],
   },
   {
-    title: '5. Deling med leverandører',
+    id: 'modtagere',
+    title: '5. Modtagere og databehandlere',
     body: [
-      'Naetwork bruger leverandører til hosting, database, login, e-mail og teknisk drift. Det kan omfatte Supabase, Vercel og Resend eller tilsvarende databehandlere.',
-      'Leverandører må kun behandle oplysninger på vores vegne og efter instruks. Hvis oplysninger behandles uden for EU/EØS, skal der være et relevant overførselsgrundlag.',
+      'Bookingoplysninger deles mellem den kandidat og den professionelle, der er part i bookingen. Vi deler kun det, der er nødvendigt for at planlægge og levere sessionen.',
+      'Tekniske leverandører kan behandle oplysninger efter instruks og databehandleraftale. De aktuelle kategorier omfatter database og login (Supabase), hosting og levering (Vercel) samt transaktionelle e-mails (Resend, når integrationen er aktiveret).',
+      'Oplysninger kan også udleveres, hvis lovgivning eller en gyldig myndighedsanmodning kræver det, eller hvis det er nødvendigt for at beskytte rettigheder og sikkerhed.',
     ],
   },
   {
-    title: '6. Opbevaring og sletning',
+    id: 'tredjelande',
+    title: '6. Overførsler uden for EU/EØS',
     body: [
-      'Vi opbevarer oplysninger, så længe de er nødvendige for formålet. Konto- og profiloplysninger opbevares normalt, så længe kontoen er aktiv.',
-      'Booking- og impactrelaterede oplysninger kan opbevares længere, hvis det er nødvendigt af juridiske eller dokumentationsmæssige årsager. Når betaling senere aktiveres, opdateres politikken med de relevante betalings- og regnskabsoplysninger.',
-      'Når du anmoder om sletning, fjerner eller anonymiserer vi oplysninger, hvor det er muligt, medmindre vi er forpligtet til at gemme dem i en begrænset periode.',
+      'Nogle leverandører kan behandle oplysninger i lande uden for EU/EØS. I de tilfælde anvendes et gyldigt overførselsgrundlag, eksempelvis EU-Kommissionens standardkontraktbestemmelser og relevante supplerende sikkerhedsforanstaltninger eller en gældende tilstrækkelighedsafgørelse.',
+      `Du kan kontakte ${supportEmail} for at få mere information om det relevante overførselsgrundlag for en konkret leverandør.`,
     ],
   },
   {
-    title: '7. Dine rettigheder',
-    body: [
-      'Du kan anmode om indsigt i de oplysninger, vi behandler om dig. Du kan også bede om rettelse af urigtige oplysninger, sletning, begrænsning af behandling eller dataportabilitet, når betingelserne er opfyldt.',
-      'Du kan gøre indsigelse mod behandling baseret på legitim interesse, og du kan til enhver tid trække samtykke tilbage, når behandlingen er baseret på samtykke.',
-      'Du kan kontakte os på kontakt@naetwork.dk. Du har også mulighed for at klage til Datatilsynet, hvis du mener, at dine oplysninger ikke behandles korrekt.',
+    id: 'opbevaring',
+    title: '7. Opbevaring og sletning',
+    body: ['Vi sletter eller anonymiserer oplysninger, når de ikke længere er nødvendige. Følgende perioder er udgangspunkt og kan forkortes, hvis formålet ophører tidligere.'],
+    bullets: [
+      'Konto og profil: så længe kontoen er aktiv. Ved kontosletning fjernes eller anonymiseres data, medmindre en begrænset opbevaring er nødvendig.',
+      'Bookingoplysninger uden betaling: op til 24 måneder efter den seneste aktivitet for support, tvister og dokumentation.',
+      'Kontaktbeskeder: op til 12 måneder efter afsluttet henvendelse, medmindre længere opbevaring er nødvendig for en konkret sag.',
+      'Sikkerheds- og driftslogs: normalt op til 90 dage, medmindre en hændelse kræver længere undersøgelse.',
+      'Samtykkedokumentation og oplysninger om gennemførte betalinger opbevares efter de lovpligtige perioder, når disse funktioner aktiveres.',
     ],
   },
   {
-    title: '8. Cookies og lokal lagring',
+    id: 'rettigheder',
+    title: '8. Dine rettigheder',
     body: [
-      'Vi bruger nødvendige cookies og lokal lagring til login, sikkerhed og sprogvalg. Ikke-nødvendige cookies bruges kun, hvis de senere aktiveres med et gyldigt samtykke.',
-      'Læs mere på vores cookiepolitik.',
+      'Du kan efter omstændighederne få indsigt, rettelse, sletning, begrænsning og dataportabilitet samt gøre indsigelse mod behandling baseret på legitim interesse. Du kan altid trække et samtykke tilbage.',
+      `Send din anmodning til ${supportEmail}. Vi kan bede om oplysninger, der er nødvendige for at bekræfte din identitet. Du kan klage til Datatilsynet, hvis du mener, at behandlingen er i strid med reglerne.`,
     ],
-    link: { href: '/cookies', label: 'Læs cookiepolitik' },
+    link: { href: 'https://www.datatilsynet.dk/borger/klage', label: 'Læs om klage til Datatilsynet', external: true },
   },
   {
-    title: '9. Ændringer',
+    id: 'sikkerhed',
+    title: '9. Sikkerhed og hændelser',
     body: [
-      'Vi kan opdatere denne privatlivspolitik, når platformen, leverandører eller juridiske krav ændrer sig. Den nyeste version vil altid fremgå på denne side.',
+      'Naetwork anvender adgangskontrol, rollebaserede databasepolitikker, krypteret transport, begrænsede servernøgler og løbende release-checks. Ingen tjeneste kan garantere absolut sikkerhed, men foranstaltningerne vurderes løbende i forhold til risikoen.',
+      'Ved et brud på persondatasikkerheden undersøger vi hændelsen og underretter Datatilsynet og berørte personer, når reglerne kræver det.',
+    ],
+  },
+  {
+    id: 'cookies',
+    title: '10. Cookies og lokal lagring',
+    body: [
+      'Naetwork bruger aktuelt kun teknologier, der er nødvendige for login, sikkerhed og det sprogvalg, brugeren aktivt foretager. Ikke-nødvendig statistik eller markedsføring må ikke aktiveres uden relevant information og samtykke.',
+    ],
+    link: { href: '/cookies', label: 'Læs cookiepolitikken' },
+  },
+  {
+    id: 'aendringer',
+    title: '11. Ændringer',
+    body: [
+      'Politikken opdateres, når funktioner, leverandører eller regler ændrer sig. Ved væsentlige ændringer informerer vi på en passende måde. Datoen øverst viser den gældende version.',
     ],
   },
 ]
 
 export default function PrivacyPage() {
-  return (
-    <main className="bg-[#f7f7f4]">
-      <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
-        <div className="mx-auto max-w-5xl">
-          <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
-          <p className="mb-4 text-xs font-semibold uppercase text-gray-500">Juridisk</p>
-          <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Privatlivspolitik</h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">Hvordan vi behandler oplysninger, når du opretter konto, booker en session, bliver professionel eller kontakter Naetwork.</p>
-          <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>
-        </div>
-      </section>
-
-      <section className="px-6 py-10 md:py-14">
-        <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[300px_1fr]">
-          <aside className="h-fit rounded-lg border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
-            <p className="mb-4 text-xs font-semibold uppercase text-gray-400">Overblik</p>
-            <div className="space-y-4">
-              {quickFacts.map(([label, value]) => (
-                <div key={label}>
-                  <p className="text-xs font-semibold uppercase text-gray-400">{label}</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-950">{value}</p>
-                </div>
-              ))}
-            </div>
-          </aside>
-
-          <div className="space-y-4">
-            {sections.map((section) => (
-              <article key={section.title} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-                <h2 className="text-xl font-black text-gray-950">{section.title}</h2>
-                <div className="mt-4 space-y-3">
-                  {section.body.map((paragraph) => (
-                    <p key={paragraph} className="text-sm leading-relaxed text-gray-600">{paragraph}</p>
-                  ))}
-                </div>
-                {section.link && (
-                  <Link href={section.link.href} className="mt-5 inline-flex rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
-                    {section.link.label}
-                  </Link>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    </main>
-  )
+  return <LegalDocument title="Privatlivspolitik" intro="Et præcist overblik over hvilke oplysninger vi behandler, hvorfor vi gør det, og hvilke valg du har." updated={updated} facts={facts} sections={sections} />
 }
