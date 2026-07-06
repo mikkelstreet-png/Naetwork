@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
+import { isBilingualPublicRoute } from '@/lib/navigation';
 
 export function Footer() {
-  const { tr, lang } = useLanguage();
-  const isDa = lang === 'da';
+  const { lang } = useLanguage();
   const pathname = usePathname();
+  const isDa = lang === 'da' || !isBilingualPublicRoute(pathname);
 
   const columns = [
     {
@@ -23,7 +24,7 @@ export function Footer() {
       links: [
         { href: '/fields/ai', label: 'AI' },
         { href: '/fields/banking', label: 'Banking' },
-        { href: '/fields/consulting', label: 'Consulting' },
+        { href: '/fields/consulting', label: 'Management Consulting' },
         { href: '/fields/private-equity', label: 'Private Equity' },
       ],
     },
@@ -38,9 +39,9 @@ export function Footer() {
     {
       title: isDa ? 'Juridisk' : 'Legal',
       links: [
-        { href: '/terms', label: tr('footer.terms') },
-        { href: '/privacy', label: tr('footer.privacy_link') },
-        { href: '/cookies', label: tr('footer.cookies') },
+        { href: '/terms', label: isDa ? 'Vilkår' : 'Terms' },
+        { href: '/privacy', label: isDa ? 'Privatlivspolitik' : 'Privacy policy' },
+        { href: '/cookies', label: 'Cookies' },
       ],
     },
   ];
@@ -64,6 +65,7 @@ export function Footer() {
             <p className="mt-3 max-w-sm text-xs font-semibold leading-relaxed text-gray-400">
               {isDa ? 'Minimum 40% af hver betalt session går til Kræftens Bekæmpelse.' : 'At least 40% from every paid session goes to Kræftens Bekæmpelse.'}
             </p>
+            <a href="mailto:kontakt@naetwork.dk" className="mt-5 inline-flex text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">kontakt@naetwork.dk</a>
           </div>
 
           <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-4 lg:grid-cols-4">
@@ -83,8 +85,8 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-gray-200 pt-6 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-2xl text-xs leading-relaxed text-gray-400">{tr('footer.legal')}</p>
-          <p className="text-xs text-gray-400">{tr('footer.copyright')}</p>
+          <p className="max-w-2xl text-xs leading-relaxed text-gray-400">{isDa ? 'Naetwork er et uafhængigt initiativ. Bidrag gælder kun for betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative. Contributions apply only to paid sessions. Payments are not enabled yet.'}</p>
+          <p className="text-xs text-gray-400">{isDa ? '© 2026 Naetwork. Alle rettigheder forbeholdes.' : '© 2026 Naetwork. All rights reserved.'}</p>
         </div>
       </div>
     </footer>
