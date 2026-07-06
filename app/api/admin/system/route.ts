@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { hasMeaningfulValue, hasValidLegalIdentity, isValidEmail } from '@/lib/server/readiness';
 
 export async function GET() {
   const supabase = await createClient();
@@ -16,11 +17,11 @@ export async function GET() {
       NEXT_PUBLIC_SUPABASE_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
       NEXT_PUBLIC_SUPABASE_ANON_KEY: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
       SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
-      SUPPORT_EMAIL: Boolean(process.env.SUPPORT_EMAIL),
+      SUPPORT_EMAIL: isValidEmail(process.env.SUPPORT_EMAIL),
       NEXT_PUBLIC_APP_URL: Boolean(process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL),
-      NEXT_PUBLIC_LEGAL_NAME: Boolean(process.env.NEXT_PUBLIC_LEGAL_NAME),
-      NEXT_PUBLIC_LEGAL_ADDRESS: Boolean(process.env.NEXT_PUBLIC_LEGAL_ADDRESS),
-      NEXT_PUBLIC_LEGAL_REGISTRATION: Boolean(process.env.NEXT_PUBLIC_LEGAL_REGISTRATION),
+      NEXT_PUBLIC_LEGAL_NAME: hasMeaningfulValue(process.env.NEXT_PUBLIC_LEGAL_NAME),
+      NEXT_PUBLIC_LEGAL_ADDRESS: hasValidLegalIdentity(),
+      NEXT_PUBLIC_LEGAL_REGISTRATION: hasValidLegalIdentity(),
     },
     integrations: {
       transactionalEmail: process.env.RESEND_API_KEY && process.env.EMAIL_FROM ? 'configured' : 'pending',
