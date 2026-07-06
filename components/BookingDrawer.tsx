@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Check, LockKeyhole, X } from 'lucide-react'
+import { BOOKING_FOCUS_AREAS, contributionAmount, focusLabel } from '@/lib/platform'
 
 interface Professional {
   id: string
@@ -23,12 +24,11 @@ interface BookingDrawerProps {
 
 const PREFERRED_TIMES = ['09:00', '11:00', '14:00', '16:00']
 
-const FOCUS_OPTIONS = [
-  { id: 'cv_linkedin', da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
-  { id: 'interview_prep', da: 'Interview', en: 'Interview' },
-  { id: 'case_prep', da: 'Case / technicals', en: 'Case / technicals' },
-  { id: 'career_direction', da: 'Karriereretning', en: 'Career direction' },
-]
+const FOCUS_OPTIONS = BOOKING_FOCUS_AREAS.map((id) => ({
+  id,
+  da: focusLabel(id, 'da'),
+  en: focusLabel(id, 'en'),
+}))
 
 interface PreferredDay {
   label: string
@@ -71,7 +71,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const dialogRef = useRef<HTMLDivElement>(null)
 
   const days = getNextWeekdays(locale)
-  const minimumContribution = Math.round(professional.price * professional.contributionPercent / 100)
+  const minimumContribution = contributionAmount(professional.price, professional.contributionPercent)
 
   useEffect(() => {
     if (open) return
