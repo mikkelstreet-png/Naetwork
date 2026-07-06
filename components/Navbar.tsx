@@ -91,7 +91,7 @@ export function Navbar() {
           <span className="text-[15px] font-black text-gray-950">Naetwork</span>
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -111,17 +111,19 @@ export function Navbar() {
 
           <Link
             href="/professionals"
-            className="hidden items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 md:inline-flex"
+            className="hidden items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 lg:inline-flex"
           >
             {displayDa ? 'Find en professionel' : 'Find a professional'}
           </Link>
 
-          {session === null ? null : session ? (
+          {session === null ? <span aria-hidden="true" className="hidden h-9 w-16 lg:block" /> : session ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950 text-xs font-bold text-white transition-transform hover:scale-105"
-                aria-label={displayDa ? 'Åbn kontomenu' : 'Open account menu'}
+                aria-label={dropdownOpen
+                  ? (displayDa ? 'Luk kontomenu' : 'Close account menu')
+                  : (displayDa ? 'Åbn kontomenu' : 'Open account menu')}
                 aria-expanded={dropdownOpen}
                 aria-controls="account-menu"
               >
@@ -140,13 +142,13 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950 md:block">
+            <Link href="/login" className="hidden px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950 lg:block">
               {displayDa ? 'Log ind' : 'Log in'}
             </Link>
           )}
 
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen
               ? (displayDa ? 'Luk menu' : 'Close menu')
@@ -160,7 +162,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 py-5 md:hidden">
+        <div id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 py-5 lg:hidden">
           <div className="border-t border-gray-200">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 text-sm font-black text-gray-950" onClick={() => setMobileOpen(false)}>
