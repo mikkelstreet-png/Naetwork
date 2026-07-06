@@ -1,9 +1,7 @@
-// Platform constants for Naetwork career session platform
-
-export const PLATFORM_NAME = 'Naetwork';
+// Compatibility layer for older imports. Canonical product values live in platform.ts.
+export { CHARITY_NAME, PLATFORM_NAME, PRICE_MAX, PRICE_MIN } from './platform';
 export const PLATFORM_COMMISSION_DEFAULT = 0.15;
 export const PLATFORM_COMMISSION_CHARITY = 0.075;
-export const CHARITY_NAME = 'Kraeftens Bekaempelse';
 
 export const SESSION_TYPES = [
   'mock_interview',
@@ -21,19 +19,6 @@ export const SESSION_TYPE_LABELS: Record<SessionType, { da: string; en: string }
   career_advice: { da: 'Karriereraadgivning', en: 'Career advice' },
 };
 
-export const INDUSTRIES = [
-  'Teknologi',
-  'Finans',
-  'Konsulentbranchen',
-  'Marketing',
-  'Jura',
-  'Sundhed',
-  'Uddannelse',
-  'Medier',
-  'Andet',
-] as const;
+export const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'] as const;
 
 export type Industry = typeof INDUSTRIES[number];
-
-export const PRICE_MIN = 300;
-export const PRICE_MAX = 2000;
