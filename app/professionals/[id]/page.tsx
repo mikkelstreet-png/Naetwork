@@ -162,12 +162,13 @@ export default function ProfessionalDetailPage() {
       <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-[#f7f7f4] p-6">
         <span className="block h-2 w-10 rounded-full bg-cyan-300" aria-hidden="true" />
         <h1 className="mt-5 text-2xl font-black text-gray-950">{isDa ? 'Profilen kunne ikke indlæses' : 'The profile could not be loaded'}</h1>
-        <p className="mt-2 text-sm leading-relaxed text-gray-600">{isDa ? 'Forbindelsen svarede ikke. Prøv igen om et øjeblik.' : 'The connection did not respond. Please try again in a moment.'}</p>
+        <p className="mt-2 text-sm leading-relaxed text-gray-600">{isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen; hvis fejlen fortsætter, hjælper vi dig videre.' : 'The profile service is not responding right now. Try again; if the issue continues, we can help.'}</p>
         <div className="mt-5 flex flex-wrap gap-3">
           <button type="button" onClick={() => void fetchProfessional()} className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-3 text-sm font-black text-white">
             <RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}
           </button>
           <Link href="/professionals" className="inline-flex items-center px-2 py-3 text-sm font-black text-gray-600">{isDa ? 'Alle profiler' : 'All profiles'}</Link>
+          <Link href="/contact" className="inline-flex items-center px-2 py-3 text-sm font-black text-gray-600">{isDa ? 'Kontakt os' : 'Contact us'}</Link>
         </div>
       </div>
     </main>
