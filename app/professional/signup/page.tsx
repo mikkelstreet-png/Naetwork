@@ -189,37 +189,37 @@ export default function ProfessionalSignupPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="professional-name" className="mb-1 block text-sm font-semibold text-gray-700">Fulde navn</label>
-                    <input id="professional-name" autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Mikkel Jensen" />
+                    <input id="professional-name" required aria-required="true" autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Mikkel Jensen" />
                   </div>
                   <div>
                     <label htmlFor="professional-email" className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
-                    <input id="professional-email" type="email" autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="mikkel@firma.dk" />
+                    <input id="professional-email" type="email" required aria-required="true" autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="mikkel@firma.dk" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="professional-password" className="mb-1 block text-sm font-semibold text-gray-700">Adgangskode</label>
-                  <input id="professional-password" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Min. 8 tegn" />
+                  <input id="professional-password" type="password" required aria-required="true" autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Min. 8 tegn" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="professional-title" className="mb-1 block text-sm font-semibold text-gray-700">Jobtitel</label>
-                    <input id="professional-title" value={form.title} onChange={e => set('title', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Senior Manager" />
+                    <input id="professional-title" required aria-required="true" autoComplete="organization-title" value={form.title} onChange={e => set('title', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Senior Manager" />
                   </div>
                   <div>
                     <label htmlFor="professional-company" className="mb-1 block text-sm font-semibold text-gray-700">Virksomhed</label>
-                    <input id="professional-company" value={form.company} onChange={e => set('company', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Nordea" />
+                    <input id="professional-company" required aria-required="true" autoComplete="organization" value={form.company} onChange={e => set('company', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Nordea" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="professional-industry" className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
-                  <select id="professional-industry" value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950">
+                  <select id="professional-industry" required aria-required="true" value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950">
                     <option value="">Vælg industri</option>
                     {INDUSTRIES.map((industry) => <option key={industry.id} value={industry.id}>{industry.id}</option>)}
                   </select>
                 </div>
                 <div>
                   <label htmlFor="professional-linkedin" className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
-                  <input id="professional-linkedin" type="url" inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="https://linkedin.com/in/..." />
+                  <input id="professional-linkedin" type="url" required aria-required="true" inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="https://linkedin.com/in/..." />
                   <p className="mt-1 text-xs text-gray-400">Bruges til at gennemgå din professionelle baggrund.</p>
                 </div>
               </div>
@@ -306,13 +306,13 @@ export default function ProfessionalSignupPage() {
                   ))}
                 </div>
                 <label className="flex items-start gap-3 text-sm leading-relaxed text-gray-600">
-                  <input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-1 h-4 w-4 accent-gray-950" />
+                  <input type="checkbox" required checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-1 h-4 w-4 accent-gray-950" />
                   <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitik</Link>.</span>
                 </label>
               </div>
             )}
 
-            {error && <p className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+            {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
             <div className="mt-8 flex gap-3">
               {step > 1 && <button onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 rounded-lg border border-gray-200 py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-50">Tilbage</button>}
