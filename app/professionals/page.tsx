@@ -171,7 +171,7 @@ export default function ProfessionalsPage() {
     emptyTitle: isDa ? 'De første profiler er på vej' : 'The first profiles are on their way',
     emptyBody: isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.',
     errorTitle: isDa ? 'Vi kunne ikke hente profilerne' : 'We could not load the profiles',
-    errorBody: isDa ? 'Forbindelsen svarede ikke. Prøv igen om et øjeblik.' : 'The connection did not respond. Please try again in a moment.',
+    errorBody: isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen; hvis fejlen fortsætter, hjælper vi dig videre.' : 'The profile service is not responding right now. Try again; if the issue continues, we can help.',
   }
 
   const needLabels: Record<Need, string> = {
@@ -303,7 +303,7 @@ export default function ProfessionalsPage() {
                 <RefreshCw size={16} aria-hidden="true" />
                 {isDa ? 'Prøv igen' : 'Try again'}
               </button>
-              <Link href="/impact" className="inline-flex px-1 py-3 text-sm font-black text-gray-600 transition-colors hover:text-gray-950">{isDa ? 'Sådan virker bidraget' : 'How the contribution works'}</Link>
+              <Link href="/contact" className="inline-flex px-1 py-3 text-sm font-black text-gray-600 transition-colors hover:text-gray-950">{isDa ? 'Kontakt os' : 'Contact us'}</Link>
             </div>
           </div>
         ) : dbProfessionals.length === 0 ? (
