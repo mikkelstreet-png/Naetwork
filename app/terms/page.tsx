@@ -1,155 +1,130 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { LegalDocument, type LegalSection } from '@/components/LegalDocument'
 
 export const metadata: Metadata = {
-  title: 'Vilkår - Naetwork',
-  description: 'Vilkår for brug af Naetwork, booking af 60-minutters sessioner og professionelle profiler.',
+  title: 'Vilkår for brug - Naetwork',
+  description: 'Vilkår for konti, professionelle profiler og booking af 60 minutters karrieresparring på Naetwork.',
 }
 
-const updated = '30. juni 2026'
+const updated = '6. juli 2026'
 const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
 const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
 const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
+const supportEmail = process.env.SUPPORT_EMAIL ?? 'kontakt@naetwork.dk'
 const operator = [legalName, legalRegistration, legalAddress].filter(Boolean).join(', ')
 
-const keyPoints = [
-  ['Format', '60 min 1:1 karrieresparring'],
-  ['Pris', 'DKK 600-1.800, sat af den professionelle'],
-  ['Platform', 'Naetwork forbinder kandidater og professionelle'],
-  ['Bidrag', 'Minimum 40% og op til 90% af betalte sessioner'],
+const facts: Array<[string, string]> = [
+  ['Operatør', operator],
+  ['Kontakt', supportEmail],
+  ['Format', '60 minutter'],
+  ['Prisramme', 'DKK 600-1.800'],
 ]
 
-const sections = [
+const sections: LegalSection[] = [
   {
-    title: '1. Om Naetwork',
+    id: 'om-naetwork',
+    title: '1. Om Naetwork og vilkårenes omfang',
     body: [
-      'Naetwork er en platform, der forbinder ambitiøse kandidater med professionelle fra AI, Banking, Management Consulting og Private Equity.',
-      `Platformen drives af ${operator}.`,
-      'Kerneproduktet er en 60-minutters 1:1-session, hvor kandidaten vælger fokus før booking. Det kan eksempelvis være CV, interview, case-træning, tekniske spørgsmål, AI-karrierestrategi eller karrierevalg.',
+      `Naetwork drives af ${operator} og forbinder kandidater med professionelle fra AI, Banking, Management Consulting og Private Equity.`,
+      'Vilkårene gælder, når du besøger platformen, opretter en konto, publicerer en professionel profil eller sender og behandler bookinganmodninger.',
+      'Du skal være fyldt 18 år for at oprette konto eller tilbyde sessioner. Ved at oprette konto accepterer du den version af vilkårene, der gælder på det tidspunkt.',
     ],
   },
   {
+    id: 'platformens-rolle',
     title: '2. Platformens rolle',
     body: [
-      'Naetwork stiller platformen til rådighed, så kandidater kan finde professionelle, sende bookinganmodninger og modtage relevant kommunikation.',
-      'De professionelle er ansvarlige for den sparring, de leverer. Naetwork garanterer ikke jobtilbud, interviews, optagelse i bestemte virksomheder eller konkrete karriereresultater.',
+      'Naetwork stiller søgning, profiler, bookinganmodninger og relateret kommunikation til rådighed. Den professionelle leverer selve sparringen og er ansvarlig for at møde forberedt og levere sessionen med rimelig omhu og professionalisme.',
+      'Karrieresparring er vejledende og er ikke en garanti for ansættelse, interview, optagelse, afkast eller andre bestemte resultater. Sessioner er ikke juridisk, skattemæssig, investeringsmæssig eller lægefaglig rådgivning.',
     ],
   },
   {
-    title: '3. Konto og adgang',
+    id: 'konto',
+    title: '3. Konto og sikkerhed',
     body: [
-      'Du skal give korrekte oplysninger, når du opretter konto. Du er ansvarlig for at holde dine loginoplysninger fortrolige.',
-      'Naetwork kan begrænse eller lukke adgang, hvis en bruger misbruger platformen, giver urigtige oplysninger, overtræder lovgivning eller handler i strid med disse vilkår.',
+      'Du skal give korrekte og aktuelle oplysninger og beskytte dine loginoplysninger. Du må ikke dele konto, udgive dig for en anden eller bruge platformen til ulovlige eller vildledende formål.',
+      'Kontakt os straks, hvis du mener, at din konto er kompromitteret. Naetwork kan midlertidigt begrænse adgang for at beskytte brugere, data eller platformen.',
     ],
   },
   {
-    title: '4. Booking af sessioner',
+    id: 'booking',
+    title: '4. Booking og gennemførelse',
     body: [
-      'En bookinganmodning er først endelig, når den er bekræftet i platformen eller via relevant kommunikation.',
-      'Kandidaten er ansvarlig for at møde forberedt og give den professionelle tilstrækkelig kontekst. Den professionelle er ansvarlig for at levere sessionen med rimelig omhu, professionalisme og fortrolighed.',
-      'Hvis en session skal flyttes eller aflyses, skal det ske så tidligt som muligt og i overensstemmelse med de processer, Naetwork stiller til rådighed.',
+      'En bookinganmodning angiver kandidatens ønskede tidspunkt og fokus. Aftalen om tidspunktet er først bekræftet, når den professionelle accepterer anmodningen i platformen eller gennem den kommunikation, Naetwork stiller til rådighed.',
+      'Kandidaten skal give relevant kontekst uden at dele fortrolige eller ulovligt indhentede oplysninger. Begge parter skal møde til tiden og kommunikere ændringer så tidligt som muligt.',
+      'Aktuelle funktioner til ombooking, aflysning og status fremgår af bookingoversigten. Naetwork kan kontakte parterne for at afklare udeblivelse, tvister eller tekniske fejl.',
     ],
   },
   {
-    title: '5. Priser og betaling',
+    id: 'pris-og-betaling',
+    title: '5. Pris og betaling',
     body: [
-      'Professionelle sætter selv prisen for en 60-minutters session inden for den ramme, Naetwork viser på platformen. Aktuelt er rammen DKK 600-1.800.',
-      'Betaling er ikke aktiveret endnu. En bookinganmodning eller bekræftelse trækker derfor ikke et beløb og udgør ikke dokumentation for en betaling eller donation.',
-      'Når betaling aktiveres, vil den konkrete pris, eventuelle gebyrer, udbetaling og bidrag fremgå før bindende betaling. Vilkårene opdateres inden aktivering.',
+      'Den professionelle vælger en pris mellem DKK 600 og DKK 1.800 for en session på 60 minutter. Den konkrete pris og det forventede minimumsbidrag vises før bookinganmodningen sendes.',
+      'Betaling er ikke aktiveret endnu. En bookinganmodning eller bekræftelse medfører derfor ikke betaling og dokumenterer ikke et gennemført bidrag.',
+      'Før betaling aktiveres, opdaterer Naetwork checkout, afbestillingsvilkår, gebyrer, kvitteringer og disse vilkår, så alle økonomiske konsekvenser fremgår før en bindende bestilling.',
     ],
   },
   {
-    title: '6. Professionelle profiler',
+    id: 'fortrydelse',
+    title: '6. Fortrydelse og aflysning',
     body: [
-      'Professionelle skal give korrekte oplysninger om rolle, erfaring, virksomhed, fokusområder, pris og valgt bidragsniveau.',
-      'Naetwork kan skjule, afvise eller justere synlighed for profiler, hvis kvaliteten, dokumentationen eller indholdet ikke matcher platformens standarder.',
-      'Professionelle må ikke love ansættelse, intern adgang, fortrolige oplysninger fra arbejdsgivere eller resultater, som de ikke kan kontrollere.',
+      'Ved et fremtidigt onlinekøb har forbrugere som udgangspunkt 14 dages fortrydelsesret efter dansk forbrugerret. Hvis en session ønskes gennemført inden fristens udløb, vil checkout indhente den nødvendige udtrykkelige anmodning og oplyse om konsekvenserne.',
+      'Ufravigelige forbrugerrettigheder gælder altid. De konkrete afbestillings- og refusionsregler offentliggøres og accepteres, før betaling aktiveres.',
     ],
   },
   {
-    title: '7. Fortrolighed og adfærd',
+    id: 'professionelle',
+    title: '7. Professionelle profiler',
     body: [
-      'Brugere skal behandle hinanden respektfuldt og professionelt. Chikane, diskrimination, spam, vildledning eller forsøg på at omgå platformens sikkerhed accepteres ikke.',
-      'Kandidater må ikke dele fortrolige materialer uden ret til det. Professionelle må ikke dele fortrolige oplysninger fra nuværende eller tidligere arbejdsgivere.',
+      'Professionelle skal beskrive rolle, erfaring, virksomhed, fokusområder, pris og bidragsniveau sandfærdigt. LinkedIn-oplysninger bruges til gennemgang og vises ikke offentligt, medmindre det oplyses særskilt.',
+      'Naetwork kan afvise, skjule eller kræve ændringer til en profil, hvis erfaring ikke kan verificeres, teksten er vildledende, eller profilen ikke lever op til platformens kvalitets- og adfærdsstandarder.',
+      'Professionelle må ikke love intern adgang, dele arbejdsgiveres fortrolige oplysninger eller give indtryk af at repræsentere en virksomhed uden bemyndigelse.',
     ],
   },
   {
-    title: '8. Bidrag og Kræftens Bekæmpelse',
+    id: 'adfaerd',
+    title: '8. Adfærd og fortrolighed',
     body: [
-      'For hver betalt session bidrager minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse. Den konkrete minimumsandel vises i booking-flowet, før en bookinganmodning sendes.',
-      'Bidraget gælder for betalte sessioner. Anmodede, aflyste eller refunderede sessioner tæller ikke som betalte bidrag, medmindre andet fremgår eksplicit.',
-      'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse, medmindre det fremgår eksplicit. Modellen beskriver Naetworks bidragsforpligtelse og er ikke personlig skatte- eller donationsrådgivning.',
+      'Chikane, diskrimination, spam, manipulation, omgåelse af sikkerhed og misbrug af personoplysninger accepteres ikke.',
+      'Parterne skal respektere tredjemands rettigheder og må ikke dele fortrolige cases, kundedata, personoplysninger eller materiale, de ikke har ret til at bruge. Naetwork kan undersøge dokumenterede klager og begrænse konti, mens en sag afklares.',
     ],
   },
   {
-    title: '9. Ansvar og forbehold',
+    id: 'bidrag',
+    title: '9. Bidrag til Kræftens Bekæmpelse',
     body: [
-      'Naetwork leveres som en platform under udvikling. Vi forsøger at holde information, profiler og funktioner korrekte, men kan ikke garantere uafbrudt drift eller fejlfrie oplysninger.',
-      'Naetwork er ikke ansvarlig for indirekte tab, tabte muligheder, tabt indtjening eller beslutninger truffet på baggrund af en session, medmindre andet følger af ufravigelig lovgivning.',
+      'For hver betalt session afsættes minimum 40% og op til 90% af den viste sessionspris til støtte for Kræftens Bekæmpelse. Den konkrete procent vælges på den professionelle profil og vises før booking.',
+      'Kun gennemførte og betalte sessioner tæller. Anmodede, aflyste, tilbageførte eller refunderede sessioner tæller ikke som gennemførte bidrag.',
+      'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet eller godkendt af Kræftens Bekæmpelse, medmindre det fremgår udtrykkeligt. Bidragsoplysninger er ikke personlig skatte- eller fradragsrådgivning.',
     ],
   },
   {
-    title: '10. Privatliv',
+    id: 'rettigheder',
+    title: '10. Indhold og immaterielle rettigheder',
     body: [
-      'Når du bruger Naetwork, behandler vi personoplysninger som beskrevet i privatlivspolitikken.',
+      'Naetwork ejer platformens design, kode, struktur og eget indhold. Du bevarer rettighederne til oplysninger og materiale, du selv indsender, og giver kun Naetwork den begrænsede ret, der er nødvendig for at drive, sikre og vise tjenesten.',
+      'Du må ikke kopiere, scrape, videresælge eller systematisk genbruge profiler eller platformdata uden tilladelse.',
     ],
-    link: { href: '/privacy', label: 'Læs privatlivspolitik' },
   },
   {
-    title: '11. Ændringer og kontakt',
+    id: 'ansvar',
+    title: '11. Drift og ansvar',
     body: [
-      'Vi kan opdatere disse vilkår, når produktet, forretningsmodellen eller lovgivningen ændrer sig. Den nyeste version fremgår altid på denne side.',
-      'Spørgsmål kan sendes til kontakt@naetwork.dk.',
+      'Naetwork arbejder for stabil og sikker drift, men kan ikke garantere uafbrudt adgang. Ved vedligeholdelse, sikkerhedshændelser eller fejl kan funktioner midlertidigt begrænses.',
+      'Naetwork er ikke ansvarlig for indirekte tab, tabte muligheder eller beslutninger truffet på baggrund af en session, medmindre andet følger af ufravigelig lovgivning. Intet i vilkårene begrænser ansvar, som ikke lovligt kan begrænses.',
     ],
+  },
+  {
+    id: 'aendringer-og-lovvalg',
+    title: '12. Ændringer, lovvalg og kontakt',
+    body: [
+      'Væsentlige ændringer varsles på en rimelig måde, før de får virkning for eksisterende brugere. Den gældende version og dato vises altid her.',
+      `Spørgsmål og klager sendes først til ${supportEmail}. Dansk ret gælder, men uden at begrænse ufravigelige rettigheder, som en forbruger har efter loven i sit bopælsland.`,
+    ],
+    link: { href: '/privacy', label: 'Læs privatlivspolitikken' },
   },
 ]
 
 export default function TermsPage() {
-  return (
-    <main className="bg-[#f7f7f4]">
-      <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
-        <div className="mx-auto max-w-5xl">
-          <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
-          <p className="mb-4 text-xs font-semibold uppercase text-gray-500">Juridisk</p>
-          <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Vilkår for brug</h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">De klare spilleregler for kandidater, professionelle, booking og bidrag på Naetwork.</p>
-          <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>
-        </div>
-      </section>
-
-      <section className="px-6 py-10 md:py-14">
-        <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[300px_1fr]">
-          <aside className="h-fit rounded-lg border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
-            <p className="mb-4 text-xs font-semibold uppercase text-gray-400">Overblik</p>
-            <div className="space-y-4">
-              {keyPoints.map(([label, value]) => (
-                <div key={label}>
-                  <p className="text-xs font-semibold uppercase text-gray-400">{label}</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-950">{value}</p>
-                </div>
-              ))}
-            </div>
-          </aside>
-
-          <div className="space-y-4">
-            {sections.map((section) => (
-              <article key={section.title} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-                <h2 className="text-xl font-black text-gray-950">{section.title}</h2>
-                <div className="mt-4 space-y-3">
-                  {section.body.map((paragraph) => (
-                    <p key={paragraph} className="text-sm leading-relaxed text-gray-600">{paragraph}</p>
-                  ))}
-                </div>
-                {section.link && (
-                  <Link href={section.link.href} className="mt-5 inline-flex rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
-                    {section.link.label}
-                  </Link>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    </main>
-  )
+  return <LegalDocument title="Vilkår for brug" intro="Klare rammer for konti, profiler, booking, bidrag og ansvar på Naetwork." updated={updated} facts={facts} sections={sections} />
 }
