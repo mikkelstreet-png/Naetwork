@@ -7,6 +7,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import Link from 'next/link'
 import BookingDrawer from '@/components/BookingDrawer'
 import { RefreshCw } from 'lucide-react'
+import { contributionAmount, focusLabel, industryAccent } from '@/lib/platform'
 
 interface Professional {
   id: string
@@ -20,24 +21,6 @@ interface Professional {
   focus_areas?: string[]
 }
 
-const FOCUS_LABELS: Record<string, { da: string; en: string }> = {
-  cv_linkedin: { da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
-  application_review: { da: 'Ansøgning', en: 'Application review' },
-  interview_prep: { da: 'Interviewforberedelse', en: 'Interview preparation' },
-  case_prep: { da: 'Case-træning', en: 'Case preparation' },
-  banking_technicals: { da: 'Banking technicals', en: 'Banking technicals' },
-  consulting_cases: { da: 'Consulting-cases', en: 'Consulting cases' },
-  pe_investment_case: { da: 'PE / investment case', en: 'PE / investment case' },
-  career_direction: { da: 'Karriereretning', en: 'Career direction' },
-  ai_career_strategy: { da: 'AI-karrierestrategi', en: 'AI career strategy' },
-  industry_insight: { da: 'Brancheindsigt', en: 'Industry insight' },
-  mock_interview: { da: 'Prøveinterview', en: 'Mock interview' },
-  cv_review: { da: 'CV / LinkedIn', en: 'CV / LinkedIn' },
-  career_strategy: { da: 'Karriereretning', en: 'Career direction' },
-  career_advice: { da: 'Karriereretning', en: 'Career direction' },
-  informal_chat: { da: 'Brancheindsigt', en: 'Industry insight' },
-}
-
 function initials(name: string) {
   return name
     .split(' ')
@@ -48,31 +31,24 @@ function initials(name: string) {
 }
 
 function accentFor(pro: Professional) {
-  if (pro.industries.includes('AI')) return 'bg-cyan-300'
-  if (pro.industries.includes('Banking')) return 'bg-emerald-300'
-  if (pro.industries.includes('Management Consulting')) return 'bg-blue-300'
-  return 'bg-lime-300'
-}
-
-function contributionAmount(price: number, percentage: number) {
-  return Math.round(price * percentage / 100)
+  return industryAccent(pro.industries[0])
 }
 
 function bestFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'PE / investment case' : 'PE / investment case'
-  if (focus.includes('banking_technicals')) return isDa ? 'Banking technicals' : 'Banking technicals'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting cases' : 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-karrierestrategi' : 'AI career strategy'
+  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og PE-interview' : 'PE / investment case'
+  if (focus.includes('banking_technicals')) return isDa ? 'Tekniske spørgsmål og Banking-interview' : 'Banking technicals'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Cases og personligt interview' : 'Consulting cases'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-roller og positionering' : 'AI career strategy'
   if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Ansøgningsmateriale' : 'Applications'
   return isDa ? 'Karriereafklaring' : 'Career clarity'
 }
 
 function primaryOutputFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og deal thinking' : 'Investment case and deal thinking'
-  if (focus.includes('banking_technicals')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit'
+  if (focus.includes('pe_investment_case')) return isDa ? 'Skarpere investeringsvurdering' : 'Investment case and deal thinking'
+  if (focus.includes('banking_technicals')) return isDa ? 'Teknisk sikkerhed og interviewklarhed' : 'Technicals and interview bar'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og personlig kommunikation' : 'Case structure and fit'
   if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
   if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
   return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
@@ -82,22 +58,22 @@ function useCasesFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
   if (focus.includes('pe_investment_case')) {
     return isDa
-      ? ['Du søger Private Equity og vil forstå interviewbaren.', 'Du vil træne investment cases, deal thinking eller diligence-logik.', 'Du vil oversætte banking, consulting eller startup-erfaring til en PE-fortælling.']
+      ? ['Du søger Private Equity og vil forstå interviewniveauet.', 'Du vil træne investment cases, deal-forståelse eller due diligence-logik.', 'Du vil omsætte erfaring fra Banking, Consulting eller startups til en troværdig PE-fortælling.']
       : ['You are targeting Private Equity and want to understand the interview bar.', 'You want to practice investment cases, deal thinking or diligence logic.', 'You want to translate banking, consulting or startup experience into a PE story.']
   }
   if (focus.includes('banking_technicals')) {
     return isDa
-      ? ['Du søger Banking og vil forstå interviewbaren.', 'Du vil træne technicals, fit eller M&A-proces.', 'Du har materiale eller processtatus, der skal skærpes hurtigt.']
+      ? ['Du søger Banking og vil forstå interviewniveauet.', 'Du vil træne tekniske spørgsmål, motivation eller M&A-processen.', 'Du har materiale eller en igangværende proces, der skal skærpes hurtigt.']
       : ['You are targeting Banking and want to understand the interview bar.', 'You want to practice technicals, fit or M&A process.', 'You have materials or process context that needs sharper positioning.']
   }
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
     return isDa
-      ? ['Du vil træne cases med mere struktur og mindre støj.', 'Du vil forbedre fit-svar og personlig kommunikation.', 'Du vil forstå, hvordan konsulenthuse vurderer kandidater.']
+      ? ['Du vil træne cases med mere struktur og mindre støj.', 'Du vil forbedre dine personlige svar og din kommunikation.', 'Du vil forstå, hvordan konsulenthuse vurderer kandidater.']
       : ['You want to practice cases with more structure and less noise.', 'You want to improve fit answers and personal communication.', 'You want to understand how consultancies evaluate candidates.']
   }
   if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) {
     return isDa
-      ? ['Du vil ind i AI og har brug for en klarere vej ind.', 'Du vil oversætte din erfaring til relevante AI-roller.', 'Du vil forstå portfolio, rolletyper og interviewvinkler.']
+      ? ['Du vil ind i AI og har brug for en klarere vej ind.', 'Du vil omsætte din erfaring til relevante AI-roller.', 'Du vil forstå portefølje, rolletyper og interviewvinkler.']
       : ['You want to enter AI and need a clearer path in.', 'You want to translate your experience into relevant AI roles.', 'You want to understand portfolio, role types and interview angles.']
   }
   return isDa
@@ -109,22 +85,22 @@ function outcomesFor(pro: Professional, isDa: boolean) {
   const focus = pro.focus_areas ?? []
   if (focus.includes('pe_investment_case')) {
     return isDa
-      ? ['Skærp investment case', 'Træn deal thinking', 'Forstå PE-forventninger', 'Få ærlig feedback på fit']
+      ? ['Skærp din investment case', 'Træn deal-forståelse', 'Forstå PE-forventninger', 'Få ærlig feedback på dit match']
       : ['Sharpen investment case', 'Practice deal thinking', 'Understand PE expectations', 'Get honest fit feedback']
   }
   if (focus.includes('banking_technicals')) {
     return isDa
-      ? ['Forstå interviewbaren', 'Træn technicals', 'Skærp M&A-story', 'Få ærlig feedback på fit']
+      ? ['Forstå interviewniveauet', 'Træn tekniske spørgsmål', 'Skærp din M&A-fortælling', 'Få ærlig feedback på dit match']
       : ['Understand the interview bar', 'Practice technicals', 'Sharpen M&A story', 'Get honest fit feedback']
   }
   if (focus.includes('consulting_cases') || focus.includes('case_prep')) {
     return isDa
-      ? ['Strukturer cases bedre', 'Træn hypoteser', 'Kommunikér klarere', 'Forbered fit-svar']
+      ? ['Strukturér cases bedre', 'Træn hypoteser', 'Kommunikér klarere', 'Forbered personlige svar']
       : ['Structure cases better', 'Practice hypotheses', 'Communicate more clearly', 'Prepare fit answers']
   }
   if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) {
     return isDa
-      ? ['Afkod AI-roller', 'Positionér din erfaring', 'Byg stærkere portfolio', 'Vælg næste skridt']
+      ? ['Afkod AI-roller', 'Positionér din erfaring', 'Byg en stærkere portefølje', 'Vælg næste skridt']
       : ['Decode AI roles', 'Position your experience', 'Build a stronger portfolio', 'Choose next steps']
   }
   return isDa
@@ -306,7 +282,7 @@ export default function ProfessionalDetailPage() {
                 <div className="border-t border-gray-200">
                   {focusAreas.map((area) => (
                     <div key={area} className="grid gap-3 border-b border-gray-200 py-5 md:grid-cols-[220px_1fr]">
-                      <p className="text-sm font-black text-gray-950">{FOCUS_LABELS[area]?.[isDa ? 'da' : 'en'] ?? area}</p>
+                      <p className="text-sm font-black text-gray-950">{focusLabel(area, isDa ? 'da' : 'en')}</p>
                       <p className="text-sm leading-relaxed text-gray-500">
                         {isDa ? 'Brug sessionen på konkrete spørgsmål, feedback og næste skridt.' : 'Use the session for concrete questions, feedback and next steps.'}
                       </p>
