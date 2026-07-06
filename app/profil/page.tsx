@@ -162,7 +162,7 @@ export default function ProfilPage() {
               {[
                 ['Navn', profile.name || 'Ikke angivet'],
                 ['E-mail', user?.email || 'Ikke angivet'],
-                ['Rolle', isProfessional ? 'Professional' : 'Kandidat'],
+                ['Rolle', isProfessional ? 'Professionel' : 'Kandidat'],
               ].map(([label, value]) => (
                 <div key={label} className="flex items-center justify-between gap-5 border-b border-gray-300 px-4 py-4 text-sm">
                   <dt className="text-gray-500">{label}</dt>
