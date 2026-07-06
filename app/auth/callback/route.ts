@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { safeInternalPath } from '@/lib/navigation';
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PRICE_MAX, PRICE_MIN } from '@/lib/platform';
 
 function text(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -15,14 +16,14 @@ function stringArray(value: unknown): string[] {
 
 function price(value: unknown): number {
   const parsed = typeof value === 'number' ? value : Number(value);
-  if (!Number.isFinite(parsed)) return 600;
-  return Math.min(1800, Math.max(600, Math.round(parsed)));
+  if (!Number.isFinite(parsed)) return PRICE_MIN;
+  return Math.min(PRICE_MAX, Math.max(PRICE_MIN, Math.round(parsed)));
 }
 
 function percentage(value: unknown): number {
   const parsed = typeof value === 'number' ? value : Number(value);
-  if (!Number.isFinite(parsed)) return 40;
-  return Math.min(90, Math.max(40, Math.round(parsed)));
+  if (!Number.isFinite(parsed)) return CONTRIBUTION_MIN;
+  return Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, Math.round(parsed)));
 }
 
 export async function GET(request: NextRequest) {
