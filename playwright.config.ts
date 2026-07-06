@@ -27,11 +27,15 @@ export default defineConfig({
     },
     {
       name: 'mobile-small',
-      use: { ...devices['iPhone SE'], viewport: { width: 375, height: 667 } },
+      use: { ...devices['iPhone SE'], browserName: 'webkit', viewport: { width: 375, height: 667 } },
     },
     {
       name: 'mobile-standard',
       use: { ...devices['Pixel 7'], viewport: { width: 412, height: 915 } },
+    },
+    {
+      name: 'tablet',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 834, height: 1112 } },
     },
   ],
 })
