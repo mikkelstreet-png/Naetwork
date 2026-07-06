@@ -8,13 +8,13 @@ export function MissionContent() {
   const isDa = lang === 'da';
 
   const principles = [
-    [isDa ? 'Adgang bør være mindre tilfældig' : 'Access should be less random', isDa ? 'Stærke kandidater bør ikke være afhængige af en varm intro for at forstå krævende karriereveje.' : 'Strong candidates should not need a warm introduction to understand demanding career paths.'],
+    [isDa ? 'Adgang bør være mindre tilfældig' : 'Access should be less random', isDa ? 'Stærke kandidater bør ikke være afhængige af en personlig introduktion for at forstå krævende karriereveje.' : 'Strong candidates should not need a warm introduction to understand demanding career paths.'],
     [isDa ? 'Sparring bør være specifik' : 'Guidance should be specific', isDa ? 'Værdien er ikke generel inspiration. Det er kontekst fra en person, der kender barren.' : 'The value is not generic inspiration. It is context from someone who knows the bar.'],
     [isDa ? 'Forberedelse bør være konkret' : 'Preparation should be concrete', isDa ? 'En god session skal skabe skarpere materiale, bedre svar, mere ro eller et klarere næste skridt.' : 'A good session should create sharper materials, better answers, more calm or a clearer next step.'],
     [isDa ? 'Karrieresparring bør have mening' : 'Career guidance should have meaning', isDa ? 'Hver betalt session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse.' : 'Every paid session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse.'],
   ] as const;
 
-  const product = ['60 min', 'AI', 'Banking', 'Consulting', 'Private Equity', '40-90%'] as const;
+  const product = ['60 min', 'AI', 'Banking', 'Management Consulting', 'Private Equity', '40-90%'] as const;
 
   return (
     <main className="page-shell">
@@ -27,7 +27,7 @@ export function MissionContent() {
             </h1>
             <p className="body-lg mt-7 max-w-2xl">
               {isDa
-                ? 'Naetwork gør uformel insider-sparring til et fokuseret produkt: én professionel, ét brief, én 60-minutters session, ét klarere næste skridt og ét konkret bidrag.'
+                ? 'Naetwork gør erfaringsbaseret karrieresparring til et fokuseret produkt: én professionel, ét kort oplæg, 60 minutter, ét klarere næste skridt og ét konkret bidrag.'
                 : 'Naetwork turns informal insider guidance into a focused product: one professional, one brief, one 60-minute session, one clearer next step and one concrete contribution.'}
             </p>
           </div>
