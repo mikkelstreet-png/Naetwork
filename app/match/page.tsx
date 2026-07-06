@@ -27,8 +27,8 @@ function needOptions(isDa: boolean): Array<{ id: Need; label: string; body: stri
   return [
     { id: 'direction', label: isDa ? 'Retning' : 'Direction', body: isDa ? 'Felt, rolle og næste skridt' : 'Field, role and next step' },
     { id: 'materials', label: isDa ? 'Materiale' : 'Materials', body: isDa ? 'CV, LinkedIn eller ansøgning' : 'CV, LinkedIn or application' },
-    { id: 'interview', label: 'Interview', body: isDa ? 'Svar, fit og personlig fortælling' : 'Answers, fit and personal story' },
-    { id: 'case', label: isDa ? 'Case / technicals' : 'Case / technicals', body: isDa ? 'Cases, technicals eller portfolio' : 'Cases, technicals or portfolio' },
+    { id: 'interview', label: 'Interview', body: isDa ? 'Svar, motivation og personlig fortælling' : 'Answers, fit and personal story' },
+    { id: 'case', label: isDa ? 'Case og faglighed' : 'Cases and technicals', body: isDa ? 'Cases, tekniske spørgsmål eller portefølje' : 'Cases, technicals or portfolio' },
   ];
 }
 
@@ -47,10 +47,10 @@ function recommendationFor(field: string, need: Need | '', isDa: boolean) {
   };
 
   const fieldNotes: Record<string, string[]> = {
-    AI: isDa ? ['Afkod relevante roller', 'Positionér din erfaring', 'Vælg stærke proof points'] : ['Decode relevant roles', 'Position your experience', 'Choose strong proof points'],
-    Banking: isDa ? ['Forstå interviewbaren', 'Skærp technicals', 'Styrk din fit story'] : ['Understand the interview bar', 'Sharpen technicals', 'Strengthen your fit story'],
-    'Management Consulting': isDa ? ['Strukturér cases', 'Kommunikér klart', 'Forbered fit-svar'] : ['Structure cases', 'Communicate clearly', 'Prepare fit answers'],
-    'Private Equity': isDa ? ['Skærp deal thinking', 'Træn investment cases', 'Forstå PE-forventninger'] : ['Sharpen deal thinking', 'Practice investment cases', 'Understand PE expectations'],
+    AI: isDa ? ['Afkod relevante roller', 'Positionér din erfaring', 'Vælg de stærkeste resultater'] : ['Decode relevant roles', 'Position your experience', 'Choose strong proof points'],
+    Banking: isDa ? ['Forstå interviewniveauet', 'Skærp din tekniske viden', 'Styrk din personlige fortælling'] : ['Understand the interview bar', 'Sharpen technicals', 'Strengthen your fit story'],
+    'Management Consulting': isDa ? ['Strukturér cases', 'Kommunikér klart', 'Forbered personlige svar'] : ['Structure cases', 'Communicate clearly', 'Prepare fit answers'],
+    'Private Equity': isDa ? ['Skærp din deal-forståelse', 'Træn investment cases', 'Forstå PE-forventninger'] : ['Sharpen deal thinking', 'Practice investment cases', 'Understand PE expectations'],
   };
 
   return {
