@@ -55,7 +55,7 @@ export async function GET() {
       : { data: [] };
 
     const candidateNames = new Map((candidates ?? []).map((row) => [row.id, row.name || 'Kandidat']));
-    const ownerNames = new Map((owners ?? []).map((row) => [row.id, row.name || 'Professional']));
+    const ownerNames = new Map((owners ?? []).map((row) => [row.id, row.name || 'Professionel']));
     const professionalMap = new Map((professionals ?? []).map((row) => [row.id, row]));
 
     return NextResponse.json({
@@ -67,7 +67,7 @@ export async function GET() {
           ...booking,
           viewer_role: viewerRole,
           counterpart_name: viewerRole === 'candidate'
-            ? ownerNames.get(professional?.profile_id) ?? 'Professional'
+            ? ownerNames.get(professional?.profile_id) ?? 'Professionel'
             : candidateNames.get(booking.candidate_profile_id) ?? 'Kandidat',
           counterpart_title: viewerRole === 'candidate'
             ? [professional?.title, professional?.company].filter(Boolean).join(' · ')
