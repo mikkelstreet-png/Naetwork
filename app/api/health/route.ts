@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { hasValidLegalIdentity, isValidEmail } from '@/lib/server/readiness';
 
 export const dynamic = 'force-dynamic';
 
@@ -6,12 +7,8 @@ export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const emailConfigured = Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
-  const supportConfigured = Boolean(process.env.SUPPORT_EMAIL);
-  const legalIdentityConfigured = Boolean(
-    process.env.NEXT_PUBLIC_LEGAL_NAME &&
-    process.env.NEXT_PUBLIC_LEGAL_ADDRESS &&
-    process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
-  );
+  const supportConfigured = isValidEmail(process.env.SUPPORT_EMAIL);
+  const legalIdentityConfigured = hasValidLegalIdentity();
   let database = false;
 
   if (url && key) {
