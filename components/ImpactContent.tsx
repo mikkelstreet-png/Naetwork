@@ -2,23 +2,23 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PRICE_MAX, PRICE_MIN, SESSION_MINUTES, contributionAmount, formatDkk } from '@/lib/platform';
 
 export function ImpactContent() {
   const { lang } = useLanguage();
   const isDa = lang === 'da';
 
-  const examples = [
-    ['DKK 600', 'DKK 240+', '40%'],
-    ['DKK 900', 'DKK 360+', '40%'],
-    ['DKK 1.200', 'DKK 480+', '40%'],
-    ['DKK 1.800', 'DKK 720+', '40%'],
-  ] as const;
+  const examples = [PRICE_MIN, 900, 1200, PRICE_MAX].map((price) => [
+    formatDkk(price),
+    `${formatDkk(contributionAmount(price, CONTRIBUTION_MIN))}-${formatDkk(contributionAmount(price, CONTRIBUTION_MAX)).replace('DKK ', '')}`,
+    `${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`,
+  ] as const);
 
   const clarity = [
     [isDa ? 'Hvornår bidraget gælder' : 'When it applies', isDa ? 'Bidraget gælder for betalte sessioner. Anmodede, aflyste eller ikke-betalte sessioner tæller ikke som bidrag.' : 'The contribution applies to paid sessions. Requested, cancelled or unpaid sessions do not count as contributions.'],
     [isDa ? 'Hvordan procenten forstås' : 'How the percentage works', isDa ? 'Procenten beregnes ud fra den viste sessionspris. Minimumsbidraget vises før booking.' : 'The percentage is calculated from the displayed session price. The minimum contribution is visible before booking.'],
     [isDa ? 'Hvem formålet er' : 'Who it supports', isDa ? 'Bidraget er tiltænkt Kræftens Bekæmpelse. Naetwork er uafhængig og ikke officielt tilknyttet, medmindre det fremgår eksplicit.' : 'The contribution is intended for Kræftens Bekæmpelse. Naetwork is independent and not officially affiliated unless explicitly stated.'],
-    [isDa ? 'Hvad der skal dokumenteres' : 'What should be documented', isDa ? 'Når platformen modnes, bør betalte sessioner, bidragsniveauer og samlet impact kunne vises klart.' : 'As the platform matures, paid sessions, contribution levels and total impact should be shown clearly.'],
+    [isDa ? 'Hvad der tæller' : 'What counts', isDa ? 'Kun gennemførte og betalte sessioner tæller. Aflyste, tilbageførte eller refunderede sessioner fjernes fra opgørelsen.' : 'Only completed and paid sessions count. Cancelled, reversed or refunded sessions are excluded.'],
   ] as const;
 
   return (
@@ -38,17 +38,17 @@ export function ImpactContent() {
           </div>
           <aside className="dark-panel p-6">
             <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
-            <p className="mt-5 text-5xl font-black sm:text-6xl">40-90%</p>
+            <p className="mt-5 text-5xl font-black sm:text-6xl">{CONTRIBUTION_MIN}-{CONTRIBUTION_MAX}%</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               {isDa ? 'Minimum 40% fra hver betalt session. Professionelle kan vælge et højere bidragsniveau.' : 'Minimum 40% from every paid session. Professionals can choose a higher contribution level.'}
             </p>
             <div className="mt-7 grid grid-cols-2 gap-px border border-white/10 bg-white/10">
               <div className="bg-gray-950 p-4">
-                <p className="text-2xl font-black">60 min</p>
+                <p className="text-2xl font-black">{SESSION_MINUTES} min</p>
                 <p className="mt-1 text-xs font-bold uppercase text-white/35">Format</p>
               </div>
               <div className="bg-white p-4 text-gray-950">
-                <p className="text-2xl font-black">DKK 600+</p>
+                <p className="text-2xl font-black">{formatDkk(PRICE_MIN)}+</p>
                 <p className="mt-1 text-xs font-bold uppercase text-gray-400">{isDa ? 'Fra' : 'From'}</p>
               </div>
             </div>
@@ -63,7 +63,7 @@ export function ImpactContent() {
               <div key={price} className="bg-white p-6">
                 <p className="text-xs font-black uppercase text-gray-400">{price}</p>
                 <p className="mt-5 text-3xl font-black text-gray-950">{impact}</p>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">{percent} {isDa ? 'som minimumsbidrag' : 'minimum contribution'}</p>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">{percent} {isDa ? 'af sessionsprisen' : 'of the session price'}</p>
               </div>
             ))}
           </div>
