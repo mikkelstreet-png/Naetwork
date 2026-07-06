@@ -11,10 +11,11 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit --incremental false",
+    "contentcheck": "node scripts/content-audit.mjs",
     "preflight": "node scripts/preflight.mjs",
     "test:e2e": "playwright test",
     "test:e2e:mobile": "playwright test --project=mobile-small --project=mobile-standard",
-    "check": "pnpm typecheck && pnpm build",
+    "check": "pnpm contentcheck && pnpm typecheck && pnpm build",
     "check:release": "pnpm preflight && pnpm check && pnpm test:e2e"
   },
   "dependencies": {
