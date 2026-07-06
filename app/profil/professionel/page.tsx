@@ -22,27 +22,46 @@ export default function ProfessionalProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const [loadFailed, setLoadFailed] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) {
+        setError('Kontosystemet svarer ikke. Prøv igen om et øjeblik.');
+        setLoadFailed(true);
+        setLoading(false);
+        return;
+      }
       if (!user) { router.push('/login'); return; }
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, role')
         .eq('auth_user_id', user.id)
         .single();
+      if (profileError) {
+        setError('Din konto kunne ikke indlæses. Prøv igen om et øjeblik.');
+        setLoadFailed(true);
+        setLoading(false);
+        return;
+      }
       if (!profile || profile.role !== 'professional') {
         router.push('/profil');
         return;
       }
-      const { data: prof } = await supabase
+      const { data: prof, error: professionalError } = await supabase
         .from('professional_profiles')
         .select('*')
         .eq('profile_id', profile.id)
         .maybeSingle();
+      if (professionalError) {
+        setError('Din professionelle profil kunne ikke indlæses. Ingen ændringer er foretaget.');
+        setLoadFailed(true);
+        setLoading(false);
+        return;
+      }
       if (prof) {
         setData({
           title: prof.title || '',
@@ -102,6 +121,10 @@ export default function ProfessionalProfilePage() {
     return <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] pt-16"><div className="text-gray-400">Indlæser...</div></main>;
   }
 
+  if (loadFailed) {
+    return <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white px-5 py-12"><section className="w-full max-w-lg border-y border-gray-200 py-10 text-center"><h1 className="text-3xl font-black text-gray-950">Profilen kunne ikke indlæses</h1><p role="alert" className="mt-3 text-sm leading-relaxed text-gray-500">{error}</p><button type="button" onClick={() => window.location.reload()} className="mt-6 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white">Prøv igen</button></section></main>;
+  }
+
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
       <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-14">
@@ -120,9 +143,9 @@ export default function ProfessionalProfilePage() {
           <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">Gør din erfaring bookbar.</h2>
           <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:mt-5">Alle professionelle tilbyder 60 minutter. Forskellen er din erfaring, dine fokusområder og din pris.</p>
           <div className="mt-8 hidden space-y-3 lg:block">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Prisramme</p><p className="mt-1 text-lg font-black">DKK 600-1.800</p></div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Format</p><p className="mt-1 text-lg font-black">60 min</p></div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Gennemgang</p><p className="mt-1 text-lg font-black">{data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'}</p></div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Prisramme</p><p className="mt-1 text-lg font-black">DKK 600-1.800</p></div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Format</p><p className="mt-1 text-lg font-black">60 min</p></div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Gennemgang</p><p className="mt-1 text-lg font-black">{data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'}</p></div>
           </div>
         </aside>
 
@@ -137,22 +160,22 @@ export default function ProfessionalProfilePage() {
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label htmlFor="profile-title" className="mb-1 block text-sm font-semibold text-gray-700">Stillingsbetegnelse</label>
-                <input id="profile-title" type="text" value={data.title} onChange={e => setData(d => ({ ...d, title: e.target.value }))} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Associate Director" />
+                <input id="profile-title" type="text" value={data.title} onChange={e => setData(d => ({ ...d, title: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Associate Director" />
               </div>
               <div>
                 <label htmlFor="profile-company" className="mb-1 block text-sm font-semibold text-gray-700">Virksomhed / erfaring</label>
-                <input id="profile-company" type="text" value={data.company} onChange={e => setData(d => ({ ...d, company: e.target.value }))} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Goldman Sachs, McKinsey, OpenAI" />
+                <input id="profile-company" type="text" value={data.company} onChange={e => setData(d => ({ ...d, company: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Goldman Sachs, McKinsey, OpenAI" />
               </div>
             </div>
 
             <div>
               <label htmlFor="profile-bio" className="mb-1 block text-sm font-semibold text-gray-700">Bio <span className="font-normal text-gray-400">({data.bio.length}/500)</span></label>
-              <textarea id="profile-bio" value={data.bio} onChange={e => setData(d => ({ ...d, bio: e.target.value.slice(0, 500) }))} rows={5} className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Beskriv din baggrund og hvad du kan hjælpe kandidater med i en 60-minutters session..." />
+              <textarea id="profile-bio" value={data.bio} onChange={e => setData(d => ({ ...d, bio: e.target.value.slice(0, 500) }))} rows={5} className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Beskriv din baggrund og hvad du kan hjælpe kandidater med i en 60-minutters session..." />
             </div>
 
             <div>
               <label htmlFor="profile-linkedin" className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
-              <input id="profile-linkedin" type="url" value={data.linkedin_url} onChange={e => setData(d => ({ ...d, linkedin_url: e.target.value }))} className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="https://linkedin.com/in/..." />
+              <input id="profile-linkedin" type="url" value={data.linkedin_url} onChange={e => setData(d => ({ ...d, linkedin_url: e.target.value }))} className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="https://linkedin.com/in/..." />
               <p className="mt-1 text-xs text-gray-400">Bruges af Naetwork ved gennemgang og vises ikke offentligt.</p>
             </div>
 
@@ -174,30 +197,30 @@ export default function ProfessionalProfilePage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
               <label htmlFor="profile-price" className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {data.price_dkk.toLocaleString('da-DK')}</span></label>
               <input id="profile-price" type="range" min={PRICE_MIN} max={PRICE_MAX} step={100} value={data.price_dkk} onChange={e => setData(d => ({ ...d, price_dkk: Number(e.target.value) }))} className="w-full accent-gray-950" />
               <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>DKK 600</span><span>DKK 1.800</span></div>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
               <label htmlFor="profile-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag ved en betalt session: <span className="font-black text-gray-950">{data.contribution_percent}% / DKK {Math.round(data.price_dkk * data.contribution_percent / 100).toLocaleString('da-DK')}</span></label>
               <input id="profile-contribution" type="range" min={CONTRIBUTION_MIN} max={CONTRIBUTION_MAX} step={5} value={data.contribution_percent} onChange={e => setData(d => ({ ...d, contribution_percent: Number(e.target.value) }))} className="w-full accent-gray-950" />
               <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
             </div>
 
             <div>
-              <label className="mb-3 block text-sm font-semibold text-gray-700">Synlighed</label>
+              <label className="mb-3 block text-sm font-semibold text-gray-700">Publiceringsvalg</label>
               <div className="grid grid-cols-2 gap-3">
-                <button type="button" aria-pressed={data.visibility === 'hidden'} onClick={() => setData(d => ({ ...d, visibility: 'hidden' }))} className={`rounded-xl border py-3 text-sm font-semibold transition-colors ${data.visibility === 'hidden' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Skjult</button>
-                <button type="button" aria-pressed={data.visibility === 'published'} onClick={() => setData(d => ({ ...d, visibility: 'published' }))} className={`rounded-xl border py-3 text-sm font-semibold transition-colors ${data.visibility === 'published' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Send til gennemgang</button>
+                <button type="button" aria-pressed={data.visibility === 'hidden'} onClick={() => setData(d => ({ ...d, visibility: 'hidden' }))} className={`rounded-lg border py-3 text-sm font-semibold transition-colors ${data.visibility === 'hidden' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Gem som kladde</button>
+                <button type="button" aria-pressed={data.visibility === 'published'} onClick={() => setData(d => ({ ...d, visibility: 'published' }))} className={`rounded-lg border py-3 text-sm font-semibold transition-colors ${data.visibility === 'published' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Send til gennemgang</button>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-gray-400">Profilen bliver først synlig, når den både er sendt til gennemgang og godkendt af Naetwork. Ændringer kræver en ny gennemgang.</p>
             </div>
 
             {error && <p role="alert" className="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
-            <button type="submit" disabled={saving} className="w-full rounded-xl bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="w-full rounded-lg bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">
               {saved ? 'Gemt' : saving ? 'Gemmer...' : 'Gem profil'}
             </button>
           </form>
