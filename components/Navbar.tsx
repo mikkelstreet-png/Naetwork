@@ -78,7 +78,7 @@ export function Navbar() {
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <nav aria-label={isDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/94 backdrop-blur-xl">
+    <nav aria-label={isDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/[0.94] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Naetwork home">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
