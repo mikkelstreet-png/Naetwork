@@ -41,7 +41,7 @@ test('mobile navigation exposes the primary journeys', async ({ page, isMobile }
   await page.goto('/')
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Priser|Pricing/)
-  await expect(page.getByRole('link', { name: /Se profiler|Browse profiles/i })).toBeVisible()
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Se profiler|Browse profiles/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
