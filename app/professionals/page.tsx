@@ -6,8 +6,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import BookingDrawer from '@/components/BookingDrawer'
 import { ChevronDown, RefreshCw, Search } from 'lucide-react'
+import { contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
 
-type Industry = 'all' | 'AI' | 'Banking' | 'Management Consulting' | 'Private Equity'
+type Industry = 'all' | PlatformIndustry
 type Need = 'direction' | 'materials' | 'interview' | 'case'
 
 interface ProfessionalCard {
@@ -22,20 +23,7 @@ interface ProfessionalCard {
   bio: string
 }
 
-const FOCUS_LABELS: Record<string, string> = {
-  cv_linkedin: 'CV / LinkedIn',
-  application_review: 'Ansøgning Application Review',
-  interview_prep: 'Interviewforberedelse Interview Prep',
-  case_prep: 'Case-træning Case Prep',
-  banking_technicals: 'Banking Technicals',
-  consulting_cases: 'Consulting Cases',
-  pe_investment_case: 'PE / Investment Case',
-  career_direction: 'Karriereretning Career Direction',
-  ai_career_strategy: 'AI-karrierestrategi AI Career Strategy',
-  industry_insight: 'Brancheindsigt Industry Insight',
-}
-
-const INDUSTRIES: Industry[] = ['all', 'AI', 'Banking', 'Management Consulting', 'Private Equity']
+const FILTER_INDUSTRIES: Industry[] = ['all', ...PLATFORM_INDUSTRIES.map((industry) => industry.id)]
 
 const NEED_FOCUS: Record<Need, string[]> = {
   direction: ['career_direction', 'career_strategy', 'career_advice', 'ai_career_strategy', 'industry_insight'],
@@ -44,33 +32,14 @@ const NEED_FOCUS: Record<Need, string[]> = {
   case: ['case_prep', 'consulting_cases', 'banking_technicals', 'pe_investment_case'],
 }
 
-const FIELD_SIGNALS = [
-  ['AI', 'bg-cyan-300'],
-  ['Banking', 'bg-emerald-300'],
-  ['Management Consulting', 'bg-blue-300'],
-  ['Private Equity', 'bg-lime-300'],
-] as const
-
 function industryLabel(industry: Industry, isDa: boolean) {
   if (industry === 'all') return isDa ? 'Alle' : 'All'
   return industry
 }
 
-function accentForIndustry(industry?: string) {
-  if (industry === 'AI') return 'bg-cyan-300'
-  if (industry === 'Banking') return 'bg-emerald-300'
-  if (industry === 'Management Consulting') return 'bg-blue-300'
-  if (industry === 'Private Equity') return 'bg-lime-300'
-  return 'bg-gray-300'
-}
-
 function accentFor(pro: ProfessionalCard) {
-  const primary = FIELD_SIGNALS.find(([industry]) => pro.industries.includes(industry))?.[0]
-  return accentForIndustry(primary ?? pro.industries[0])
-}
-
-function contributionAmount(price: number, percentage: number) {
-  return Math.round(price * percentage / 100)
+  const primary = PLATFORM_INDUSTRIES.find((industry) => pro.industries.includes(industry.id))?.id
+  return industryAccent(primary ?? pro.industries[0])
 }
 
 function initials(name: string) {
@@ -79,26 +48,26 @@ function initials(name: string) {
 
 function bestFor(pro: ProfessionalCard, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'PE / investment case' : 'PE / investment case'
-  if (focus.includes('banking_technicals')) return isDa ? 'Banking technicals' : 'Banking technicals'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Consulting-cases' : 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-karrierestrategi' : 'AI career strategy'
+  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og PE-interview' : 'PE / investment case'
+  if (focus.includes('banking_technicals')) return isDa ? 'Tekniske spørgsmål og Banking-interview' : 'Banking technicals'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Cases og personligt interview' : 'Consulting cases'
+  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-roller og positionering' : 'AI career strategy'
   if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Ansøgning og profil' : 'Applications'
   return isDa ? 'Karriereretning' : 'Career clarity'
 }
 
 function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
   const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og deal thinking' : 'Investment case and deal thinking'
-  if (focus.includes('banking_technicals')) return isDa ? 'Technicals og interviewbar' : 'Technicals and interview bar'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og fit' : 'Case structure and fit'
+  if (focus.includes('pe_investment_case')) return isDa ? 'Skarpere investeringsvurdering' : 'Investment case and deal thinking'
+  if (focus.includes('banking_technicals')) return isDa ? 'Teknisk sikkerhed og interviewklarhed' : 'Technicals and interview bar'
+  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og personlig kommunikation' : 'Case structure and fit'
   if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
   if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
   return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
 }
 
 function isIndustry(value: string | null): value is Industry {
-  return !!value && INDUSTRIES.includes(value as Industry) && value !== 'all'
+  return !!value && FILTER_INDUSTRIES.includes(value as Industry) && value !== 'all'
 }
 
 function isNeed(value: string | null): value is Need {
@@ -179,7 +148,7 @@ export default function ProfessionalsPage() {
   const filtered = dbProfessionals.filter((p) => {
     const matchesIndustry = industryFilter === 'all' || p.industries.includes(industryFilter)
     const searchLower = search.toLowerCase()
-    const focusText = (p.focus_areas ?? []).map((area) => FOCUS_LABELS[area] ?? area).join(' ')
+    const focusText = (p.focus_areas ?? []).map((area) => `${focusLabel(area, 'da')} ${focusLabel(area, 'en')}`).join(' ')
     const matchesSearch = !search || [p.name, p.title, p.company, p.bio, p.industries.join(' '), focusText]
       .join(' ')
       .toLowerCase()
@@ -269,21 +238,21 @@ export default function ProfessionalsPage() {
                 aria-label={isDa ? 'Vælg felt' : 'Choose field'}
                 className="w-full appearance-none bg-transparent py-3.5 pl-4 pr-8 text-right text-sm font-black text-gray-950 outline-none"
               >
-                {INDUSTRIES.map((industry) => (
+                {FILTER_INDUSTRIES.map((industry) => (
                   <option key={industry} value={industry}>{industryLabel(industry, isDa)}</option>
                 ))}
               </select>
               <ChevronDown size={17} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
             </div>
             <div className="hidden gap-2 px-3 py-3 md:flex">
-              {INDUSTRIES.map((ind) => (
+              {FILTER_INDUSTRIES.map((ind) => (
                 <button
                   key={ind}
                   onClick={() => selectIndustry(ind)}
                   aria-pressed={industryFilter === ind}
                   className={`inline-flex items-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-xs font-black transition-colors ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
                 >
-                  <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : accentForIndustry(ind)}`} />
+                  <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : industryAccent(ind)}`} />
                   {industryLabel(ind, isDa)}
                 </button>
               ))}
@@ -361,7 +330,7 @@ export default function ProfessionalsPage() {
                 <div className="flex items-center gap-3">
                   <span className={`h-2 w-8 rounded-full lg:hidden ${accentFor(pro)}`} />
                   <p className="text-xs font-black uppercase text-gray-400">
-                    {pro.industries[0] ?? (isDa ? 'Professional' : 'Professional')}
+                    {pro.industries[0] ?? (isDa ? 'Professionel' : 'Professional')}
                   </p>
                 </div>
 
