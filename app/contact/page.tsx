@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, Mail, Send } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -109,7 +110,7 @@ export default function ContactPage() {
                   {status === 'sending' ? (isDa ? 'Sender...' : 'Sending...') : (isDa ? 'Send besked' : 'Send message')}
                   {status !== 'sending' && <Send size={16} aria-hidden="true" />}
                 </button>
-                <p className="text-xs leading-relaxed text-gray-400">{isDa ? 'Ved at sende formularen accepterer du, at vi behandler oplysningerne for at besvare din henvendelse.' : 'By submitting the form, you agree that we process the information to respond to your request.'}</p>
+                <p className="text-xs leading-relaxed text-gray-400">{isDa ? 'Vi behandler oplysningerne for at besvare din henvendelse. Læs om opbevaring og dine rettigheder i ' : 'We process the information to respond to your request. Read about retention and your rights in our '}<Link href="/privacy" className="font-semibold text-gray-600 underline underline-offset-2">{isDa ? 'privatlivspolitikken' : 'privacy policy'}</Link>.</p>
               </form>
             )}
           </div>
