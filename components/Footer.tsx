@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
-import { isBilingualPublicRoute } from '@/lib/navigation';
+import { isBilingualPublicRoute, isFocusedAppRoute } from '@/lib/navigation';
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -46,7 +46,7 @@ export function Footer() {
     },
   ];
 
-  if (pathname.startsWith('/admin')) return null;
+  if (isFocusedAppRoute(pathname)) return null;
 
   return (
     <footer className="border-t border-gray-200 bg-white">
