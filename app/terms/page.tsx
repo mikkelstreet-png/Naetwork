@@ -96,6 +96,7 @@ const sections: LegalSection[] = [
       'For hver betalt session afsættes minimum 40% og op til 90% af den viste sessionspris til støtte for Kræftens Bekæmpelse. Den konkrete procent vælges på den professionelle profil og vises før booking.',
       'Kun gennemførte og betalte sessioner tæller. Anmodede, aflyste, tilbageførte eller refunderede sessioner tæller ikke som gennemførte bidrag.',
       'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet eller godkendt af Kræftens Bekæmpelse, medmindre det fremgår udtrykkeligt. Bidragsoplysninger er ikke personlig skatte- eller fradragsrådgivning.',
+      'Før betaling aktiveres, skal Naetwork have afklaret de nødvendige aftaler, tilladelser, regnskabsprocesser og dokumentationskrav for støtte knyttet til salg. Den aktive checkout og de gældende vilkår vil beskrive den endelige model.',
     ],
   },
   {
