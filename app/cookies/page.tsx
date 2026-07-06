@@ -1,100 +1,62 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { LegalDocument, type LegalSection } from '@/components/LegalDocument'
 
 export const metadata: Metadata = {
   title: 'Cookiepolitik - Naetwork',
-  description: 'Læs hvordan Naetwork bruger nødvendige cookies og lokal lagring.',
+  description: 'Præcis information om nødvendige cookies og lokal lagring på Naetwork.',
 }
 
-const updated = '30. juni 2026'
+const updated = '6. juli 2026'
 
-const cookieRows = [
-  ['naetwork_lang', 'Gemmer dit valgte sprog', 'Lokal lagring', 'Funktionel'],
-  ['Supabase auth/session', 'Holder dig logget ind og beskytter din konto', 'Cookie eller lokal lagring', 'Nødvendig'],
+const facts: Array<[string, string]> = [
+  ['Status', 'Kun nødvendige teknologier'],
+  ['Statistik', 'Ikke aktiveret'],
+  ['Marketing', 'Ikke aktiveret'],
+  ['Kontakt', 'kontakt@naetwork.dk'],
 ]
 
-const sections = [
+const sections: LegalSection[] = [
   {
+    id: 'kort-fortalt',
     title: '1. Kort fortalt',
     body: [
-      'Naetwork bruger kun cookies og lokal lagring, når det er nødvendigt for at holde dig logget ind, beskytte din konto eller huske dit sprogvalg.',
-      'Vi bruger ikke reklamecookies på nuværende tidspunkt. Hvis vi senere tilføjer analytics eller marketingcookies, skal det beskrives tydeligt og kræve samtykke, hvor loven kræver det.',
+      'Naetwork bruger cookies og lignende teknologier til login, sikkerhed og det sprogvalg, du aktivt foretager. Vi bruger ikke reklamecookies eller analyseværktøjer på nuværende tidspunkt.',
+      'Teknisk nødvendige teknologier kan anvendes uden samtykke, fordi platformen ellers ikke kan levere den funktion, brugeren udtrykkeligt har bedt om. Hvis Naetwork senere tilføjer ikke-nødvendig statistik eller markedsføring, aktiveres en samtykkeløsning først.',
     ],
   },
   {
-    title: '2. Nødvendige cookies',
+    id: 'teknologier',
+    title: '2. Aktuelle teknologier',
+    body: ['Navne og levetider for autentificeringscookies kan variere efter browser og Supabase-projekt, men formålet er det samme.'],
+    bullets: [
+      'naetwork_lang: lokal lagring, som husker dit aktive sprogvalg. Opbevares, indtil du rydder browserdata eller ændrer valget.',
+      'Supabase auth/session: nødvendige cookies eller lokal lagring, som etablerer og fornyer en sikker login-session. Udløber eller fornyes efter autentificeringssystemets sikkerhedsindstillinger.',
+      'Tekniske hostinglogs: serveroplysninger, som ikke lagres i din browser, men kan indeholde IP- og enhedsdata til sikkerhed og drift. De er beskrevet i privatlivspolitikken.',
+    ],
+  },
+  {
+    id: 'samtykke',
+    title: '3. Samtykke og fremtidige ændringer',
     body: [
-      'Nødvendige cookies bruges til login, sikkerhed, sessioner og basale funktioner. De kan normalt ikke fravælges, fordi platformen ellers ikke fungerer korrekt.',
+      'Der vises ikke et cookiebanner, når kun teknisk nødvendige teknologier anvendes. Det er et bevidst valg for ikke at bede om et overflødigt samtykke.',
+      'Før en ikke-nødvendig teknologi aktiveres, opdaterer vi denne oversigt og indhenter et frivilligt, specifikt, informeret og utvetydigt samtykke. Det skal være lige så let at trække samtykket tilbage som at give det.',
     ],
   },
   {
-    title: '3. Funktionelle valg',
+    id: 'browservalg',
+    title: '4. Sletning i browseren',
     body: [
-      'Vi gemmer dit sprogvalg lokalt i browseren. Det gør oplevelsen mere stabil uden at bruge oplysningerne til reklameprofilering.',
+      'Du kan slette cookies og lokal lagring i browserens indstillinger. Det kan logge dig ud og nulstille sprogvalget. Blokering af nødvendige cookies kan betyde, at konto- og bookingfunktioner ikke virker.',
     ],
   },
   {
-    title: '4. Sådan ændrer du valg',
-    body: [
-      'Du kan altid slette cookies og lokal lagring i din browser. Hvis du gør det, kan du blive logget ud, og sprogvalget kan blive nulstillet.',
-      'Hvis Naetwork senere bruger ikke-nødvendige cookies, skal du kunne ændre eller trække samtykke tilbage på en tilsvarende enkel måde.',
-    ],
-  },
-  {
-    title: '5. Privatliv',
-    body: ['Du kan læse mere om vores behandling af personoplysninger i privatlivspolitikken.'],
-    link: { href: '/privacy', label: 'Læs privatlivspolitik' },
+    id: 'privatliv',
+    title: '5. Personoplysninger',
+    body: ['Privatlivspolitikken beskriver behandlingsgrundlag, leverandører, opbevaring, overførsler og dine rettigheder.'],
+    link: { href: '/privacy', label: 'Læs privatlivspolitikken' },
   },
 ]
 
 export default function CookiesPage() {
-  return (
-    <main className="bg-[#f7f7f4]">
-      <section className="border-b border-gray-200 bg-white px-6 py-16 md:py-20">
-        <div className="mx-auto max-w-5xl">
-          <Link href="/" className="mb-8 inline-flex rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:text-gray-950">&larr; Naetwork</Link>
-          <p className="mb-4 text-xs font-semibold uppercase text-gray-500">Juridisk</p>
-          <h1 className="max-w-4xl text-4xl font-black leading-none tracking-tight text-gray-950 md:text-6xl">Cookiepolitik</h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">En enkel oversigt over cookies og lokal lagring på Naetwork.</p>
-          <p className="mt-6 text-sm font-medium text-gray-400">Senest opdateret: {updated}</p>
-        </div>
-      </section>
-
-      <section className="px-6 py-10 md:py-14">
-        <div className="mx-auto max-w-5xl space-y-6">
-          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="grid grid-cols-4 border-b border-gray-100 bg-gray-50 px-4 py-3 text-xs font-semibold uppercase text-gray-400">
-              <span>Navn</span><span>Formål</span><span>Type</span><span>Kategori</span>
-            </div>
-            {cookieRows.map(([name, purpose, type, category]) => (
-              <div key={name} className="grid grid-cols-1 gap-2 border-b border-gray-100 px-4 py-4 text-sm last:border-b-0 md:grid-cols-4">
-                <span className="font-semibold text-gray-950">{name}</span>
-                <span className="text-gray-600">{purpose}</span>
-                <span className="text-gray-500">{type}</span>
-                <span className="font-medium text-gray-700">{category}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            {sections.map((section) => (
-              <article key={section.title} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-                <h2 className="text-xl font-black text-gray-950">{section.title}</h2>
-                <div className="mt-4 space-y-3">
-                  {section.body.map((paragraph) => (
-                    <p key={paragraph} className="text-sm leading-relaxed text-gray-600">{paragraph}</p>
-                  ))}
-                </div>
-                {section.link && (
-                  <Link href={section.link.href} className="mt-5 inline-flex rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-950 hover:border-gray-950 hover:bg-gray-50">
-                    {section.link.label}
-                  </Link>
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    </main>
-  )
+  return <LegalDocument title="Cookiepolitik" intro="Hvilke teknologier Naetwork gemmer i din browser, hvorfor de er nødvendige, og hvordan du rydder dem." updated={updated} facts={facts} sections={sections} />
 }
