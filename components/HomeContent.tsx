@@ -13,6 +13,16 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import {
+  CONTRIBUTION_MAX,
+  CONTRIBUTION_MIN,
+  PRICE_MAX,
+  PRICE_MIN,
+  SESSION_MINUTES,
+  contributionAmount,
+  formatDkk,
+  industryAccent,
+} from '@/lib/platform';
 import { createClient } from '@/lib/supabase/client';
 
 interface FeaturedProfessional {
@@ -26,11 +36,7 @@ interface FeaturedProfessional {
 }
 
 function accentForIndustry(industry?: string) {
-  if (industry === 'AI') return 'bg-cyan-300';
-  if (industry === 'Banking') return 'bg-emerald-300';
-  if (industry === 'Management Consulting') return 'bg-blue-300';
-  if (industry === 'Private Equity') return 'bg-lime-300';
-  return 'bg-gray-300';
+  return industryAccent(industry);
 }
 
 function initials(name: string) {
@@ -81,7 +87,7 @@ export function HomeContent() {
           company: profile.company ?? '',
           industries: profile.industries ?? [],
           focusAreas: profile.focus_areas ?? [],
-          price: profile.price_dkk ?? 600,
+          price: profile.price_dkk ?? PRICE_MIN,
         })).filter((profile) => profile.name));
       }
     } catch {
@@ -152,10 +158,10 @@ export function HomeContent() {
   ] as const;
 
   const priceAnchors = [
-    { price: 'DKK 600', label: isDa ? 'Start' : 'Starting', impact: 'DKK 240', color: 'bg-[#d8f7fb]' },
-    { price: 'DKK 900', label: isDa ? 'Etableret' : 'Established', impact: 'DKK 360', color: 'bg-[#dff4e7]' },
-    { price: 'DKK 1.200', label: isDa ? 'Senior' : 'Senior', impact: 'DKK 480', color: 'bg-[#dfeafb]' },
-    { price: 'DKK 1.800', label: isDa ? 'Specialist' : 'Specialist', impact: 'DKK 720', color: 'bg-[#edf4cf]' },
+    { amount: PRICE_MIN, label: isDa ? 'Start' : 'Starting', color: 'bg-[#d8f7fb]' },
+    { amount: 900, label: isDa ? 'Etableret' : 'Established', color: 'bg-[#dff4e7]' },
+    { amount: 1200, label: isDa ? 'Senior' : 'Senior', color: 'bg-[#dfeafb]' },
+    { amount: PRICE_MAX, label: isDa ? 'Specialist' : 'Specialist', color: 'bg-[#edf4cf]' },
   ] as const;
 
   return (
@@ -188,9 +194,9 @@ export function HomeContent() {
 
             <dl className="grid grid-cols-3 border-y border-gray-200 lg:grid-cols-1 lg:border-b-0 lg:border-t">
               {[
-                ['60 min', isDa ? 'Ét fleksibelt format' : 'One flexible format'],
-                ['DKK 600', isDa ? 'Priser fra' : 'Prices from'],
-                ['40-90%', isDa ? 'Til kræftsagen' : 'To the cancer cause'],
+                [`${SESSION_MINUTES} min`, isDa ? 'Ét fleksibelt format' : 'One flexible format'],
+                [formatDkk(PRICE_MIN), isDa ? 'Priser fra' : 'Prices from'],
+                [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Til kræftsagen' : 'To the cancer cause'],
               ].map(([value, label]) => (
                 <div key={label} className="border-r border-gray-200 py-4 pr-3 last:border-r-0 lg:flex lg:items-center lg:justify-between lg:border-b lg:border-r-0 lg:pr-0">
                   <dt className="text-[11px] font-bold leading-tight text-gray-500 sm:text-xs lg:order-1">{label}</dt>
@@ -347,17 +353,17 @@ export function HomeContent() {
               </h2>
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/65 md:text-base">
                 {isDa
-                  ? 'Den professionelle fastsætter prisen mellem DKK 600 og DKK 1.800. Hver betalt session bidrager med minimum 40% og op til 90% til Kræftens Bekæmpelse.'
-                  : 'The professional sets the price between DKK 600 and DKK 1,800. Every paid session contributes at least 40% and up to 90% to Kræftens Bekæmpelse.'}
+                  ? `Den professionelle fastsætter prisen mellem ${formatDkk(PRICE_MIN)} og ${formatDkk(PRICE_MAX)}. Hver betalt session bidrager med minimum ${CONTRIBUTION_MIN}% og op til ${CONTRIBUTION_MAX}% til Kræftens Bekæmpelse.`
+                  : `The professional sets the price between ${formatDkk(PRICE_MIN)} and ${formatDkk(PRICE_MAX)}. Every paid session contributes at least ${CONTRIBUTION_MIN}% and up to ${CONTRIBUTION_MAX}% to Kræftens Bekæmpelse.`}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-              {priceAnchors.map(({ price, label, impact, color }) => (
-                <div key={price} className={`min-h-[150px] rounded-lg p-4 text-gray-950 sm:p-5 ${color}`}>
+              {priceAnchors.map(({ amount, label, color }) => (
+                <div key={amount} className={`min-h-[150px] rounded-lg p-4 text-gray-950 sm:p-5 ${color}`}>
                   <p className="text-[11px] font-black uppercase text-gray-600">{label}</p>
-                  <p className="mt-5 text-lg font-black sm:text-xl">{price}</p>
+                  <p className="mt-5 text-lg font-black sm:text-xl">{formatDkk(amount)}</p>
                   <p className="mt-2 text-xs font-semibold leading-relaxed text-gray-700">
-                    {isDa ? `Min. ${impact} til Kræftens Bekæmpelse` : `Min. ${impact} to Kræftens Bekæmpelse`}
+                    {isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} til Kræftens Bekæmpelse` : `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} to Kræftens Bekæmpelse`}
                   </p>
                 </div>
               ))}
