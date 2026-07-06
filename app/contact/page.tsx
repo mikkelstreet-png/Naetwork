@@ -16,7 +16,7 @@ export default function ContactPage() {
   const subjects = [
     ['booking', isDa ? 'Booking og session' : 'Booking and session'],
     ['account', isDa ? 'Konto og profil' : 'Account and profile'],
-    ['professional', isDa ? 'Professional på Naetwork' : 'Professional on Naetwork'],
+    ['professional', isDa ? 'Professionel på Naetwork' : 'Professional on Naetwork'],
     ['privacy', isDa ? 'Privatliv og data' : 'Privacy and data'],
     ['other', isDa ? 'Andet' : 'Other'],
   ];
