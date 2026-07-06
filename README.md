@@ -2,7 +2,7 @@
 
 Naetwork connects candidates with experienced professionals from AI, Banking, Management Consulting, and Private Equity for focused 60-minute career sessions.
 
-Every paid session contributes 40-90% of its listed price to Kræftens Bekæmpelse. Booking requests, profile review, and transactional emails are active. Payment is intentionally disabled until the commercial and legal setup is approved.
+Every paid session is designed to allocate 40-90% of its listed price in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
 
 ## Stack
 
@@ -21,7 +21,7 @@ Use Node.js 20 or newer.
 3. Run `pnpm install`.
 4. Run `pnpm dev`.
 
-Use `pnpm check` during development. Run `pnpm check:release` with the production environment loaded before release. TypeScript, production build, and core configuration errors are release blockers.
+Use `pnpm check` during development. Run `pnpm check:release` with the production environment loaded before release. The release gate covers canonical product content, TypeScript, the production build, configuration validation, and responsive browser tests across desktop, tablet, Android-sized mobile, and mobile Safari.
 
 ## Production configuration
 
@@ -47,7 +47,7 @@ The Supabase URL must resolve publicly. When transactional email is activated, t
 - `https://naetwork.dk/auth/callback`
 - the active Vercel production URL while the custom domain is being connected
 
-The legal name, address, and registration value must identify the actual data controller shown in the terms and privacy policy.
+The legal name, complete street address, and 8-digit CVR registration value must identify the actual data controller shown in the terms and privacy policy. Placeholder values intentionally fail release preflight.
 
 ## Admin bootstrap
 
@@ -71,4 +71,6 @@ Admin access is enforced server-side and by row-level security. Professional pro
 - Candidate and professional receive booking emails.
 - Professionals can confirm or decline; candidates can cancel.
 - Contact messages are stored in the admin inbox and notify the configured support address.
+- Admins can run the published 12/24-month data-retention baseline from system administration after migration `007_data_retention.sql` is applied.
 - Payment remains disabled and no card or charge is created.
+- Payment must remain disabled until every critical legal blocker introduced in `006_legal_release_gates.sql` has been manually reviewed and resolved.
