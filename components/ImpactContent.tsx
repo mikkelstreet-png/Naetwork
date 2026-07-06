@@ -18,7 +18,7 @@ export function ImpactContent() {
     [isDa ? 'Hvornår bidraget gælder' : 'When it applies', isDa ? 'Bidraget gælder for betalte sessioner. Anmodede, aflyste eller ikke-betalte sessioner tæller ikke som bidrag.' : 'The contribution applies to paid sessions. Requested, cancelled or unpaid sessions do not count as contributions.'],
     [isDa ? 'Hvordan procenten forstås' : 'How the percentage works', isDa ? 'Procenten beregnes ud fra den viste sessionspris. Minimumsbidraget vises før booking.' : 'The percentage is calculated from the displayed session price. The minimum contribution is visible before booking.'],
     [isDa ? 'Hvem formålet er' : 'Who it supports', isDa ? 'Bidraget er tiltænkt Kræftens Bekæmpelse. Naetwork er uafhængig og ikke officielt tilknyttet, medmindre det fremgår eksplicit.' : 'The contribution is intended for Kræftens Bekæmpelse. Naetwork is independent and not officially affiliated unless explicitly stated.'],
-    [isDa ? 'Hvad der tæller' : 'What counts', isDa ? 'Kun gennemførte og betalte sessioner tæller. Aflyste, tilbageførte eller refunderede sessioner fjernes fra opgørelsen.' : 'Only completed and paid sessions count. Cancelled, reversed or refunded sessions are excluded.'],
+    [isDa ? 'Hvad der tæller' : 'What counts', isDa ? 'Kun gennemførte og betalte sessioner tæller. Aflyste, tilbageførte eller refunderede sessioner fjernes fra opgørelsen. Betaling aktiveres først, når aftaler og dokumentation er på plads.' : 'Only completed and paid sessions count. Cancelled, reversed or refunded sessions are excluded. Payments launch only after agreements and documentation are in place.'],
   ] as const;
 
   return (
