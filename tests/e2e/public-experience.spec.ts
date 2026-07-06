@@ -41,7 +41,7 @@ test('mobile navigation exposes the primary journeys', async ({ page, isMobile }
   await page.goto('/')
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Priser|Pricing/)
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Se profiler|Browse profiles/i })).toBeVisible()
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Find en professionel|Find a professional/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
@@ -60,8 +60,30 @@ test('Danish public UI avoids mixed interface labels', async ({ page }) => {
   for (const route of ['/', '/professionals', '/impact', '/professional/signup']) {
     await page.goto(route)
     const body = await page.locator('body').innerText()
-    expect(body).not.toMatch(/\b(?:Become a professional|Edit profile|Session brief|Best for|Account)\b/)
+    expect(body).not.toMatch(/\b(?:Become a professional|Edit profile|Session brief|Best for|Account|Application Review|Career Direction|Professional profile)\b/)
   }
+})
+
+test('legal documents expose the launch disclosures', async ({ page }) => {
+  const expectations = [
+    ['/terms', ['Vilkår for brug', 'Fortrydelse og aflysning', 'Bidrag til Kræftens Bekæmpelse']],
+    ['/privacy', ['Privatlivspolitik', 'Formål og behandlingsgrundlag', 'Opbevaring og sletning']],
+    ['/cookies', ['Cookiepolitik', 'Aktuelle teknologier', 'Samtykke og fremtidige ændringer']],
+  ] as const
+
+  for (const [route, headings] of expectations) {
+    await page.goto(route)
+    for (const heading of headings) await expect(page.getByRole('heading', { name: heading })).toBeVisible()
+    await expectNoHorizontalOverflow(page)
+  }
+})
+
+test('core public actions remain clear', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('heading', { name: /60 minutters sparring|60 minutes of guidance/i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Find en professionel|Find a professional/i })).toBeVisible()
+  await page.goto('/match')
+  await expect(page.getByRole('heading', { name: /Hvad skal de 60 minutter løse|What should the 60 minutes solve/i })).toBeVisible()
 })
 
 test('protected member pages redirect to login', async ({ page }) => {
