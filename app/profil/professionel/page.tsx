@@ -3,20 +3,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { MemberNav } from '@/components/MemberNav';
-
-const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'];
-const FOCUS_AREAS = [
-  { type: 'cv_linkedin', label: 'CV / LinkedIn' },
-  { type: 'application_review', label: 'Ansøgning' },
-  { type: 'interview_prep', label: 'Interviewforberedelse' },
-  { type: 'case_prep', label: 'Case-træning' },
-  { type: 'banking_technicals', label: 'Banking Technicals' },
-  { type: 'consulting_cases', label: 'Consulting Cases' },
-  { type: 'pe_investment_case', label: 'PE / Investment Case' },
-  { type: 'career_direction', label: 'Karriereretning' },
-  { type: 'ai_career_strategy', label: 'AI-karrierestrategi' },
-  { type: 'industry_insight', label: 'Brancheindsigt' },
-];
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_MAX, PRICE_MIN } from '@/lib/platform';
 
 export default function ProfessionalProfilePage() {
   const [data, setData] = useState({
@@ -97,8 +84,8 @@ export default function ProfessionalProfilePage() {
     const { error: saveError } = await supabase.from('professional_profiles').upsert({
       profile_id: profile?.id,
       ...data,
-      price_dkk: Math.min(1800, Math.max(600, data.price_dkk)),
-      contribution_percent: Math.min(90, Math.max(40, data.contribution_percent)),
+      price_dkk: Math.min(PRICE_MAX, Math.max(PRICE_MIN, data.price_dkk)),
+      contribution_percent: Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, data.contribution_percent)),
       updated_at: new Date().toISOString(),
     }, { onConflict: 'profile_id' });
     setSaving(false);
@@ -129,9 +116,9 @@ export default function ProfessionalProfilePage() {
 
       <div className="mx-auto grid max-w-6xl gap-5 px-5 py-7 sm:px-8 md:gap-8 md:py-10 lg:grid-cols-[330px_1fr] lg:py-14">
         <aside className="h-fit border border-gray-900 bg-gray-950 p-5 text-white lg:sticky lg:top-24 lg:p-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200">Professional profile</p>
+          <p className="text-xs font-semibold uppercase text-cyan-200">Professionel profil</p>
           <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">Gør din erfaring bookbar.</h2>
-          <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:mt-5">Alle professionals tilbyder 60 minutter. Forskellen er din erfaring, dine fokusområder og din pris.</p>
+          <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:mt-5">Alle professionelle tilbyder 60 minutter. Forskellen er din erfaring, dine fokusområder og din pris.</p>
           <div className="mt-8 hidden space-y-3 lg:block">
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Prisramme</p><p className="mt-1 text-lg font-black">DKK 600-1.800</p></div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Format</p><p className="mt-1 text-lg font-black">60 min</p></div>
@@ -172,8 +159,8 @@ export default function ProfessionalProfilePage() {
             <div>
               <label className="mb-3 block text-sm font-semibold text-gray-700">Brancher</label>
               <div className="flex flex-wrap gap-2">
-                {INDUSTRIES.map(ind => (
-                  <button key={ind} type="button" aria-pressed={data.industries.includes(ind)} onClick={() => setData(d => ({ ...d, industries: toggleArr(d.industries, ind) }))} className={`rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors ${data.industries.includes(ind) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>{ind}</button>
+                {INDUSTRIES.map((industry) => (
+                  <button key={industry.id} type="button" aria-pressed={data.industries.includes(industry.id)} onClick={() => setData(d => ({ ...d, industries: toggleArr(d.industries, industry.id) }))} className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${data.industries.includes(industry.id) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>{industry.id}</button>
                 ))}
               </div>
             </div>
@@ -181,21 +168,21 @@ export default function ProfessionalProfilePage() {
             <div>
               <label className="mb-3 block text-sm font-semibold text-gray-700">Fokusområder</label>
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                {FOCUS_AREAS.map(st => (
-                  <button key={st.type} type="button" aria-pressed={data.focus_areas.includes(st.type)} onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, st.type) }))} className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold transition-colors ${data.focus_areas.includes(st.type) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>{st.label}</button>
+                {FOCUS_AREAS.map((focus) => (
+                  <button key={focus.id} type="button" aria-pressed={data.focus_areas.includes(focus.id)} onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, focus.id) }))} className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${data.focus_areas.includes(focus.id) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>{focus.da}</button>
                 ))}
               </div>
             </div>
 
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
               <label htmlFor="profile-price" className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {data.price_dkk.toLocaleString('da-DK')}</span></label>
-              <input id="profile-price" type="range" min={600} max={1800} step={100} value={data.price_dkk} onChange={e => setData(d => ({ ...d, price_dkk: Number(e.target.value) }))} className="w-full accent-gray-950" />
+              <input id="profile-price" type="range" min={PRICE_MIN} max={PRICE_MAX} step={100} value={data.price_dkk} onChange={e => setData(d => ({ ...d, price_dkk: Number(e.target.value) }))} className="w-full accent-gray-950" />
               <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>DKK 600</span><span>DKK 1.800</span></div>
             </div>
 
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
               <label htmlFor="profile-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag ved en betalt session: <span className="font-black text-gray-950">{data.contribution_percent}% / DKK {Math.round(data.price_dkk * data.contribution_percent / 100).toLocaleString('da-DK')}</span></label>
-              <input id="profile-contribution" type="range" min={40} max={90} step={5} value={data.contribution_percent} onChange={e => setData(d => ({ ...d, contribution_percent: Number(e.target.value) }))} className="w-full accent-gray-950" />
+              <input id="profile-contribution" type="range" min={CONTRIBUTION_MIN} max={CONTRIBUTION_MAX} step={5} value={data.contribution_percent} onChange={e => setData(d => ({ ...d, contribution_percent: Number(e.target.value) }))} className="w-full accent-gray-950" />
               <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
             </div>
 
