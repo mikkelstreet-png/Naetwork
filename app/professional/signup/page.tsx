@@ -4,20 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
-
-const INDUSTRIES = ['AI', 'Banking', 'Management Consulting', 'Private Equity'];
-const FOCUS_AREAS = [
-  { type: 'cv_linkedin', label: 'CV / LinkedIn' },
-  { type: 'application_review', label: 'Ansøgning' },
-  { type: 'interview_prep', label: 'Interview' },
-  { type: 'case_prep', label: 'Case-træning' },
-  { type: 'banking_technicals', label: 'Banking Technicals' },
-  { type: 'consulting_cases', label: 'Consulting-cases' },
-  { type: 'pe_investment_case', label: 'PE / Investment Case' },
-  { type: 'career_direction', label: 'Karriereretning' },
-  { type: 'ai_career_strategy', label: 'AI-karrierestrategi' },
-  { type: 'industry_insight', label: 'Indsigt i branchen' },
-];
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_MAX, PRICE_MIN } from '@/lib/platform';
+import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
 
 const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
 
@@ -113,6 +101,8 @@ export default function ProfessionalSignupPage() {
           donatesToCharity: true,
           contributionPercent: form.contributionPercent,
           termsAcceptedAt: new Date().toISOString(),
+          termsVersion: TERMS_VERSION,
+          privacyVersion: PRIVACY_VERSION,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/profil/professionel`,
       },
@@ -224,7 +214,7 @@ export default function ProfessionalSignupPage() {
                   <label htmlFor="professional-industry" className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
                   <select id="professional-industry" value={form.industry} onChange={e => set('industry', e.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950">
                     <option value="">Vælg industri</option>
-                    {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                    {INDUSTRIES.map((industry) => <option key={industry.id} value={industry.id}>{industry.id}</option>)}
                   </select>
                 </div>
                 <div>
@@ -245,17 +235,17 @@ export default function ProfessionalSignupPage() {
                 <div>
                   <label className="mb-3 block text-sm font-semibold text-gray-700">Hvad kan kandidater bruge din session på?</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {FOCUS_AREAS.map(s => (
-                      <button key={s.type} type="button" aria-pressed={form.sessionTypes.includes(s.type)} onClick={() => toggleSessionType(s.type)}
-                        className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${form.sessionTypes.includes(s.type) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>
-                        {s.label}
+                    {FOCUS_AREAS.map((focus) => (
+                      <button key={focus.id} type="button" aria-pressed={form.sessionTypes.includes(focus.id)} onClick={() => toggleSessionType(focus.id)}
+                        className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${form.sessionTypes.includes(focus.id) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>
+                        {focus.da}
                       </button>
                     ))}
                   </div>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
                   <label htmlFor="professional-price" className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
-                  <input id="professional-price" type="range" min={600} max={1800} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
+                  <input id="professional-price" type="range" min={PRICE_MIN} max={PRICE_MAX} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
                     className="w-full accent-gray-950" />
                   <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>DKK 600</span><span>DKK 1.800</span></div>
                 </div>
@@ -275,7 +265,7 @@ export default function ProfessionalSignupPage() {
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
                   <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
-                  <input id="professional-contribution" type="range" min={40} max={90} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
+                  <input id="professional-contribution" type="range" min={CONTRIBUTION_MIN} max={CONTRIBUTION_MAX} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
                     className="w-full accent-gray-950" />
                   <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
                 </div>
