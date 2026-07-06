@@ -30,6 +30,7 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
+  const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -70,6 +71,10 @@ export default function BookingsPage() {
   });
 
   async function updateBooking(bookingId: string, action: 'confirm' | 'cancel') {
+    if (action === 'cancel' && confirmCancelId !== bookingId) {
+      setConfirmCancelId(bookingId);
+      return;
+    }
     setActionLoading(`${bookingId}:${action}`);
     setActionError('');
     try {
@@ -88,6 +93,7 @@ export default function BookingsPage() {
       setActionError(isDa ? 'Bookingen kunne ikke opdateres.' : 'The booking could not be updated.');
     } finally {
       setActionLoading(null);
+      setConfirmCancelId(null);
     }
   }
 
@@ -163,11 +169,11 @@ export default function BookingsPage() {
                   {booking.viewer_role === 'professional' && ['requested', 'pending'].includes(booking.status) && (
                     <>
                       <button onClick={() => updateBooking(booking.id, 'confirm')} disabled={actionLoading !== null} className="rounded-lg bg-gray-950 px-3 py-2 text-xs font-black text-white disabled:opacity-50">{actionLoading === `${booking.id}:confirm` ? '...' : (isDa ? 'Bekræft' : 'Confirm')}</button>
-                      <button onClick={() => updateBooking(booking.id, 'cancel')} disabled={actionLoading !== null} className="rounded-lg border border-gray-300 px-3 py-2 text-xs font-black text-gray-700 disabled:opacity-50">{isDa ? 'Afvis' : 'Decline'}</button>
+                      <button onClick={() => updateBooking(booking.id, 'cancel')} onBlur={() => confirmCancelId === booking.id && setConfirmCancelId(null)} disabled={actionLoading !== null} className={`rounded-lg px-3 py-2 text-xs font-black disabled:opacity-50 ${confirmCancelId === booking.id ? 'bg-red-600 text-white' : 'border border-gray-300 text-gray-700'}`}>{confirmCancelId === booking.id ? (isDa ? 'Bekræft afvisning' : 'Confirm decline') : (isDa ? 'Afvis' : 'Decline')}</button>
                     </>
                   )}
                   {booking.viewer_role === 'candidate' && ACTIVE_STATUSES.includes(booking.status) && (
-                    <button onClick={() => updateBooking(booking.id, 'cancel')} disabled={actionLoading !== null} className="rounded-lg border border-gray-300 px-3 py-2 text-xs font-black text-gray-700 disabled:opacity-50">{actionLoading === `${booking.id}:cancel` ? '...' : (isDa ? 'Aflys' : 'Cancel')}</button>
+                    <button onClick={() => updateBooking(booking.id, 'cancel')} onBlur={() => confirmCancelId === booking.id && setConfirmCancelId(null)} disabled={actionLoading !== null} className={`rounded-lg px-3 py-2 text-xs font-black disabled:opacity-50 ${confirmCancelId === booking.id ? 'bg-red-600 text-white' : 'border border-gray-300 text-gray-700'}`}>{actionLoading === `${booking.id}:cancel` ? '...' : confirmCancelId === booking.id ? (isDa ? 'Bekræft aflysning' : 'Confirm cancellation') : (isDa ? 'Aflys' : 'Cancel')}</button>
                   )}
                 </div>
               </article>
