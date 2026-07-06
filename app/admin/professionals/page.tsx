@@ -1,216 +1,125 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
+'use client'
 
-type Visibility = 'hidden' | 'published';
-type ReviewStatus = 'pending' | 'approved' | 'rejected';
+import Link from 'next/link'
+import { useCallback, useEffect, useState } from 'react'
+import { ExternalLink } from 'lucide-react'
+import { AdminEmptyState, AdminPageHeader, AdminTableFrame } from '@/components/AdminShell'
+import { createClient } from '@/lib/supabase/client'
+
+type Visibility = 'hidden' | 'published'
+type ReviewStatus = 'pending' | 'approved' | 'rejected'
 
 interface Professional {
-  id: string;
-  profile_id: string | null;
-  name: string;
-  title: string | null;
-  company: string | null;
-  industries: string[] | null;
-  visibility: Visibility;
-  review_status: ReviewStatus;
-  created_at: string;
+  id: string
+  profile_id: string | null
+  name: string
+  title: string | null
+  company: string | null
+  industries: string[] | null
+  visibility: Visibility
+  review_status: ReviewStatus
+  created_at: string
 }
 
-const STATUS_TABS: { label: string; value: ReviewStatus | 'all' }[] = [
-  { label: 'Alle', value: 'all' },
-  { label: 'Afventer', value: 'pending' },
-  { label: 'Godkendt', value: 'approved' },
-  { label: 'Afvist', value: 'rejected' },
-];
+const STATUS_TABS: Array<{ label: string; value: ReviewStatus | 'all' }> = [
+  { label: 'Alle', value: 'all' }, { label: 'Afventer', value: 'pending' }, { label: 'Godkendte', value: 'approved' }, { label: 'Afviste', value: 'rejected' },
+]
 
-const statusBadge = (status: ReviewStatus, visibility: Visibility) => {
-  const map: Record<ReviewStatus, string> = {
-    pending: 'bg-amber-100 text-amber-800',
-    approved: 'bg-emerald-100 text-emerald-800',
-    rejected: 'bg-red-100 text-red-800',
-  };
-  const labels: Record<ReviewStatus, string> = {
-    pending: 'Afventer',
-    approved: visibility === 'published' ? 'Godkendt · synlig' : 'Godkendt · skjult',
-    rejected: 'Afvist',
-  };
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[status]}`}>
-      {labels[status]}
-    </span>
-  );
-};
+function ReviewBadge({ status, visibility }: { status: ReviewStatus; visibility: Visibility }) {
+  const label = status === 'pending' ? 'Afventer' : status === 'rejected' ? 'Afvist' : visibility === 'published' ? 'Godkendt · synlig' : 'Godkendt · skjult'
+  const tone = status === 'pending' ? 'border-amber-200 bg-amber-50 text-amber-800' : status === 'rejected' ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-800'
+  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${tone}`}>{label}</span>
+}
 
 export default function ProfessionalsPage() {
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [filter, setFilter] = useState<ReviewStatus | 'all'>('all');
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [professionals, setProfessionals] = useState<Professional[]>([])
+  const [filter, setFilter] = useState<ReviewStatus | 'all'>('all')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [confirmRejectId, setConfirmRejectId] = useState<string | null>(null)
 
-  const supabase = createClient();
+  const loadProfessionals = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    const supabase = createClient()
+    const { data, error: loadError } = await supabase.from('professional_profiles').select('id, profile_id, title, company, industries, visibility, review_status, created_at').order('created_at', { ascending: false })
+    if (loadError) {
+      setError('Profilerne kunne ikke indlæses. Kontrollér systemstatus og prøv igen.')
+      setProfessionals([])
+      setLoading(false)
+      return
+    }
+    const rows = (data as Array<Omit<Professional, 'name'>> | null) ?? []
+    const profileIds = Array.from(new Set(rows.map((row) => row.profile_id).filter(Boolean))) as string[]
+    const { data: profiles, error: profileError } = profileIds.length ? await supabase.from('profiles').select('id, name').in('id', profileIds) : { data: [], error: null }
+    if (profileError) setError('Profilnavne kunne ikke indlæses fuldt ud.')
+    const names = new Map(((profiles as Array<{ id: string; name: string | null }> | null) ?? []).map((profile) => [profile.id, profile.name || 'Navn mangler']))
+    setProfessionals(rows.map((row) => ({ ...row, name: row.profile_id ? names.get(row.profile_id) ?? 'Navn mangler' : 'Navn mangler' })))
+    setLoading(false)
+  }, [])
 
-  useEffect(() => {
-    loadProfessionals();
-  }, []);
-
-  async function loadProfessionals() {
-    setLoading(true);
-    const { data } = await supabase
-      .from('professional_profiles')
-      .select('id, profile_id, title, company, industries, visibility, review_status, created_at')
-      .order('created_at', { ascending: false });
-
-    const rows = (data as Array<Omit<Professional, 'name'>> | null) || [];
-    const profileIds = Array.from(new Set(rows.map(row => row.profile_id).filter(Boolean))) as string[];
-    const { data: profiles } = profileIds.length
-      ? await supabase.from('profiles').select('id, name').in('id', profileIds)
-      : { data: [] };
-    const names = new Map(((profiles as Array<{ id: string; name: string | null }> | null) || []).map(profile => [profile.id, profile.name || '—']));
-
-    setProfessionals(rows.map(row => ({ ...row, name: row.profile_id ? names.get(row.profile_id) ?? '—' : '—' })));
-    setLoading(false);
-  }
+  useEffect(() => { void loadProfessionals() }, [loadProfessionals])
 
   async function updateReview(id: string, reviewStatus: ReviewStatus, visibility: Visibility) {
-    setActionLoading(id + reviewStatus);
-    const { data: { user } } = await supabase.auth.getUser();
-    await supabase
-      .from('professional_profiles')
-      .update({
-        review_status: reviewStatus,
-        visibility,
-        approved_at: reviewStatus === 'approved' ? new Date().toISOString() : null,
-      })
-      .eq('id', id);
-    if (user) {
-      const { data: adminProfile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).maybeSingle();
-      if (adminProfile) await supabase.from('admin_audit_log').insert({
-        admin_user_id: adminProfile.id,
-        action: `professional_${reviewStatus}`,
-        target_table: 'professional_profiles',
-        target_id: id,
-        notes: `Review status: ${reviewStatus}; visibility: ${visibility}`,
-      });
+    if (reviewStatus === 'rejected' && confirmRejectId !== id) {
+      setConfirmRejectId(id)
+      return
     }
-    await loadProfessionals();
-    setActionLoading(null);
+    setActionLoading(`${id}:${reviewStatus}:${visibility}`)
+    setError('')
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const { error: updateError } = await supabase.from('professional_profiles').update({ review_status: reviewStatus, visibility, approved_at: reviewStatus === 'approved' ? new Date().toISOString() : null }).eq('id', id)
+    if (updateError) {
+      setError('Profilstatus kunne ikke opdateres. Ingen ændringer er gemt.')
+    } else if (user) {
+      const { data: adminProfile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).maybeSingle()
+      if (adminProfile) await supabase.from('admin_audit_log').insert({ admin_user_id: adminProfile.id, action: `professional_${reviewStatus}`, target_table: 'professional_profiles', target_id: id, notes: `Review status: ${reviewStatus}; visibility: ${visibility}` })
+      await loadProfessionals()
+    }
+    setConfirmRejectId(null)
+    setActionLoading(null)
   }
 
-  const filtered = filter === 'all' ? professionals : professionals.filter(p => p.review_status === filter);
+  const filtered = filter === 'all' ? professionals : professionals.filter((profile) => profile.review_status === filter)
 
   return (
-    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
-      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
-        <div className="px-6 py-5 border-b border-gray-800">
-          <Link href="/admin" className="text-white font-bold text-lg tracking-tight">Admin</Link>
-          <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">Naetwork</Link>
+    <>
+      <AdminPageHeader title="Professionelle" description="Gennemgå erfaring, publiceringsstatus og profilkvalitet, før en profil bliver synlig for kandidater." />
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1" role="group" aria-label="Filtrér profiler">
+          {STATUS_TABS.map((tab) => <button key={tab.value} type="button" onClick={() => setFilter(tab.value)} aria-pressed={filter === tab.value} className={`rounded-md px-3 py-2 text-xs font-black transition-colors ${filter === tab.value ? 'bg-gray-950 text-white' : 'text-gray-500 hover:text-gray-950'}`}>{tab.label}</button>)}
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {[
-            { label: 'Oversigt', href: '/admin' },
-            { label: 'Brugere', href: '/admin/users' },
-            { label: 'Professionelle', href: '/admin/professionals' },
-            { label: 'Bookinger', href: '/admin/bookings' },
-            { label: 'Kontaktbeskeder', href: '/admin/contact' },
-            { label: 'Betalinger', href: '/admin/payments', badge: 'Gated' },
-            { label: 'Donation / juridisk', href: '/admin/legal' },
-            { label: 'System', href: '/admin/system' },
-          ].map((item) => (
-            <Link key={item.href} href={item.href} className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${item.href === '/admin/professionals' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>
-              <span>{item.label}</span>
-              {item.badge && <span className="text-xs bg-yellow-500 text-black px-1.5 py-0.5 rounded font-medium">{item.badge}</span>}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <h1 className="text-gray-900 font-semibold text-base">Professionelle</h1>
-        </header>
-
-        <main className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="flex gap-2 mb-4">
-            {STATUS_TABS.map(tab => (
-              <button
-                key={tab.value}
-                onClick={() => setFilter(tab.value)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filter === tab.value ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-300'}`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            {loading ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indlæser...</div>
-            ) : filtered.length === 0 ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Ingen professionelle fundet</div>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-100">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Navn</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Titel / Virksomhed</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Brancher</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Oprettet</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Handlinger</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filtered.map((p) => (
-                    <tr key={p.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{p.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        <div>{p.title || '—'}</div>
-                        <div className="text-gray-400 text-xs">{p.company || ''}</div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {p.industries?.slice(0, 2).join(', ') || '—'}
-                        {(p.industries?.length ?? 0) > 2 && <span className="text-gray-400"> +{(p.industries?.length ?? 0) - 2}</span>}
-                      </td>
-                      <td className="px-4 py-3">{statusBadge(p.review_status, p.visibility)}</td>
-                      <td className="px-4 py-3 text-xs text-gray-400">{new Date(p.created_at).toLocaleDateString('da-DK')}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1.5">
-                          {p.review_status !== 'approved' && (
-                            <button
-                              onClick={() => updateReview(p.id, 'approved', 'published')}
-                              disabled={actionLoading === p.id + 'approved'}
-                              className="text-xs px-2 py-1 rounded bg-gray-950 text-white hover:bg-gray-800 disabled:opacity-50"
-                            >
-                              Godkend
-                            </button>
-                          )}
-                          {p.review_status !== 'rejected' && (
-                            <button
-                              onClick={() => updateReview(p.id, 'rejected', 'hidden')}
-                              disabled={actionLoading === p.id + 'rejected'}
-                              className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50"
-                            >
-                              Afvis
-                            </button>
-                          )}
-                          {p.review_status === 'approved' && p.visibility === 'published' && (
-                            <button onClick={() => updateReview(p.id, 'approved', 'hidden')} disabled={actionLoading !== null} className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50">Skjul</button>
-                          )}
-                          <Link href={`/professionals/${p.id}`} className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200">
-                            Se profil
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </main>
+        <p className="text-xs font-bold text-gray-400">{loading ? 'Indlæser' : `${filtered.length} profiler`}</p>
       </div>
-    </div>
-  );
+
+      {error && <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+
+      <AdminTableFrame>
+        {loading ? <AdminEmptyState title="Indlæser profiler..." /> : filtered.length === 0 ? <AdminEmptyState title="Ingen profiler i denne visning" body="Skift filter for at se andre profilstatusser." /> : (
+          <table className="min-w-[980px] w-full border-collapse">
+            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Profil</th><th className="px-4 py-3">Felt</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Oprettet</th><th className="px-4 py-3 text-right">Handlinger</th></tr></thead>
+            <tbody className="divide-y divide-gray-100">
+              {filtered.map((profile) => (
+                <tr key={profile.id} className="hover:bg-gray-50/70">
+                  <td className="px-4 py-4"><p className="text-sm font-black text-gray-950">{profile.name}</p><p className="mt-1 text-xs text-gray-500">{[profile.title, profile.company].filter(Boolean).join(' · ') || 'Titel og virksomhed mangler'}</p></td>
+                  <td className="px-4 py-4 text-sm text-gray-600">{profile.industries?.join(', ') || 'Ikke valgt'}</td>
+                  <td className="px-4 py-4"><ReviewBadge status={profile.review_status} visibility={profile.visibility} /></td>
+                  <td className="px-4 py-4 text-xs tabular-nums text-gray-500">{new Date(profile.created_at).toLocaleDateString('da-DK')}</td>
+                  <td className="px-4 py-4"><div className="flex justify-end gap-2">
+                    {profile.review_status !== 'approved' && <button onClick={() => void updateReview(profile.id, 'approved', 'published')} disabled={actionLoading !== null} className="rounded-lg bg-gray-950 px-3 py-2 text-xs font-black text-white disabled:opacity-50">Godkend</button>}
+                    {profile.review_status !== 'rejected' && <button onClick={() => void updateReview(profile.id, 'rejected', 'hidden')} onBlur={() => confirmRejectId === profile.id && setConfirmRejectId(null)} disabled={actionLoading !== null} className={`rounded-lg px-3 py-2 text-xs font-black disabled:opacity-50 ${confirmRejectId === profile.id ? 'bg-red-600 text-white' : 'border border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-700'}`}>{confirmRejectId === profile.id ? 'Bekræft afvisning' : 'Afvis'}</button>}
+                    {profile.review_status === 'approved' && <button onClick={() => void updateReview(profile.id, 'approved', profile.visibility === 'published' ? 'hidden' : 'published')} disabled={actionLoading !== null} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-black text-gray-600 disabled:opacity-50">{profile.visibility === 'published' ? 'Skjul' : 'Publicér'}</button>}
+                    <Link href={`/professionals/${profile.id}`} target="_blank" className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-black text-gray-600">Profil <ExternalLink size={12} aria-hidden="true" /></Link>
+                  </div></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </AdminTableFrame>
+    </>
+  )
 }
