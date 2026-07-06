@@ -1,54 +1,30 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { ArrowRight, LockKeyhole } from 'lucide-react'
+import { AdminPageHeader } from '@/components/AdminShell'
+
+const REQUIREMENTS = [
+  'Handelsoplysninger, operatør og CVR er publiceret',
+  'Checkout viser pris, afbestilling og fortrydelsesvilkår før køb',
+  'Stripe, kvitteringer, refunds og webhooks er testet end to end',
+  'Regnskabs- og skattemodel for professionelle og bidrag er godkendt',
+  'Bidrag kan dokumenteres, afstemmes og korrigeres ved refundering',
+]
 
 export default function PaymentsPage() {
   return (
-    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
-      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
-        <div className="px-6 py-5 border-b border-gray-800">
-          <Link href="/admin" className="text-white font-bold text-lg tracking-tight">Admin</Link>
-          <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">Naetwork</Link>
+    <>
+      <AdminPageHeader title="Betaling" description="Betaling er bevidst deaktiveret. Denne side beskriver den release-gate, der skal være opfyldt, før der kan trækkes penge." />
+      <section className="max-w-4xl overflow-hidden rounded-lg border border-gray-950 bg-gray-950 text-white">
+        <div className="grid gap-5 p-6 sm:grid-cols-[auto_1fr] sm:p-8">
+          <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-white text-gray-950"><LockKeyhole size={19} aria-hidden="true" /></span>
+          <div><p className="text-xs font-black uppercase text-white/40">Status</p><h2 className="mt-2 text-2xl font-black">Ingen betalinger kan gennemføres</h2><p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/60">Bookinganmodninger opretter ingen betaling, reserverer ingen beløb og dokumenterer ikke et bidrag. Aktivering kræver både teknisk og manuel godkendelse.</p></div>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {[
-            { label: 'Oversigt', href: '/admin' },
-            { label: 'Brugere', href: '/admin/users' },
-            { label: 'Professionelle', href: '/admin/professionals' },
-            { label: 'Bookinger', href: '/admin/bookings' },
-            { label: 'Kontaktbeskeder', href: '/admin/contact' },
-            { label: 'Betalinger', href: '/admin/payments', badge: 'Gated' },
-            { label: 'Donation / juridisk', href: '/admin/legal' },
-            { label: 'System', href: '/admin/system' },
-          ].map((item) => (
-            <Link key={item.href} href={item.href} className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${item.href === '/admin/payments' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>
-              <span>{item.label}</span>
-              {item.badge && <span className="text-xs bg-yellow-500 text-black px-1.5 py-0.5 rounded font-medium">{item.badge}</span>}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <h1 className="text-gray-900 font-semibold text-base">Betalinger</h1>
-        </header>
-
-        <main className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm px-3 py-1.5 rounded-full mb-6">
-              Under juridisk afklaring
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Betalinger</h2>
-            <p className="text-gray-500 mb-6">
-              Betalingsmodulet er ikke aktiveret endnu. Aktivering afventer juridisk,
-              regnskabsm\u00e6ssig og skattem\u00e6ssig afklaring samt godkendelse fra betalingsudbyder.
-              Se status under Donation / juridisk.
-            </p>
-            <Link href="/admin/legal" className="text-indigo-600 hover:underline text-sm">
-              Se juridiske blokkere
-            </Link>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+        <div className="border-t border-white/10 bg-white p-6 text-gray-950 sm:p-8">
+          <p className="text-[11px] font-black uppercase text-gray-400">Release-gate</p>
+          <ol className="mt-4 divide-y divide-gray-200 border-t border-gray-200">{REQUIREMENTS.map((requirement, index) => <li key={requirement} className="grid grid-cols-[32px_1fr] gap-3 py-4"><span className="text-xs font-black text-gray-300">0{index + 1}</span><p className="text-sm font-bold leading-relaxed text-gray-700">{requirement}</p></li>)}</ol>
+          <div className="mt-6 flex flex-wrap gap-3"><Link href="/admin/legal" className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white">Juridiske blokkere <ArrowRight size={15} aria-hidden="true" /></Link><Link href="/admin/system" className="inline-flex items-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-black text-gray-700">Systemstatus</Link></div>
+        </div>
+      </section>
+    </>
+  )
 }
