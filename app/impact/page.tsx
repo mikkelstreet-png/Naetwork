@@ -3,7 +3,7 @@ import { ImpactContent } from '@/components/ImpactContent';
 
 export const metadata: Metadata = {
   title: 'Bidragsmodel - Naetwork',
-  description: 'How every paid Naetwork career session contributes to Kræftens Bekæmpelse through the platform impact model.',
+  description: 'Sådan afsætter hver betalt Naetwork-session 40-90% af sessionsprisen til støtte for Kræftens Bekæmpelse.',
 };
 
 export default function ImpactPage() {
