@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 const SUBJECTS: Record<string, string> = {
   booking: 'Booking og session',
   account: 'Konto og profil',
-  professional: 'Professional på Naetwork',
+  professional: 'Professionel på Naetwork',
   privacy: 'Privatliv og data',
   other: 'Andet',
 };
