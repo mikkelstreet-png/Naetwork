@@ -3,13 +3,9 @@ import { copenhagenDateTimeToUtc, formatSessionDate } from '@/lib/dateTime';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
+import { BOOKING_FOCUS_AREAS, CONTRIBUTION_MAX, CONTRIBUTION_MIN, contributionAmount, focusLabel } from '@/lib/platform';
 
-const FOCUS_LABELS: Record<string, string> = {
-  cv_linkedin: 'CV / LinkedIn',
-  interview_prep: 'Interview',
-  case_prep: 'Case / technicals',
-  career_direction: 'Karriereretning',
-};
+const BOOKING_FOCUS_IDS = new Set<string>(BOOKING_FOCUS_AREAS);
 
 function cleanText(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().replace(/\r\n/g, '\n').slice(0, maxLength) : '';
@@ -103,7 +99,7 @@ export async function POST(request: Request) {
     const goal = cleanText(body.goal, 260);
     const material = cleanText(body.material, 180);
 
-    if (!professionalId || !FOCUS_LABELS[focus]) {
+    if (!professionalId || !BOOKING_FOCUS_IDS.has(focus)) {
       return NextResponse.json({ error: 'Vælg en professionel og et gyldigt fokus.' }, { status: 400 });
     }
 
@@ -177,9 +173,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Den professionelle konto kunne ikke findes.' }, { status: 409 });
     }
 
-    const focusLabel = FOCUS_LABELS[focus];
+    const selectedFocusLabel = focusLabel(focus, 'da');
     const brief = [
-      `Fokus: ${focusLabel}`,
+      `Fokus: ${selectedFocusLabel}`,
       goal ? `Mål: ${goal}` : null,
       material ? `Materiale/link: ${material}` : null,
     ].filter(Boolean).join('\n');
@@ -208,8 +204,8 @@ export async function POST(request: Request) {
       notes: 'Booking request created. Payment is not active.',
     });
 
-    const contributionPercent = Math.min(90, Math.max(40, Number(professional.contribution_percent ?? 40)));
-    const contribution = Math.round(Number(professional.price_dkk) * contributionPercent / 100);
+    const contributionPercent = Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, Number(professional.contribution_percent ?? CONTRIBUTION_MIN)));
+    const contribution = contributionAmount(Number(professional.price_dkk), contributionPercent);
     const formattedDate = formatSessionDate(startsAt);
     const professionalName = owner.name || professional.title || 'din professionelle';
     const candidateName = candidate.name || user.email || 'Kandidat';
@@ -223,7 +219,7 @@ export async function POST(request: Request) {
         intro: `Hej ${candidateName}. Din anmodning er gemt, og ${professionalName} kan nu bekræfte eller afvise tidspunktet.`,
         rows: [
           { label: 'Ønsket tidspunkt', value: formattedDate },
-          { label: 'Fokus', value: focusLabel },
+          { label: 'Fokus', value: selectedFocusLabel },
           { label: 'Pris', value: `DKK ${Number(professional.price_dkk).toLocaleString('da-DK')}` },
           { label: 'Minimumsbidrag', value: `DKK ${contribution.toLocaleString('da-DK')} (${contributionPercent}%)` },
         ],
@@ -237,7 +233,7 @@ export async function POST(request: Request) {
         intro: `${candidateName} ønsker 60 minutters karrieresparring med dig. Log ind for at bekræfte eller afvise tidspunktet.`,
         rows: [
           { label: 'Ønsket tidspunkt', value: formattedDate },
-          { label: 'Fokus', value: focusLabel },
+          { label: 'Fokus', value: selectedFocusLabel },
           { label: 'Sessionpris', value: `DKK ${Number(professional.price_dkk).toLocaleString('da-DK')}` },
         ],
         note: goal || 'Kandidaten har ikke tilføjet et ekstra mål.',
