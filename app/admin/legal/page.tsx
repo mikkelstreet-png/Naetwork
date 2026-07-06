@@ -1,167 +1,78 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
+'use client'
 
-type LegalStatus = 'open' | 'in_progress' | 'resolved';
-type LegalPriority = 'low' | 'medium' | 'high' | 'critical';
+import { useCallback, useEffect, useState } from 'react'
+import { LockKeyhole } from 'lucide-react'
+import { AdminEmptyState, AdminPageHeader, AdminTableFrame } from '@/components/AdminShell'
+import { createClient } from '@/lib/supabase/client'
+
+type LegalStatus = 'open' | 'in_progress' | 'resolved'
+type LegalPriority = 'low' | 'medium' | 'high' | 'critical'
 
 interface LegalBlocker {
-  id: string;
-  title: string;
-  description: string | null;
-  status: LegalStatus;
-  priority: LegalPriority;
-  created_at: string;
-  resolved_at: string | null;
+  id: string
+  title: string
+  description: string | null
+  status: LegalStatus
+  priority: LegalPriority
+  created_at: string
 }
 
-const priorityBadge = (priority: LegalPriority) => {
-  const map: Record<LegalPriority, string> = {
-    critical: 'bg-red-100 text-red-800',
-    high: 'bg-orange-100 text-orange-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    low: 'bg-gray-100 text-gray-600',
-  };
-  const labels: Record<LegalPriority, string> = {
-    critical: 'Kritisk',
-    high: 'H\u00f8j',
-    medium: 'Medium',
-    low: 'Lav',
-  };
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[priority]}`}>{labels[priority]}</span>;
-};
+const PRIORITY_LABELS: Record<LegalPriority, string> = { critical: 'Kritisk', high: 'Høj', medium: 'Mellem', low: 'Lav' }
+const STATUS_LABELS: Record<LegalStatus, string> = { open: 'Åben', in_progress: 'I gang', resolved: 'Løst' }
 
-const statusBadge = (status: LegalStatus) => {
-  const map: Record<LegalStatus, string> = {
-    open: 'bg-red-100 text-red-800',
-    in_progress: 'bg-yellow-100 text-yellow-800',
-    resolved: 'bg-gray-100 text-gray-600',
-  };
-  const labels: Record<LegalStatus, string> = {
-    open: '\u00c5ben',
-    in_progress: 'I gang',
-    resolved: 'L\u00f8st',
-  };
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[status]}`}>{labels[status]}</span>;
-};
+function PriorityBadge({ priority }: { priority: LegalPriority }) {
+  const tone = priority === 'critical' ? 'border-red-200 bg-red-50 text-red-700' : priority === 'high' ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-gray-200 bg-gray-50 text-gray-600'
+  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${tone}`}>{PRIORITY_LABELS[priority]}</span>
+}
 
 export default function LegalPage() {
-  const [blockers, setBlockers] = useState<LegalBlocker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [blockers, setBlockers] = useState<LegalBlocker[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
-  const supabase = createClient();
+  const loadBlockers = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    const { data, error: loadError } = await createClient().from('legal_blockers').select('id, title, description, status, priority, created_at').order('created_at', { ascending: false })
+    if (loadError) setError('De juridiske blokkere kunne ikke indlæses.')
+    const priority = { critical: 0, high: 1, medium: 2, low: 3 }
+    setBlockers(((data as LegalBlocker[] | null) ?? []).sort((a, b) => priority[a.priority] - priority[b.priority]))
+    setLoading(false)
+  }, [])
 
-  useEffect(() => {
-    loadBlockers();
-  }, []);
-
-  async function loadBlockers() {
-    setLoading(true);
-    const { data } = await supabase
-      .from('legal_blockers')
-      .select('id, title, description, status, priority, created_at, resolved_at')
-      .order('priority', { ascending: false })
-      .order('created_at', { ascending: false });
-    setBlockers((data as LegalBlocker[]) || []);
-    setLoading(false);
-  }
+  useEffect(() => { void loadBlockers() }, [loadBlockers])
 
   async function updateStatus(id: string, status: LegalStatus) {
-    setActionLoading(id);
-    const updates: Record<string, unknown> = { status };
-    if (status === 'resolved') updates.resolved_at = new Date().toISOString();
-    await supabase.from('legal_blockers').update(updates).eq('id', id);
-    await loadBlockers();
-    setActionLoading(null);
+    setActionLoading(id)
+    setError('')
+    const updates = { status, resolved_at: status === 'resolved' ? new Date().toISOString() : null }
+    const { error: updateError } = await createClient().from('legal_blockers').update(updates).eq('id', id)
+    if (updateError) setError('Status kunne ikke opdateres. Ingen ændringer er gemt.')
+    else setBlockers((current) => current.map((blocker) => blocker.id === id ? { ...blocker, status } : blocker))
+    setActionLoading(null)
   }
 
+  const unresolved = blockers.filter((blocker) => blocker.status !== 'resolved')
+  const critical = unresolved.filter((blocker) => blocker.priority === 'critical').length
+
   return (
-    <div className="flex h-[calc(100svh-6rem)] overflow-hidden bg-gray-50 md:h-screen">
-      <aside className="hidden w-60 flex-shrink-0 flex-col bg-gray-900 md:flex">
-        <div className="px-6 py-5 border-b border-gray-800">
-          <Link href="/admin" className="text-white font-bold text-lg tracking-tight">Admin</Link>
-          <Link href="/" className="block text-gray-400 text-xs mt-0.5 hover:text-white transition-colors">Naetwork</Link>
-        </div>
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {[
-            { label: 'Oversigt', href: '/admin' },
-            { label: 'Brugere', href: '/admin/users' },
-            { label: 'Professionelle', href: '/admin/professionals' },
-            { label: 'Bookinger', href: '/admin/bookings' },
-            { label: 'Kontaktbeskeder', href: '/admin/contact' },
-            { label: 'Betalinger', href: '/admin/payments', badge: 'Gated' },
-            { label: 'Donation / juridisk', href: '/admin/legal' },
-            { label: 'System', href: '/admin/system' },
-          ].map((item) => (
-            <Link key={item.href} href={item.href} className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${item.href === '/admin/legal' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}>
-              <span>{item.label}</span>
-              {item.badge && <span className="text-xs bg-yellow-500 text-black px-1.5 py-0.5 rounded font-medium">{item.badge}</span>}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <h1 className="text-gray-900 font-semibold text-base">Donation / Juridisk</h1>
-        </header>
-
-        <main className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-4 mb-6">
-            <p className="text-sm font-semibold text-yellow-900 mb-1">Betalingsintegration</p>
-            <p className="text-sm text-yellow-800">
-              Betalingsintegration afventer l\u00f8sning af aktive juridiske blokkere nedenfor.
-              Ingen betalinger kan aktiveres f\u00f8r alle kritiske blokkere er l\u00f8st.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            {loading ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Indl\u00e6ser...</div>
-            ) : blockers.length === 0 ? (
-              <div className="px-5 py-8 text-center text-gray-400 text-sm">Ingen juridiske blokkere registreret</div>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-100">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Titel</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Beskrivelse</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Prioritet</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Opdater status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {blockers.map((b) => (
-                    <tr key={b.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-medium max-w-xs">{b.title}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500 max-w-sm">
-                        <p className="line-clamp-2">{b.description || '\u2014'}</p>
-                      </td>
-                      <td className="px-4 py-3">{priorityBadge(b.priority)}</td>
-                      <td className="px-4 py-3">{statusBadge(b.status)}</td>
-                      <td className="px-4 py-3">
-                        <select
-                          value={b.status}
-                          onChange={e => updateStatus(b.id, e.target.value as LegalStatus)}
-                          disabled={actionLoading === b.id}
-                          className="text-xs px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50"
-                        >
-                          <option value="open">\u00c5ben</option>
-                          <option value="in_progress">I gang</option>
-                          <option value="resolved">L\u00f8st</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+    <>
+      <AdminPageHeader title="Juridisk readiness" description="Hold økonomiske, forbrugerretlige og dokumentationsmæssige launch-krav synlige, indtil de er reelt afklaret." />
+      <section className="mb-6 grid gap-4 rounded-lg border border-gray-950 bg-gray-950 p-5 text-white sm:grid-cols-[auto_1fr_auto] sm:items-center">
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-gray-950"><LockKeyhole size={18} aria-hidden="true" /></span>
+        <div><p className="text-sm font-black">Betaling forbliver låst</p><p className="mt-1 text-xs leading-relaxed text-white/55">Aktivér først checkout, når kritiske blokkere, handelsoplysninger, afbestilling, regnskab og bidragsdokumentation er godkendt.</p></div>
+        <div className="text-left sm:text-right"><p className="text-2xl font-black tabular-nums">{loading ? '—' : critical}</p><p className="text-[10px] font-black uppercase text-white/40">kritiske</p></div>
+      </section>
+      {error && <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+      <AdminTableFrame>
+        {loading ? <AdminEmptyState title="Indlæser juridisk status..." /> : blockers.length === 0 ? <AdminEmptyState title="Ingen blokkere registreret" body="Det er ikke i sig selv en juridisk godkendelse. Foretag stadig manuel review før betaling aktiveres." /> : (
+          <table className="min-w-[820px] w-full border-collapse">
+            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Krav</th><th className="px-4 py-3">Prioritet</th><th className="px-4 py-3">Oprettet</th><th className="px-4 py-3 text-right">Status</th></tr></thead>
+            <tbody className="divide-y divide-gray-100">{blockers.map((blocker) => <tr key={blocker.id} className="align-top hover:bg-gray-50/70"><td className="px-4 py-4"><p className="text-sm font-black text-gray-950">{blocker.title}</p><p className="mt-1 max-w-2xl text-xs leading-relaxed text-gray-500">{blocker.description || 'Ingen beskrivelse tilføjet.'}</p></td><td className="px-4 py-4"><PriorityBadge priority={blocker.priority} /></td><td className="px-4 py-4 text-xs tabular-nums text-gray-500">{new Date(blocker.created_at).toLocaleDateString('da-DK')}</td><td className="px-4 py-4 text-right"><label><span className="sr-only">Status for {blocker.title}</span><select value={blocker.status} onChange={(event) => void updateStatus(blocker.id, event.target.value as LegalStatus)} disabled={actionLoading === blocker.id} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-black text-gray-700 outline-none focus:border-gray-950 disabled:opacity-50">{Object.entries(STATUS_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label></td></tr>)}</tbody>
+          </table>
+        )}
+      </AdminTableFrame>
+    </>
+  )
 }
