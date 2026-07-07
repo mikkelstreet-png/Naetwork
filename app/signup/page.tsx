@@ -68,21 +68,23 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-4.5rem)] bg-[#f4f4f0] px-5 py-12 sm:px-8 md:py-20 lg:px-10">
-      <div className="mx-auto grid max-w-[78rem] gap-12 lg:grid-cols-[1fr_450px] lg:items-start">
-        <section className="max-w-2xl pt-2 lg:pt-10">
+    <main className="min-h-[calc(100vh-4.75rem)] bg-white">
+      <div className="grid min-h-[calc(100vh-4.75rem)] lg:grid-cols-[1fr_520px]">
+        <section className="flex flex-col justify-center bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-20 lg:px-12">
+          <div className="mx-auto w-full max-w-3xl lg:mx-0 lg:ml-auto lg:pr-16">
           <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-          <p className="kicker mb-5">Opret konto</p>
-          <h1 className="text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-6xl">Find den erfaring, du mangler adgang til.</h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Opret en kandidatkonto for at sende bookinganmodninger og samle dine sessioner ét sted.</p>
-          <div className="mt-10 border-t border-gray-200 pt-5">
-            <p className="text-sm font-semibold text-gray-500">Vil du tilbyde sparring?</p>
-            <Link href="/professional/signup" className="mt-2 inline-flex items-center gap-2 text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">Ansøg som professionel <ArrowRight size={15} aria-hidden="true" /></Link>
+          <p className="kicker mb-5 text-white/40">Opret konto</p>
+          <h1 className="text-4xl font-medium leading-[0.96] text-white text-balance sm:text-5xl md:text-6xl">Find den erfaring, du mangler adgang til.</h1>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-white/55 md:text-lg">Opret en kandidatkonto for at sende bookinganmodninger og samle dine sessioner ét sted.</p>
+          <div className="mt-10 border-t border-white/20 pt-5">
+            <p className="text-sm font-semibold text-white/40">Vil du tilbyde sparring?</p>
+            <Link href="/professional/signup" className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-white underline decoration-white/30 underline-offset-4">Ansøg som professionel <ArrowRight size={15} aria-hidden="true" /></Link>
+          </div>
           </div>
         </section>
 
-        <section className="overflow-hidden rounded-md border border-gray-200 bg-white p-6 shadow-[0_20px_60px_rgba(9,9,11,0.08)] sm:p-8">
-          <h2 className="text-2xl font-semibold text-gray-950">Opret kandidatkonto</h2>
+        <section className="flex flex-col justify-center border-l border-gray-200 bg-white px-5 py-12 sm:px-8 lg:px-12">
+          <h2 className="text-3xl font-medium text-gray-950">Opret kandidatkonto</h2>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">Det tager under ét minut.</p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-5" aria-busy={loading}>
