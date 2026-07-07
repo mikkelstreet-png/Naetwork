@@ -18,8 +18,8 @@ export function MissionContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_380px] lg:items-end">
+      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
+        <div className="mx-auto grid max-w-[78rem] gap-10 lg:grid-cols-[1fr_390px] lg:items-end">
           <div>
             <p className="kicker mb-5">Mission</p>
             <h1 className="display-xl max-w-5xl">
@@ -31,9 +31,9 @@ export function MissionContent() {
                 : 'Naetwork turns informal insider guidance into a focused product: one professional, one brief, one 60-minute session, one clearer next step and one concrete contribution.'}
             </p>
           </div>
-          <aside className="premium-panel p-5">
+          <aside className="premium-panel lift-hover p-6">
             <p className="kicker">{isDa ? 'Produktstandpunkt' : 'Product stance'}</p>
-            <p className="mt-4 text-3xl font-black leading-tight text-gray-950">
+            <p className="mt-4 text-3xl font-semibold leading-tight text-gray-950">
               {isDa ? 'Simpelt på overfladen. Seriøst nedenunder.' : 'Simple on the surface. Serious underneath.'}
             </p>
             <div className="mt-7 flex flex-wrap gap-2">
@@ -45,8 +45,8 @@ export function MissionContent() {
         </div>
       </section>
 
-      <section className="px-5 py-10 sm:px-8 md:py-16">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+      <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto grid max-w-[78rem] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
             <p className="kicker mb-5">{isDa ? 'Principper' : 'Principles'}</p>
             <h2 className="display-lg">
@@ -58,7 +58,7 @@ export function MissionContent() {
               <article key={title} className="grid gap-4 border-b border-gray-200 py-7 md:grid-cols-[72px_1fr]">
                 <p className="text-xs font-black text-gray-300">0{index + 1}</p>
                 <div>
-                  <h3 className="text-2xl font-black text-gray-950">{title}</h3>
+                  <h3 className="text-2xl font-semibold text-gray-950">{title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-gray-600">{body}</p>
                 </div>
               </article>
@@ -66,9 +66,9 @@ export function MissionContent() {
           </div>
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-3 sm:flex-row">
-          <Link href="/match" className="pill-dark">{isDa ? 'Prøv match' : 'Try match'}</Link>
-          <Link href="/professionals" className="pill-light">{isDa ? 'Se profiler' : 'Browse profiles'}</Link>
+        <div className="mx-auto mt-12 flex max-w-[78rem] flex-col gap-3 sm:flex-row">
+          <Link href="/match" className="button-primary">{isDa ? 'Prøv match' : 'Try match'}</Link>
+          <Link href="/professionals" className="button-secondary">{isDa ? 'Se profiler' : 'Browse profiles'}</Link>
         </div>
       </section>
     </main>
