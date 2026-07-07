@@ -4,6 +4,7 @@ export const CHARITY_NAME = 'Kræftens Bekæmpelse'
 export const SESSION_MINUTES = 60
 export const PRICE_MIN = 600
 export const PRICE_MAX = 1800
+export const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
 export const CONTRIBUTION_MIN = 40
 export const CONTRIBUTION_MAX = 90
 
@@ -15,6 +16,15 @@ export const INDUSTRIES = [
 ] as const
 
 export type Industry = typeof INDUSTRIES[number]['id']
+export type PriceOption = typeof PRICE_OPTIONS[number]
+
+export function normalizePrice(value: unknown): PriceOption {
+  const parsed = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(parsed)) return PRICE_OPTIONS[0]
+  return PRICE_OPTIONS.reduce((closest, option) =>
+    Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
+  )
+}
 
 export const FOCUS_AREAS = [
   { id: 'cv_linkedin', da: 'CV og LinkedIn', en: 'CV and LinkedIn' },
