@@ -19,12 +19,13 @@ interface LegalDocumentProps {
 export function LegalDocument({ title, intro, updated, facts, sections }: LegalDocumentProps) {
   return (
     <main className="bg-white">
-      <header className="border-b border-gray-200 px-5 py-10 sm:px-8 md:py-20">
-        <div className="mx-auto max-w-6xl">
+      <header className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
           <Link href="/" className="inline-flex text-sm font-black text-gray-500 transition-colors hover:text-gray-950">&larr; Naetwork</Link>
           <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_320px] lg:items-end">
             <div>
               <p className="kicker mb-5">Juridisk</p>
+              <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
               <h1 className="display-xl max-w-4xl">{title}</h1>
               <p className="body-lg mt-6 max-w-2xl">{intro}</p>
               <p className="mt-5 text-xs font-semibold text-gray-400">Senest opdateret {updated}</p>
@@ -41,7 +42,7 @@ export function LegalDocument({ title, intro, updated, facts, sections }: LegalD
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 py-10 sm:px-8 md:py-16 lg:grid-cols-[240px_1fr] lg:gap-16">
+      <div className="mx-auto grid max-w-[78rem] gap-12 px-5 py-12 sm:px-8 md:py-20 lg:grid-cols-[240px_1fr] lg:gap-20 lg:px-10">
         <aside className="h-fit lg:sticky lg:top-24">
           <p className="kicker mb-4">Indhold</p>
           <nav aria-label={`Indhold i ${title}`} className="border-t border-gray-200">
