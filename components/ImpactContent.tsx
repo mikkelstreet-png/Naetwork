@@ -23,8 +23,8 @@ export function ImpactContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_390px] lg:items-end">
+      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
+        <div className="mx-auto grid max-w-[78rem] gap-10 lg:grid-cols-[1fr_400px] lg:items-end">
           <div>
             <p className="kicker mb-5">{isDa ? 'Bidragsmodel' : 'Impact model'}</p>
             <h1 className="display-xl max-w-5xl">
@@ -36,7 +36,8 @@ export function ImpactContent() {
                 : 'At least 40% and up to 90% of a completed, paid Naetwork session is allocated in support of Kræftens Bekæmpelse. The exact share is shown before the candidate sends a request.'}
             </p>
           </div>
-          <aside className="dark-panel p-6">
+          <aside className="dark-panel relative overflow-hidden p-7 shadow-[0_24px_70px_rgba(9,9,11,0.14)]">
+            <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
             <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
             <p className="mt-5 text-5xl font-black sm:text-6xl">{CONTRIBUTION_MIN}-{CONTRIBUTION_MAX}%</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
@@ -56,8 +57,8 @@ export function ImpactContent() {
         </div>
       </section>
 
-      <section className="px-5 py-10 sm:px-8 md:py-16">
-        <div className="mx-auto max-w-6xl">
+      <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
           <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-4">
             {examples.map(([price, impact, percent]) => (
               <div key={price} className="bg-white p-6">
