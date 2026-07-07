@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
   title: 'Naetwork - Karrieresparring med mening',
   description:
-    'Book 60 minutters karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity. Minimum 40% af hver betalt session går til Kræftens Bekæmpelse.',
+    'Book 60 minutters karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity. Minimum 40% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.',
   openGraph: {
     title: 'Naetwork - Karrieresparring med mening',
     description:
