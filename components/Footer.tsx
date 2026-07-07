@@ -49,32 +49,36 @@ export function Footer() {
   if (isFocusedAppRoute(pathname)) return null;
 
   return (
-    <footer className="border-t border-gray-200 bg-white">
-      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 md:py-16">
-        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+    <footer className="bg-[#09090b] text-white">
+      <div className="signal-rail"><span /><span /><span /><span /></div>
+      <div className="mx-auto max-w-[78rem] px-5 py-14 sm:px-8 md:py-20 lg:px-10">
+        <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-20">
           <div>
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Naetwork home">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white">N</span>
-              <span className="block text-lg font-black text-gray-950">Naetwork</span>
+              <span className="brand-mark border border-white/15 bg-white text-gray-950">N</span>
+              <span className="block font-['Space_Grotesk'] text-xl font-bold text-white">Naetwork</span>
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-gray-600">
+            <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-3xl">
               {isDa
-                ? 'Fokuseret karrieresparring fra AI, Banking, Management Consulting og Private Equity.'
-                : 'Focused career guidance from AI, Banking, Management Consulting and Private Equity.'}
+                ? 'Erfaring, du kan handle på. En session med mening.'
+                : 'Experience you can act on. A session with purpose.'}
             </p>
-            <p className="mt-3 max-w-sm text-xs font-semibold leading-relaxed text-gray-400">
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-white/55">
+              {isDa ? 'Fokuseret karrieresparring fra AI, Banking, Management Consulting og Private Equity.' : 'Focused career guidance from AI, Banking, Management Consulting and Private Equity.'}
+            </p>
+            <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/40">
               {isDa ? 'Minimum 40% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.' : 'At least 40% of a completed, paid session is allocated in support of Kræftens Bekæmpelse.'}
             </p>
-            <a href="mailto:kontakt@naetwork.dk" className="mt-5 inline-flex text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">kontakt@naetwork.dk</a>
+            <a href="mailto:kontakt@naetwork.dk" className="mt-6 inline-flex text-sm font-bold text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white">kontakt@naetwork.dk</a>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-4 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-white/15 pt-7 text-sm sm:grid-cols-4">
             {columns.map((column) => (
               <div key={column.title}>
-                <p className="mb-4 text-xs font-bold uppercase text-gray-400">{column.title}</p>
+                <p className="editorial-label mb-5 text-white/35">{column.title}</p>
                 <div className="space-y-3">
                   {column.links.map((link) => (
-                    <Link key={link.href} href={link.href} className="block font-semibold text-gray-600 transition-colors hover:text-gray-950">
+                    <Link key={link.href} href={link.href} className="block font-medium text-white/60 transition-colors hover:text-white">
                       {link.label}
                     </Link>
                   ))}
@@ -84,9 +88,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-gray-200 pt-6 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-2xl text-xs leading-relaxed text-gray-400">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
-          <p className="text-xs text-gray-400">{isDa ? '© 2026 Naetwork. Alle rettigheder forbeholdes.' : '© 2026 Naetwork. All rights reserved.'}</p>
+        <div className="mt-14 flex flex-col gap-4 border-t border-white/15 pt-6 md:flex-row md:items-end md:justify-between">
+          <p className="max-w-2xl text-xs leading-relaxed text-white/35">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
+          <p className="shrink-0 text-xs text-white/35">{isDa ? '© 2026 Naetwork. Alle rettigheder forbeholdes.' : '© 2026 Naetwork. All rights reserved.'}</p>
         </div>
       </div>
     </footer>
