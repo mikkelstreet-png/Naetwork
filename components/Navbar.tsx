@@ -86,22 +86,20 @@ export function Navbar() {
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/[0.94] backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+    <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.09] bg-white/[0.92] backdrop-blur-2xl">
+      <div className="mx-auto flex h-[4.5rem] max-w-[78rem] items-center justify-between px-5 sm:px-8 lg:px-10">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={displayDa ? 'Naetwork forside' : 'Naetwork home'}>
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
-            N
-          </span>
-          <span className="text-[15px] font-black text-gray-950">Naetwork</span>
+          <span className="brand-mark transition-transform duration-200 group-hover:-translate-y-0.5">N</span>
+          <span className="font-['Space_Grotesk'] text-[16px] font-bold text-gray-950">Naetwork</span>
         </Link>
 
-        <div className="hidden items-center gap-6 lg:flex">
+        <div className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               aria-current={link.href.startsWith('/#') ? undefined : pathname === link.href ? 'page' : undefined}
-              className={`text-sm font-bold transition-colors hover:text-gray-950 ${pathname === link.href ? 'text-gray-950' : 'text-gray-500'}`}
+              className={`relative py-2 text-[13px] font-semibold transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-gray-950 after:transition-transform hover:text-gray-950 hover:after:scale-x-100 ${pathname === link.href ? 'text-gray-950 after:scale-x-100' : 'text-gray-500'}`}
             >
               {link.label}
             </Link>
@@ -115,7 +113,7 @@ export function Navbar() {
 
           <Link
             href="/professionals"
-            className="hidden items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 lg:inline-flex"
+            className="button-primary hidden min-h-10 px-4 py-2.5 lg:inline-flex"
           >
             {displayDa ? 'Find en professionel' : 'Find a professional'}
           </Link>
@@ -124,7 +122,7 @@ export function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-950 text-xs font-bold text-white transition-transform hover:scale-105"
+                className="flex h-10 w-10 items-center justify-center rounded-md bg-gray-950 text-xs font-bold text-white transition-transform hover:-translate-y-0.5"
                 aria-label={dropdownOpen
                   ? (displayDa ? 'Luk kontomenu' : 'Close account menu')
                   : (displayDa ? 'Åbn kontomenu' : 'Open account menu')}
@@ -146,7 +144,7 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden px-3 py-2 text-sm font-bold text-gray-500 transition-colors hover:text-gray-950 lg:block">
+            <Link href="/login" className="hidden px-2 py-2 text-[13px] font-semibold text-gray-500 transition-colors hover:text-gray-950 lg:block">
               {displayDa ? 'Log ind' : 'Log in'}
             </Link>
           )}
@@ -154,7 +152,7 @@ export function Navbar() {
           <button
             ref={mobileButtonRef}
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-950 transition-colors hover:border-gray-400 lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen
               ? (displayDa ? 'Luk menu' : 'Close menu')
@@ -168,17 +166,18 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div ref={mobilePanelRef} id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 py-5 lg:hidden">
+        <div ref={mobilePanelRef} id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4.5rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 pb-6 pt-2 lg:hidden">
+          <div className="signal-rail mb-6"><span /><span /><span /><span /></div>
           <div className="border-t border-gray-200">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 text-sm font-black text-gray-950" onClick={() => setMobileOpen(false)}>
+              <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 font-['Space_Grotesk'] text-lg font-semibold text-gray-950" onClick={() => setMobileOpen(false)}>
                 <span>{link.label}</span>
                 <span aria-hidden="true">→</span>
               </Link>
             ))}
           </div>
           <div className="mt-4 grid gap-2">
-            <Link href="/professionals" className="inline-flex items-center justify-center rounded-lg bg-gray-950 px-4 py-3 text-sm font-bold text-white" onClick={() => setMobileOpen(false)}>
+            <Link href="/professionals" className="button-primary" onClick={() => setMobileOpen(false)}>
               {displayDa ? 'Find en professionel' : 'Find a professional'}
             </Link>
             {session ? (
