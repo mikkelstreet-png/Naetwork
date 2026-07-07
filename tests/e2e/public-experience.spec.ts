@@ -33,6 +33,8 @@ for (const route of publicRoutes) {
     const response = await page.goto(route, { waitUntil: 'domcontentloaded' })
     expect(response?.status(), `${route} should return a successful document`).toBeLessThan(400)
     await expect(page.locator('#main-content')).toBeVisible()
+    await expect(page.locator('#main-content main')).toHaveCount(1)
+    await expect(page.locator('#main-content h1')).toHaveCount(1)
     await expectNoHorizontalOverflow(page)
   })
 }
@@ -49,11 +51,17 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
 
 test('profile filters remain usable on mobile and desktop', async ({ page, isMobile }) => {
   await page.goto('/professionals')
-  await expect(page.getByRole('searchbox')).toBeVisible()
-  if (isMobile) {
-    await expect(page.getByRole('combobox', { name: /Vælg felt|Choose field/i })).toBeVisible()
+  const serviceError = page.getByRole('alert')
+  if (await serviceError.count()) {
+    await expect(page.getByRole('searchbox')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Prøv igen|Try again/i })).toBeVisible()
   } else {
-    await expect(page.getByRole('button', { name: 'Management Consulting' })).toBeVisible()
+    await expect(page.getByRole('searchbox')).toBeVisible()
+    if (isMobile) {
+      await expect(page.getByRole('combobox', { name: /Vælg felt|Choose field/i })).toBeVisible()
+    } else {
+      await expect(page.getByRole('button', { name: 'Management Consulting' })).toBeVisible()
+    }
   }
   await expectNoHorizontalOverflow(page)
 })
@@ -82,10 +90,59 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /60 minutters sparring|60 minutes of guidance/i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Find en professionel|Find a professional/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /60 minutter med erfaring|60 minutes with experience/i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Sammenlign professionelle|Compare professionals/i })).toBeVisible()
+  await expect(page.locator('#pricing')).toContainText('DKK 600')
+  await expect(page.locator('#pricing')).toContainText('DKK 1.800')
   await page.goto('/match')
   await expect(page.getByRole('heading', { name: /Hvad skal de 60 minutter løse|What should the 60 minutes solve/i })).toBeVisible()
+})
+
+test('critical public routes expose specific metadata', async ({ page }) => {
+  for (const [route, title] of [
+    ['/professionals', 'Find en professionel'],
+    ['/match', 'Find dit fokus'],
+    ['/contact', 'Kontakt'],
+    ['/professional/signup', 'Bliv professionel'],
+  ] as const) {
+    await page.goto(route)
+    await expect(page).toHaveTitle(new RegExp(title, 'i'))
+  }
+})
+
+test('account creation distinguishes terms acceptance from privacy notice', async ({ page }) => {
+  await page.goto('/signup')
+  const notice = page.getByText(/Jeg accepterer Naetworks vilkår og bekræfter/i)
+  await expect(notice).toBeVisible()
+  await expect(page.locator('body')).not.toContainText(/accepterer Naetworks vilkår og privatlivspolitik/i)
+})
+
+test('professional application keeps pricing and review expectations concrete', async ({ page }) => {
+  await page.goto('/professional/signup')
+  await page.getByLabel('Fulde navn').fill('Test Professionel')
+  await page.getByLabel('E-mail').fill('professionel@example.com')
+  await page.getByLabel('Adgangskode').fill('test-password-123')
+  await page.getByLabel('Jobtitel').fill('Senior Manager')
+  await page.getByLabel('Virksomhed').fill('Testvirksomhed')
+  await page.getByLabel('Industri').selectOption('Management Consulting')
+  await page.getByLabel('LinkedIn').fill('https://linkedin.com/in/test-professionel')
+  await page.getByRole('button', { name: 'Næste' }).click()
+
+  await page.getByRole('button', { name: 'CV og LinkedIn' }).click()
+  for (const amount of ['DKK 600', 'DKK 900', 'DKK 1.200', 'DKK 1.800']) {
+    await expect(page.getByRole('button', { name: amount })).toBeVisible()
+  }
+  await page.getByRole('button', { name: 'DKK 600' }).click()
+  await page.getByRole('button', { name: 'Næste' }).click()
+  await expect(page.getByText('Bidrag pr. betalt session:')).toBeVisible()
+  await page.getByRole('button', { name: 'Næste' }).click()
+  await expect(page.getByText(/accepterer Naetworks vilkår og bekræfter/i)).toBeVisible()
+})
+
+test('security contact is published in the standard location', async ({ page }) => {
+  const response = await page.goto('/.well-known/security.txt')
+  expect(response?.status()).toBe(200)
+  await expect(page.locator('body')).toContainText('Contact: mailto:kontakt@naetwork.dk')
 })
 
 test('contact flow explains privacy without claiming consent', async ({ page }) => {
