@@ -1,6 +1,6 @@
 # Naetwork
 
-Naetwork connects candidates with experienced professionals from AI, Banking, Management Consulting, and Private Equity for focused 60-minute career sessions.
+Naetwork connects candidates with reviewed professionals from AI, Banking, Management Consulting, and Private Equity for focused 60-minute career sessions at one of four prices: DKK 600, 900, 1,200, or 1,800.
 
 Every paid session is designed to allocate 40-90% of its listed price in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
 
@@ -72,5 +72,6 @@ Admin access is enforced server-side and by row-level security. Professional pro
 - Professionals can confirm or decline; candidates can cancel.
 - Contact messages are stored in the admin inbox and notify the configured support address.
 - Admins can run the published 12/24-month data-retention baseline from system administration after migration `007_data_retention.sql` is applied.
+- Terms acceptance, privacy-notice versions, and the four-price database constraint require migration `008_consent_and_price_integrity.sql`.
 - Payment remains disabled and no card or charge is created.
 - Payment must remain disabled until every critical legal blocker introduced in `006_legal_release_gates.sql` has been manually reviewed and resolved.
