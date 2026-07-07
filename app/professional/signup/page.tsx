@@ -144,7 +144,7 @@ export default function ProfessionalSignupPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f4f0]">
-      <div className="mx-auto grid max-w-[78rem] gap-6 px-5 py-8 sm:gap-8 sm:px-8 sm:py-12 lg:grid-cols-[0.88fr_1.12fr] lg:px-10 lg:py-20">
+      <div className="mx-auto grid max-w-[82rem] gap-6 px-5 py-8 sm:gap-8 sm:px-8 sm:py-12 lg:grid-cols-[0.88fr_1.12fr] lg:px-12 lg:py-20">
         <aside className="relative overflow-hidden rounded-md border border-gray-900 bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:h-fit lg:p-9">
           <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
           <p className="editorial-label mb-5 text-white/45 sm:mb-7">For professionelle</p>
