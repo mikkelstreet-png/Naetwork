@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { safeInternalPath } from '@/lib/navigation';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PRICE_MAX, PRICE_MIN } from '@/lib/platform';
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, normalizePrice } from '@/lib/platform';
 
 function text(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -15,9 +15,7 @@ function stringArray(value: unknown): string[] {
 }
 
 function price(value: unknown): number {
-  const parsed = typeof value === 'number' ? value : Number(value);
-  if (!Number.isFinite(parsed)) return PRICE_MIN;
-  return Math.min(PRICE_MAX, Math.max(PRICE_MIN, Math.round(parsed)));
+  return normalizePrice(value);
 }
 
 function percentage(value: unknown): number {
