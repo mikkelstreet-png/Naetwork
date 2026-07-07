@@ -54,11 +54,21 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #050505;
-  outline-offset: 3px;
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #050505;
 }
 
 input, textarea, select { font-size: 16px; }
+
+input::placeholder,
+textarea::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+/* Tailwind gray-400 is too light for meaningful small copy on white. */
+.text-gray-400 { color: #6b7280 !important; }
 
 time,
 .tabular-nums {
@@ -81,8 +91,20 @@ time,
 }
 
 .focus-ring:focus-visible {
-  outline: 2px solid #050505;
-  outline-offset: 3px;
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #050505;
+}
+
+@media (forced-colors: active) {
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid CanvasText;
+    box-shadow: none;
+  }
 }
 
 .no-scrollbar {
