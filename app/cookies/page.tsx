@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Præcis information om nødvendige cookies og lokal lagring på Naetwork.',
 }
 
-const updated = '6. juli 2026'
+const updated = '7. juli 2026'
 
 const facts: Array<[string, string]> = [
   ['Status', 'Kun nødvendige teknologier'],
