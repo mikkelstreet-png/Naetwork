@@ -173,21 +173,22 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="border-b border-gray-200 bg-white px-5 sm:px-8">
-        <div className="mx-auto max-w-6xl py-6 sm:py-10 md:py-14">
+      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-[78rem] py-8 sm:py-12 md:py-16">
+          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
           <div className="md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-8">
             <div>
-              <p className="mb-2 text-[11px] font-black uppercase text-gray-400 md:mb-3 md:text-xs">Naetwork</p>
-              <h1 className="max-w-5xl text-3xl font-black leading-none text-gray-950 text-balance sm:text-4xl md:text-6xl">{t.heading}</h1>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-gray-600 sm:mt-4 md:text-base">{t.subheading}</p>
+              <p className="kicker mb-4">{isDa ? 'Profiluniverset' : 'Profile universe'}</p>
+              <h1 className="max-w-5xl text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-7xl">{t.heading}</h1>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
             </div>
-            <p className="mt-4 text-xs font-bold text-gray-400 md:mt-0 md:text-right">
+            <p className="editorial-label mt-6 max-w-[260px] leading-relaxed md:mt-0 md:text-right">
               {isDa ? '60 min · 4 prisvalg · 40-90% afsættes ved betaling' : '60 min · 4 price points · 40-90% allocated when paid'}
             </p>
           </div>
 
-          {!loadError && <div className="mt-5 grid overflow-hidden rounded-lg border border-gray-200 bg-[#f7f7f4] md:mt-7 lg:grid-cols-[1fr_auto] lg:items-center">
-            <label className="flex min-w-0 items-center gap-3 px-4 py-3 lg:pr-5">
+          {!loadError && <div className="mt-7 grid overflow-hidden rounded-md border border-[#d2d2cb] bg-white shadow-[0_8px_30px_rgba(9,9,11,0.05)] md:mt-9 lg:grid-cols-[1fr_auto] lg:items-center">
+            <label className="flex min-w-0 items-center gap-3 px-4 py-3.5 lg:pr-5">
               <Search size={18} className="shrink-0 text-gray-400" aria-hidden="true" />
               <span className="sr-only">{t.searchPlaceholder}</span>
               <input
@@ -195,7 +196,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="min-w-0 w-full border-0 bg-transparent py-1 text-[15px] font-semibold text-gray-950 outline-none placeholder:text-gray-400"
+                className="min-w-0 w-full border-0 bg-transparent py-1 text-[15px] font-medium text-gray-950 outline-none placeholder:text-gray-500"
               />
             </label>
             <div className="relative flex items-center border-t border-gray-200 px-4 md:hidden">
@@ -218,7 +219,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                   key={ind}
                   onClick={() => selectIndustry(ind)}
                   aria-pressed={industryFilter === ind}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-xs font-black transition-colors ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
+                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-md border px-3 py-2 text-xs font-bold transition-all ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
                 >
                   <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : industryAccent(ind)}`} />
                   {industryLabel(ind, isDa)}
@@ -240,7 +241,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         </div>
       </section>
 
-      <section id="marketplace" className="mx-auto max-w-6xl px-5 py-5 sm:px-8 md:py-12" aria-busy={loading}>
+      <section id="marketplace" className="mx-auto max-w-[78rem] px-5 py-7 sm:px-8 md:py-14 lg:px-10" aria-busy={loading}>
         {!loadError && <div className="mb-4 flex items-center justify-between gap-3 md:mb-7">
           <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser' : 'Loading') : loadError ? (isDa ? 'Midlertidigt utilgængelig' : 'Temporarily unavailable') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'profil' : 'profiler') : (filtered.length === 1 ? 'profile' : 'profiles')}`}</p>
           <p className="shrink-0 text-right text-xs font-bold text-gray-400">
@@ -254,7 +255,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             {[0, 1, 2, 3].map((item) => <div key={item} className="h-36 animate-pulse bg-[#f7f7f4]" />)}
           </div>
         ) : loadError ? (
-          <div role="alert" className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5 sm:p-7">
+          <div role="alert" className="relative overflow-hidden rounded-md border border-gray-200 bg-[#f4f4f0] p-6 sm:p-9">
+            <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
             <div className="flex items-start gap-4">
               <span className="mt-1 block h-2 w-10 shrink-0 rounded-full bg-cyan-300" aria-hidden="true" />
               <div>
@@ -266,7 +268,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               <button
                 type="button"
                 onClick={() => void fetchProfessionals()}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-950 px-4 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800"
+                className="button-primary"
               >
                 <RefreshCw size={16} aria-hidden="true" />
                 {isDa ? 'Prøv igen' : 'Try again'}
@@ -293,7 +295,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         ) : (
           <div className="md:border-t md:border-gray-200">
             {filtered.map((pro) => (
-              <article key={pro.id} className="relative mb-3 grid gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-[#fafaf8] md:mb-0 md:rounded-none md:border-x-0 md:border-t-0 md:px-2 md:py-7 lg:grid-cols-[170px_1.1fr_1fr_130px_150px] lg:items-center lg:px-3 lg:pl-5">
+              <article key={pro.id} className="group relative mb-3 grid gap-4 overflow-hidden rounded-md border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-gray-400 hover:shadow-[0_16px_45px_rgba(9,9,11,0.07)] md:mb-0 md:rounded-none md:border-x-0 md:border-t-0 md:px-3 md:py-8 md:hover:z-10 lg:grid-cols-[170px_1.1fr_1fr_130px_150px] lg:items-center lg:pl-6">
                 <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full lg:block ${accentFor(pro)}`} />
                 <div className="flex items-center gap-3">
                   <span className={`h-2 w-8 rounded-full lg:hidden ${accentFor(pro)}`} />
@@ -303,9 +305,9 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-xs font-black text-gray-950 ${accentFor(pro)}`}>{initials(pro.name)}</span>
+                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-md font-['Space_Grotesk'] text-xs font-bold text-gray-950 transition-transform group-hover:-translate-y-0.5 ${accentFor(pro)}`}>{initials(pro.name)}</span>
                   <div>
-                    <h2 className="text-xl font-black leading-tight text-gray-950 md:text-2xl">{pro.name}</h2>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-950 md:text-2xl">{pro.name}</h2>
                     <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title}{pro.company ? ` · ${pro.company}` : ''}</p>
                   </div>
                 </div>
@@ -321,13 +323,13 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 </div>
 
                 <div className="flex gap-2 lg:justify-end">
-                  <Link href={`/professionals/${pro.id}`} className="inline-flex flex-1 items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-black text-gray-950 transition-colors hover:border-gray-950 hover:bg-white lg:flex-none">
+                  <Link href={`/professionals/${pro.id}`} className="button-secondary min-h-11 flex-1 px-4 py-2.5 lg:flex-none">
                     {t.viewProfile}
                   </Link>
                   <button
                     type="button"
                     onClick={() => setBookTarget(pro)}
-                    className="inline-flex flex-1 items-center justify-center rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white transition-colors hover:bg-gray-800 lg:flex-none"
+                    className="button-primary min-h-11 flex-1 px-4 py-2.5 lg:flex-none"
                   >
                     {t.bookCta}
                   </button>
