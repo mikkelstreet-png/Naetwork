@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_MAX, PRICE_MIN } from '@/lib/platform';
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_OPTIONS } from '@/lib/platform';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
 
 const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
@@ -77,7 +77,7 @@ export default function ProfessionalSignupPage() {
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2)) return;
     if (!accepted) {
-      setError('Accepter vilkår og privatlivspolitik for at oprette profilen.');
+      setError('Accepter vilkårene og bekræft, at du har læst privatlivspolitikken.');
       return;
     }
 
@@ -102,6 +102,7 @@ export default function ProfessionalSignupPage() {
           contributionPercent: form.contributionPercent,
           termsAcceptedAt: new Date().toISOString(),
           termsVersion: TERMS_VERSION,
+          privacyNoticedAt: new Date().toISOString(),
           privacyVersion: PRIVACY_VERSION,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/profil/professionel`,
@@ -233,7 +234,7 @@ export default function ProfessionalSignupPage() {
                   <p className="mt-2 text-sm leading-relaxed text-gray-500">Alle sessioner er 60 minutter. Kandidaten vælger fokus før booking.</p>
                 </div>
                 <div>
-                  <label className="mb-3 block text-sm font-semibold text-gray-700">Hvad kan kandidater bruge din session på?</label>
+                  <p className="mb-3 text-sm font-semibold text-gray-700">Hvad kan kandidater bruge din session på?</p>
                   <div className="grid grid-cols-2 gap-2">
                     {FOCUS_AREAS.map((focus) => (
                       <button key={focus.id} type="button" aria-pressed={form.sessionTypes.includes(focus.id)} onClick={() => toggleSessionType(focus.id)}
@@ -243,12 +244,16 @@ export default function ProfessionalSignupPage() {
                     ))}
                   </div>
                 </div>
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                  <label htmlFor="professional-price" className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {form.priceDkk.toLocaleString('da-DK')}</span></label>
-                  <input id="professional-price" type="range" min={PRICE_MIN} max={PRICE_MAX} step={100} value={form.priceDkk} onChange={e => set('priceDkk', Number(e.target.value))}
-                    className="w-full accent-gray-950" />
-                  <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>DKK 600</span><span>DKK 1.800</span></div>
-                </div>
+                <fieldset className="rounded-lg border border-gray-200 bg-gray-50 p-5">
+                  <legend className="px-1 text-sm font-semibold text-gray-700">Pris pr. 60 minutter</legend>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {PRICE_OPTIONS.map((amount) => (
+                      <button key={amount} type="button" aria-pressed={form.priceDkk === amount} onClick={() => set('priceDkk', amount)} className={`rounded-lg border px-3 py-3 text-sm font-black transition-colors ${form.priceDkk === amount ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
+                        DKK {amount.toLocaleString('da-DK')}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
                 <div>
                   <label htmlFor="professional-bio" className="mb-1 block text-sm font-semibold text-gray-700">Bio (valgfri)</label>
                   <textarea id="professional-bio" value={form.bio} maxLength={500} onChange={e => set('bio', e.target.value)} rows={4} className="w-full resize-none rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition-colors focus:border-gray-950" placeholder="Fortæl konkret, hvad du kan hjælpe med i en 60-minutters session..." />
@@ -261,7 +266,7 @@ export default function ProfessionalSignupPage() {
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 03</p>
                   <h2 className="mt-2 text-2xl font-black text-gray-950">Bidrag pr. session</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Hver betalt session bidrager med minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Ved aktiveret betaling afsættes minimum 40% og op til 90% af en gennemført sessions pris til støtte for Kræftens Bekæmpelse.</p>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
                   <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
@@ -271,14 +276,14 @@ export default function ProfessionalSignupPage() {
                 </div>
                 <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-2">
                   <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Til Kræftens Bekæmpelse</p>
+                    <p className="text-xs font-black uppercase text-gray-400">Afsættes til støtte</p>
                     <p className="mt-4 text-3xl font-black text-gray-950">DKK {estimatedContribution.toLocaleString('da-DK')}</p>
-                    <p className="mt-1 text-sm text-gray-500">Estimat pr. betalt session</p>
+                    <p className="mt-1 text-sm text-gray-500">Ved gennemført og betalt session</p>
                   </div>
                   <div className="bg-white p-5">
                     <p className="text-xs font-black uppercase text-gray-400">Din andel</p>
                     <p className="mt-4 text-3xl font-black text-gray-950">DKK {estimatedProfessionalShare.toLocaleString('da-DK')}</p>
-                    <p className="mt-1 text-sm text-gray-500">Før eventuelle gebyrer</p>
+                    <p className="mt-1 text-sm text-gray-500">Før skat og eventuelle gebyrer</p>
                   </div>
                 </div>
               </div>
@@ -307,7 +312,7 @@ export default function ProfessionalSignupPage() {
                 </div>
                 <label className="flex items-start gap-3 text-sm leading-relaxed text-gray-600">
                   <input type="checkbox" required checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-1 h-4 w-4 accent-gray-950" />
-                  <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitik</Link>.</span>
+                  <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og bekræfter, at jeg har læst <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitikken</Link>.</span>
                 </label>
               </div>
             )}
@@ -315,10 +320,10 @@ export default function ProfessionalSignupPage() {
             {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
             <div className="mt-8 flex gap-3">
-              {step > 1 && <button onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 rounded-lg border border-gray-200 py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-50">Tilbage</button>}
+              {step > 1 && <button type="button" onClick={() => { setError(''); setStep(s => s - 1); }} className="flex-1 rounded-lg border border-gray-200 py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-50">Tilbage</button>}
               {step < 4
-                ? <button onClick={() => { if (validateStep(step)) setStep(s => s + 1); }} className="flex-1 rounded-lg bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800">Næste</button>
-                : <button onClick={handleSubmit} disabled={loading} className="flex-1 rounded-lg bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
+                ? <button type="button" onClick={() => { if (validateStep(step)) setStep(s => s + 1); }} className="flex-1 rounded-lg bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800">Næste</button>
+                : <button type="button" onClick={handleSubmit} disabled={loading} className="flex-1 rounded-lg bg-gray-950 py-3 font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
               }
             </div>
           </div>
