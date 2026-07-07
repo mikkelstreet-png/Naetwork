@@ -78,11 +78,12 @@ export default function MatchPage() {
       : '/professionals';
 
   return (
-    <main className="min-h-screen bg-[#f7f7f4]">
-      <section className="border-b border-gray-200 bg-white px-5 py-8 sm:px-8 md:py-14">
-        <div className="mx-auto max-w-6xl">
-          <p className="mb-4 text-xs font-black uppercase text-gray-400">Match</p>
-          <h1 className="max-w-4xl text-4xl font-black leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">
+    <main className="min-h-screen bg-[#f4f4f0]">
+      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-16 lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
+          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+          <p className="kicker mb-5">Match</p>
+          <h1 className="max-w-4xl text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-6xl md:text-7xl">
             {isDa ? 'Hvad skal de 60 minutter løse?' : 'What should the 60 minutes solve?'}
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
@@ -91,14 +92,14 @@ export default function MatchPage() {
         </div>
       </section>
 
-      <section className="px-5 py-7 sm:px-8 md:py-14">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_380px]">
-          <div className="border-t border-gray-300 bg-white">
+      <section className="px-5 py-8 sm:px-8 md:py-16 lg:px-10">
+        <div className="mx-auto grid max-w-[78rem] gap-8 lg:grid-cols-[1fr_400px]">
+          <div className="overflow-hidden rounded-md border border-gray-300 bg-white">
             <section className="border-b border-gray-300 p-5 md:p-7">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-black text-gray-400">01</p>
-                  <h2 className="mt-2 text-2xl font-black text-gray-950">{isDa ? 'Vælg felt' : 'Choose field'}</h2>
+                  <h2 className="mt-2 text-2xl font-semibold text-gray-950">{isDa ? 'Vælg felt' : 'Choose field'}</h2>
                 </div>
                 {field && <Check size={20} aria-label={isDa ? 'Valgt' : 'Selected'} />}
               </div>
@@ -109,7 +110,7 @@ export default function MatchPage() {
                     type="button"
                     onClick={() => setField(option)}
                     aria-pressed={field === option}
-                    className={`flex min-h-14 items-center justify-between rounded-lg border px-4 py-3 text-left text-sm font-black transition-colors ${field === option ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                    className={`lift-hover flex min-h-16 items-center justify-between rounded-md border px-4 py-3 text-left text-sm font-bold transition-colors ${field === option ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
                   >
                     {option}
                     <span className={`h-2 w-8 rounded-full ${FIELD_ACCENTS[option]}`} aria-hidden="true" />
@@ -122,7 +123,7 @@ export default function MatchPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-black text-gray-400">02</p>
-                  <h2 className="mt-2 text-2xl font-black text-gray-950">{isDa ? 'Vælg behov' : 'Choose need'}</h2>
+                  <h2 className="mt-2 text-2xl font-semibold text-gray-950">{isDa ? 'Vælg behov' : 'Choose need'}</h2>
                 </div>
                 {need && <Check size={20} aria-label={isDa ? 'Valgt' : 'Selected'} />}
               </div>
@@ -133,7 +134,7 @@ export default function MatchPage() {
                     type="button"
                     onClick={() => setNeed(option.id)}
                     aria-pressed={need === option.id}
-                    className={`min-h-20 rounded-lg border px-4 py-3 text-left transition-colors ${need === option.id ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                    className={`lift-hover min-h-24 rounded-md border px-4 py-4 text-left transition-colors ${need === option.id ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
                   >
                     <span className="block text-sm font-black">{option.label}</span>
                     <span className={`mt-1 block text-xs ${need === option.id ? 'text-white/60' : 'text-gray-500'}`}>{option.body}</span>
@@ -143,13 +144,13 @@ export default function MatchPage() {
             </section>
           </div>
 
-          <aside className="h-fit bg-gray-950 p-6 text-white lg:sticky lg:top-24">
+          <aside className="h-fit overflow-hidden rounded-md bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:p-7">
             <div className="flex items-center justify-between gap-4">
               <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Anbefaling' : 'Recommendation'}</p>
               <span className={`h-2 w-16 rounded-full ${recommendation.accent}`} aria-hidden="true" />
             </div>
             <p className="mt-5 text-xs font-black text-white/40">{completed}/2</p>
-            <h2 className="mt-2 text-3xl font-black leading-tight">{recommendation.title}</h2>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight">{recommendation.title}</h2>
             <p className="mt-4 text-sm leading-relaxed text-white/60">{recommendation.body}</p>
 
             {recommendation.notes.length > 0 && (
@@ -164,7 +165,7 @@ export default function MatchPage() {
             )}
 
             {completed === 2 ? (
-              <Link href={profileHref} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
+              <Link href={profileHref} className="button-secondary mt-6 w-full border-white bg-white">
                 {isDa ? 'Se relevante profiler' : 'View relevant profiles'}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
