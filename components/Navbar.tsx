@@ -16,6 +16,8 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
+  const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const isDa = lang === 'da';
   const pathname = usePathname();
   const bilingual = isBilingualPublicRoute(pathname);
@@ -43,6 +45,7 @@ export function Navbar() {
     if (!mobileOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    window.requestAnimationFrame(() => mobilePanelRef.current?.querySelector<HTMLElement>('a[href]')?.focus());
     return () => { document.body.style.overflow = previousOverflow; };
   }, [mobileOpen]);
 
@@ -56,6 +59,7 @@ export function Navbar() {
       if (e.key === 'Escape') {
         setDropdownOpen(false);
         setMobileOpen(false);
+        mobileButtonRef.current?.focus();
       }
     }
     document.addEventListener('mousedown', handleClick);
@@ -84,7 +88,7 @@ export function Navbar() {
   return (
     <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.08] bg-white/[0.94] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label="Naetwork home">
+        <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={displayDa ? 'Naetwork forside' : 'Naetwork home'}>
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-950 text-[11px] font-black text-white transition-transform group-hover:scale-105">
             N
           </span>
@@ -137,7 +141,7 @@ export function Navbar() {
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Overblik' : 'Overview'}</Link>
                   <Link href="/match" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
-                  <button onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{displayDa ? 'Log ud' : 'Log out'}</button>
+                  <button type="button" onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{displayDa ? 'Log ud' : 'Log out'}</button>
                 </div>
               )}
             </div>
@@ -148,6 +152,8 @@ export function Navbar() {
           )}
 
           <button
+            ref={mobileButtonRef}
+            type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen
@@ -162,7 +168,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 py-5 lg:hidden">
+        <div ref={mobilePanelRef} id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 py-5 lg:hidden">
           <div className="border-t border-gray-200">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 text-sm font-black text-gray-950" onClick={() => setMobileOpen(false)}>
