@@ -32,8 +32,8 @@ export function ImpactContent() {
             </h1>
             <p className="body-lg mt-7 max-w-2xl">
               {isDa
-                ? 'Hver betalt Naetwork-session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse. Det gør bidraget konkret, før kandidaten booker.'
-                : 'Every paid Naetwork session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse. That makes impact concrete before the candidate books.'}
+                ? 'Minimum 40% og op til 90% af en gennemført, betalt Naetwork-session afsættes til støtte for Kræftens Bekæmpelse. Den konkrete andel vises, før kandidaten sender sin anmodning.'
+                : 'At least 40% and up to 90% of a completed, paid Naetwork session is allocated in support of Kræftens Bekæmpelse. The exact share is shown before the candidate sends a request.'}
             </p>
           </div>
           <aside className="dark-panel p-6">
