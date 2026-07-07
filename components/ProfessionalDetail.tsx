@@ -192,33 +192,33 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
 
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
-      <section className="border-b border-gray-200 bg-white px-5 sm:px-8">
-        <div className="mx-auto max-w-6xl py-7 md:py-16">
+      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-[78rem] py-8 md:py-[4.5rem]">
           <Link href="/professionals" className="mb-7 inline-flex items-center gap-2 text-sm font-black text-gray-500 transition-colors hover:text-gray-950 md:mb-10">
             <span>&larr;</span><span>{t.back}</span>
           </Link>
 
-          <div className="grid gap-12 lg:grid-cols-[1fr_320px] lg:items-end">
+          <div className="grid gap-12 lg:grid-cols-[1fr_340px] lg:items-end">
             <div>
-              <span className={`mb-5 block h-1.5 w-16 rounded-full md:mb-8 md:h-2 md:w-24 ${accentFor(professional)}`} />
-              <p className="mb-3 text-xs font-black uppercase text-gray-400 md:mb-5">
+              <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+              <p className="kicker mb-4 md:mb-6">
                 {professional.industries.join(' / ')}
               </p>
-              <h1 className="max-w-4xl text-4xl font-black leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">{professional.name}</h1>
-              <p className="mt-4 text-base font-black text-gray-700 md:mt-6 md:text-lg">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
+              <h1 className="max-w-4xl text-5xl font-semibold leading-[0.94] text-gray-950 text-balance sm:text-6xl md:text-8xl">{professional.name}</h1>
+              <p className="mt-5 font-['Space_Grotesk'] text-base font-semibold text-gray-700 md:mt-7 md:text-xl">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
               <p className="mt-5 max-w-2xl text-sm leading-relaxed text-gray-600 md:mt-7 md:text-lg">{professional.bio}</p>
             </div>
 
-            <aside className="hidden lg:block">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-950 text-sm font-black text-white">
+            <aside className="hidden rounded-md bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:block">
+              <div className={`flex h-12 w-12 items-center justify-center rounded-md font-['Space_Grotesk'] text-sm font-bold text-gray-950 ${accentFor(professional)}`}>
                 {initials(professional.name)}
               </div>
-              <div className="mt-6 border-y border-gray-200 py-5">
-                <p className="text-xs font-black uppercase text-gray-400">{t.session}</p>
-                <p className="mt-2 text-3xl font-black text-gray-950">DKK {professional.price}</p>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">{t.briefing}</p>
+              <div className="mt-6 border-y border-white/15 py-5">
+                <p className="editorial-label text-white/40">{t.session}</p>
+                <p className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold text-white">DKK {professional.price}</p>
+                <p className="mt-3 text-sm leading-relaxed text-white/55">{t.briefing}</p>
               </div>
-              <button type="button" onClick={() => setDrawerOpen(true)} className="mt-5 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
+              <button type="button" onClick={() => setDrawerOpen(true)} className="button-secondary mt-5 w-full border-white bg-white">
                 {t.bookCta}
               </button>
             </aside>
@@ -226,36 +226,36 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 md:py-16">
+      <div className="mx-auto max-w-[78rem] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <div className="space-y-10 md:space-y-14">
             <section>
-              <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.profileSignal}</p>
-              <h2 className="max-w-2xl text-2xl font-black text-gray-950 sm:text-3xl md:text-5xl">{t.useThisProfileIf}</h2>
+              <p className="kicker mb-5">{t.profileSignal}</p>
+              <h2 className="max-w-2xl text-3xl font-semibold leading-tight text-gray-950 sm:text-4xl md:text-5xl">{t.useThisProfileIf}</h2>
               <div className="mt-8 border-t border-gray-200">
                 {useCases.map((item, index) => (
                   <div key={item} className="grid gap-4 border-b border-gray-200 py-6 md:grid-cols-[80px_1fr]">
                     <p className="text-xs font-black text-gray-300">0{index + 1}</p>
-                    <p className="max-w-2xl text-base font-black leading-relaxed text-gray-950">{item}</p>
+                    <p className="max-w-2xl font-['Space_Grotesk'] text-base font-semibold leading-relaxed text-gray-950">{item}</p>
                   </div>
                 ))}
               </div>
             </section>
 
             <section>
-              <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.leaveWith}</p>
-              <h2 className="text-2xl font-black text-gray-950 sm:text-3xl md:text-5xl">{primaryOutput}</h2>
+              <p className="kicker mb-5">{t.leaveWith}</p>
+              <h2 className="text-3xl font-semibold text-gray-950 sm:text-4xl md:text-5xl">{primaryOutput}</h2>
               <div className="mt-8 grid gap-px border border-gray-200 bg-gray-200 sm:grid-cols-2">
                 {outcomes.map((outcome) => (
-                  <div key={outcome} className="bg-[#f7f7f4] p-5">
-                    <p className="text-sm font-black text-gray-950">{outcome}</p>
+                  <div key={outcome} className="bg-[#f4f4f0] p-5 transition-colors hover:bg-white">
+                    <p className="font-['Space_Grotesk'] text-sm font-semibold text-gray-950">{outcome}</p>
                   </div>
                 ))}
               </div>
             </section>
 
             <section>
-              <p className="mb-5 text-xs font-black uppercase text-gray-400">{t.focusAreas}</p>
+              <p className="kicker mb-5">{t.focusAreas}</p>
               {focusAreas.length > 0 ? (
                 <div className="border-t border-gray-200">
                   {focusAreas.map((area) => (
@@ -288,7 +288,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
                 </div>
               ))}
             </div>
-            <button type="button" onClick={() => setDrawerOpen(true)} className="mt-6 w-full rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800">
+            <button type="button" onClick={() => setDrawerOpen(true)} className="button-primary mt-6 w-full">
               {t.bookCta}
             </button>
           </aside>
@@ -296,13 +296,13 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
       </div>
 
       {!drawerOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-2xl shadow-gray-950/10 backdrop-blur md:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-12px_40px_rgba(9,9,11,0.10)] backdrop-blur-xl md:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-black text-gray-950">DKK {professional.price} · 60 min</p>
               <p className="truncate text-[11px] font-semibold text-gray-500">{isDa ? `DKK ${minimumImpact} afsættes ved betaling` : `DKK ${minimumImpact} allocated when paid`}</p>
             </div>
-            <button type="button" onClick={() => setDrawerOpen(true)} className="shrink-0 rounded-lg bg-gray-950 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+            <button type="button" onClick={() => setDrawerOpen(true)} className="button-primary min-h-11 shrink-0 px-5 py-2.5">
               {t.bookCta}
             </button>
           </div>
