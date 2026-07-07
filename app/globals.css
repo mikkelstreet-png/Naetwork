@@ -3,12 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --ink: #050505;
+  --ink: #09090b;
   --paper: #ffffff;
-  --muted: #f6f6f3;
-  --line: #e5e5df;
-  --wash: #f7f7f4;
-  --soft-ink: #171717;
+  --canvas: #f4f4f0;
+  --muted: #f7f7f4;
+  --line: #deded8;
+  --line-strong: #c8c8c0;
+  --soft-ink: #222224;
+  --quiet: #626269;
+  --cyan: #8eeaf2;
+  --mint: #a8e9c4;
+  --blue: #adcdf6;
+  --lime: #d9eba1;
+  --radius: 6px;
+  --shadow-float: 0 24px 70px rgba(9, 9, 11, 0.12);
 }
 
 html {
@@ -30,7 +38,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3 { letter-spacing: 0; }
+h1, h2, h3 {
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: 0;
+  font-feature-settings: 'ss01', 'ss02';
+}
 
 .tracking-tight,
 .tracking-wide { letter-spacing: 0 !important; }
@@ -147,21 +159,31 @@ time,
 }
 
 @layer components {
-  .wrap { @apply mx-auto w-full max-w-[76rem] px-5 sm:px-8; }
+  .wrap { @apply mx-auto w-full max-w-[78rem] px-5 sm:px-8 lg:px-10; }
 
   .page-shell { @apply min-h-screen bg-[#f7f7f4]; }
 
-  .section-pad { @apply px-5 py-10 sm:px-8 sm:py-14 md:py-20; }
+  .section-pad { @apply px-5 py-14 sm:px-8 sm:py-16 md:py-24 lg:px-10; }
 
-  .kicker { @apply text-xs font-black uppercase text-gray-400; }
+  .kicker {
+    @apply inline-flex items-center gap-2 text-[10px] font-bold uppercase text-gray-500 sm:text-xs;
+    font-family: 'JetBrains Mono', monospace;
+  }
 
-  .display-xl { @apply text-4xl font-black leading-none text-gray-950 sm:text-5xl md:text-7xl; text-wrap: balance; }
+  .kicker::before {
+    content: '';
+    width: 1.75rem;
+    height: 2px;
+    background: currentColor;
+  }
 
-  .display-lg { @apply text-3xl font-black leading-tight text-gray-950 sm:text-4xl md:text-5xl; text-wrap: balance; }
+  .display-xl { @apply text-4xl font-semibold leading-[0.98] text-gray-950 sm:text-5xl md:text-7xl; text-wrap: balance; }
+
+  .display-lg { @apply text-3xl font-semibold leading-[1.04] text-gray-950 sm:text-4xl md:text-5xl; text-wrap: balance; }
 
   .body-lg { @apply text-base leading-relaxed text-gray-600 md:text-lg; }
 
-  .premium-card { @apply rounded-lg border border-gray-200 bg-white shadow-sm; }
+  .premium-card { @apply rounded-md border border-gray-200 bg-white; box-shadow: 0 1px 0 rgba(9, 9, 11, 0.04); }
 
   .premium-panel { @apply rounded-lg border border-gray-200 bg-[#f7f7f4]; }
 
@@ -179,4 +201,88 @@ time,
   .soft-noise {
     background-image: linear-gradient(180deg, #ffffff 0%, #f7f7f4 100%);
   }
+
+  .signal-rail {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 3px;
+    overflow: hidden;
+  }
+
+  .signal-rail > span:nth-child(1) { background: var(--cyan); }
+  .signal-rail > span:nth-child(2) { background: var(--mint); }
+  .signal-rail > span:nth-child(3) { background: var(--blue); }
+  .signal-rail > span:nth-child(4) { background: var(--lime); }
+
+  .brand-mark {
+    @apply relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[#09090b] text-[11px] font-bold text-white;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .brand-mark::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan) 0 25%, var(--mint) 25% 50%, var(--blue) 50% 75%, var(--lime) 75%);
+  }
+
+  .button-primary {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[#09090b] px-5 py-3 text-sm font-bold text-white transition-all duration-200;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset;
+  }
+
+  .button-primary:hover {
+    background: #252528;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(9, 9, 11, 0.16);
+  }
+
+  .button-secondary {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-5 py-3 text-sm font-bold text-gray-950 transition-all duration-200;
+  }
+
+  .button-secondary:hover {
+    border-color: #09090b;
+    transform: translateY(-1px);
+  }
+
+  .field-control {
+    @apply w-full rounded-md border border-[#d7d7d1] bg-white px-4 py-3 text-gray-950 outline-none transition-all duration-200;
+    min-height: 3rem;
+    box-shadow: 0 1px 0 rgba(9, 9, 11, 0.03);
+  }
+
+  .field-control:hover { border-color: #a8a8a1; }
+  .field-control:focus { border-color: #09090b; box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.08); }
+
+  .editorial-label {
+    @apply text-[10px] font-bold uppercase text-gray-500;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .section-rule { @apply border-t border-[#deded8]; }
+
+  .lift-hover {
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  }
+
+  .lift-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 45px rgba(9, 9, 11, 0.10);
+    border-color: #c2c2bb;
+  }
+}
+
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.enter-up { animation: enter-up 650ms cubic-bezier(.2,.7,.2,1) both; }
+.enter-up-delay { animation-delay: 100ms; }
+
+@media (max-width: 640px) {
+  .button-primary,
+  .button-secondary { min-height: 3.125rem; }
 }
