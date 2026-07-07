@@ -45,7 +45,7 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('button', { name: /luk menu|close menu/i })).toHaveAttribute('aria-expanded', 'true')
   await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Priser|Pricing/)
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Find en professionel|Find a professional/i })).toBeVisible()
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Book 60 min|Find en professionel|Find a professional/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
