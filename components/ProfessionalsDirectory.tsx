@@ -173,21 +173,21 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 sm:px-8 lg:px-10">
-        <div className="mx-auto max-w-[78rem] py-8 sm:py-12 md:py-16">
+      <section className="border-b border-white/15 bg-[#09090b] px-5 text-white sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[82rem] py-10 sm:py-14 md:py-20">
           <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
           <div className="md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-8">
             <div>
-              <p className="kicker mb-4">{isDa ? 'Profiluniverset' : 'Profile universe'}</p>
-              <h1 className="max-w-5xl text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-7xl">{t.heading}</h1>
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-gray-600 md:text-lg">{t.subheading}</p>
+              <p className="kicker mb-4 text-white/45">{isDa ? 'Profiluniverset' : 'Profile universe'}</p>
+              <h1 className="max-w-5xl text-4xl font-medium leading-[0.96] text-white text-balance sm:text-6xl md:text-7xl">{t.heading}</h1>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/55 md:text-lg">{t.subheading}</p>
             </div>
-            <p className="editorial-label mt-6 max-w-[260px] leading-relaxed md:mt-0 md:text-right">
+            <p className="editorial-label mt-6 max-w-[260px] leading-relaxed text-white/35 md:mt-0 md:text-right">
               {isDa ? '60 min · 4 prisvalg · 40-90% afsættes ved betaling' : '60 min · 4 price points · 40-90% allocated when paid'}
             </p>
           </div>
 
-          {!loadError && <div className="mt-7 grid overflow-hidden rounded-md border border-[#d2d2cb] bg-white shadow-[0_8px_30px_rgba(9,9,11,0.05)] md:mt-9 lg:grid-cols-[1fr_auto] lg:items-center">
+          {!loadError && <div className="mt-8 grid overflow-hidden rounded-[4px] border border-white/25 bg-white md:mt-10 lg:grid-cols-[1fr_auto] lg:items-center">
             <label className="flex min-w-0 items-center gap-3 px-4 py-3.5 lg:pr-5">
               <Search size={18} className="shrink-0 text-gray-400" aria-hidden="true" />
               <span className="sr-only">{t.searchPlaceholder}</span>
@@ -199,7 +199,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 className="min-w-0 w-full border-0 bg-transparent py-1 text-[15px] font-medium text-gray-950 outline-none placeholder:text-gray-500"
               />
             </label>
-            <div className="relative flex items-center border-t border-gray-200 px-4 md:hidden">
+            <div className="relative flex items-center border-t border-gray-200 px-4 text-gray-950 md:hidden">
               <span className="pointer-events-none text-xs font-bold text-gray-400">{isDa ? 'Felt' : 'Field'}</span>
               <select
                 value={industryFilter}
@@ -219,7 +219,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                   key={ind}
                   onClick={() => selectIndustry(ind)}
                   aria-pressed={industryFilter === ind}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-md border px-3 py-2 text-xs font-bold transition-all ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white shadow-sm' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
+                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-[3px] border px-3 py-2 text-xs font-bold transition-all ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
                 >
                   <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : industryAccent(ind)}`} />
                   {industryLabel(ind, isDa)}
@@ -228,12 +228,12 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             </div>
           </div>}
           {!loadError && recommendedNeed && (
-            <div className="flex flex-col gap-2.5 border-b border-gray-200 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:py-4">
-              <p className="text-[13px] leading-relaxed text-gray-600 sm:text-sm">
-                <span className="font-black text-gray-950">{isDa ? 'Prioriteret efter dit match:' : 'Prioritized from your match:'}</span>{' '}
+            <div className="flex flex-col gap-2.5 border-b border-white/20 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:py-4">
+              <p className="text-[13px] leading-relaxed text-white/55 sm:text-sm">
+                <span className="font-bold text-white">{isDa ? 'Prioriteret efter dit match:' : 'Prioritized from your match:'}</span>{' '}
                 {needLabels[recommendedNeed]}.
               </p>
-              <button type="button" onClick={clearRecommendation} className="w-fit text-xs font-black uppercase text-gray-400 hover:text-gray-950">
+              <button type="button" onClick={clearRecommendation} className="w-fit text-xs font-bold uppercase text-white/40 hover:text-white">
                 {isDa ? 'Fjern prioritering' : 'Remove priority'}
               </button>
             </div>
@@ -241,7 +241,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         </div>
       </section>
 
-      <section id="marketplace" className="mx-auto max-w-[78rem] px-5 py-7 sm:px-8 md:py-14 lg:px-10" aria-busy={loading}>
+      <section id="marketplace" className="mx-auto max-w-[82rem] px-5 py-8 sm:px-8 md:py-16 lg:px-12" aria-busy={loading}>
         {!loadError && <div className="mb-4 flex items-center justify-between gap-3 md:mb-7">
           <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser' : 'Loading') : loadError ? (isDa ? 'Midlertidigt utilgængelig' : 'Temporarily unavailable') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'profil' : 'profiler') : (filtered.length === 1 ? 'profile' : 'profiles')}`}</p>
           <p className="shrink-0 text-right text-xs font-bold text-gray-400">
