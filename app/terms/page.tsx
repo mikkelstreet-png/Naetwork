@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Vilkår for konti, professionelle profiler og booking af 60 minutters karrieresparring på Naetwork.',
 }
 
-const updated = '6. juli 2026'
+const updated = '7. juli 2026'
 const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
 const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
 const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
@@ -17,7 +17,7 @@ const facts: Array<[string, string]> = [
   ['Operatør', operator],
   ['Kontakt', supportEmail],
   ['Format', '60 minutter'],
-  ['Prisramme', 'DKK 600-1.800'],
+  ['Prisvalg', 'DKK 600 · 900 · 1.200 · 1.800'],
 ]
 
 const sections: LegalSection[] = [
@@ -59,7 +59,7 @@ const sections: LegalSection[] = [
     id: 'pris-og-betaling',
     title: '5. Pris og betaling',
     body: [
-      'Den professionelle vælger en pris mellem DKK 600 og DKK 1.800 for en session på 60 minutter. Den konkrete pris og det forventede minimumsbidrag vises før bookinganmodningen sendes.',
+      'Den professionelle vælger én af fire sessionspriser: DKK 600, DKK 900, DKK 1.200 eller DKK 1.800 for 60 minutter. Den konkrete pris og det forventede minimumsbidrag vises, før bookinganmodningen sendes.',
       'Betaling er ikke aktiveret endnu. En bookinganmodning eller bekræftelse medfører derfor ikke betaling og dokumenterer ikke et gennemført bidrag.',
       'Før betaling aktiveres, opdaterer Naetwork checkout, afbestillingsvilkår, gebyrer, kvitteringer og disse vilkår, så alle økonomiske konsekvenser fremgår før en bindende bestilling.',
     ],
@@ -79,6 +79,7 @@ const sections: LegalSection[] = [
       'Professionelle skal beskrive rolle, erfaring, virksomhed, fokusområder, pris og bidragsniveau sandfærdigt. LinkedIn-oplysninger bruges til gennemgang og vises ikke offentligt, medmindre det oplyses særskilt.',
       'Naetwork kan afvise, skjule eller kræve ændringer til en profil, hvis erfaring ikke kan verificeres, teksten er vildledende, eller profilen ikke lever op til platformens kvalitets- og adfærdsstandarder.',
       'Professionelle må ikke love intern adgang, dele arbejdsgiveres fortrolige oplysninger eller give indtryk af at repræsentere en virksomhed uden bemyndigelse.',
+      'En professionel deltager i eget navn. En arbejdsgiver, tidligere arbejdsgiver eller nævnt virksomhed er ikke part i sessionen og har ikke godkendt profilen, medmindre det fremgår udtrykkeligt.',
     ],
   },
   {
@@ -87,6 +88,7 @@ const sections: LegalSection[] = [
     body: [
       'Chikane, diskrimination, spam, manipulation, omgåelse af sikkerhed og misbrug af personoplysninger accepteres ikke.',
       'Parterne skal respektere tredjemands rettigheder og må ikke dele fortrolige cases, kundedata, personoplysninger eller materiale, de ikke har ret til at bruge. Naetwork kan undersøge dokumenterede klager og begrænse konti, mens en sag afklares.',
+      'Materialelinks bør kun indeholde oplysninger, som den anden part må se. Følsomme personoplysninger, interne arbejdsdokumenter og ikke-offentlige kundedata må ikke deles gennem bookingbriefet.',
     ],
   },
   {
