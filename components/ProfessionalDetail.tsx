@@ -131,20 +131,38 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
     }
   }, [id])
 
-  if (loading) return <main aria-busy="true" className="flex min-h-screen items-center justify-center bg-white"><p className="text-gray-400">{isDa ? 'Indlæser...' : 'Loading...'}</p></main>
+  if (loading) return (
+    <main aria-busy="true" className="flex min-h-[calc(100vh-4.75rem)] items-center justify-center bg-[#09090b] px-5 text-white">
+      <div className="w-full max-w-sm">
+        <div className="signal-rail mb-6"><span /><span /><span /><span /></div>
+        <p className="editorial-label text-white/35">Profile record</p>
+        <p className="mt-3 font-['Space_Grotesk'] text-2xl font-medium">{isDa ? 'Henter profil…' : 'Loading profile…'}</p>
+        <div className="mt-7 h-px w-full overflow-hidden bg-white/15"><span className="block h-full w-1/2 animate-pulse bg-white/70" /></div>
+      </div>
+    </main>
+  )
 
   if (loadError) return (
-    <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white px-5 py-10">
-      <div className="w-full max-w-lg rounded-lg border border-gray-200 bg-[#f7f7f4] p-6">
-        <span className="block h-2 w-10 rounded-full bg-cyan-300" aria-hidden="true" />
-        <h1 className="mt-5 text-2xl font-black text-gray-950">{isDa ? 'Profilen kunne ikke indlæses' : 'The profile could not be loaded'}</h1>
-        <p className="mt-2 text-sm leading-relaxed text-gray-600">{isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen; hvis fejlen fortsætter, hjælper vi dig videre.' : 'The profile service is not responding right now. Try again; if the issue continues, we can help.'}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" onClick={() => void fetchProfessional()} className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-3 text-sm font-black text-white">
-            <RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}
-          </button>
-          <Link href="/professionals" className="inline-flex items-center px-2 py-3 text-sm font-black text-gray-600">{isDa ? 'Alle profiler' : 'All profiles'}</Link>
-          <Link href="/contact" className="inline-flex items-center px-2 py-3 text-sm font-black text-gray-600">{isDa ? 'Kontakt os' : 'Contact us'}</Link>
+    <main className="grid min-h-[calc(100vh-4.75rem)] bg-white lg:grid-cols-[1fr_0.72fr]">
+      <div className="flex items-center bg-[#09090b] px-5 py-14 text-white sm:px-8 lg:px-12">
+        <div className="mx-auto w-full max-w-2xl">
+          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+          <p className="kicker text-white/35">Profile service / status</p>
+          <h1 className="mt-5 max-w-xl text-4xl font-medium leading-tight text-white sm:text-5xl">{isDa ? 'Profilen kunne ikke indlæses' : 'The profile could not be loaded'}</h1>
+          <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/55">{isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen; hvis fejlen fortsætter, hjælper vi dig videre.' : 'The profile service is not responding right now. Try again; if the issue continues, we can help.'}</p>
+        </div>
+      </div>
+      <div className="flex items-center bg-[#f1f1ec] px-5 py-12 sm:px-8 lg:px-12">
+        <div className="w-full max-w-md">
+          <p className="editorial-label">{isDa ? 'Næste handling' : 'Next action'}</p>
+          <p className="mt-4 font-['Space_Grotesk'] text-2xl font-medium leading-tight text-gray-950">{isDa ? 'Prøv forbindelsen igen, eller gå tilbage til profiluniverset.' : 'Retry the connection or return to the profile universe.'}</p>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <button type="button" onClick={() => void fetchProfessional()} className="button-primary">
+              <RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}
+            </button>
+            <Link href="/professionals" className="button-secondary">{isDa ? 'Alle profiler' : 'All profiles'}</Link>
+          </div>
+          <Link href="/contact" className="mt-5 inline-flex text-sm font-bold text-gray-600 hover:text-gray-950">{isDa ? 'Kontakt os' : 'Contact us'} <span className="ml-2" aria-hidden="true">→</span></Link>
         </div>
       </div>
     </main>
