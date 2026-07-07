@@ -182,9 +182,18 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               <h1 className="max-w-5xl text-4xl font-medium leading-[0.96] text-white text-balance sm:text-6xl md:text-7xl">{t.heading}</h1>
               <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/55 md:text-lg">{t.subheading}</p>
             </div>
-            <p className="editorial-label mt-6 max-w-[260px] leading-relaxed text-white/35 md:mt-0 md:text-right">
-              {isDa ? '60 min · 4 prisvalg · 40-90% afsættes ved betaling' : '60 min · 4 price points · 40-90% allocated when paid'}
-            </p>
+            <dl className="mt-7 grid grid-cols-3 border-y border-white/15 md:mt-0 md:block md:min-w-[230px] md:border-y-0">
+              {[
+                ['60 min', isDa ? 'Format' : 'Format'],
+                ['4', isDa ? 'Prisvalg' : 'Price points'],
+                ['40-90%', isDa ? 'Afsættes' : 'Allocated'],
+              ].map(([value, label]) => (
+                <div key={label} className="border-r border-white/15 py-3 last:border-r-0 md:flex md:items-center md:justify-between md:border-b md:border-r-0 md:py-2.5">
+                  <dd className="font-['Space_Grotesk'] text-sm font-semibold text-white md:text-base">{value}</dd>
+                  <dt className="mt-1 text-[9px] font-medium uppercase text-white/35 md:mt-0">{label}</dt>
+                </div>
+              ))}
+            </dl>
           </div>
 
           {!loadError && <div className="mt-8 grid overflow-hidden rounded-[4px] border border-white/25 bg-white md:mt-10 lg:grid-cols-[1fr_auto] lg:items-center">
@@ -255,25 +264,38 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             {[0, 1, 2, 3].map((item) => <div key={item} className="h-36 animate-pulse bg-[#f7f7f4]" />)}
           </div>
         ) : loadError ? (
-          <div role="alert" className="relative overflow-hidden rounded-md border border-gray-200 bg-[#f4f4f0] p-6 sm:p-9">
-            <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
-            <div className="flex items-start gap-4">
-              <span className="mt-1 block h-2 w-10 shrink-0 rounded-full bg-cyan-300" aria-hidden="true" />
-              <div>
-                <p className="text-lg font-black text-gray-950 sm:text-xl">{t.errorTitle}</p>
-                <p className="mt-2 max-w-md text-sm leading-relaxed text-gray-600">{t.errorBody}</p>
+          <div role="alert" className="relative overflow-hidden border-y border-gray-300 bg-white">
+            <div className="signal-rail"><span /><span /><span /><span /></div>
+            <div className="grid lg:grid-cols-[0.85fr_1.15fr]">
+              <div className="flex flex-col justify-center p-6 sm:p-9 lg:border-r lg:border-gray-300 lg:p-12">
+                <p className="editorial-label">Profile service / status</p>
+                <h2 className="mt-5 max-w-md text-3xl font-medium leading-tight text-gray-950">{t.errorTitle}</h2>
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-600">{t.errorBody}</p>
+                <div className="mt-7 flex flex-wrap items-center gap-4">
+                  <button type="button" onClick={() => void fetchProfessionals()} className="button-primary">
+                    <RefreshCw size={16} aria-hidden="true" />
+                    {isDa ? 'Prøv igen' : 'Try again'}
+                  </button>
+                  <Link href="/contact" className="inline-flex py-3 text-sm font-bold text-gray-600 transition-colors hover:text-gray-950">{isDa ? 'Kontakt os' : 'Contact us'} <span className="ml-2" aria-hidden="true">→</span></Link>
+                </div>
               </div>
-            </div>
-            <div className="mt-5 flex flex-wrap items-center gap-3 sm:pl-14">
-              <button
-                type="button"
-                onClick={() => void fetchProfessionals()}
-                className="button-primary"
-              >
-                <RefreshCw size={16} aria-hidden="true" />
-                {isDa ? 'Prøv igen' : 'Try again'}
-              </button>
-              <Link href="/contact" className="inline-flex px-1 py-3 text-sm font-black text-gray-600 transition-colors hover:text-gray-950">{isDa ? 'Kontakt os' : 'Contact us'}</Link>
+
+              <div className="border-t border-gray-300 bg-[#f1f1ec] p-6 sm:p-9 lg:border-t-0 lg:p-12">
+                <p className="editorial-label">{isDa ? 'Imens kan du udforske' : 'In the meantime, explore'}</p>
+                <p className="mt-4 max-w-lg font-['Space_Grotesk'] text-xl font-medium leading-snug text-gray-950">{isDa ? 'Læs feltguiden og afklar, hvilken erfaring der er mest relevant for dig.' : 'Read a field guide and clarify which experience is most relevant to you.'}</p>
+                <div className="mt-7 grid grid-cols-2 border-l border-t border-gray-300">
+                  {[
+                    ['/fields/ai', 'AI'],
+                    ['/fields/banking', 'Banking'],
+                    ['/fields/consulting', 'Management Consulting'],
+                    ['/fields/private-equity', 'Private Equity'],
+                  ].map(([href, label]) => (
+                    <Link key={href} href={href} className="flex min-h-20 items-end justify-between border-b border-r border-gray-300 p-3 text-xs font-bold text-gray-950 transition-colors hover:bg-white sm:p-4 sm:text-sm">
+                      <span>{label}</span><span aria-hidden="true">→</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         ) : dbProfessionals.length === 0 ? (
