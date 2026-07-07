@@ -90,7 +90,7 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Erfaring fra den verden|Experience from the world/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Karrieresparring med den rette erfaring|Career guidance with the right experience/i })).toBeVisible()
   await expect(page.locator('#home').getByRole('link', { name: /Sammenlign professionelle|Compare professionals/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
