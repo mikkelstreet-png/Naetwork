@@ -63,7 +63,7 @@ export function Footer() {
                 : 'Focused career guidance from AI, Banking, Management Consulting and Private Equity.'}
             </p>
             <p className="mt-3 max-w-sm text-xs font-semibold leading-relaxed text-gray-400">
-              {isDa ? 'Minimum 40% af hver betalt session går til Kræftens Bekæmpelse.' : 'At least 40% from every paid session goes to Kræftens Bekæmpelse.'}
+              {isDa ? 'Minimum 40% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.' : 'At least 40% of a completed, paid session is allocated in support of Kræftens Bekæmpelse.'}
             </p>
             <a href="mailto:kontakt@naetwork.dk" className="mt-5 inline-flex text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">kontakt@naetwork.dk</a>
           </div>
@@ -85,7 +85,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-gray-200 pt-6 md:flex-row md:items-end md:justify-between">
-          <p className="max-w-2xl text-xs leading-relaxed text-gray-400">{isDa ? 'Naetwork er et uafhængigt initiativ. Bidrag gælder kun for betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative. Contributions apply only to paid sessions. Payments are not enabled yet.'}</p>
+          <p className="max-w-2xl text-xs leading-relaxed text-gray-400">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
           <p className="text-xs text-gray-400">{isDa ? '© 2026 Naetwork. Alle rettigheder forbeholdes.' : '© 2026 Naetwork. All rights reserved.'}</p>
         </div>
       </div>
