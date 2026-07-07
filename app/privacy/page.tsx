@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Sådan indsamler, bruger, deler, opbevarer og sletter Naetwork personoplysninger.',
 }
 
-const updated = '6. juli 2026'
+const updated = '7. juli 2026'
 const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
 const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
 const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
@@ -37,6 +37,7 @@ const sections: LegalSection[] = [
       'Konto: navn, e-mail, bruger-ID, rolle, loginstatus og sikkerhedsrelaterede hændelser.',
       'Professionel profil: titel, virksomhed, bio, LinkedIn-link, brancher, fokusområder, pris, bidragsniveau, synlighed og gennemgangsstatus.',
       'Booking: valgte parter, ønsket dato og tid, fokus, mål, eventuelt materialelink, status, pris og forventet bidrag.',
+      'Dokumentation: tidspunkt og version for accept af vilkår samt tidspunkt og version for den privatlivsinformation, der blev vist ved oprettelse.',
       'Kommunikation: kontaktformular, service-e-mails, supporthenvendelser og leveringsstatus for e-mails.',
       'Teknik: nødvendige cookies, lokal lagring, IP- og enhedsoplysninger i sikkerheds- og hostinglogs samt fejldata.',
     ],
@@ -50,6 +51,7 @@ const sections: LegalSection[] = [
       'Legitim interesse: platformsikkerhed, misbrugsforebyggelse, support, kvalitetskontrol og forbedring af stabilitet. Interessen afvejes mod dine rettigheder.',
       'Retlig forpligtelse: dokumentation, myndighedskrav og senere regnskabsoplysninger, når betaling aktiveres.',
       'Samtykke: markedsføring og eventuelle ikke-nødvendige cookies. Samtykke kan trækkes tilbage uden at påvirke tidligere lovlig behandling.',
+      'Privatlivspolitikken er information om behandlingen og er ikke i sig selv et samtykke. Når du opretter konto, accepterer du vilkårene og bekræfter, at du har fået privatlivsinformationen.',
     ],
   },
   {
@@ -78,8 +80,15 @@ const sections: LegalSection[] = [
     ],
   },
   {
+    id: 'automatiske-afgoerelser',
+    title: '7. Automatiske afgørelser og profilering',
+    body: [
+      'Naetwork træffer ikke afgørelser med retsvirkning eller tilsvarende væsentlig virkning alene ved automatisk behandling. Matchfunktionen bruger de valg, du selv foretager, til at prioritere relevante profiler; den vurderer ikke din egnethed til et job.',
+    ],
+  },
+  {
     id: 'opbevaring',
-    title: '7. Opbevaring og sletning',
+    title: '8. Opbevaring og sletning',
     body: ['Vi sletter eller anonymiserer oplysninger, når de ikke længere er nødvendige. Følgende perioder er udgangspunkt og kan forkortes, hvis formålet ophører tidligere.'],
     bullets: [
       'Konto og profil: så længe kontoen er aktiv. Ved kontosletning fjernes eller anonymiseres data, medmindre en begrænset opbevaring er nødvendig.',
@@ -91,7 +100,7 @@ const sections: LegalSection[] = [
   },
   {
     id: 'rettigheder',
-    title: '8. Dine rettigheder',
+    title: '9. Dine rettigheder',
     body: [
       'Du kan efter omstændighederne få indsigt, rettelse, sletning, begrænsning og dataportabilitet samt gøre indsigelse mod behandling baseret på legitim interesse. Du kan altid trække et samtykke tilbage.',
       `Send din anmodning til ${supportEmail}. Vi kan bede om oplysninger, der er nødvendige for at bekræfte din identitet. Du kan klage til Datatilsynet, hvis du mener, at behandlingen er i strid med reglerne.`,
@@ -100,7 +109,7 @@ const sections: LegalSection[] = [
   },
   {
     id: 'sikkerhed',
-    title: '9. Sikkerhed og hændelser',
+    title: '10. Sikkerhed og hændelser',
     body: [
       'Naetwork anvender adgangskontrol, rollebaserede databasepolitikker, krypteret transport, begrænsede servernøgler og løbende release-checks. Ingen tjeneste kan garantere absolut sikkerhed, men foranstaltningerne vurderes løbende i forhold til risikoen.',
       'Ved et brud på persondatasikkerheden undersøger vi hændelsen og underretter Datatilsynet og berørte personer, når reglerne kræver det.',
@@ -108,7 +117,7 @@ const sections: LegalSection[] = [
   },
   {
     id: 'cookies',
-    title: '10. Cookies og lokal lagring',
+    title: '11. Cookies og lokal lagring',
     body: [
       'Naetwork bruger aktuelt kun teknologier, der er nødvendige for login, sikkerhed og det sprogvalg, brugeren aktivt foretager. Ikke-nødvendig statistik eller markedsføring må ikke aktiveres uden relevant information og samtykke.',
     ],
@@ -116,7 +125,7 @@ const sections: LegalSection[] = [
   },
   {
     id: 'aendringer',
-    title: '11. Ændringer',
+    title: '12. Ændringer',
     body: [
       'Politikken opdateres, når funktioner, leverandører eller regler ændrer sig. Ved væsentlige ændringer informerer vi på en passende måde. Datoen øverst viser den gældende version.',
     ],
