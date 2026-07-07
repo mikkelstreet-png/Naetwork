@@ -21,7 +21,7 @@ export default function SignupPage() {
     setError('');
 
     if (!accepted) {
-      setError('Accepter vilkår og privatlivspolitik for at oprette en konto.');
+      setError('Accepter vilkårene og bekræft, at du har læst privatlivspolitikken.');
       setLoading(false);
       return;
     }
@@ -35,6 +35,7 @@ export default function SignupPage() {
           role: 'candidate',
           termsAcceptedAt: new Date().toISOString(),
           termsVersion: TERMS_VERSION,
+          privacyNoticedAt: new Date().toISOString(),
           privacyVersion: PRIVACY_VERSION,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/match`,
@@ -83,7 +84,7 @@ export default function SignupPage() {
           <h2 className="text-2xl font-black text-gray-950">Opret kandidatkonto</h2>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">Det tager under ét minut.</p>
 
-          <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-7 space-y-5" aria-busy={loading}>
             <div>
               <label htmlFor="signup-name" className="mb-2 block text-sm font-semibold text-gray-700">Fulde navn</label>
               <input id="signup-name" type="text" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Dit fulde navn" />
@@ -99,7 +100,7 @@ export default function SignupPage() {
 
             <label className="flex items-start gap-3 text-sm leading-relaxed text-gray-600">
               <input type="checkbox" required checked={accepted} onChange={(event) => setAccepted(event.target.checked)} className="mt-1 h-4 w-4 accent-gray-950" />
-              <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitik</Link>.</span>
+              <span>Jeg accepterer Naetworks <Link href="/terms" className="font-semibold text-gray-950 underline underline-offset-2">vilkår</Link> og bekræfter, at jeg har læst <Link href="/privacy" className="font-semibold text-gray-950 underline underline-offset-2">privatlivspolitikken</Link>.</span>
             </label>
 
             {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
