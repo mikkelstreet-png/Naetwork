@@ -11,7 +11,7 @@ export function MissionContent() {
     [isDa ? 'Adgang bør være mindre tilfældig' : 'Access should be less random', isDa ? 'Stærke kandidater bør ikke være afhængige af en personlig introduktion for at forstå krævende karriereveje.' : 'Strong candidates should not need a warm introduction to understand demanding career paths.'],
     [isDa ? 'Sparring bør være specifik' : 'Guidance should be specific', isDa ? 'Værdien er ikke generel inspiration. Det er kontekst fra en person, der kender barren.' : 'The value is not generic inspiration. It is context from someone who knows the bar.'],
     [isDa ? 'Forberedelse bør være konkret' : 'Preparation should be concrete', isDa ? 'En god session skal skabe skarpere materiale, bedre svar, mere ro eller et klarere næste skridt.' : 'A good session should create sharper materials, better answers, more calm or a clearer next step.'],
-    [isDa ? 'Karrieresparring bør have mening' : 'Career guidance should have meaning', isDa ? 'Hver betalt session bidrager med minimum 40% og op til 90% af sessionsprisen til Kræftens Bekæmpelse.' : 'Every paid session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse.'],
+    [isDa ? 'Karrieresparring bør have mening' : 'Career guidance should have meaning', isDa ? 'Minimum 40% og op til 90% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.' : 'At least 40% and up to 90% of a completed, paid session is allocated in support of Kræftens Bekæmpelse.'],
   ] as const;
 
   const product = ['60 min', 'AI', 'Banking', 'Management Consulting', 'Private Equity', '40-90%'] as const;
