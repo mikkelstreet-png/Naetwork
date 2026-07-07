@@ -66,7 +66,7 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_320px]">
           <div className="border border-gray-200 bg-white p-5 sm:p-7">
             {status === 'sent' ? (
-              <div className="flex min-h-[430px] flex-col items-center justify-center text-center">
+              <div role="status" className="flex min-h-[430px] flex-col items-center justify-center text-center">
                 <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-950 text-white"><Check size={24} aria-hidden="true" /></span>
                 <h2 className="mt-6 text-3xl font-black text-gray-950">{isDa ? 'Tak for din besked.' : 'Thank you for your message.'}</h2>
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-500">{isDa ? 'Den er gemt hos os, og vi vender tilbage på den e-mail, du har angivet.' : 'It has been saved, and we will reply to the email address you provided.'}</p>
@@ -75,7 +75,7 @@ export default function ContactPage() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={submit} className="space-y-5">
+              <form onSubmit={submit} className="space-y-5" aria-busy={status === 'sending'}>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label htmlFor="contact-name" className="mb-2 block text-sm font-black text-gray-950">{isDa ? 'Navn' : 'Name'}</label>
