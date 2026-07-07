@@ -69,7 +69,12 @@ export function Footer() {
             <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/40">
               {isDa ? 'Minimum 40% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.' : 'At least 40% of a completed, paid session is allocated in support of Kræftens Bekæmpelse.'}
             </p>
-            <a href="mailto:kontakt@naetwork.dk" className="mt-6 inline-flex text-sm font-bold text-white underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white">kontakt@naetwork.dk</a>
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Link href="/professionals" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
+                {isDa ? 'Sammenlign profiler' : 'Compare profiles'} <span aria-hidden="true">→</span>
+              </Link>
+              <a href="mailto:kontakt@naetwork.dk" className="inline-flex text-sm font-medium text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white hover:decoration-white">kontakt@naetwork.dk</a>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-white/15 pt-7 text-sm sm:grid-cols-4">
