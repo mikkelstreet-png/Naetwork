@@ -43,11 +43,12 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-white px-5 py-12 sm:px-8 md:py-16">
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_430px] lg:items-start">
+    <main className="min-h-[calc(100vh-4.5rem)] bg-[#f4f4f0] px-5 py-12 sm:px-8 md:py-20 lg:px-10">
+      <div className="mx-auto grid max-w-[78rem] gap-12 lg:grid-cols-[1fr_450px] lg:items-start">
         <section className="max-w-2xl pt-2 lg:pt-10">
-          <p className="mb-4 text-xs font-black uppercase text-gray-400">Log ind</p>
-          <h1 className="text-4xl font-black leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-6xl">Fortsæt din karrieresparring.</h1>
+          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+          <p className="kicker mb-5">Log ind</p>
+          <h1 className="text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-6xl">Fortsæt din karrieresparring.</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Se dine bookinger, administrer din profil og fortsæt der, hvor du slap.</p>
           <div className="mt-10 grid max-w-xl grid-cols-3 border-y border-gray-200">
             {[
@@ -63,26 +64,26 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section className="border border-gray-200 bg-[#f7f7f4] p-5 sm:p-7">
-          <h2 className="text-2xl font-black text-gray-950">Log ind på Naetwork</h2>
+        <section className="overflow-hidden rounded-md border border-gray-200 bg-white p-6 shadow-[0_20px_60px_rgba(9,9,11,0.08)] sm:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">Log ind på Naetwork</h2>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">Brug den e-mail, du oprettede kontoen med.</p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-5" aria-busy={loading}>
             <div>
               <label htmlFor="login-email" className="mb-2 block text-sm font-semibold text-gray-700">E-mail</label>
-              <input id="login-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="dit@eksempel.dk" />
+              <input id="login-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="field-control" placeholder="dit@eksempel.dk" />
             </div>
             <div>
               <div className="mb-2 flex items-center justify-between gap-4">
                 <label htmlFor="login-password" className="text-sm font-semibold text-gray-700">Adgangskode</label>
                 <Link href="/forgot-password" className="text-xs font-semibold text-gray-600 underline decoration-gray-300 underline-offset-4 hover:text-gray-950">Glemt adgangskode?</Link>
               </div>
-              <input id="login-password" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Din adgangskode" />
+              <input id="login-password" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} className="field-control" placeholder="Din adgangskode" />
             </div>
 
             {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
-            <button type="submit" disabled={loading} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-wait disabled:opacity-60">
+            <button type="submit" disabled={loading} className="button-primary w-full disabled:cursor-wait disabled:opacity-60">
               {loading ? 'Logger ind...' : 'Log ind'}
               {!loading && <ArrowRight size={16} aria-hidden="true" />}
             </button>
