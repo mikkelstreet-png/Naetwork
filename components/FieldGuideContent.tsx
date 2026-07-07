@@ -83,8 +83,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Bidrag' : 'Impact'}</p>
               <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
                 {isDa
-                  ? 'Hver betalt Naetwork-session bidrager med minimum 40% og op til 90% af sessionens pris til Kræftens Bekæmpelse. Den konkrete pris og minimumsbidraget vises før booking.'
-                  : 'Every paid Naetwork session contributes at least 40% and up to 90% of the session price to Kræftens Bekæmpelse. The concrete price and minimum contribution are visible before booking.'}
+                  ? 'Minimum 40% og op til 90% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse. Pris og minimumsbeløb vises før anmodningen.'
+                  : 'At least 40% and up to 90% of a completed, paid session is allocated in support of Kræftens Bekæmpelse. Price and minimum amount are shown before the request.'}
               </p>
             </section>
           </div>
