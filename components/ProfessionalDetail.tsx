@@ -192,24 +192,24 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
 
   return (
     <main className="min-h-screen bg-white pb-24 md:pb-0">
-      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 sm:px-8 lg:px-10">
-        <div className="mx-auto max-w-[78rem] py-8 md:py-[4.5rem]">
-          <Link href="/professionals" className="mb-7 inline-flex items-center gap-2 text-sm font-black text-gray-500 transition-colors hover:text-gray-950 md:mb-10">
+      <section className="border-b border-white/15 bg-[#09090b] px-5 text-white sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[82rem] py-9 md:py-20">
+          <Link href="/professionals" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-white/45 transition-colors hover:text-white md:mb-12">
             <span>&larr;</span><span>{t.back}</span>
           </Link>
 
           <div className="grid gap-12 lg:grid-cols-[1fr_340px] lg:items-end">
             <div>
               <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-              <p className="kicker mb-4 md:mb-6">
+              <p className="kicker mb-4 text-white/40 md:mb-6">
                 {professional.industries.join(' / ')}
               </p>
-              <h1 className="max-w-4xl text-5xl font-semibold leading-[0.94] text-gray-950 text-balance sm:text-6xl md:text-8xl">{professional.name}</h1>
-              <p className="mt-5 font-['Space_Grotesk'] text-base font-semibold text-gray-700 md:mt-7 md:text-xl">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-gray-600 md:mt-7 md:text-lg">{professional.bio}</p>
+              <h1 className="max-w-4xl text-5xl font-medium leading-[0.94] text-white text-balance sm:text-6xl md:text-8xl">{professional.name}</h1>
+              <p className="mt-5 font-['Space_Grotesk'] text-base font-semibold text-white/70 md:mt-7 md:text-xl">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/52 md:mt-7 md:text-lg">{professional.bio}</p>
             </div>
 
-            <aside className="hidden rounded-md bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:block">
+            <aside className="hidden border border-white/20 bg-white/[0.035] p-6 text-white lg:block">
               <div className={`flex h-12 w-12 items-center justify-center rounded-md font-['Space_Grotesk'] text-sm font-bold text-gray-950 ${accentFor(professional)}`}>
                 {initials(professional.name)}
               </div>
@@ -218,7 +218,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
                 <p className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold text-white">DKK {professional.price}</p>
                 <p className="mt-3 text-sm leading-relaxed text-white/55">{t.briefing}</p>
               </div>
-              <button type="button" onClick={() => setDrawerOpen(true)} className="button-secondary mt-5 w-full border-white bg-white">
+              <button type="button" onClick={() => setDrawerOpen(true)} className="button-inverse mt-5 w-full">
                 {t.bookCta}
               </button>
             </aside>
@@ -226,7 +226,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         </div>
       </section>
 
-      <div className="mx-auto max-w-[78rem] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
+      <div className="mx-auto max-w-[82rem] px-5 py-12 sm:px-8 md:py-24 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <div className="space-y-10 md:space-y-14">
             <section>
