@@ -15,13 +15,13 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
 
   return (
     <main className="bg-white">
-      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
-        <div className="mx-auto grid max-w-[78rem] gap-10 lg:grid-cols-[1fr_360px] lg:items-end lg:gap-16">
+      <section className={`border-b border-black/15 px-5 py-10 sm:px-8 md:py-20 lg:px-12 ${surface}`}>
+        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[1fr_370px] lg:items-end lg:gap-16">
           <div>
             <Link href="/" className="mb-8 inline-flex text-sm font-black text-gray-500 transition-colors hover:text-gray-950">&larr; Naetwork</Link>
             <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
             <p className="kicker mb-5">{isDa ? 'Feltguide' : 'Field guide'}</p>
-            <h1 className="max-w-5xl text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-6xl md:text-7xl">{field.title[locale]}</h1>
+            <h1 className="max-w-5xl text-4xl font-medium leading-[0.96] text-gray-950 text-balance sm:text-6xl md:text-7xl">{field.title[locale]}</h1>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{field.description[locale]}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href={profileHrefForField(slug)} className="button-primary">
@@ -32,21 +32,21 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               </Link>
             </div>
           </div>
-          <aside className={`lift-hover flex min-h-[270px] flex-col justify-between rounded-md border border-black/5 p-6 text-gray-950 ${surface}`}>
-            <p className="editorial-label text-gray-700">{field.label}</p>
-            <dl className="border-t border-gray-950/15">
+          <aside className="flex min-h-[290px] flex-col justify-between border border-black bg-[#09090b] p-6 text-white">
+            <p className="editorial-label text-white/40">{field.label}</p>
+            <dl className="border-t border-white/15">
               {[
                 [`${SESSION_MINUTES} min`, isDa ? 'Fleksibelt format' : 'Flexible format'],
                 [`${formatDkk(PRICE_MIN)}-${formatDkk(PRICE_MAX).replace('DKK ', '')}`, isDa ? 'Pris før booking' : 'Price before booking'],
                 [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Til kræftsagen' : 'To the cancer cause'],
-              ].map(([value, label]) => <div key={label} className="flex items-center justify-between gap-4 border-b border-gray-950/15 py-3"><dt className="text-xs font-semibold text-gray-700">{label}</dt><dd className="text-sm font-black">{value}</dd></div>)}
+              ].map(([value, label]) => <div key={label} className="flex items-center justify-between gap-4 border-b border-white/15 py-3"><dt className="text-xs font-semibold text-white/45">{label}</dt><dd className="text-sm font-bold text-white">{value}</dd></div>)}
             </dl>
           </aside>
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto grid max-w-[78rem] gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+      <section className="px-5 py-16 sm:px-8 md:py-24 lg:px-12">
+        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <aside className="lg:sticky lg:top-24 lg:h-fit">
             <p className="kicker mb-5">{isDa ? 'Sessionens fokus' : 'Session focus'}</p>
             <h2 className="text-3xl font-semibold leading-[1.04] text-gray-950 text-balance sm:text-4xl md:text-5xl">
