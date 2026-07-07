@@ -79,21 +79,21 @@ export default function MatchPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f4f0]">
-      <section className="border-b border-gray-200 bg-white px-5 py-10 sm:px-8 md:py-16 lg:px-10">
-        <div className="mx-auto max-w-[78rem]">
+      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-20 lg:px-12">
+        <div className="mx-auto max-w-[82rem]">
           <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-          <p className="kicker mb-5">Match</p>
-          <h1 className="max-w-4xl text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-6xl md:text-7xl">
+          <p className="kicker mb-5 text-white/40">Match</p>
+          <h1 className="max-w-4xl text-4xl font-medium leading-[0.96] text-white text-balance sm:text-6xl md:text-7xl">
             {isDa ? 'Hvad skal de 60 minutter løse?' : 'What should the 60 minutes solve?'}
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/55 md:text-lg">
             {isDa ? 'To valg er nok. Vælg dit felt og det vigtigste behov.' : 'Two choices are enough. Choose your field and your most important need.'}
           </p>
         </div>
       </section>
 
-      <section className="px-5 py-8 sm:px-8 md:py-16 lg:px-10">
-        <div className="mx-auto grid max-w-[78rem] gap-8 lg:grid-cols-[1fr_400px]">
+      <section className="px-5 py-10 sm:px-8 md:py-16 lg:px-12">
+        <div className="mx-auto grid max-w-[82rem] gap-8 lg:grid-cols-[1fr_400px]">
           <div className="overflow-hidden rounded-md border border-gray-300 bg-white">
             <section className="border-b border-gray-300 p-5 md:p-7">
               <div className="flex items-center justify-between gap-4">
