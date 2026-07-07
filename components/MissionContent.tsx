@@ -18,35 +18,35 @@ export function MissionContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
-        <div className="mx-auto grid max-w-[78rem] gap-10 lg:grid-cols-[1fr_390px] lg:items-end">
+      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-24 lg:px-12">
+        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[1fr_400px] lg:items-end">
           <div>
-            <p className="kicker mb-5">Mission</p>
-            <h1 className="display-xl max-w-5xl">
+            <p className="kicker mb-5 text-white/40">Mission</p>
+            <h1 className="display-xl max-w-5xl text-white">
               {isDa ? 'Adgang til karrieresparring bør ikke afhænge af hvem du kender.' : 'Career access should not depend on who you happen to know.'}
             </h1>
-            <p className="body-lg mt-7 max-w-2xl">
+            <p className="body-lg mt-7 max-w-2xl text-white/55">
               {isDa
                 ? 'Naetwork gør erfaringsbaseret karrieresparring til et fokuseret produkt: én professionel, ét kort oplæg, 60 minutter, ét klarere næste skridt og ét konkret bidrag.'
                 : 'Naetwork turns informal insider guidance into a focused product: one professional, one brief, one 60-minute session, one clearer next step and one concrete contribution.'}
             </p>
           </div>
-          <aside className="premium-panel lift-hover p-6">
-            <p className="kicker">{isDa ? 'Produktstandpunkt' : 'Product stance'}</p>
-            <p className="mt-4 text-3xl font-semibold leading-tight text-gray-950">
+          <aside className="border border-white/20 bg-white/[0.035] p-6">
+            <p className="kicker text-white/40">{isDa ? 'Produktstandpunkt' : 'Product stance'}</p>
+            <p className="mt-4 text-3xl font-medium leading-tight text-white">
               {isDa ? 'Simpelt på overfladen. Seriøst nedenunder.' : 'Simple on the surface. Serious underneath.'}
             </p>
             <div className="mt-7 flex flex-wrap gap-2">
               {product.map((item) => (
-                <span key={item} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-black text-gray-600">{item}</span>
+                <span key={item} className="border border-white/20 px-3 py-2 text-xs font-bold text-white/65">{item}</span>
               ))}
             </div>
           </aside>
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto grid max-w-[78rem] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+      <section className="px-5 py-16 sm:px-8 md:py-24 lg:px-12">
+        <div className="mx-auto grid max-w-[82rem] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
             <p className="kicker mb-5">{isDa ? 'Principper' : 'Principles'}</p>
             <h2 className="display-lg">
@@ -66,7 +66,7 @@ export function MissionContent() {
           </div>
         </div>
 
-        <div className="mx-auto mt-12 flex max-w-[78rem] flex-col gap-3 sm:flex-row">
+        <div className="mx-auto mt-12 flex max-w-[82rem] flex-col gap-3 sm:flex-row">
           <Link href="/match" className="button-primary">{isDa ? 'Prøv match' : 'Try match'}</Link>
           <Link href="/professionals" className="button-secondary">{isDa ? 'Se profiler' : 'Browse profiles'}</Link>
         </div>
