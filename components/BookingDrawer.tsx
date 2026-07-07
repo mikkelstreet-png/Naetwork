@@ -223,16 +223,17 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-gray-950/45 backdrop-blur-sm" onClick={handleClose} aria-hidden="true" />
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="booking-title" aria-describedby="booking-description" className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl shadow-gray-950/20">
-        <div className="border-b border-gray-200 px-5 py-4 sm:px-6 sm:py-5">
+      <div className="fixed inset-0 z-40 bg-gray-950/55 backdrop-blur-sm" onClick={handleClose} aria-hidden="true" />
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="booking-title" aria-describedby="booking-description" className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[30rem] flex-col bg-white shadow-[0_0_80px_rgba(9,9,11,0.22)]">
+        <div className="signal-rail"><span /><span /><span /><span /></div>
+        <div className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-5 sm:px-7 sm:py-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase text-gray-400">{t.title}</p>
-              <h2 id="booking-title" className="mt-1 text-xl font-black text-gray-950">{professional.name}</h2>
+              <p className="editorial-label">{t.title}</p>
+              <h2 id="booking-title" className="mt-2 text-2xl font-semibold text-gray-950">{professional.name}</h2>
               <p className="mt-1 text-sm text-gray-500">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
             </div>
-            <button onClick={handleClose} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-950" aria-label={t.close}>
+            <button onClick={handleClose} className="flex h-10 w-10 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-500 transition-colors hover:border-gray-950 hover:text-gray-950" aria-label={t.close}>
               <X size={18} aria-hidden="true" />
             </button>
           </div>
@@ -280,11 +281,11 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
           {authState === 'signed_in' && step === 1 && (
             <div>
-              <h3 className="mb-5 text-base font-black text-gray-950">{t.step1Title}</h3>
+              <h3 className="mb-5 text-lg font-semibold text-gray-950">{t.step1Title}</h3>
               <div className="space-y-4">
                 {days.map((day) => (
-                  <div key={day.value} className="border border-gray-200 bg-[#f7f7f4] p-3">
-                    <p className="mb-2 text-xs font-black uppercase text-gray-500 capitalize">{day.label}</p>
+                  <div key={day.value} className="rounded-md border border-gray-200 bg-[#f4f4f0] p-3">
+                    <p className="editorial-label mb-2 capitalize text-gray-600">{day.label}</p>
                     <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                       {PREFERRED_TIMES.map((slot) => {
                         const isSelected = selectedDate?.value === day.value && selectedTime === slot
@@ -294,7 +295,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                             aria-pressed={isSelected}
                             type="button"
                             onClick={() => { setSelectedDate(day); setSelectedTime(slot); setError(null) }}
-                            className={`rounded-lg border px-1 py-2 text-[13px] font-bold transition-colors sm:px-2 sm:text-sm ${isSelected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950 hover:text-gray-950'}`}
+                            className={`rounded-md border px-1 py-2.5 text-[13px] font-bold transition-all sm:px-2 sm:text-sm ${isSelected ? 'border-gray-950 bg-gray-950 text-white shadow-sm' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950 hover:-translate-y-0.5 hover:text-gray-950'}`}
                           >
                             {slot}
                           </button>
@@ -309,8 +310,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
           {authState === 'signed_in' && step === 2 && selectedDate && selectedTime && (
             <div>
-              <h3 className="mb-5 text-base font-black text-gray-950">{t.step2Title}</h3>
-              <div className="mb-5 border border-gray-200 bg-[#f7f7f4] p-4">
+              <h3 className="mb-5 text-lg font-semibold text-gray-950">{t.step2Title}</h3>
+              <div className="mb-5 rounded-md border border-gray-200 bg-[#f4f4f0] p-4">
                 {[
                   [t.professional, professional.name],
                   [t.date, selectedDate.label],
@@ -345,7 +346,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                         type="button"
                         aria-pressed={selected}
                         onClick={() => { setSessionFocus(option.id); setError(null) }}
-                        className={`rounded-lg border px-3 py-2.5 text-left text-xs font-black transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f7f7f4] text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
+                        className={`rounded-md border px-3 py-2.5 text-left text-xs font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
                       >
                         {label}
                       </button>
@@ -365,7 +366,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 minLength={20}
                 maxLength={260}
                 aria-describedby="booking-goal-count"
-                className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
+                className="field-control resize-none text-sm text-gray-700"
               />
               <p id="booking-goal-count" className="mt-1 flex justify-between gap-4 text-xs text-gray-400"><span>{locale === 'da' ? 'Mindst 20 tegn' : 'At least 20 characters'}</span><span>{sessionGoal.length}/260</span></p>
 
@@ -377,7 +378,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 onChange={(e) => setMaterialLink(e.target.value.slice(0, 140))}
                 placeholder={t.materialPlaceholder}
                 inputMode="url"
-                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition-colors focus:border-gray-950"
+                className="field-control text-sm text-gray-700"
               />
               <p className="mt-2 text-xs leading-relaxed text-gray-400">{locale === 'da' ? 'Del kun materiale, du har ret til at dele. Undlad følsomme personoplysninger og fortrolige arbejdsdokumenter.' : 'Only share material you are allowed to share. Do not include sensitive personal data or confidential work documents.'}</p>
 
@@ -400,16 +401,16 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
         <div className="mobile-safe-bottom border-t border-gray-200 px-5 py-3 sm:px-6 sm:py-4">
           {authState === 'signed_in' && step === 1 && selectedDate && selectedTime && (
-            <button type="button" onClick={() => setStep(2)} className="w-full rounded-lg bg-gray-950 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800">
+            <button type="button" onClick={() => setStep(2)} className="button-primary w-full">
               {t.continue}
             </button>
           )}
           {authState === 'signed_in' && step === 2 && (
             <div className="flex gap-3">
-              <button type="button" onClick={() => setStep(1)} className="flex-1 rounded-lg border border-gray-200 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">
+              <button type="button" onClick={() => setStep(1)} className="button-secondary flex-1">
                 {t.back}
               </button>
-              <button type="button" onClick={handleConfirm} disabled={loading} className="flex-1 rounded-lg bg-gray-950 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800 disabled:opacity-60">
+              <button type="button" onClick={handleConfirm} disabled={loading} className="button-primary flex-1 disabled:opacity-60">
                 {loading ? '...' : t.confirm}
               </button>
             </div>
