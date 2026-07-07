@@ -102,6 +102,9 @@ export async function POST(request: Request) {
     if (!professionalId || !BOOKING_FOCUS_IDS.has(focus)) {
       return NextResponse.json({ error: 'Vælg en professionel og et gyldigt fokus.' }, { status: 400 });
     }
+    if (goal.length < 20) {
+      return NextResponse.json({ error: 'Beskriv dit ønskede resultat med mindst 20 tegn.' }, { status: 400 });
+    }
 
     if (material) {
       try {
