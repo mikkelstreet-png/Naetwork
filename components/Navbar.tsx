@@ -104,7 +104,7 @@ export function Navbar() {
               aria-current={link.href.startsWith('/#') ? undefined : pathname === link.href ? 'page' : undefined}
               className={`group/link relative flex items-center gap-1.5 py-2 text-[13px] font-semibold transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-gray-950 after:transition-transform hover:text-gray-950 hover:after:scale-x-100 ${pathname === link.href ? 'text-gray-950 after:scale-x-100' : 'text-gray-500'}`}
             >
-              <span className="font-['JetBrains_Mono'] text-[8px] font-medium text-gray-300 transition-colors group-hover/link:text-gray-500">0{index + 1}</span>
+              <span className="font-['JetBrains_Mono'] text-[8px] font-medium text-gray-400 transition-colors group-hover/link:text-gray-600">0{index + 1}</span>
               {link.label}
             </Link>
           ))}
