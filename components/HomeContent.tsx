@@ -165,75 +165,79 @@ export function HomeContent() {
 
   return (
     <main>
-      <section id="home" className="overflow-hidden border-b border-gray-200 bg-white px-5 pb-10 pt-8 sm:px-8 sm:pb-14 sm:pt-14 md:pb-16 md:pt-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end lg:gap-16">
-            <div>
-              <p className="mb-4 text-[10px] font-black uppercase text-gray-400 sm:mb-5 sm:text-xs">
-                {isDa ? '1:1 karrieresparring · 60 minutter' : '1:1 career guidance · 60 minutes'}
-              </p>
-              <h1 className="max-w-4xl text-[2.15rem] font-black leading-[0.98] text-gray-950 text-balance sm:text-6xl md:text-7xl">
-                {isDa ? '60 minutter med erfaring fra den verden, du vil ind i.' : '60 minutes with experience from the world you want to enter.'}
-              </h1>
-              <p className="mt-5 max-w-2xl text-[15px] leading-7 text-gray-600 sm:mt-6 sm:text-base md:text-xl">
-                {isDa
-                  ? 'Sammenlign gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity. Brug sessionen på interview, case, CV eller din næste karrierebeslutning.'
-                  : 'Compare reviewed professionals from AI, Banking, Management Consulting and Private Equity. Use the session for interviews, cases, materials or your next career decision.'}
-              </p>
-              <div className="mt-7 flex flex-col items-center gap-4 sm:mt-8 sm:flex-row">
-                <Link href="/professionals" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-gray-950 px-6 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800 sm:w-auto">
-                  {isDa ? 'Sammenlign professionelle' : 'Compare professionals'}
-                  <ArrowRight size={16} aria-hidden="true" />
-                </Link>
-                <Link href="/match" className="inline-flex min-h-11 items-center justify-center text-sm font-black text-gray-700 transition-colors hover:text-gray-950">
-                  {isDa ? 'Hjælp mig med at vælge' : 'Help me choose'}
-                </Link>
+      <section id="home" className="relative isolate min-h-[calc(100svh-8.5rem)] overflow-hidden border-b border-black/10 bg-[#eef8f5] md:min-h-[calc(100svh-4.5rem)]">
+        <Image src="/naetwork-spectrum.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+        <div className="absolute inset-0 -z-10 bg-white/36" aria-hidden="true" />
+        <div className="mx-auto flex min-h-[calc(100svh-8.5rem)] max-w-[78rem] flex-col justify-between px-5 py-8 sm:px-8 sm:py-12 md:min-h-[calc(100svh-4.5rem)] md:py-14 lg:px-10">
+          <div className="enter-up max-w-5xl">
+            <p className="kicker mb-6 text-gray-700 sm:mb-8">
+              {isDa ? '1:1 karrieresparring · 60 minutter' : '1:1 career guidance · 60 minutes'}
+            </p>
+            <h1 className="max-w-[960px] text-[2.7rem] font-semibold leading-[0.92] text-gray-950 text-balance sm:text-6xl md:text-[5.25rem] lg:text-[6.1rem]">
+              {isDa ? 'Erfaring fra den verden, du vil ind i.' : 'Experience from the world you want to enter.'}
+            </h1>
+            <p className="enter-up enter-up-delay mt-6 max-w-2xl text-[16px] font-medium leading-7 text-gray-800 sm:mt-8 sm:text-lg md:text-xl md:leading-8">
+              {isDa
+                ? 'Book 60 minutters fokuseret sparring med gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity.'
+                : 'Book 60 minutes of focused guidance with reviewed professionals from AI, Banking, Management Consulting and Private Equity.'}
+            </p>
+            <div className="enter-up enter-up-delay mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:items-center">
+              <Link href="/professionals" className="button-primary w-full px-6 sm:w-auto">
+                {isDa ? 'Sammenlign professionelle' : 'Compare professionals'}
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+              <Link href="/match" className="button-secondary w-full border-black/20 bg-white/65 backdrop-blur-md sm:w-auto">
+                {isDa ? 'Find mit fokus' : 'Find my focus'}
+              </Link>
+            </div>
+          </div>
+
+          <dl className="mt-10 grid grid-cols-3 border-y border-black/20 bg-white/20 backdrop-blur-sm sm:mt-14">
+            {[
+              [`${SESSION_MINUTES} min`, isDa ? 'Session' : 'Session', isDa ? 'Ét mål. Én fokuseret session.' : 'One goal. One focused session.'],
+              [<><span className="sm:hidden">DKK 600+</span><span className="hidden sm:inline">{formatDkk(PRICE_MIN)}-{PRICE_MAX.toLocaleString('da-DK')}</span></>, isDa ? 'Fast pris' : 'Fixed price', isDa ? 'Fast pris før du anmoder' : 'Fixed price before you request'],
+              [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Bidrag' : 'Impact', isDa ? 'Afsættes ved gennemført betaling' : 'Allocated once completed and paid'],
+            ].map(([value, shortLabel, label], index) => (
+              <div key={index} className="border-r border-black/20 px-2 py-4 last:border-r-0 sm:px-5 sm:py-5 sm:first:pl-0 lg:flex lg:items-center lg:justify-between lg:gap-5">
+                <dd className="font-['Space_Grotesk'] text-sm font-bold leading-tight text-gray-950 sm:text-lg lg:text-xl">{value}</dd>
+                <dt className="mt-1 text-[10px] font-semibold leading-tight text-gray-700 sm:mt-1 sm:text-xs lg:mt-0 lg:max-w-[150px] lg:text-right"><span className="sm:hidden">{shortLabel}</span><span className="hidden sm:inline">{label}</span></dt>
               </div>
-            </div>
+            ))}
+          </dl>
+        </div>
+      </section>
 
-            <dl className="grid grid-cols-3 border-y border-gray-200 lg:grid-cols-1 lg:border-b-0 lg:border-t">
-              {[
-                [`${SESSION_MINUTES} min`, isDa ? 'Én fokuseret 1:1-session' : 'One focused 1:1 session'],
-                [<><span className="sm:hidden">{formatDkk(PRICE_MIN)}+</span><span className="hidden sm:inline">{formatDkk(PRICE_MIN)}-{PRICE_MAX.toLocaleString('da-DK')}</span></>, isDa ? 'Hele prisen vises på profilen' : 'Full price shown on the profile'],
-                [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Ved gennemført betaling' : 'Once completed and paid'],
-              ].map(([value, label], index) => (
-                <div key={index} className="border-r border-gray-200 py-4 pr-3 last:border-r-0 lg:flex lg:items-center lg:justify-between lg:border-b lg:border-r-0 lg:pr-0">
-                  <dt className="text-[11px] font-bold leading-tight text-gray-500 sm:text-xs lg:order-1">{label}</dt>
-                  <dd className="mb-1 text-base font-black text-gray-950 sm:text-lg lg:mb-0">{value}</dd>
+      <section className="border-b border-gray-200 bg-white px-5 py-12 sm:px-8 md:py-[4.5rem] lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
+          <div className="mb-7 flex items-end justify-between gap-6">
+            <div>
+              <p className="kicker mb-4">{isDa ? 'Fire fagområder' : 'Four fields'}</p>
+              <h2 className="max-w-2xl text-3xl font-semibold leading-tight text-gray-950 sm:text-4xl">{isDa ? 'Vælg den erfaring, der matcher dit næste træk.' : 'Choose the experience that matches your next move.'}</h2>
+            </div>
+            <p className="hidden max-w-xs text-right text-sm leading-relaxed text-gray-500 md:block">{isDa ? 'Samme format. Forskellig domæneerfaring.' : 'The same format. Different domain experience.'}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+            {fields.map((field, index) => (
+              <Link key={field.name} href={field.href} className={`group lift-hover flex min-h-[158px] flex-col justify-between rounded-md border border-black/5 p-4 text-gray-950 sm:min-h-[205px] sm:p-5 ${field.color}`}>
+                <div className="flex items-center justify-between">
+                  <span className="editorial-label text-gray-700">0{index + 1}</span>
+                  <ArrowRight className="transition-transform group-hover:translate-x-1" size={18} aria-hidden="true" />
                 </div>
-              ))}
-            </dl>
-          </div>
-
-          <div className="mt-10 sm:mt-14 md:mt-16">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <p className="text-xs font-black uppercase text-gray-400">{isDa ? 'Vælg dit felt' : 'Choose your field'}</p>
-              <p className="hidden text-xs font-semibold text-gray-400 sm:block">{isDa ? 'Fire fagområder. Ét enkelt format.' : 'Four fields. One simple format.'}</p>
-            </div>
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-              {fields.map((field) => (
-                <Link key={field.name} href={field.href} className={`group flex min-h-[132px] flex-col justify-between rounded-lg p-4 text-gray-950 transition-transform hover:-translate-y-0.5 sm:min-h-[160px] sm:p-5 ${field.color}`}>
-                  <ArrowRight className="ml-auto transition-transform group-hover:translate-x-1" size={18} aria-hidden="true" />
-                  <div>
-                    <h2 className="text-base font-black leading-tight sm:text-lg">{field.name}</h2>
-                    <p className="mt-2 hidden text-xs font-semibold leading-relaxed text-gray-700 sm:block">{field.body}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative mt-3 h-24 overflow-hidden rounded-lg sm:h-32 md:mt-4 md:h-40" aria-hidden="true">
-            <Image src="/naetwork-spectrum.webp" alt="" fill sizes="(max-width: 768px) 100vw, 1152px" className="object-cover" />
+                <div>
+                  <h3 className="text-lg font-semibold leading-tight sm:text-2xl">{field.name}</h3>
+                  <p className="mt-3 hidden text-xs font-semibold leading-relaxed text-gray-700 sm:block">{field.body}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="content-auto bg-white px-5 py-12 sm:px-8 md:py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <section className="content-auto bg-white px-5 py-14 sm:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto grid max-w-[78rem] gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-20">
           <div>
-            <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Dit fokus' : 'Your focus'}</p>
-            <h2 className="text-3xl font-black leading-tight text-gray-950 text-balance sm:text-4xl md:text-5xl">
+            <p className="kicker mb-5">{isDa ? 'Dit fokus' : 'Your focus'}</p>
+            <h2 className="text-3xl font-semibold leading-[1.04] text-gray-950 text-balance sm:text-4xl md:text-5xl">
               {isDa ? 'Kom med ét konkret spørgsmål. Gå med et skarpere næste skridt.' : 'Bring one concrete question. Leave with a sharper next step.'}
             </h2>
             <p className="mt-5 max-w-lg text-sm leading-relaxed text-gray-600 md:text-base">
@@ -244,9 +248,9 @@ export function HomeContent() {
           </div>
           <div className="border-t border-gray-200">
             {outcomes.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="grid grid-cols-[28px_1fr] gap-3 border-b border-gray-200 py-5 sm:grid-cols-[32px_210px_1fr] sm:items-center sm:gap-5">
-                <Icon size={20} strokeWidth={2} aria-hidden="true" />
-                <h3 className="text-base font-black leading-tight text-gray-950">{title}</h3>
+              <div key={title} className="group grid grid-cols-[32px_1fr] gap-3 border-b border-gray-200 py-6 transition-colors hover:bg-[#fafaf7] sm:grid-cols-[36px_210px_1fr] sm:items-center sm:gap-5 sm:px-4">
+                <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
+                <h3 className="text-base font-semibold leading-tight text-gray-950">{title}</h3>
                 <p className="col-start-2 text-sm leading-relaxed text-gray-600 sm:col-start-3">{body}</p>
               </div>
             ))}
@@ -254,23 +258,23 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="how-it-works" className="content-auto border-y border-gray-200 bg-[#f7f7f4] px-5 py-12 sm:px-8 md:py-20">
-        <div className="mx-auto max-w-6xl">
+      <section id="how-it-works" className="content-auto border-y border-gray-200 bg-[#f4f4f0] px-5 py-14 sm:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
           <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
             <div>
-              <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Sådan fungerer det' : 'How it works'}</p>
-              <h2 className="text-3xl font-black leading-tight text-gray-950 text-balance sm:text-4xl md:text-5xl">
+              <p className="kicker mb-5">{isDa ? 'Sådan fungerer det' : 'How it works'}</p>
+              <h2 className="text-3xl font-semibold leading-[1.04] text-gray-950 text-balance sm:text-4xl md:text-5xl">
                 {isDa ? 'Fra mål til næste skridt.' : 'From goal to next step.'}
               </h2>
             </div>
             <ol className="grid border-t border-gray-300 sm:grid-cols-2 lg:grid-cols-4">
               {steps.map(([Icon, title, body], index) => (
-                <li key={title} className="border-b border-gray-300 py-6 sm:border-r sm:px-5 sm:even:border-r-0 lg:border-b-0 lg:even:border-r lg:last:border-r-0">
+                <li key={title} className="border-b border-gray-300 py-7 sm:border-r sm:px-5 sm:even:border-r-0 lg:min-h-[250px] lg:border-b-0 lg:even:border-r lg:last:border-r-0">
                   <div className="flex items-center justify-between">
                     <Icon size={20} strokeWidth={2} aria-hidden="true" />
-                    <span className="text-xs font-black text-gray-400">0{index + 1}</span>
+                    <span className="editorial-label">0{index + 1}</span>
                   </div>
-                  <h3 className="mt-8 text-lg font-black text-gray-950">{title}</h3>
+                  <h3 className="mt-10 text-xl font-semibold text-gray-950">{title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-gray-600">{body}</p>
                 </li>
               ))}
@@ -279,16 +283,16 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="profile-universe" className="content-auto bg-white px-5 py-12 sm:px-8 md:py-20">
-        <div className="mx-auto max-w-6xl">
+      <section id="profile-universe" className="content-auto bg-white px-5 py-14 sm:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
           <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Profiluniverset' : 'The profile universe'}</p>
-              <h2 className="max-w-3xl text-3xl font-black leading-tight text-gray-950 text-balance sm:text-4xl md:text-5xl">
+              <p className="kicker mb-5">{isDa ? 'Profiluniverset' : 'The profile universe'}</p>
+              <h2 className="max-w-3xl text-3xl font-semibold leading-[1.04] text-gray-950 text-balance sm:text-4xl md:text-5xl">
                 {isDa ? 'Vælg på dokumenteret baggrund, ikke på støj.' : 'Choose based on documented experience, not noise.'}
               </h2>
             </div>
-            <Link href="/professionals" className="inline-flex w-fit items-center gap-2 text-sm font-black text-gray-950 hover:text-gray-600">
+            <Link href="/professionals" className="button-secondary w-fit">
               {isDa ? 'Se alle profiler' : 'View all profiles'}
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
@@ -301,11 +305,11 @@ export function HomeContent() {
           ) : !profilesError && featured.length > 0 ? (
             <div className="border-t border-gray-200">
               {featured.map((profile) => (
-                <Link key={profile.id} href={`/professionals/${profile.id}`} className="grid grid-cols-[44px_1fr] gap-x-3 gap-y-3 border-b border-gray-200 py-5 transition-colors hover:bg-gray-50 md:grid-cols-[52px_170px_1fr_1fr_130px] md:items-center md:gap-4 md:px-4">
-                  <span className={`flex h-11 w-11 items-center justify-center rounded-lg text-xs font-black text-gray-950 ${accentForIndustry(profile.industries[0])}`}>{initials(profile.name)}</span>
+                <Link key={profile.id} href={`/professionals/${profile.id}`} className="group grid grid-cols-[44px_1fr] gap-x-3 gap-y-3 border-b border-gray-200 py-5 transition-colors hover:bg-[#fafaf7] md:grid-cols-[52px_170px_1fr_1fr_130px] md:items-center md:gap-4 md:px-4 md:py-6">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-md font-['Space_Grotesk'] text-xs font-bold text-gray-950 transition-transform group-hover:-translate-y-0.5 ${accentForIndustry(profile.industries[0])}`}>{initials(profile.name)}</span>
                   <p className="self-center text-xs font-black uppercase text-gray-400 md:self-auto">{profile.industries[0] ?? (isDa ? 'Professionel' : 'Professional')}</p>
                   <div className="col-span-2 md:col-span-1">
-                    <p className="text-lg font-black text-gray-950">{profile.name}</p>
+                    <p className="font-['Space_Grotesk'] text-lg font-semibold text-gray-950">{profile.name}</p>
                     <p className="mt-1 text-xs font-semibold text-gray-500">{profile.title}{profile.company ? ` · ${profile.company}` : ''}</p>
                   </div>
                   <p className="col-span-2 text-sm leading-relaxed text-gray-600 md:col-span-1">{primaryFocus(profile.focusAreas, isDa)}</p>
@@ -324,7 +328,7 @@ export function HomeContent() {
                   {isDa ? 'Profilservicen er midlertidigt utilgængelig. Du kan stadig se formatet og kontakte os, hvis du søger en bestemt baggrund.' : 'The profile service is temporarily unavailable. You can still review the format and contact us if you need a specific background.'}
                 </p>
               </div>
-              <Link href="/professionals" className="inline-flex min-h-12 w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
+              <Link href="/professionals" className="button-primary w-fit">
                 {isDa ? 'Kontrollér profilstatus' : 'Check profile status'}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
@@ -346,12 +350,12 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="pricing" className="content-auto bg-gray-950 px-5 py-12 text-white sm:px-8 md:py-20">
-        <div className="mx-auto max-w-6xl">
+      <section id="pricing" className="content-auto bg-[#09090b] px-5 py-14 text-white sm:px-8 md:py-24 lg:px-10">
+        <div className="mx-auto max-w-[78rem]">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end lg:gap-14">
             <div>
-              <p className="mb-4 text-xs font-black uppercase text-white/45">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
-              <h2 className="text-3xl font-black leading-tight text-white text-balance sm:text-4xl md:text-5xl">
+              <p className="kicker mb-5 text-white/50">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
+              <h2 className="text-3xl font-semibold leading-[1.04] text-white text-balance sm:text-4xl md:text-5xl">
                 {isDa ? 'Fire priser. Samme fokuserede format.' : 'Four prices. The same focused format.'}
               </h2>
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/65 md:text-base">
@@ -362,9 +366,9 @@ export function HomeContent() {
             </div>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
               {PRICE_OPTIONS.map((amount, index) => (
-                <div key={amount} className={`min-h-[150px] rounded-lg p-4 text-gray-950 sm:p-5 ${priceColors[index]}`}>
-                  <p className="text-[11px] font-black uppercase text-gray-600">{SESSION_MINUTES} min</p>
-                  <p className="mt-5 text-lg font-black sm:text-xl">{formatDkk(amount)}</p>
+                <div key={amount} className={`lift-hover min-h-[170px] rounded-md border border-white/10 p-4 text-gray-950 sm:p-5 ${priceColors[index]}`}>
+                  <div className="flex items-center justify-between"><p className="editorial-label text-gray-700">{SESSION_MINUTES} min</p><p className="editorial-label text-gray-600">0{index + 1}</p></div>
+                  <p className="mt-7 font-['Space_Grotesk'] text-2xl font-semibold sm:text-3xl">{formatDkk(amount)}</p>
                   <p className="mt-2 text-xs font-semibold leading-relaxed text-gray-700">
                     {isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} afsættes ved betaling` : `At least ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} allocated when paid`}
                   </p>
@@ -375,14 +379,14 @@ export function HomeContent() {
 
           <div className="mt-12 flex flex-col gap-6 border-t border-white/15 pt-8 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="max-w-2xl text-2xl font-black leading-tight text-white md:text-3xl">
+              <p className="max-w-2xl font-['Space_Grotesk'] text-2xl font-semibold leading-tight text-white md:text-3xl">
                 {isDa ? 'Find den rette sparringspartner.' : 'Find the right sparring partner.'}
               </p>
               <p className="mt-2 text-xs leading-relaxed text-white/45">
                 {isDa ? 'Bookinganmodninger er aktive. Der trækkes ingen betaling, før checkout og bidragsmodellen er endeligt aktiveret.' : 'Booking requests are active. No payment is collected until checkout and the contribution model are fully enabled.'}
               </p>
             </div>
-            <Link href="/professionals" className="inline-flex min-h-12 w-fit items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100">
+            <Link href="/professionals" className="button-secondary w-fit border-white bg-white">
               {isDa ? 'Se profiler' : 'Browse profiles'}
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
