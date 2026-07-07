@@ -87,20 +87,24 @@ export function Navbar() {
 
   return (
     <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.09] bg-white/[0.92] backdrop-blur-2xl">
-      <div className="mx-auto flex h-[4.5rem] max-w-[78rem] items-center justify-between px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto flex h-[4.75rem] max-w-[82rem] items-center justify-between px-5 sm:px-8 lg:px-12">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={displayDa ? 'Naetwork forside' : 'Naetwork home'}>
           <span className="brand-mark transition-transform duration-200 group-hover:-translate-y-0.5">N</span>
-          <span className="font-['Space_Grotesk'] text-[16px] font-bold text-gray-950">Naetwork</span>
+          <span>
+            <span className="block font-['Space_Grotesk'] text-[16px] font-semibold leading-none text-gray-950">Naetwork</span>
+            <span className="mt-1 hidden font-['JetBrains_Mono'] text-[8px] uppercase text-gray-400 sm:block">Career access</span>
+          </span>
         </Link>
 
         <div className="hidden items-center gap-7 lg:flex">
-          {navLinks.map((link) => (
+          {navLinks.map((link, index) => (
             <Link
               key={link.href}
               href={link.href}
               aria-current={link.href.startsWith('/#') ? undefined : pathname === link.href ? 'page' : undefined}
-              className={`relative py-2 text-[13px] font-semibold transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-gray-950 after:transition-transform hover:text-gray-950 hover:after:scale-x-100 ${pathname === link.href ? 'text-gray-950 after:scale-x-100' : 'text-gray-500'}`}
+              className={`group/link relative flex items-center gap-1.5 py-2 text-[13px] font-semibold transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-gray-950 after:transition-transform hover:text-gray-950 hover:after:scale-x-100 ${pathname === link.href ? 'text-gray-950 after:scale-x-100' : 'text-gray-500'}`}
             >
+              <span className="font-['JetBrains_Mono'] text-[8px] font-medium text-gray-300 transition-colors group-hover/link:text-gray-500">0{index + 1}</span>
               {link.label}
             </Link>
           ))}
@@ -115,7 +119,7 @@ export function Navbar() {
             href="/professionals"
             className="button-primary hidden min-h-10 px-4 py-2.5 lg:inline-flex"
           >
-            {displayDa ? 'Find en professionel' : 'Find a professional'}
+            {displayDa ? 'Book 60 min' : 'Book 60 min'}
           </Link>
 
           {session === null ? <span aria-hidden="true" className="hidden h-9 w-16 lg:block" /> : session ? (
@@ -178,7 +182,7 @@ export function Navbar() {
           </div>
           <div className="mt-4 grid gap-2">
             <Link href="/professionals" className="button-primary" onClick={() => setMobileOpen(false)}>
-              {displayDa ? 'Find en professionel' : 'Find a professional'}
+              {displayDa ? 'Book 60 min' : 'Book 60 min'}
             </Link>
             {session ? (
               <div className="grid grid-cols-2 gap-2">
