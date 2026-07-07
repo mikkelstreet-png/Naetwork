@@ -132,7 +132,7 @@ export function HomeContent() {
           <dl className="grid grid-cols-3 border-x border-t border-white/20 bg-black/18 backdrop-blur-md">
             {[
               [`${SESSION_MINUTES} min`, isDa ? 'Fokuseret 1:1' : 'Focused 1:1'],
-              [<><span className="sm:hidden">600+</span><span className="hidden sm:inline">{formatDkk(PRICE_MIN)}-{PRICE_MAX.toLocaleString('da-DK')}</span></>, isDa ? 'Fast pris' : 'Fixed price'],
+              [<><span className="sm:hidden">DKK 600+</span><span className="hidden sm:inline">{formatDkk(PRICE_MIN)}-{PRICE_MAX.toLocaleString('da-DK')}</span></>, isDa ? 'Fast pris' : 'Fixed price'],
               [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Afsættes' : 'Allocated'],
             ].map(([value, label], index) => (
               <div key={index} className="border-r border-white/20 px-3 py-4 last:border-r-0 sm:px-5 sm:py-5 md:flex md:items-end md:justify-between md:gap-4">
@@ -236,7 +236,7 @@ export function HomeContent() {
               <h2 className="max-w-3xl text-4xl font-medium leading-[1] text-gray-950 text-balance sm:text-5xl md:text-6xl">
                 {isDa ? 'Sammenlign signal. Fjern støj.' : 'Compare signal. Remove noise.'}
               </h2>
-              <Link href="/professionals" className="button-secondary w-fit">
+              <Link href="/professionals" className="button-secondary w-fit whitespace-nowrap">
                 {isDa ? 'Se profiluniverset' : 'Explore profiles'}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
@@ -305,7 +305,10 @@ export function HomeContent() {
             {PRICE_OPTIONS.map((amount, index) => (
               <div key={amount} className="price-row group grid grid-cols-[46px_1fr_auto] items-center gap-4 border-b border-white/20 py-5 transition-colors duration-300 hover:bg-white/[0.04] md:grid-cols-[90px_1fr_1fr_120px] md:gap-6 md:px-3 md:py-6">
                 <p className="editorial-label text-white/35">0{index + 1}</p>
-                <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{formatDkk(amount)}</p>
+                <div>
+                  <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{formatDkk(amount)}</p>
+                  <p className="mt-1 text-[10px] font-semibold leading-tight text-white/38 md:hidden">{isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} afsættes` : `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} allocated`}</p>
+                </div>
                 <p className="hidden text-sm font-semibold text-white/60 md:block">{formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))}</p>
                 <p className="text-right text-xs font-semibold text-white/45">{SESSION_MINUTES} min</p>
               </div>
