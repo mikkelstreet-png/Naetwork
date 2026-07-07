@@ -68,11 +68,12 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-white px-5 py-12 sm:px-8 md:py-16">
-      <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_430px] lg:items-start">
+    <main className="min-h-[calc(100vh-4.5rem)] bg-[#f4f4f0] px-5 py-12 sm:px-8 md:py-20 lg:px-10">
+      <div className="mx-auto grid max-w-[78rem] gap-12 lg:grid-cols-[1fr_450px] lg:items-start">
         <section className="max-w-2xl pt-2 lg:pt-10">
-          <p className="mb-4 text-xs font-black uppercase text-gray-400">Opret konto</p>
-          <h1 className="text-4xl font-black leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-6xl">Find den erfaring, du mangler adgang til.</h1>
+          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+          <p className="kicker mb-5">Opret konto</p>
+          <h1 className="text-4xl font-semibold leading-[0.96] text-gray-950 text-balance sm:text-5xl md:text-6xl">Find den erfaring, du mangler adgang til.</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Opret en kandidatkonto for at sende bookinganmodninger og samle dine sessioner ét sted.</p>
           <div className="mt-10 border-t border-gray-200 pt-5">
             <p className="text-sm font-semibold text-gray-500">Vil du tilbyde sparring?</p>
@@ -80,22 +81,22 @@ export default function SignupPage() {
           </div>
         </section>
 
-        <section className="border border-gray-200 bg-[#f7f7f4] p-5 sm:p-7">
-          <h2 className="text-2xl font-black text-gray-950">Opret kandidatkonto</h2>
+        <section className="overflow-hidden rounded-md border border-gray-200 bg-white p-6 shadow-[0_20px_60px_rgba(9,9,11,0.08)] sm:p-8">
+          <h2 className="text-2xl font-semibold text-gray-950">Opret kandidatkonto</h2>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">Det tager under ét minut.</p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-5" aria-busy={loading}>
             <div>
               <label htmlFor="signup-name" className="mb-2 block text-sm font-semibold text-gray-700">Fulde navn</label>
-              <input id="signup-name" type="text" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Dit fulde navn" />
+              <input id="signup-name" type="text" autoComplete="name" required value={name} onChange={(event) => setName(event.target.value)} className="field-control" placeholder="Dit fulde navn" />
             </div>
             <div>
               <label htmlFor="signup-email" className="mb-2 block text-sm font-semibold text-gray-700">E-mail</label>
-              <input id="signup-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="dit@eksempel.dk" />
+              <input id="signup-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="field-control" placeholder="dit@eksempel.dk" />
             </div>
             <div>
               <label htmlFor="signup-password" className="mb-2 block text-sm font-semibold text-gray-700">Adgangskode</label>
-              <input id="signup-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="Mindst 8 tegn" />
+              <input id="signup-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="field-control" placeholder="Mindst 8 tegn" />
             </div>
 
             <label className="flex items-start gap-3 text-sm leading-relaxed text-gray-600">
@@ -105,7 +106,7 @@ export default function SignupPage() {
 
             {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
-            <button type="submit" disabled={loading} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-wait disabled:opacity-60">
+            <button type="submit" disabled={loading} className="button-primary w-full disabled:cursor-wait disabled:opacity-60">
               {loading ? 'Opretter konto...' : 'Opret konto'}
               {!loading && <ArrowRight size={16} aria-hidden="true" />}
             </button>
