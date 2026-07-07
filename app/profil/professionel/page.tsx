@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { MemberNav } from '@/components/MemberNav';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_MAX, PRICE_MIN } from '@/lib/platform';
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_OPTIONS, normalizePrice } from '@/lib/platform';
 
 export default function ProfessionalProfilePage() {
   const [data, setData] = useState({
@@ -24,10 +24,10 @@ export default function ProfessionalProfilePage() {
   const [error, setError] = useState('');
   const [loadFailed, setLoadFailed] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     async function load() {
+      const supabase = createClient();
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError) {
         setError('Kontosystemet svarer ikke. Prøv igen om et øjeblik.');
@@ -69,7 +69,7 @@ export default function ProfessionalProfilePage() {
           bio: prof.bio || '',
           industries: prof.industries || [],
           focus_areas: prof.focus_areas || [],
-          price_dkk: prof.price_dkk || 1200,
+          price_dkk: normalizePrice(prof.price_dkk),
           contribution_percent: prof.contribution_percent || 40,
           linkedin_url: prof.linkedin_url || '',
           visibility: prof.visibility || 'hidden',
@@ -94,6 +94,7 @@ export default function ProfessionalProfilePage() {
       return;
     }
     setSaving(true);
+    const supabase = createClient();
     const { data: { user: u } } = await supabase.auth.getUser();
     const { data: profile } = await supabase
       .from('profiles')
@@ -103,7 +104,7 @@ export default function ProfessionalProfilePage() {
     const { error: saveError } = await supabase.from('professional_profiles').upsert({
       profile_id: profile?.id,
       ...data,
-      price_dkk: Math.min(PRICE_MAX, Math.max(PRICE_MIN, data.price_dkk)),
+      price_dkk: normalizePrice(data.price_dkk),
       contribution_percent: Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, data.contribution_percent)),
       updated_at: new Date().toISOString(),
     }, { onConflict: 'profile_id' });
@@ -143,7 +144,7 @@ export default function ProfessionalProfilePage() {
           <h2 className="mt-3 text-2xl font-black leading-tight text-white sm:text-3xl">Gør din erfaring bookbar.</h2>
           <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:mt-5">Alle professionelle tilbyder 60 minutter. Forskellen er din erfaring, dine fokusområder og din pris.</p>
           <div className="mt-8 hidden space-y-3 lg:block">
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Prisramme</p><p className="mt-1 text-lg font-black">DKK 600-1.800</p></div>
+            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Prisvalg</p><p className="mt-1 text-lg font-black">600 · 900 · 1.200 · 1.800</p></div>
             <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Format</p><p className="mt-1 text-lg font-black">60 min</p></div>
             <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4"><p className="text-xs text-gray-500">Gennemgang</p><p className="mt-1 text-lg font-black">{data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'}</p></div>
           </div>
@@ -197,11 +198,16 @@ export default function ProfessionalProfilePage() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-              <label htmlFor="profile-price" className="mb-4 block text-sm font-semibold text-gray-700">Pris pr. 60 min: <span className="font-black text-gray-950">DKK {data.price_dkk.toLocaleString('da-DK')}</span></label>
-              <input id="profile-price" type="range" min={PRICE_MIN} max={PRICE_MAX} step={100} value={data.price_dkk} onChange={e => setData(d => ({ ...d, price_dkk: Number(e.target.value) }))} className="w-full accent-gray-950" />
-              <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>DKK 600</span><span>DKK 1.800</span></div>
-            </div>
+            <fieldset className="rounded-lg border border-gray-200 bg-gray-50 p-5">
+              <legend className="px-1 text-sm font-semibold text-gray-700">Pris pr. 60 minutter</legend>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {PRICE_OPTIONS.map((amount) => (
+                  <button key={amount} type="button" aria-pressed={data.price_dkk === amount} onClick={() => setData(d => ({ ...d, price_dkk: amount }))} className={`rounded-lg border px-3 py-3 text-sm font-black transition-colors ${data.price_dkk === amount ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
+                    DKK {amount.toLocaleString('da-DK')}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
 
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-5">
               <label htmlFor="profile-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag ved en betalt session: <span className="font-black text-gray-950">{data.contribution_percent}% / DKK {Math.round(data.price_dkk * data.contribution_percent / 100).toLocaleString('da-DK')}</span></label>
