@@ -67,7 +67,7 @@ export default function LoginPage() {
           <h2 className="text-2xl font-black text-gray-950">Log ind på Naetwork</h2>
           <p className="mt-2 text-sm leading-relaxed text-gray-500">Brug den e-mail, du oprettede kontoen med.</p>
 
-          <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-7 space-y-5" aria-busy={loading}>
             <div>
               <label htmlFor="login-email" className="mb-2 block text-sm font-semibold text-gray-700">E-mail</label>
               <input id="login-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder="dit@eksempel.dk" />
