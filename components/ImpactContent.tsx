@@ -23,20 +23,20 @@ export function ImpactContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-10 sm:px-8 md:py-20 lg:px-10">
-        <div className="mx-auto grid max-w-[78rem] gap-10 lg:grid-cols-[1fr_400px] lg:items-end">
+      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-24 lg:px-12">
+        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[1fr_410px] lg:items-end">
           <div>
-            <p className="kicker mb-5">{isDa ? 'Bidragsmodel' : 'Impact model'}</p>
-            <h1 className="display-xl max-w-5xl">
+            <p className="kicker mb-5 text-white/40">{isDa ? 'Bidragsmodel' : 'Impact model'}</p>
+            <h1 className="display-xl max-w-5xl text-white">
               {isDa ? 'Karrieresparring skal skabe værdi efter timen.' : 'Career guidance should create value beyond the hour.'}
             </h1>
-            <p className="body-lg mt-7 max-w-2xl">
+            <p className="body-lg mt-7 max-w-2xl text-white/55">
               {isDa
                 ? 'Minimum 40% og op til 90% af en gennemført, betalt Naetwork-session afsættes til støtte for Kræftens Bekæmpelse. Den konkrete andel vises, før kandidaten sender sin anmodning.'
                 : 'At least 40% and up to 90% of a completed, paid Naetwork session is allocated in support of Kræftens Bekæmpelse. The exact share is shown before the candidate sends a request.'}
             </p>
           </div>
-          <aside className="dark-panel relative overflow-hidden p-7 shadow-[0_24px_70px_rgba(9,9,11,0.14)]">
+          <aside className="relative overflow-hidden border border-white/20 bg-white/[0.035] p-7">
             <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
             <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
             <p className="mt-5 text-5xl font-black sm:text-6xl">{CONTRIBUTION_MIN}-{CONTRIBUTION_MAX}%</p>
@@ -57,8 +57,8 @@ export function ImpactContent() {
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-10">
-        <div className="mx-auto max-w-[78rem]">
+      <section className="px-5 py-16 sm:px-8 md:py-24 lg:px-12">
+        <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-4">
             {examples.map(([price, impact, percent]) => (
               <div key={price} className="bg-white p-6">
