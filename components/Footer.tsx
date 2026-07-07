@@ -51,14 +51,14 @@ export function Footer() {
   return (
     <footer className="bg-[#09090b] text-white">
       <div className="signal-rail"><span /><span /><span /><span /></div>
-      <div className="mx-auto max-w-[78rem] px-5 py-14 sm:px-8 md:py-20 lg:px-10">
+      <div className="mx-auto max-w-[82rem] px-5 py-14 sm:px-8 md:py-20 lg:px-12">
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-20">
           <div>
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Naetwork home">
               <span className="brand-mark border border-white/15 bg-white text-gray-950">N</span>
               <span className="block font-['Space_Grotesk'] text-xl font-bold text-white">Naetwork</span>
             </Link>
-            <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-3xl">
+            <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-4xl">
               {isDa
                 ? 'Erfaring, du kan handle på. En session med mening.'
                 : 'Experience you can act on. A session with purpose.'}
@@ -92,6 +92,8 @@ export function Footer() {
           <p className="max-w-2xl text-xs leading-relaxed text-white/35">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
           <p className="shrink-0 text-xs text-white/35">{isDa ? '© 2026 Naetwork. Alle rettigheder forbeholdes.' : '© 2026 Naetwork. All rights reserved.'}</p>
         </div>
+
+        <p aria-hidden="true" className="mt-12 overflow-hidden border-t border-white/10 pt-8 font-['Space_Grotesk'] text-[3.6rem] font-medium leading-none text-white/[0.08] sm:text-[7rem] md:text-[9rem]">Naetwork</p>
       </div>
     </footer>
   );
