@@ -27,6 +27,7 @@ import {
   industryAccent,
 } from '@/lib/platform';
 import { createClient } from '@/lib/supabase/client';
+import { HERO_SPECTRUM } from '@/lib/heroSpectrum';
 
 interface FeaturedProfessional {
   id: string;
@@ -166,7 +167,7 @@ export function HomeContent() {
   return (
     <main>
       <section id="home" className="relative isolate min-h-[calc(100svh-8.5rem)] overflow-hidden border-b border-black/10 bg-[#eef8f5] md:min-h-[calc(100svh-4.5rem)]">
-        <Image src="/naetwork-spectrum.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+        <Image src={HERO_SPECTRUM} alt="" fill priority unoptimized sizes="100vw" className="-z-20 object-cover object-center" />
         <div className="absolute inset-0 -z-10 bg-white/36" aria-hidden="true" />
         <div className="mx-auto flex min-h-[calc(100svh-8.5rem)] max-w-[78rem] flex-col justify-between px-5 py-8 sm:px-8 sm:py-12 md:min-h-[calc(100svh-4.5rem)] md:py-14 lg:px-10">
           <div className="enter-up max-w-5xl">
