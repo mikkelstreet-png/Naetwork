@@ -140,6 +140,7 @@ test('legal documents expose the current policy date', async ({ page }) => {
 
 test('professional application keeps pricing and review expectations concrete', async ({ page }) => {
   await page.goto('/professional/signup')
+  await expect(page.locator('main section[data-interactive="true"]')).toBeVisible()
   await page.getByLabel('Fulde navn').fill('Test Professionel')
   await page.getByLabel('E-mail').fill('professionel@example.com')
   await page.getByLabel('Adgangskode').fill('test-password-123')
@@ -149,6 +150,7 @@ test('professional application keeps pricing and review expectations concrete', 
   await page.getByLabel('LinkedIn').fill('https://linkedin.com/in/test-professionel')
   await page.getByRole('button', { name: 'Næste' }).click()
 
+  await expect(page.getByRole('heading', { name: 'Fokusområder og pris' })).toBeVisible()
   await page.getByRole('button', { name: 'CV og LinkedIn' }).click()
   for (const amount of ['DKK 600', 'DKK 900', 'DKK 1.200', 'DKK 1.800']) {
     await expect(page.getByRole('button', { name: amount })).toBeVisible()

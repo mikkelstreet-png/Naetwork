@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
@@ -20,6 +20,7 @@ const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
 
 export default function ProfessionalSignupPage() {
   const [step, setStep] = useState(1);
+  const [isInteractive, setIsInteractive] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', password: '',
@@ -31,6 +32,10 @@ export default function ProfessionalSignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [accepted, setAccepted] = useState(false);
+
+  useEffect(() => {
+    setIsInteractive(true);
+  }, []);
 
   const economics = sessionEconomics(form.priceDkk, form.contributionPercent);
   const set = (key: string, value: unknown) => setForm(f => ({ ...f, [key]: value }));
@@ -179,7 +184,7 @@ export default function ProfessionalSignupPage() {
           </div>
         </aside>
 
-        <section>
+        <section aria-busy={!isInteractive} data-interactive={isInteractive ? 'true' : 'false'}>
           <div className="mb-4 grid grid-cols-4 gap-1.5 sm:mb-5 sm:gap-2">
             {STEP_LABELS.map((label, index) => {
               const n = index + 1;
@@ -202,37 +207,37 @@ export default function ProfessionalSignupPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="professional-name" className="mb-1 block text-sm font-semibold text-gray-700">Fulde navn</label>
-                    <input id="professional-name" required aria-required="true" autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="field-control text-sm" placeholder="Mikkel Jensen" />
+                    <input id="professional-name" required aria-required="true" disabled={!isInteractive} autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="field-control text-sm" placeholder="Mikkel Jensen" />
                   </div>
                   <div>
                     <label htmlFor="professional-email" className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
-                    <input id="professional-email" type="email" required aria-required="true" autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="field-control text-sm" placeholder="mikkel@firma.dk" />
+                    <input id="professional-email" type="email" required aria-required="true" disabled={!isInteractive} autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="field-control text-sm" placeholder="mikkel@firma.dk" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="professional-password" className="mb-1 block text-sm font-semibold text-gray-700">Adgangskode</label>
-                  <input id="professional-password" type="password" required aria-required="true" autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="field-control text-sm" placeholder="Min. 8 tegn" />
+                  <input id="professional-password" type="password" required aria-required="true" disabled={!isInteractive} autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="field-control text-sm" placeholder="Min. 8 tegn" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="professional-title" className="mb-1 block text-sm font-semibold text-gray-700">Jobtitel</label>
-                    <input id="professional-title" required aria-required="true" autoComplete="organization-title" value={form.title} onChange={e => set('title', e.target.value)} className="field-control text-sm" placeholder="Senior Manager" />
+                    <input id="professional-title" required aria-required="true" disabled={!isInteractive} autoComplete="organization-title" value={form.title} onChange={e => set('title', e.target.value)} className="field-control text-sm" placeholder="Senior Manager" />
                   </div>
                   <div>
                     <label htmlFor="professional-company" className="mb-1 block text-sm font-semibold text-gray-700">Virksomhed</label>
-                    <input id="professional-company" required aria-required="true" autoComplete="organization" value={form.company} onChange={e => set('company', e.target.value)} className="field-control text-sm" placeholder="Nordea" />
+                    <input id="professional-company" required aria-required="true" disabled={!isInteractive} autoComplete="organization" value={form.company} onChange={e => set('company', e.target.value)} className="field-control text-sm" placeholder="Nordea" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="professional-industry" className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
-                  <select id="professional-industry" required aria-required="true" value={form.industry} onChange={e => set('industry', e.target.value)} className="field-control text-sm">
+                  <select id="professional-industry" required aria-required="true" disabled={!isInteractive} value={form.industry} onChange={e => set('industry', e.target.value)} className="field-control text-sm">
                     <option value="">Vælg industri</option>
                     {INDUSTRIES.map((industry) => <option key={industry.id} value={industry.id}>{industry.id}</option>)}
                   </select>
                 </div>
                 <div>
                   <label htmlFor="professional-linkedin" className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
-                  <input id="professional-linkedin" type="url" required aria-required="true" inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="field-control text-sm" placeholder="https://linkedin.com/in/..." />
+                  <input id="professional-linkedin" type="url" required aria-required="true" disabled={!isInteractive} inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="field-control text-sm" placeholder="https://linkedin.com/in/..." />
                   <p className="mt-1 text-xs text-gray-400">Bruges til at gennemgå din professionelle baggrund.</p>
                 </div>
               </div>
@@ -346,7 +351,7 @@ export default function ProfessionalSignupPage() {
             <div className="mt-8 flex gap-3">
               {step > 1 && <button type="button" onClick={() => { setError(''); setStep(s => s - 1); }} className="button-secondary flex-1">Tilbage</button>}
               {step < 4
-                ? <button type="button" onClick={() => { if (validateStep(step)) setStep(s => s + 1); }} className="button-primary flex-1">Næste</button>
+                ? <button type="button" disabled={!isInteractive} onClick={() => { if (validateStep(step)) setStep(s => s + 1); }} className="button-primary flex-1 disabled:cursor-wait disabled:opacity-70">Næste</button>
                 : <button type="button" onClick={handleSubmit} disabled={loading} className="button-primary flex-1 disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
               }
             </div>
