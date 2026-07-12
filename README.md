@@ -14,7 +14,7 @@ Every paid session is designed to allocate 40%, 60%, 80% or 90% of its price exc
 
 ## Local setup
 
-Use Node.js 20 or newer.
+Use Node.js 22.13 or newer.
 
 1. Copy `.env.example` to `.env.local` and provide every value.
 2. Apply the SQL files in `supabase/migrations` in numeric order.
@@ -77,5 +77,6 @@ Admin access is enforced server-side and by row-level security. Professional pro
 - Terms acceptance, privacy-notice versions, and the four-price database constraint require migration `008_consent_and_price_integrity.sql`.
 - Fixed contribution choices and immutable booking-economics snapshots require migration `009_pricing_and_contribution_integrity.sql`.
 - Auditable marketing consent timestamps and change history require migration `010_marketing_consent_audit.sql`.
+- Public professional discovery, real availability, review records, and integration audit tables require migration `011_marketplace_foundation.sql`.
 - Payment remains disabled and no card or charge is created.
 - Payment must remain disabled until every critical legal blocker introduced in `006_legal_release_gates.sql` has been manually reviewed and resolved.
