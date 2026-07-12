@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 
 const files = [
   'lib/platform.ts',
+  'lib/legal.ts',
   'lib/constants.ts',
   'lib/content.ts',
   'lib/fieldGuides.ts',
@@ -20,6 +21,7 @@ const files = [
   'app/professionals/page.tsx',
   'app/professionals/[id]/page.tsx',
   'app/professional/signup/page.tsx',
+  'app/profil/page.tsx',
   'app/profil/professionel/page.tsx',
   'app/terms/page.tsx',
   'app/privacy/page.tsx',
@@ -27,6 +29,8 @@ const files = [
   'supabase/migrations/006_legal_release_gates.sql',
   'supabase/migrations/007_data_retention.sql',
   'supabase/migrations/008_consent_and_price_integrity.sql',
+  'supabase/migrations/009_pricing_and_contribution_integrity.sql',
+  'supabase/migrations/010_marketing_consent_audit.sql',
   'app/admin/page.tsx',
   'app/admin/users/page.tsx',
   'app/admin/professionals/page.tsx',
@@ -52,6 +56,9 @@ const forbidden = [
   ['incorrect contact consent wording', /Ved at sende formularen accepterer du/],
   ['privacy policy framed as consent', /accepterer Naetworks[^\n]{0,120}privatlivspolitik/i],
   ['misleading contribution certainty', /Minimum 40% af hver betalt session går til/],
+  ['unsupported identity verification claim', /gennemgår identitet/i],
+  ['outdated legal date', /7\. juli 2026|2026[-]07[-]07/],
+  ['overstated contribution in social image', new RegExp('Minimum 40% til Kræftens ' + 'Bekæmpelse')],
 ]
 
 const errors = forbidden.filter(([, pattern]) => pattern.test(corpus)).map(([label]) => `Forbidden content: ${label}`)
@@ -62,6 +69,10 @@ const required = [
   ['lib/platform.ts', /export const PRICE_OPTIONS = \[600, 900, 1200, 1800\]/],
   ['lib/platform.ts', /export const CONTRIBUTION_MIN = 40/],
   ['lib/platform.ts', /export const CONTRIBUTION_MAX = 90/],
+  ['lib/platform.ts', /export const CONTRIBUTION_OPTIONS = \[40, 60, 80, 90\]/],
+  ['lib/platform.ts', /export const PLATFORM_FEE_DKK = 49/],
+  ['lib/legal.ts', /export const LEGAL_OPERATOR/],
+  ['lib/legal.ts', /export const LEGAL_UPDATED_ISO = '2026-07-12'/],
   ['app/terms/page.tsx', /14 dages fortrydelsesret/],
   ['app/terms/page.tsx', /ikke officielt tilknyttet/],
   ['app/terms/page.tsx', /aftaler, tilladelser, regnskabsprocesser og dokumentationskrav/],
@@ -69,6 +80,12 @@ const required = [
   ['supabase/migrations/007_data_retention.sql', /run_data_retention/],
   ['supabase/migrations/008_consent_and_price_integrity.sql', /privacy_noticed_at/],
   ['supabase/migrations/008_consent_and_price_integrity.sql', /price_dkk IN \(600, 900, 1200, 1800\)/],
+  ['supabase/migrations/009_pricing_and_contribution_integrity.sql', /contribution_percent IN \(40, 60, 80, 90\)/],
+  ['supabase/migrations/010_marketing_consent_audit.sql', /marketing_consent_events/],
+  ['supabase/migrations/010_marketing_consent_audit.sql', /profiles_marketing_consent_evidence/],
+  ['app/profil/page.tsx', /marketing_consent_at/],
+  ['app/privacy/page.tsx', /ændringshistorik for et eventuelt markedsføringssamtykke/],
+  ['app/terms/page.tsx', /sessionsprisen eksklusive moms/],
   ['app/privacy/page.tsx', /behandlingsgrundlag/i],
   ['app/privacy/page.tsx', /Overførsler uden for EU\/EØS/],
   ['app/privacy/page.tsx', /Opbevaring og sletning/],

@@ -90,15 +90,42 @@ export function HomeContent() {
   const profileFacts = [
     [isDa ? 'Baggrund' : 'Background', isDa ? 'Rolle, virksomhed og LinkedIn gennemgås' : 'Role, company and LinkedIn are reviewed'],
     [isDa ? 'Fokus' : 'Focus', isDa ? 'Konkrete emner og forventet output' : 'Concrete topics and expected output'],
-    [isDa ? 'Pris' : 'Price', `${formatDkk(PRICE_MIN)}-${PRICE_MAX.toLocaleString('da-DK')} / ${SESSION_MINUTES} min`],
-    [isDa ? 'Bidrag' : 'Impact', `${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% ${isDa ? 'ved gennemført betaling' : 'once completed and paid'}`],
+    [isDa ? 'Pris' : 'Price', `${formatDkk(PRICE_MIN)}-${PRICE_MAX.toLocaleString('da-DK')} ${isDa ? 'inkl. moms' : 'incl. VAT'} / ${SESSION_MINUTES} min`],
+    [isDa ? 'Bidrag' : 'Impact', `${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% ${isDa ? 'af pris ekskl. moms' : 'of the price excl. VAT'}`],
   ] as const;
+
+  const faqs = [
+    [
+      isDa ? 'Hvad kan de 60 minutter bruges til?' : 'What can the 60 minutes be used for?',
+      isDa ? 'Du vælger ét konkret fokus i dit brief, eksempelvis karriereretning, interview, case eller CV. Sessionen giver kvalificeret modspil og et skarpere næste træk, men lover ikke et bestemt karriereresultat.' : 'Choose one concrete focus in your brief, such as career direction, an interview, a case or your CV. The session provides informed challenge and a sharper next move, not a guaranteed career outcome.',
+    ],
+    [
+      isDa ? 'Hvordan gennemgås de professionelle?' : 'How are professionals reviewed?',
+      isDa ? 'Naetwork gennemgår den indsendte rolle, virksomhedserfaring og LinkedIn, før en profil kan publiceres. Det er en kvalitetskontrol, ikke en baggrundsundersøgelse eller garanti for et bestemt resultat.' : 'Naetwork reviews the submitted role, company experience and LinkedIn before a profile can be published. It is a quality check, not a background investigation or guarantee of a particular outcome.',
+    ],
+    [
+      isDa ? 'Hvorfor varierer prisen?' : 'Why does the price vary?',
+      isDa ? 'Den professionelle vælger mellem fire faste priser ud fra erfaring og fokus. Den samlede pris inklusive moms vises altid, før du sender en bookinganmodning.' : 'The professional selects one of four fixed prices based on experience and focus. The total price including VAT is always shown before you send a booking request.',
+    ],
+    [
+      isDa ? 'Hvordan beregnes bidraget?' : 'How is the contribution calculated?',
+      isDa ? 'Den professionelle vælger 40%, 60%, 80% eller 90% af sessionsprisen eksklusive moms. Det konkrete beløb vises før booking. Naetwork er et uafhængigt initiativ og ikke officielt tilknyttet Kræftens Bekæmpelse.' : 'The professional selects 40%, 60%, 80% or 90% of the session price excluding VAT. The exact amount is shown before booking. Naetwork is independent and is not officially affiliated with Kræftens Bekæmpelse.',
+    ],
+    [
+      isDa ? 'Hvornår er bookingen bindende?' : 'When is the booking binding?',
+      isDa ? 'Din anmodning bliver først til en aftale, når den professionelle bekræfter tidspunktet. Betaling er endnu ikke aktiveret, så der trækkes ikke et beløb nu.' : 'Your request becomes an appointment when the professional confirms the time. Payments are not enabled yet, so no amount is charged now.',
+    ],
+  ] as const;
+
+  const priceTiers = isDa
+    ? ['Specialist', 'Erfaren specialist / manager', 'Senior profil', 'Særligt erfaren profil']
+    : ['Specialist', 'Experienced specialist / manager', 'Senior profile', 'Distinct senior expertise'];
 
   return (
     <main>
       <section id="home" className="relative isolate min-h-[calc(100svh-7.5rem)] overflow-hidden bg-[#09090b] text-white md:min-h-[calc(100svh-8rem)]">
-        <Image src={HERO_SPECTRUM} alt="" fill priority unoptimized sizes="100vw" className="-z-20 object-cover object-center opacity-65" />
-        <div className="absolute inset-0 -z-10 bg-black/60" aria-hidden="true" />
+        <Image src={HERO_SPECTRUM} alt="" fill priority quality={85} sizes="100vw" className="-z-20 object-cover object-center opacity-85 saturate-[1.12]" />
+        <div className="absolute inset-0 -z-10 bg-black/50" aria-hidden="true" />
 
         <div className="mx-auto flex min-h-[calc(100svh-7.5rem)] max-w-[82rem] flex-col px-5 pb-0 pt-5 sm:px-8 sm:pt-6 md:min-h-[calc(100svh-8rem)] lg:px-12">
           <div className="flex items-center justify-between border-b border-white/20 pb-4">
@@ -110,30 +137,31 @@ export function HomeContent() {
             <div className="max-w-[970px]">
               <p className="kicker mb-6 text-white/65">{isDa ? 'Karrieresparring med mening' : 'Career guidance with purpose'}</p>
               <h1 className="max-w-[1000px] text-[2.75rem] font-medium leading-[0.92] text-white text-balance sm:text-6xl md:text-[4.6rem] lg:text-[4.8rem]">
-                {isDa ? 'Karrieresparring med den rette erfaring.' : 'Career guidance with the right experience.'}
+                {isDa ? 'Karrieresparring fra den side af bordet, du vil ind på.' : 'Career guidance from the side of the table you want to join.'}
               </h1>
               <p className="mt-6 max-w-2xl text-base font-medium leading-7 text-white/72 sm:mt-8 sm:text-lg md:text-xl md:leading-8">
                 {isDa
-                  ? '60 fokuserede minutter med en gennemgået professionel fra den verden, du vil forstå, søge ind i eller avancere i.'
-                  : '60 focused minutes with a reviewed professional from the world you want to understand, enter or advance in.'}
+                  ? 'Book 60 minutter med en gennemgået professionel fra AI, Banking, Management Consulting eller Private Equity. Brug tiden på CV, interview, case eller dit næste karrieretræk.'
+                  : 'Book 60 minutes with a reviewed professional from AI, Banking, Management Consulting or Private Equity. Use the time for your CV, interview, case or next career move.'}
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center">
                 <Link href="/professionals" className="button-inverse w-full sm:w-auto">
-                  {isDa ? 'Sammenlign professionelle' : 'Compare professionals'}
+                  {isDa ? 'Find den rette professionelle' : 'Find the right professional'}
                   <ArrowRight size={16} aria-hidden="true" />
                 </Link>
-                <Link href="/match" className="button-ghost-light w-full sm:w-auto">
-                  {isDa ? 'Find mit fokus' : 'Find my focus'}
+                <Link href="#how-it-works" className="button-ghost-light w-full sm:w-auto">
+                  {isDa ? 'Se hvordan det fungerer' : 'See how it works'}
                 </Link>
               </div>
             </div>
           </div>
 
-          <dl className="grid grid-cols-3 border-x border-t border-white/20 bg-black/18 backdrop-blur-md">
+          <div className="signal-rail" aria-hidden="true"><span /><span /><span /><span /></div>
+          <dl className="grid grid-cols-3 border-x border-white/20 bg-black/25 backdrop-blur-md">
             {[
               [`${SESSION_MINUTES} min`, isDa ? 'Fokuseret 1:1' : 'Focused 1:1'],
               [<><span className="sm:hidden">DKK 600+</span><span className="hidden sm:inline">{formatDkk(PRICE_MIN)}-{PRICE_MAX.toLocaleString('da-DK')}</span></>, isDa ? 'Fast pris' : 'Fixed price'],
-              [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Afsættes' : 'Allocated'],
+              [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Til kræftsagen' : 'To the cancer cause'],
             ].map(([value, label], index) => (
               <div key={index} className="border-r border-white/20 px-3 py-4 last:border-r-0 sm:px-5 sm:py-5 md:flex md:items-end md:justify-between md:gap-4">
                 <dd className="font-['Space_Grotesk'] text-base font-semibold text-white sm:text-xl md:text-2xl">{value}</dd>
@@ -150,7 +178,7 @@ export function HomeContent() {
             <p className="kicker">{isDa ? 'Fire erfaringsspor' : 'Four experience tracks'}</p>
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <h2 className="max-w-3xl text-3xl font-medium leading-[1.02] text-gray-950 text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Vælg den verden, du vil tættere på.' : 'Choose the world you want to get closer to.'}
+                {isDa ? 'Gå direkte til den erfaring, du søger.' : 'Go straight to the experience you need.'}
               </h2>
               <p className="max-w-xs text-sm leading-relaxed text-gray-500">{isDa ? 'Fire felter. Samme præcise 60-minutters format.' : 'Four fields. The same precise 60-minute format.'}</p>
             </div>
@@ -186,15 +214,16 @@ export function HomeContent() {
               </p>
             </div>
 
-            <div className="grid border-l border-t border-white/16 sm:grid-cols-2">
+            <div className="grid grid-cols-2 border-l border-t border-white/16">
               {outcomes.map(({ icon: Icon, title, body }, index) => (
-                <article key={title} className="group min-h-[230px] border-b border-r border-white/16 p-6 transition-colors duration-300 hover:bg-white/[0.045] sm:p-7">
+                <article key={title} className="group relative min-h-[220px] border-b border-r border-white/16 p-4 transition-colors duration-300 hover:bg-white/[0.045] sm:min-h-[230px] sm:p-7">
+                  <div className={`absolute inset-x-0 top-0 h-[3px] ${fields[index].color}`} aria-hidden="true" />
                   <div className="flex items-center justify-between">
-                    <span className="flex h-9 w-9 items-center justify-center border border-white/20 text-white/75"><Icon size={17} strokeWidth={1.7} aria-hidden="true" /></span>
+                    <span className="flex h-8 w-8 items-center justify-center border border-white/20 text-white/75 sm:h-9 sm:w-9"><Icon size={16} strokeWidth={1.7} aria-hidden="true" /></span>
                     <span className="editorial-label text-white/30">0{index + 1}</span>
                   </div>
-                  <h3 className="mt-10 text-xl font-semibold text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/50">{body}</p>
+                  <h3 className="mt-8 text-base font-semibold leading-tight text-white sm:mt-10 sm:text-xl">{title}</h3>
+                  <p className="mt-3 text-xs leading-relaxed text-white/52 sm:text-sm">{body}</p>
                 </article>
               ))}
             </div>
@@ -212,16 +241,16 @@ export function HomeContent() {
             <p className="max-w-lg text-sm leading-relaxed text-gray-600 md:justify-self-end md:text-right">{isDa ? 'Ingen pakker eller komplicerede valg. Find erfaringen, definer målet og send en anmodning.' : 'No packages or complicated choices. Find the experience, define the goal and send a request.'}</p>
           </div>
 
-          <ol className="process-grid mt-10 grid border-l border-t border-[#bfbfb7] sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="process-grid mt-10 grid grid-cols-2 border-l border-t border-[#bfbfb7] lg:grid-cols-4">
             {steps.map(([Icon, title, body], index) => (
-              <li key={title} className="relative min-h-[245px] border-b border-r border-[#bfbfb7] bg-white/45 p-6 sm:p-7">
+              <li key={title} className="relative min-h-[220px] border-b border-r border-[#bfbfb7] bg-white/45 p-4 sm:min-h-[245px] sm:p-7">
                 <div className={`absolute inset-x-0 top-0 h-1 ${fields[index].color}`} aria-hidden="true" />
                 <div className="flex items-center justify-between">
-                  <Icon size={19} strokeWidth={1.7} aria-hidden="true" />
+                  <Icon size={18} strokeWidth={1.7} aria-hidden="true" />
                   <span className="editorial-label">0{index + 1}</span>
                 </div>
-                <h3 className="mt-12 text-xl font-semibold text-gray-950">{title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600">{body}</p>
+                <h3 className="mt-9 text-base font-semibold leading-tight text-gray-950 sm:mt-12 sm:text-xl">{title}</h3>
+                <p className="mt-3 text-xs leading-relaxed text-gray-600 sm:text-sm">{body}</p>
               </li>
             ))}
           </ol>
@@ -234,7 +263,7 @@ export function HomeContent() {
             <p className="kicker">{isDa ? 'Profilstandarden' : 'The profile standard'}</p>
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
               <h2 className="max-w-3xl text-4xl font-medium leading-[1] text-gray-950 text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Sammenlign signal. Fjern støj.' : 'Compare signal. Remove noise.'}
+                {isDa ? 'Se præcis, hvem du booker.' : 'Know exactly who you are booking.'}
               </h2>
               <Link href="/professionals" className="button-secondary w-fit whitespace-nowrap">
                 {isDa ? 'Se profiluniverset' : 'Explore profiles'}
@@ -244,15 +273,15 @@ export function HomeContent() {
           </div>
 
           <div className="mt-10 grid overflow-hidden border border-black/15 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="relative flex min-h-[380px] flex-col justify-between bg-[#09090b] p-6 text-white sm:p-8">
+            <div className="relative flex min-h-[330px] flex-col justify-between bg-[#09090b] p-6 text-white sm:min-h-[380px] sm:p-8">
               <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
               <div className="flex items-start justify-between">
                 <p className="editorial-label text-white/45">Profile record / N-01</p>
                 <span className="inline-flex items-center gap-2 border border-white/20 px-3 py-1.5 text-[10px] font-bold uppercase text-white/65"><Check size={12} aria-hidden="true" /> {isDa ? 'Gennemgået' : 'Reviewed'}</span>
               </div>
               <div>
-                <p className="max-w-md font-['Space_Grotesk'] text-3xl font-medium leading-tight sm:text-4xl">{isDa ? 'Den erfaring, der er relevant for dit konkrete næste skridt.' : 'The experience relevant to your concrete next step.'}</p>
-                <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">{isDa ? 'Ikke popularitet. Ikke generiske ratings. Dokumenteret baggrund, tydeligt fokus og kendte vilkår.' : 'Not popularity. Not generic ratings. Documented background, clear focus and known terms.'}</p>
+                <p className="max-w-md font-['Space_Grotesk'] text-[1.7rem] font-medium leading-tight sm:text-4xl">{isDa ? 'Den erfaring, der er relevant for dit konkrete næste skridt.' : 'The experience relevant to your concrete next step.'}</p>
+                <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">{isDa ? 'Indsendt baggrund, tydeligt fokus, fast pris og konkret bidrag. Det relevante er synligt, før du sender en anmodning.' : 'Submitted background, clear focus, fixed price and concrete contribution. What matters is visible before you send a request.'}</p>
               </div>
             </div>
 
@@ -290,25 +319,28 @@ export function HomeContent() {
                 {isDa ? 'Fire priser. Ét transparent format.' : 'Four prices. One transparent format.'}
               </h2>
               <p className="mt-6 max-w-2xl text-sm leading-relaxed text-white/52 md:text-base">
-                {isDa ? `Den professionelle vælger ét prisniveau. Minimum ${CONTRIBUTION_MIN}% og op til ${CONTRIBUTION_MAX}% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.` : `The professional selects one price point. At least ${CONTRIBUTION_MIN}% and up to ${CONTRIBUTION_MAX}% of a completed, paid session is allocated in support of Kræftens Bekæmpelse.`}
+                {isDa ? `Den professionelle vælger mellem fire faste priser og fire bidragsniveauer. ${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% af sessionsprisen ekskl. moms afsættes efter en gennemført, betalt session.` : `The professional selects from four fixed prices and four contribution levels. ${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% of the session price excl. VAT is allocated after a completed, paid session.`}
               </p>
             </div>
           </div>
 
           <div className="mt-10 border-t border-white/20">
-            <div className="hidden grid-cols-[90px_1fr_1fr_120px] gap-6 border-b border-white/20 py-3 md:grid">
-              <p className="editorial-label text-white/30">Level</p>
-              <p className="editorial-label text-white/30">{isDa ? 'Sessionspris' : 'Session price'}</p>
+            <div className="hidden grid-cols-[90px_1fr_1.2fr_1fr_120px] gap-6 border-b border-white/20 py-3 md:grid">
+              <p className="editorial-label text-white/30">{isDa ? 'Valg' : 'Option'}</p>
+              <p className="editorial-label text-white/30">{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</p>
+              <p className="editorial-label text-white/30">{isDa ? 'Profilniveau' : 'Profile level'}</p>
               <p className="editorial-label text-white/30">{isDa ? 'Minimum afsættes' : 'Minimum allocated'}</p>
               <p className="editorial-label text-right text-white/30">Format</p>
             </div>
             {PRICE_OPTIONS.map((amount, index) => (
-              <div key={amount} className="price-row group grid grid-cols-[46px_1fr_auto] items-center gap-4 border-b border-white/20 py-5 transition-colors duration-300 hover:bg-white/[0.04] md:grid-cols-[90px_1fr_1fr_120px] md:gap-6 md:px-3 md:py-6">
+              <div key={amount} className="price-row group grid grid-cols-[46px_1fr_auto] items-center gap-4 border-b border-white/20 py-5 transition-colors duration-300 hover:bg-white/[0.04] md:grid-cols-[90px_1fr_1.2fr_1fr_120px] md:gap-6 md:px-3 md:py-6">
                 <p className="editorial-label text-white/35">0{index + 1}</p>
                 <div>
                   <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{formatDkk(amount)}</p>
                   <p className="mt-1 text-[10px] font-semibold leading-tight text-white/38 md:hidden">{isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} afsættes` : `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} allocated`}</p>
+                  <p className="mt-1 text-[10px] font-semibold leading-tight text-white/55 md:hidden">{priceTiers[index]}</p>
                 </div>
+                <p className="hidden text-sm font-semibold text-white/68 md:block">{priceTiers[index]}</p>
                 <p className="hidden text-sm font-semibold text-white/60 md:block">{formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))}</p>
                 <p className="text-right text-xs font-semibold text-white/45">{SESSION_MINUTES} min</p>
               </div>
@@ -318,12 +350,35 @@ export function HomeContent() {
           <div className="mt-10 flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{isDa ? 'Find den rette sparringspartner.' : 'Find the right sparring partner.'}</p>
-              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/40">{isDa ? 'Bookinganmodninger er aktive. Betaling er endnu ikke aktiveret.' : 'Booking requests are active. Payments are not yet enabled.'}</p>
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/40">{isDa ? 'Bidrag beregnes af prisen ekskl. moms. Bookinganmodninger er aktive; betaling er endnu ikke aktiveret.' : 'Contributions are calculated from the price excl. VAT. Booking requests are active; payments are not yet enabled.'}</p>
             </div>
             <Link href="/professionals" className="button-inverse w-fit">
               {isDa ? 'Sammenlign profiler' : 'Compare profiles'}
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#cacac2] bg-[#f4f4ef] px-5 py-16 sm:px-8 md:py-24 lg:px-12">
+        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+          <div>
+            <p className="kicker mb-5">{isDa ? 'Før du booker' : 'Before you book'}</p>
+            <h2 className="max-w-lg text-4xl font-medium leading-[1] text-gray-950 text-balance sm:text-5xl">{isDa ? 'Klare svar. Ingen småt gemt væk.' : 'Clear answers. Nothing important hidden.'}</h2>
+          </div>
+          <div className="border-t border-[#cacac2]">
+            {faqs.map(([question, answer], index) => (
+              <details key={question} className="group border-b border-[#cacac2] py-5 open:pb-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-left marker:content-none">
+                  <span className="flex min-w-0 items-start gap-4">
+                    <span className="editorial-label mt-1 text-gray-400">0{index + 1}</span>
+                    <span className="font-['Space_Grotesk'] text-base font-semibold text-gray-950 sm:text-lg">{question}</span>
+                  </span>
+                  <span className="relative h-5 w-5 shrink-0" aria-hidden="true"><span className="absolute left-1/2 top-1/2 h-px w-4 -translate-x-1/2 bg-gray-950" /><span className="absolute left-1/2 top-1/2 h-4 w-px -translate-y-1/2 bg-gray-950 transition-transform group-open:scale-y-0" /></span>
+                </summary>
+                <p className="ml-10 mt-4 max-w-2xl text-sm leading-relaxed text-gray-600 sm:ml-12">{answer}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>

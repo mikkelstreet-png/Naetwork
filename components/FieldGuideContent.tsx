@@ -37,8 +37,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
             <dl className="border-t border-white/15">
               {[
                 [`${SESSION_MINUTES} min`, isDa ? 'Fleksibelt format' : 'Flexible format'],
-                [`${formatDkk(PRICE_MIN)}-${formatDkk(PRICE_MAX).replace('DKK ', '')}`, isDa ? 'Pris før booking' : 'Price before booking'],
-                [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Til kræftsagen' : 'To the cancer cause'],
+                [`${formatDkk(PRICE_MIN)}-${formatDkk(PRICE_MAX).replace('DKK ', '')}`, isDa ? 'Pris inkl. moms' : 'Price incl. VAT'],
+                [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Af pris ekskl. moms' : 'Of price excl. VAT'],
               ].map(([value, label]) => <div key={label} className="flex items-center justify-between gap-4 border-b border-white/15 py-3"><dt className="text-xs font-semibold text-white/45">{label}</dt><dd className="text-sm font-bold text-white">{value}</dd></div>)}
             </dl>
           </aside>
@@ -84,8 +84,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Bidrag' : 'Impact'}</p>
               <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
                 {isDa
-                  ? 'Minimum 40% og op til 90% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse. Pris og minimumsbeløb vises før anmodningen.'
-                  : 'At least 40% and up to 90% of a completed, paid session is allocated in support of Kræftens Bekæmpelse. Price and minimum amount are shown before the request.'}
+                  ? '40%, 60%, 80% eller 90% af sessionsprisen eksklusive moms afsættes efter en gennemført, betalt session. Totalpris og det konkrete bidrag vises før anmodningen.'
+                  : '40%, 60%, 80% or 90% of the session price excluding VAT is allocated after a completed, paid session. The total price and exact contribution are shown before the request.'}
               </p>
             </section>
           </div>

@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowRight, CalendarDays } from 'lucide-react';
+import { ArrowRight, CalendarDays, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MemberNav } from '@/components/MemberNav';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useLanguage } from '@/context/LanguageContext';
+import { focusLabel } from '@/lib/platform';
 
 interface Booking {
   id: string;
@@ -13,9 +14,20 @@ interface Booking {
   ends_at: string;
   status: string;
   price_dkk: number | null;
+  contribution_percent: number | null;
+  contribution_dkk: number | null;
+  professional_payout_dkk: number | null;
+  payment_status: string;
+  refund_status: string;
+  focus_area: string | null;
+  goal: string | null;
+  material_url: string | null;
+  meeting_mode: string;
+  meeting_url: string | null;
   viewer_role: 'candidate' | 'professional';
   counterpart_name: string;
   counterpart_title: string;
+  reviewed: boolean;
 }
 
 type View = 'upcoming' | 'past' | 'all';
@@ -31,6 +43,9 @@ export default function BookingsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
+  const [reviewBookingId, setReviewBookingId] = useState<string | null>(null);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -70,7 +85,7 @@ export default function BookingsPage() {
     return true;
   });
 
-  async function updateBooking(bookingId: string, action: 'confirm' | 'cancel') {
+  async function updateBooking(bookingId: string, action: 'confirm' | 'cancel' | 'complete') {
     if (action === 'cancel' && confirmCancelId !== bookingId) {
       setConfirmCancelId(bookingId);
       return;
@@ -95,6 +110,21 @@ export default function BookingsPage() {
       setActionLoading(null);
       setConfirmCancelId(null);
     }
+  }
+
+  async function submitReview(bookingId: string) {
+    if (rating < 1) { setActionError(isDa ? 'Vælg en rating.' : 'Choose a rating.'); return; }
+    setActionLoading(`${bookingId}:review`);
+    setActionError('');
+    try {
+      const response = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId, rating, feedback }) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error);
+      setBookings((current) => current.map((booking) => booking.id === bookingId ? { ...booking, reviewed: true } : booking));
+      setReviewBookingId(null); setRating(0); setFeedback('');
+    } catch (reviewError) {
+      setActionError(reviewError instanceof Error ? reviewError.message : (isDa ? 'Vurderingen kunne ikke gemmes.' : 'The review could not be saved.'));
+    } finally { setActionLoading(null); }
   }
 
   const views: Array<{ id: View; label: string; count: number }> = [
@@ -160,10 +190,16 @@ export default function BookingsPage() {
         ) : (
           <div className="border-t border-gray-300 bg-white">
             {visibleBookings.map((booking) => (
-              <article key={booking.id} className="grid gap-5 border-b border-gray-300 px-4 py-5 lg:grid-cols-[1fr_240px_140px_auto] lg:items-center">
-                <div><h2 className="text-lg font-black text-gray-950">{booking.counterpart_name}</h2><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title}</p></div>
+              <article key={booking.id} className="border-b border-gray-300 px-4 py-5">
+                <div className="grid gap-5 lg:grid-cols-[1fr_240px_140px_auto] lg:items-center">
+                <div><h2 className="text-lg font-black text-gray-950">{booking.counterpart_name}</h2><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title}</p>{booking.focus_area && <p className="mt-2 text-xs font-bold text-gray-700">{focusLabel(booking.focus_area, isDa ? 'da' : 'en')}</p>}</div>
                 <div><p className="text-sm font-black text-gray-950">{formatDateTime(booking.starts_at)}</p><p className="mt-1 text-xs text-gray-400">60 min · Europe/Copenhagen</p></div>
-                <div><p className="text-sm font-black text-gray-950">DKK {(booking.price_dkk ?? 0).toLocaleString('da-DK')}</p><p className="mt-1 text-xs text-gray-400">{isDa ? 'Betaling ikke aktiv' : 'Payment not active'}</p></div>
+                <div>
+                  <p className="text-sm font-black text-gray-950">DKK {(booking.price_dkk ?? 0).toLocaleString('da-DK')}</p>
+                  <p className="mt-1 text-xs text-gray-400">{isDa ? 'Inkl. moms · betaling ikke aktiv' : 'Incl. VAT · payment not active'}</p>
+                  {booking.viewer_role === 'candidate' && booking.contribution_dkk != null && <p className="mt-1 text-xs font-semibold text-gray-600">{isDa ? `Bidrag: DKK ${booking.contribution_dkk.toLocaleString('da-DK')} (${booking.contribution_percent}%)` : `Contribution: DKK ${booking.contribution_dkk.toLocaleString('da-DK')} (${booking.contribution_percent}%)`}</p>}
+                  {booking.viewer_role === 'professional' && booking.professional_payout_dkk != null && <p className="mt-1 text-xs font-semibold text-gray-600">{isDa ? `Forventet udbetaling: DKK ${booking.professional_payout_dkk.toLocaleString('da-DK')}` : `Expected payout: DKK ${booking.professional_payout_dkk.toLocaleString('da-DK')}`}</p>}
+                </div>
                 <div className="flex flex-wrap items-center gap-2 lg:justify-end">
                   <StatusBadge status={booking.status} />
                   {booking.viewer_role === 'professional' && ['requested', 'pending'].includes(booking.status) && (
@@ -172,10 +208,34 @@ export default function BookingsPage() {
                       <button onClick={() => updateBooking(booking.id, 'cancel')} onBlur={() => confirmCancelId === booking.id && setConfirmCancelId(null)} disabled={actionLoading !== null} className={`rounded-lg px-3 py-2 text-xs font-black disabled:opacity-50 ${confirmCancelId === booking.id ? 'bg-red-600 text-white' : 'border border-gray-300 text-gray-700'}`}>{confirmCancelId === booking.id ? (isDa ? 'Bekræft afvisning' : 'Confirm decline') : (isDa ? 'Afvis' : 'Decline')}</button>
                     </>
                   )}
+                  {booking.viewer_role === 'professional' && ['confirmed', 'rescheduled'].includes(booking.status) && new Date(booking.ends_at).getTime() <= now && <button onClick={() => updateBooking(booking.id, 'complete')} disabled={actionLoading !== null} className="rounded-[4px] bg-gray-950 px-3 py-2 text-xs font-black text-white disabled:opacity-50">{isDa ? 'Markér gennemført' : 'Mark completed'}</button>}
+                  {booking.viewer_role === 'candidate' && booking.status === 'completed' && !booking.reviewed && <button onClick={() => setReviewBookingId(reviewBookingId === booking.id ? null : booking.id)} className="rounded-[4px] border border-gray-300 px-3 py-2 text-xs font-black text-gray-700">{isDa ? 'Vurdér session' : 'Review session'}</button>}
                   {booking.viewer_role === 'candidate' && ACTIVE_STATUSES.includes(booking.status) && (
                     <button onClick={() => updateBooking(booking.id, 'cancel')} onBlur={() => confirmCancelId === booking.id && setConfirmCancelId(null)} disabled={actionLoading !== null} className={`rounded-lg px-3 py-2 text-xs font-black disabled:opacity-50 ${confirmCancelId === booking.id ? 'bg-red-600 text-white' : 'border border-gray-300 text-gray-700'}`}>{actionLoading === `${booking.id}:cancel` ? '...' : confirmCancelId === booking.id ? (isDa ? 'Bekræft aflysning' : 'Confirm cancellation') : (isDa ? 'Aflys' : 'Cancel')}</button>
                   )}
                 </div>
+                </div>
+                {(booking.goal || booking.material_url || (booking.status === 'confirmed' && booking.meeting_url)) && (
+                  <div className="mt-5 grid gap-4 border-t border-gray-200 pt-4 sm:grid-cols-[1fr_auto] sm:items-start">
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-gray-400">{isDa ? 'Forberedelse' : 'Preparation'}</p>
+                      {booking.goal && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{booking.goal}</p>}
+                      <div className="mt-3 flex flex-wrap gap-4 text-xs font-bold">
+                        {booking.material_url && <a href={booking.material_url} target="_blank" rel="noreferrer" className="text-gray-950 underline decoration-gray-300 underline-offset-4">{isDa ? 'Åbn delt materiale' : 'Open shared material'}</a>}
+                        {booking.status === 'confirmed' && booking.meeting_url && <a href={booking.meeting_url} target="_blank" rel="noreferrer" className="text-gray-950 underline decoration-gray-300 underline-offset-4">{isDa ? 'Åbn videolink' : 'Open video link'}</a>}
+                      </div>
+                    </div>
+                    <p className="text-xs leading-relaxed text-gray-400 sm:max-w-56 sm:text-right">{booking.payment_status === 'paid' ? (isDa ? 'Betalt' : 'Paid') : (isDa ? 'Betaling ikke gennemført' : 'Payment not completed')} · {isDa ? 'Aflys senest 24 timer før for fuld refundering, når betaling aktiveres.' : 'Cancel at least 24 hours before for a full refund when payments launch.'}</p>
+                  </div>
+                )}
+                {reviewBookingId === booking.id && (
+                  <div className="mt-5 border-t border-gray-200 pt-5">
+                    <p className="text-sm font-black text-gray-950">{isDa ? 'Hvordan var sessionen?' : 'How was the session?'}</p>
+                    <div className="mt-3 flex gap-1" role="radiogroup" aria-label={isDa ? 'Rating' : 'Rating'}>{[1, 2, 3, 4, 5].map((value) => <button key={value} type="button" role="radio" aria-checked={rating === value} onClick={() => setRating(value)} className={`flex h-10 w-10 items-center justify-center rounded-[4px] border ${rating >= value ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-300 bg-white text-gray-400'}`} aria-label={`${value} ${isDa ? 'ud af 5' : 'out of 5'}`}><Star size={16} fill={rating >= value ? 'currentColor' : 'none'} aria-hidden="true" /></button>)}</div>
+                    <textarea value={feedback} onChange={(event) => setFeedback(event.target.value.slice(0, 1000))} rows={3} className="field-control mt-3 resize-none text-sm" placeholder={isDa ? 'Valgfrit: Hvad fungerede godt, og hvad kunne være bedre?' : 'Optional: What worked well, and what could be better?'} />
+                    <div className="mt-3 flex gap-2"><button type="button" onClick={() => void submitReview(booking.id)} disabled={actionLoading !== null} className="button-primary min-h-10 py-2">{isDa ? 'Send vurdering' : 'Submit review'}</button><button type="button" onClick={() => setReviewBookingId(null)} className="button-secondary min-h-10 py-2">{isDa ? 'Annuller' : 'Cancel'}</button></div>
+                  </div>
+                )}
               </article>
             ))}
           </div>

@@ -13,7 +13,7 @@ export default function OpenGraphImage() {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div style={{ maxWidth: 970, fontSize: 78, lineHeight: 0.98, fontWeight: 800, letterSpacing: 0 }}>Karrieresparring med mening.</div>
-        <div style={{ fontSize: 25, color: '#52525b' }}>60 minutter. Tydelig pris. Minimum 40% til Kræftens Bekæmpelse ved en betalt session.</div>
+        <div style={{ fontSize: 25, color: '#52525b' }}>60 minutter. Tydelig pris. Minimum 40% af prisen ekskl. moms afsættes til kræftsagen efter en betalt session.</div>
       </div>
       <div style={{ display: 'flex', width: '100%', height: 14, overflow: 'hidden', borderRadius: 7 }}>
         <div style={{ flex: 1, background: '#67e8f9' }} />

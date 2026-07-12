@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { hasMeaningfulValue, hasValidLegalIdentity, isValidEmail } from '@/lib/server/readiness';
+import { paymentConfiguration } from '@/lib/server/payments';
 
 export async function GET() {
   const supabase = await createClient();
@@ -11,6 +12,7 @@ export async function GET() {
   if (profile?.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const { error: databaseError } = await supabase.from('profiles').select('id').limit(1);
+  const payments = paymentConfiguration();
   return NextResponse.json({
     database: databaseError ? 'error' : 'ok',
     environment: {
@@ -25,7 +27,7 @@ export async function GET() {
     },
     integrations: {
       transactionalEmail: process.env.RESEND_API_KEY && process.env.EMAIL_FROM ? 'configured' : 'pending',
-      payment: 'disabled',
+      payment: payments.enabled ? 'configured' : payments.configured ? 'disabled' : 'pending',
     },
   });
 }

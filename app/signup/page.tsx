@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { ArrowRight, Mail } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
+import { accountErrorMessage } from '@/lib/authErrors';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -43,9 +44,7 @@ export default function SignupPage() {
     });
 
     if (authError) {
-      setError(/fetch|network/i.test(authError.message)
-        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
-        : authError.message);
+      setError(accountErrorMessage(authError, 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.'));
       setLoading(false);
       return;
     }

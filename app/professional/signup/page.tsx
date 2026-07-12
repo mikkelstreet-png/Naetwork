@@ -4,8 +4,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_OPTIONS } from '@/lib/platform';
+import {
+  CONTRIBUTION_OPTIONS,
+  FOCUS_AREAS,
+  INDUSTRIES,
+  PRICE_OPTIONS,
+  formatDkk,
+  normalizeLinkedInUrl,
+  sessionEconomics,
+} from '@/lib/platform';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
+import { accountErrorMessage } from '@/lib/authErrors';
 
 const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
 
@@ -23,8 +32,7 @@ export default function ProfessionalSignupPage() {
   const [loading, setLoading] = useState(false);
   const [accepted, setAccepted] = useState(false);
 
-  const estimatedContribution = Math.round(form.priceDkk * (form.contributionPercent / 100));
-  const estimatedProfessionalShare = form.priceDkk - estimatedContribution;
+  const economics = sessionEconomics(form.priceDkk, form.contributionPercent);
   const set = (key: string, value: unknown) => setForm(f => ({ ...f, [key]: value }));
   const toggleSessionType = (t: string) =>
     set('sessionTypes', form.sessionTypes.includes(t) ? form.sessionTypes.filter(x => x !== t) : [...form.sessionTypes, t]);
@@ -67,7 +75,7 @@ export default function ProfessionalSignupPage() {
       industries: form.industry ? [form.industry] : [],
       focus_areas: form.sessionTypes,
       price_dkk: form.priceDkk,
-      linkedin_url: form.linkedin,
+      linkedin_url: normalizeLinkedInUrl(form.linkedin),
       contribution_percent: form.contributionPercent,
       review_status: 'pending',
       visibility: 'hidden',
@@ -76,6 +84,11 @@ export default function ProfessionalSignupPage() {
 
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2)) return;
+    if (!normalizeLinkedInUrl(form.linkedin)) {
+      setStep(1);
+      setError('Indtast et gyldigt LinkedIn-link, der starter med https://.');
+      return;
+    }
     if (!accepted) {
       setError('Accepter vilkårene og bekræft, at du har læst privatlivspolitikken.');
       return;
@@ -95,7 +108,7 @@ export default function ProfessionalSignupPage() {
           company: form.company,
           industry: form.industry,
           bio: form.bio,
-          linkedin: form.linkedin,
+          linkedin: normalizeLinkedInUrl(form.linkedin),
           sessionTypes: form.sessionTypes,
           priceDkk: form.priceDkk,
           donatesToCharity: true,
@@ -110,9 +123,7 @@ export default function ProfessionalSignupPage() {
     });
 
     if (authErr || !authData.user) {
-      setError(authErr && /fetch|network/i.test(authErr.message)
-        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
-        : authErr?.message || 'Kunne ikke oprette konto.');
+      setError(accountErrorMessage(authErr, 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.'));
       setLoading(false);
       return;
     }
@@ -150,7 +161,7 @@ export default function ProfessionalSignupPage() {
           <p className="editorial-label mb-5 text-white/45 sm:mb-7">For professionelle</p>
           <h1 className="text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-5xl">Gør din erfaring bookbar med mening.</h1>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-gray-400 sm:mt-6 sm:text-sm">
-            Ansøg med din nuværende rolle, virksomhed og LinkedIn. Profiler gennemgås før publicering. Du vælger selv fokus, pris og et konkret bidrag mellem 40% og 90%.
+            Ansøg med din nuværende rolle, virksomhed og LinkedIn. Vi gennemgår baggrunden før publicering. Du vælger fokus, en fast pris og ét af fire bidragsniveauer.
           </p>
           <div className="mt-5 hidden grid-cols-3 gap-3 sm:grid lg:mt-8">
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
@@ -246,7 +257,7 @@ export default function ProfessionalSignupPage() {
                   </div>
                 </div>
                 <fieldset className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                  <legend className="px-1 text-sm font-semibold text-gray-700">Pris pr. 60 minutter</legend>
+                  <legend className="px-1 text-sm font-semibold text-gray-700">Pris pr. 60 minutter, inkl. moms</legend>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {PRICE_OPTIONS.map((amount) => (
                       <button key={amount} type="button" aria-pressed={form.priceDkk === amount} onClick={() => set('priceDkk', amount)} className={`rounded-lg border px-3 py-3 text-sm font-black transition-colors ${form.priceDkk === amount ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
@@ -254,6 +265,7 @@ export default function ProfessionalSignupPage() {
                       </button>
                     ))}
                   </div>
+                  <p className="mt-3 text-xs leading-relaxed text-gray-500">DKK 1.800 kræver særskilt godkendelse som del af profilgennemgangen.</p>
                 </fieldset>
                 <div>
                   <label htmlFor="professional-bio" className="mb-1 block text-sm font-semibold text-gray-700">Bio (valgfri)</label>
@@ -267,24 +279,34 @@ export default function ProfessionalSignupPage() {
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 03</p>
                   <h2 className="mt-2 text-2xl font-black text-gray-950">Bidrag pr. session</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Ved aktiveret betaling afsættes minimum 40% og op til 90% af en gennemført sessions pris til støtte for Kræftens Bekæmpelse.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Vælg den faste andel af sessionsprisen ekskl. moms, der afsættes til støtte for Kræftens Bekæmpelse efter en gennemført og betalt session.</p>
                 </div>
-                <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
-                  <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
-                  <input id="professional-contribution" type="range" min={CONTRIBUTION_MIN} max={CONTRIBUTION_MAX} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
-                    className="w-full accent-gray-950" />
-                  <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
-                </div>
-                <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-2">
+                <fieldset className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
+                  <legend className="px-1 text-sm font-semibold text-gray-700">Bidragsniveau</legend>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {CONTRIBUTION_OPTIONS.map((percentage) => (
+                      <button key={percentage} type="button" aria-pressed={form.contributionPercent === percentage} onClick={() => set('contributionPercent', percentage)} className={`rounded-lg border px-3 py-3 text-sm font-black transition-colors ${form.contributionPercent === percentage ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
+                        {percentage}%
+                      </button>
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs leading-relaxed text-gray-500">Procenten beregnes af prisen ekskl. moms. Det konkrete beløb vises altid for kandidaten før booking.</p>
+                </fieldset>
+                <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-3">
                   <div className="bg-white p-5">
                     <p className="text-xs font-black uppercase text-gray-400">Afsættes til støtte</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">DKK {estimatedContribution.toLocaleString('da-DK')}</p>
-                    <p className="mt-1 text-sm text-gray-500">Ved gennemført og betalt session</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.contribution)}</p>
+                    <p className="mt-1 text-sm text-gray-500">{economics.contributionPercent}% af pris ekskl. moms</p>
                   </div>
                   <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Din andel</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">DKK {estimatedProfessionalShare.toLocaleString('da-DK')}</p>
-                    <p className="mt-1 text-sm text-gray-500">Før skat og eventuelle gebyrer</p>
+                    <p className="text-xs font-black uppercase text-gray-400">Platform og betaling</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.platformFee)}</p>
+                    <p className="mt-1 text-sm text-gray-500">{economics.platformAbsorbsRounding ? 'Naetwork absorberer afrundingsforskellen' : 'Fast gebyr pr. gennemført session'}</p>
+                  </div>
+                  <div className="bg-white p-5">
+                    <p className="text-xs font-black uppercase text-gray-400">Forventet udbetaling</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.professionalPayout)}</p>
+                    <p className="mt-1 text-sm text-gray-500">Efter momsgrundlag, bidrag og gebyr; før skat</p>
                   </div>
                 </div>
               </div>
@@ -301,8 +323,9 @@ export default function ProfessionalSignupPage() {
                     ['Navn', form.name],
                     ['Titel', form.title],
                     ['Industri', form.industry],
-                    ['Pris', `DKK ${form.priceDkk.toLocaleString('da-DK')}/60 min`],
-                    ['Bidrag', `${form.contributionPercent}% / ca. DKK ${estimatedContribution.toLocaleString('da-DK')}`],
+                    ['Pris', `${formatDkk(form.priceDkk)} inkl. moms / 60 min`],
+                    ['Bidrag', `${form.contributionPercent}% / ${formatDkk(economics.contribution)} af pris ekskl. moms`],
+                    ['Forventet udbetaling', `${formatDkk(economics.professionalPayout)} før skat`],
                     ['Fokusområder', `${form.sessionTypes.length} valgt`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">

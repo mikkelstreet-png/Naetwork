@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { createClient } from '@/lib/supabase';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
 import { Menu, X } from 'lucide-react';
@@ -20,10 +20,15 @@ export function Navbar() {
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const isDa = lang === 'da';
   const pathname = usePathname();
+  const previousPathnameRef = useRef(pathname);
   const bilingual = isBilingualPublicRoute(pathname);
   const displayDa = isDa || !bilingual;
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setSession(false);
+      return;
+    }
     const supabase = createClient();
     supabase.auth.getSession().then(({ data }) => {
       setSession(!!data.session);
@@ -37,8 +42,11 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
-    setDropdownOpen(false);
+    if (previousPathnameRef.current !== pathname) {
+      setMobileOpen(false);
+      setDropdownOpen(false);
+      previousPathnameRef.current = pathname;
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -46,7 +54,26 @@ export function Navbar() {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     window.requestAnimationFrame(() => mobilePanelRef.current?.querySelector<HTMLElement>('a[href]')?.focus());
-    return () => { document.body.style.overflow = previousOverflow; };
+    function trapMobileFocus(event: KeyboardEvent) {
+      if (event.key !== 'Tab' || !mobilePanelRef.current || !mobileButtonRef.current) return;
+      const panelItems = Array.from(mobilePanelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'))
+        .filter((element) => element.offsetParent !== null);
+      const focusable = [mobileButtonRef.current, ...panelItems];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener('keydown', trapMobileFocus);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', trapMobileFocus);
+    };
   }, [mobileOpen]);
 
   useEffect(() => {
@@ -163,6 +190,7 @@ export function Navbar() {
               : (displayDa ? 'Åbn menu' : 'Open menu')}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
+            aria-haspopup="true"
           >
             {mobileOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>

@@ -4,24 +4,13 @@ import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { INDUSTRIES } from '@/lib/platform';
 
 type Need = 'direction' | 'materials' | 'interview' | 'case';
 
-const FIELDS = ['AI', 'Banking', 'Management Consulting', 'Private Equity'] as const;
-
-const FIELD_PATHS: Record<string, string> = {
-  AI: '/fields/ai',
-  Banking: '/fields/banking',
-  'Management Consulting': '/fields/consulting',
-  'Private Equity': '/fields/private-equity',
-};
-
-const FIELD_ACCENTS: Record<string, string> = {
-  AI: 'bg-cyan-300',
-  Banking: 'bg-emerald-300',
-  'Management Consulting': 'bg-blue-300',
-  'Private Equity': 'bg-lime-300',
-};
+const FIELDS = INDUSTRIES.map((industry) => industry.id);
+const FIELD_PATHS = Object.fromEntries(INDUSTRIES.map((industry) => [industry.id, `/fields/${industry.slug}`])) as Record<string, string>;
+const FIELD_ACCENTS = Object.fromEntries(INDUSTRIES.map((industry) => [industry.id, industry.accent])) as Record<string, string>;
 
 function needOptions(isDa: boolean): Array<{ id: Need; label: string; body: string }> {
   return [
@@ -84,18 +73,22 @@ export default function MatchPage() {
           <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
           <p className="kicker mb-5 text-white/40">Match</p>
           <h1 className="max-w-4xl text-4xl font-medium leading-[0.96] text-white text-balance sm:text-6xl md:text-7xl">
-            {isDa ? 'Hvad skal de 60 minutter løse?' : 'What should the 60 minutes solve?'}
+            {isDa ? 'Find den rigtige erfaring på to valg.' : 'Find the right experience in two choices.'}
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/55 md:text-lg">
-            {isDa ? 'To valg er nok. Vælg dit felt og det vigtigste behov.' : 'Two choices are enough. Choose your field and your most important need.'}
+            {isDa ? 'Vælg det felt, du vil tættere på, og den ene ting sessionen skal gøre skarpere.' : 'Choose the field you want to get closer to and the one thing the session should sharpen.'}
           </p>
         </div>
       </section>
 
       <section className="px-5 py-10 sm:px-8 md:py-16 lg:px-12">
         <div className="mx-auto grid max-w-[82rem] gap-8 lg:grid-cols-[1fr_400px]">
-          <div className="overflow-hidden rounded-md border border-gray-300 bg-white">
-            <section className="border-b border-gray-300 p-5 md:p-7">
+          <div>
+            <div className="mb-8 flex items-center gap-4" aria-label={isDa ? `${completed} af 2 valg foretaget` : `${completed} of 2 choices made`}>
+              <div className="h-1 flex-1 overflow-hidden bg-gray-200"><div className="h-full bg-gray-950 transition-[width] duration-300" style={{ width: `${completed * 50}%` }} /></div>
+              <span className="editorial-label shrink-0">{completed}/2</span>
+            </div>
+            <section className="border-t border-gray-300 py-7 md:py-9">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-black text-gray-400">01</p>
@@ -110,16 +103,16 @@ export default function MatchPage() {
                     type="button"
                     onClick={() => setField(option)}
                     aria-pressed={field === option}
-                    className={`lift-hover flex min-h-16 items-center justify-between rounded-md border px-4 py-3 text-left text-sm font-bold transition-colors ${field === option ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                    className="choice-control"
                   >
-                    {option}
-                    <span className={`h-2 w-8 rounded-full ${FIELD_ACCENTS[option]}`} aria-hidden="true" />
+                    <span>{option}</span>
+                    <span className="flex items-center gap-3"><span className={`h-2 w-8 rounded-full ${FIELD_ACCENTS[option]}`} aria-hidden="true" />{field === option && <Check size={16} aria-hidden="true" />}</span>
                   </button>
                 ))}
               </div>
             </section>
 
-            <section className="border-b border-gray-300 p-5 md:p-7">
+            <section className="border-t border-gray-300 py-7 md:py-9">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-black text-gray-400">02</p>
@@ -134,7 +127,7 @@ export default function MatchPage() {
                     type="button"
                     onClick={() => setNeed(option.id)}
                     aria-pressed={need === option.id}
-                    className={`lift-hover min-h-24 rounded-md border px-4 py-4 text-left transition-colors ${need === option.id ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white'}`}
+                    className="choice-control min-h-24 flex-col items-start justify-center"
                   >
                     <span className="block text-sm font-black">{option.label}</span>
                     <span className={`mt-1 block text-xs ${need === option.id ? 'text-white/60' : 'text-gray-500'}`}>{option.body}</span>
@@ -144,7 +137,7 @@ export default function MatchPage() {
             </section>
           </div>
 
-          <aside className="h-fit overflow-hidden rounded-md bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:p-7">
+          <aside aria-live="polite" className="h-fit overflow-hidden rounded-md bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:p-7">
             <div className="flex items-center justify-between gap-4">
               <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Anbefaling' : 'Recommendation'}</p>
               <span className={`h-2 w-16 rounded-full ${recommendation.accent}`} aria-hidden="true" />
@@ -170,7 +163,7 @@ export default function MatchPage() {
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
             ) : (
-              <button type="button" disabled className="mt-6 inline-flex w-full cursor-not-allowed items-center justify-center rounded-lg bg-white/10 px-5 py-3 text-sm font-black text-white/40">
+              <button type="button" disabled className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-[4px] border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-bold text-white/40">
                 {isDa ? 'Vælg begge ovenfor' : 'Choose both above'}
               </button>
             )}

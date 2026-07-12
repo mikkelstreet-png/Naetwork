@@ -90,12 +90,15 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Karrieresparring med den rette erfaring|Career guidance with the right experience/i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Sammenlign professionelle|Compare professionals/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Karrieresparring fra den side af bordet|Career guidance from the side of the table/i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Find den rette professionelle|Find the right professional/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
+  await expect(page.locator('#pricing')).toContainText('DKK 192')
+  await expect(page.locator('#pricing')).toContainText(/ekskl\. moms|excl\. VAT/i)
+  await expect(page.getByRole('heading', { name: /Klare svar|Clear answers/i })).toBeVisible()
   await page.goto('/match')
-  await expect(page.getByRole('heading', { name: /Hvad skal de 60 minutter løse|What should the 60 minutes solve/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Find den rigtige erfaring på to valg|Find the right experience in two choices/i })).toBeVisible()
 })
 
 test('critical public routes expose specific metadata', async ({ page }) => {
@@ -110,11 +113,29 @@ test('critical public routes expose specific metadata', async ({ page }) => {
   }
 })
 
+test('homepage publishes complete brand and offer metadata', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', '/manifest.webmanifest')
+
+  const structuredData = await page.locator('script[type="application/ld+json"]').textContent()
+  expect(structuredData).toBeTruthy()
+  const service = JSON.parse(structuredData ?? '{}')
+  expect(service['@type']).toBe('Service')
+  expect(service.hasOfferCatalog.itemListElement.map((offer: { price: number }) => offer.price)).toEqual([600, 900, 1200, 1800])
+})
+
 test('account creation distinguishes terms acceptance from privacy notice', async ({ page }) => {
   await page.goto('/signup')
   const notice = page.getByText(/Jeg accepterer Naetworks vilkår og bekræfter/i)
   await expect(notice).toBeVisible()
   await expect(page.locator('body')).not.toContainText(/accepterer Naetworks vilkår og privatlivspolitik/i)
+})
+
+test('legal documents expose the current policy date', async ({ page }) => {
+  for (const route of ['/terms', '/privacy', '/cookies']) {
+    await page.goto(route)
+    await expect(page.getByText('Senest opdateret 12. juli 2026', { exact: true })).toBeVisible()
+  }
 })
 
 test('professional application keeps pricing and review expectations concrete', async ({ page }) => {
@@ -134,7 +155,12 @@ test('professional application keeps pricing and review expectations concrete', 
   }
   await page.getByRole('button', { name: 'DKK 600' }).click()
   await page.getByRole('button', { name: 'Næste' }).click()
-  await expect(page.getByText('Bidrag pr. betalt session:')).toBeVisible()
+  for (const percentage of ['40%', '60%', '80%', '90%']) {
+    await expect(page.getByRole('button', { name: percentage })).toBeVisible()
+  }
+  await page.getByRole('button', { name: '80%' }).click()
+  await expect(page.getByText(/Procenten beregnes af prisen ekskl\. moms/i)).toBeVisible()
+  await expect(page.getByText('DKK 384', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Næste' }).click()
   await expect(page.getByText(/accepterer Naetworks vilkår og bekræfter/i)).toBeVisible()
 })
@@ -160,6 +186,9 @@ test('focused account pages omit the marketing footer', async ({ page }) => {
 
 test('protected member pages redirect to login', async ({ page }) => {
   await page.goto('/dashboard')
-  await expect(page).toHaveURL(/\/login\?next=%2Fdashboard|\/login\?next=\/dashboard/)
+  await expect(page).toHaveURL(/\/login\?(?:next=(?:%2F|\/)dashboard|error=service_unavailable)/)
   await expect(page.getByRole('heading', { name: /Fortsæt din karrieresparring/i })).toBeVisible()
+  if (page.url().includes('service_unavailable')) {
+    await expect(page.getByText('Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.', { exact: true })).toBeVisible()
+  }
 })

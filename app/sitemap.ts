@@ -6,12 +6,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '', '/professionals', '/match', '/professional/signup', '/mission', '/impact', '/contact',
     '/fields/ai', '/fields/banking', '/fields/consulting', '/fields/private-equity',
-    '/terms', '/privacy', '/cookies',
+    '/terms', '/privacy', '/cookies', '/afbestilling',
   ];
 
   return routes.map((route) => ({
     url: `${siteUrl}${route}`,
-    lastModified: new Date('2026-07-07'),
+    lastModified: new Date('2026-07-12'),
     changeFrequency: route === '' || route === '/professionals' ? 'weekly' : 'monthly',
     priority: route === '' ? 1 : route === '/professionals' ? 0.9 : 0.6,
   }));

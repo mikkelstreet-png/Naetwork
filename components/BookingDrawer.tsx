@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Check, LockKeyhole, X } from 'lucide-react'
+import { CalendarX2, Check, LockKeyhole, RefreshCw, X } from 'lucide-react'
 import { BOOKING_FOCUS_AREAS, contributionAmount, focusLabel, formatDkk } from '@/lib/platform'
 import { SESSION_TIME_ZONE } from '@/lib/dateTime'
 
@@ -23,45 +23,25 @@ interface BookingDrawerProps {
   locale?: 'da' | 'en'
 }
 
-const PREFERRED_TIMES = ['09:00', '11:00', '14:00', '16:00']
-
 const FOCUS_OPTIONS = BOOKING_FOCUS_AREAS.map((id) => ({
   id,
   da: focusLabel(id, 'da'),
   en: focusLabel(id, 'en'),
 }))
 
-interface PreferredDay {
-  label: string
-  value: string
-}
-
-function getNextWeekdays(locale: 'da' | 'en'): PreferredDay[] {
-  const days: PreferredDay[] = []
-  const dateFormatter = new Intl.DateTimeFormat('sv-SE', {
-    timeZone: SESSION_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit'
-  })
-  const labelFormatter = new Intl.DateTimeFormat(locale === 'da' ? 'da-DK' : 'en-GB', {
-    timeZone: SESSION_TIME_ZONE, weekday: 'short', day: 'numeric', month: 'short'
-  })
-  const weekdayFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: SESSION_TIME_ZONE, weekday: 'short'
-  })
-
-  for (let offset = 1; days.length < 5 && offset < 14; offset += 1) {
-    const candidate = new Date(Date.now() + offset * 24 * 60 * 60 * 1000)
-    const weekday = weekdayFormatter.format(candidate)
-    if (weekday !== 'Sat' && weekday !== 'Sun') {
-      days.push({ value: dateFormatter.format(candidate), label: labelFormatter.format(candidate) })
-    }
-  }
-  return days
+interface AvailabilitySlot {
+  id: string
+  starts_at: string
+  ends_at: string
+  time_zone: string
+  meeting_mode: string
 }
 
 export default function BookingDrawer({ professional, open, onClose, locale = 'da' }: BookingDrawerProps) {
   const [step, setStep] = useState(1)
-  const [selectedDate, setSelectedDate] = useState<PreferredDay | null>(null)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [slots, setSlots] = useState<AvailabilitySlot[]>([])
+  const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(null)
+  const [availabilityState, setAvailabilityState] = useState<'loading' | 'ready' | 'error'>('loading')
   const [sessionFocus, setSessionFocus] = useState('')
   const [sessionGoal, setSessionGoal] = useState('')
   const [materialLink, setMaterialLink] = useState('')
@@ -71,14 +51,20 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const [notificationSent, setNotificationSent] = useState(true)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  const days = getNextWeekdays(locale)
   const minimumContribution = contributionAmount(professional.price, professional.contributionPercent)
+  const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB'
+  const slotsByDay = slots.reduce<Record<string, AvailabilitySlot[]>>((groups, slot) => {
+    const key = new Intl.DateTimeFormat('sv-SE', { timeZone: SESSION_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(slot.starts_at))
+    groups[key] = [...(groups[key] ?? []), slot]
+    return groups
+  }, {})
 
   useEffect(() => {
     if (open) return
     setStep(1)
-    setSelectedDate(null)
-    setSelectedTime(null)
+    setSelectedSlot(null)
+    setSlots([])
+    setAvailabilityState('loading')
     setSessionFocus('')
     setSessionGoal('')
     setMaterialLink('')
@@ -94,11 +80,22 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     const previouslyFocused = document.activeElement as HTMLElement | null
     document.body.style.overflow = 'hidden'
     setAuthState('checking')
+    setAvailabilityState('loading')
     createClient().auth.getUser().then(({ data, error: authError }) => {
       if (active) setAuthState(authError ? 'error' : data.user ? 'signed_in' : 'signed_out')
     }).catch(() => {
       if (active) setAuthState('error')
     })
+    fetch(`/api/professionals/${professional.id}/availability`, { cache: 'no-store' })
+      .then(async (response) => {
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok) throw new Error(result.error)
+        if (active) {
+          setSlots(result.slots ?? [])
+          setAvailabilityState('ready')
+        }
+      })
+      .catch(() => { if (active) setAvailabilityState('error') })
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
       if (event.key === 'Tab' && dialogRef.current) {
@@ -124,21 +121,21 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
       document.removeEventListener('keydown', handleKeyDown)
       previouslyFocused?.focus()
     }
-  }, [onClose, open])
+  }, [onClose, open, professional.id])
 
   const t = {
     title: locale === 'da' ? 'Bookinganmodning' : 'Booking request',
     subtitle: locale === 'da'
-      ? 'Vælg et ønsket tidspunkt og fortæl kort, hvad sessionen skal handle om. Tiden bekræftes af den professionelle.'
-      : 'Choose a preferred time and briefly describe the session. The professional confirms the time.',
-    step1Title: locale === 'da' ? 'Vælg et ønsket tidspunkt' : 'Choose a preferred time',
+      ? 'Vælg en reel ledig tid og fortæl kort, hvad sessionen skal handle om. Den professionelle bekræfter anmodningen.'
+      : 'Choose an available time and briefly describe the session. The professional confirms the request.',
+    step1Title: locale === 'da' ? 'Vælg en ledig tid' : 'Choose an available time',
     step2Title: locale === 'da' ? 'Brief til sessionen' : 'Session brief',
     duration: '60 min',
-    price: `${formatDkk(professional.price)} / 60 min`,
-    impactLabel: locale === 'da' ? 'Minimumsbidrag' : 'Minimum contribution',
+    price: `${formatDkk(professional.price)} ${locale === 'da' ? 'inkl. moms' : 'incl. VAT'} / 60 min`,
+    impactLabel: locale === 'da' ? 'Bidrag' : 'Contribution',
     impactValue: locale === 'da'
-      ? `${professional.contributionPercent}% / ${formatDkk(minimumContribution)} afsættes til støtte for Kræftens Bekæmpelse`
-      : `${professional.contributionPercent}% / ${formatDkk(minimumContribution)} is allocated in support of Kræftens Bekæmpelse`,
+      ? `${professional.contributionPercent}% / ${formatDkk(minimumContribution)} af prisen ekskl. moms afsættes til støtte for Kræftens Bekæmpelse`
+      : `${professional.contributionPercent}% / ${formatDkk(minimumContribution)} of the price excl. VAT is allocated in support of Kræftens Bekæmpelse`,
     focusLabel: locale === 'da' ? 'Hvad skal sessionen handle om?' : 'What should the session focus on?',
     goalLabel: locale === 'da' ? 'Hvad vil du gerne opnå?' : 'What would you like to achieve?',
     goalPlaceholder: locale === 'da'
@@ -168,7 +165,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   }
 
   async function handleConfirm() {
-    if (!selectedDate || !selectedTime) return
+    if (!selectedSlot) return
     if (!sessionFocus) {
       setError(t.focusError)
       return
@@ -187,8 +184,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           professionalId: professional.id,
-          preferredDate: selectedDate.value,
-          preferredTime: selectedTime,
+          slotId: selectedSlot.id,
           focus: sessionFocus,
           goal: sessionGoal,
           material: materialLink,
@@ -208,8 +204,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
   function handleClose() {
     setStep(1)
-    setSelectedDate(null)
-    setSelectedTime(null)
+    setSelectedSlot(null)
     setSessionFocus('')
     setSessionGoal('')
     setMaterialLink('')
@@ -282,22 +277,38 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
           {authState === 'signed_in' && step === 1 && (
             <div>
               <h3 className="mb-5 text-lg font-semibold text-gray-950">{t.step1Title}</h3>
-              <div className="space-y-4">
-                {days.map((day) => (
-                  <div key={day.value} className="rounded-md border border-gray-200 bg-[#f4f4f0] p-3">
-                    <p className="editorial-label mb-2 capitalize text-gray-600">{day.label}</p>
-                    <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
-                      {PREFERRED_TIMES.map((slot) => {
-                        const isSelected = selectedDate?.value === day.value && selectedTime === slot
+              {availabilityState === 'loading' ? (
+                <div className="space-y-3" aria-label={locale === 'da' ? 'Indlæser ledige tider' : 'Loading available times'}><div className="h-20 animate-pulse bg-[#f4f4f0]" /><div className="h-20 animate-pulse bg-[#f4f4f0]" /></div>
+              ) : availabilityState === 'error' ? (
+                <div className="border-y border-gray-200 py-10 text-center">
+                  <CalendarX2 size={22} className="mx-auto text-gray-300" aria-hidden="true" />
+                  <p className="mt-4 text-sm font-semibold text-gray-950">{locale === 'da' ? 'Tiderne kunne ikke indlæses' : 'Times could not be loaded'}</p>
+                  <button type="button" onClick={() => { setAvailabilityState('loading'); fetch(`/api/professionals/${professional.id}/availability`, { cache: 'no-store' }).then(async (response) => { const result = await response.json(); if (!response.ok) throw new Error(); setSlots(result.slots ?? []); setAvailabilityState('ready') }).catch(() => setAvailabilityState('error')) }} className="button-secondary mt-5"><RefreshCw size={15} aria-hidden="true" />{locale === 'da' ? 'Prøv igen' : 'Try again'}</button>
+                </div>
+              ) : slots.length === 0 ? (
+                <div className="border-y border-gray-200 bg-[#f7f7f4] px-5 py-10 text-center">
+                  <CalendarX2 size={22} className="mx-auto text-gray-300" aria-hidden="true" />
+                  <p className="mt-4 text-sm font-semibold text-gray-950">{locale === 'da' ? 'Ingen ledige tider lige nu' : 'No available times right now'}</p>
+                  <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-gray-500">{locale === 'da' ? 'Den professionelle har ikke åbnet nye tider. Se en anden profil eller prøv igen senere.' : 'The professional has not opened new times. Browse another profile or try again later.'}</p>
+                  <Link href="/professionals" className="button-secondary mt-5">{locale === 'da' ? 'Se andre profiler' : 'Browse other profiles'}</Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                {Object.entries(slotsByDay).map(([day, daySlots]) => (
+                  <div key={day} className="rounded-md border border-gray-200 bg-[#f4f4f0] p-3">
+                    <p className="editorial-label mb-2 capitalize text-gray-600">{new Date(daySlots[0].starts_at).toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: SESSION_TIME_ZONE })}</p>
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                      {daySlots.map((slot) => {
+                        const isSelected = selectedSlot?.id === slot.id
                         return (
                           <button
-                            key={slot}
+                            key={slot.id}
                             aria-pressed={isSelected}
                             type="button"
-                            onClick={() => { setSelectedDate(day); setSelectedTime(slot); setError(null) }}
+                            onClick={() => { setSelectedSlot(slot); setError(null) }}
                             className={`rounded-md border px-1 py-2.5 text-[13px] font-bold transition-all sm:px-2 sm:text-sm ${isSelected ? 'border-gray-950 bg-gray-950 text-white shadow-sm' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950 hover:-translate-y-0.5 hover:text-gray-950'}`}
                           >
-                            {slot}
+                            {new Date(slot.starts_at).toLocaleTimeString(dateLocale, { hour: '2-digit', minute: '2-digit', timeZone: SESSION_TIME_ZONE })}
                           </button>
                         )
                       })}
@@ -305,17 +316,18 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                   </div>
                 ))}
               </div>
+              )}
             </div>
           )}
 
-          {authState === 'signed_in' && step === 2 && selectedDate && selectedTime && (
+          {authState === 'signed_in' && step === 2 && selectedSlot && (
             <div>
               <h3 className="mb-5 text-lg font-semibold text-gray-950">{t.step2Title}</h3>
               <div className="mb-5 rounded-md border border-gray-200 bg-[#f4f4f0] p-4">
                 {[
                   [t.professional, professional.name],
-                  [t.date, selectedDate.label],
-                  [locale === 'da' ? 'Ønsket tid' : 'Preferred time', `${selectedTime} (${SESSION_TIME_ZONE})`],
+                  [t.date, new Date(selectedSlot.starts_at).toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: SESSION_TIME_ZONE })],
+                  [locale === 'da' ? 'Tid' : 'Time', `${new Date(selectedSlot.starts_at).toLocaleTimeString(dateLocale, { hour: '2-digit', minute: '2-digit', timeZone: SESSION_TIME_ZONE })} (${SESSION_TIME_ZONE})`],
                   [locale === 'da' ? 'Varighed' : 'Duration', t.duration],
                 ].map(([label, value]) => (
                   <div key={label} className="flex justify-between gap-4 py-2 text-sm">
@@ -400,7 +412,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
         </div>
 
         <div className="mobile-safe-bottom border-t border-gray-200 px-5 py-3 sm:px-6 sm:py-4">
-          {authState === 'signed_in' && step === 1 && selectedDate && selectedTime && (
+          {authState === 'signed_in' && step === 1 && selectedSlot && (
             <button type="button" onClick={() => setStep(2)} className="button-primary w-full">
               {t.continue}
             </button>

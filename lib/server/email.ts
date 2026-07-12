@@ -10,6 +10,8 @@ interface EmailRow {
 interface TransactionalEmail {
   to: string;
   replyTo?: string;
+  templateKey?: string;
+  previewText?: string;
   subject: string;
   title: string;
   intro: string;
@@ -56,7 +58,7 @@ export async function sendTransactionalEmail(email: TransactionalEmail) {
       <!doctype html>
       <html lang="da">
         <body style="margin:0;background:#f7f7f4;color:#0a0a0a;font-family:Inter,Arial,sans-serif;">
-          <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(email.subject)}</div>
+          <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(email.previewText ?? email.subject)}</div>
           <div style="max-width:580px;margin:0 auto;padding:40px 20px;">
             <div style="background:#ffffff;border:1px solid #e5e7eb;padding:32px;">
               <p style="margin:0 0 28px;font-size:15px;font-weight:800;">Naetwork</p>

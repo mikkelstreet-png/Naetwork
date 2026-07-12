@@ -1,8 +1,10 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
+import '@fontsource/inter/900.css';
 import '@fontsource/space-grotesk/500.css';
 import '@fontsource/space-grotesk/600.css';
 import '@fontsource/space-grotesk/700.css';
@@ -18,27 +20,25 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
   title: 'Naetwork - Karrieresparring med mening',
   description:
-    'Book 60 minutters karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity. Minimum 40% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse.',
-  openGraph: {
-    title: 'Naetwork - Karrieresparring med mening',
-    description:
-      '60 minutters fokuseret karrieresparring med tydelige priser, gennemgåede profiler og 40-90% i bidrag fra hver betalt session.',
-    siteName: 'Naetwork',
-    type: 'website',
-    locale: 'da_DK',
-    url: '/',
-  },
-  alternates: { canonical: '/' },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Naetwork - Karrieresparring med mening',
-    description: '60 minutters fokuseret karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity.',
-  },
+    'Book 60 minutters karrieresparring med gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity. Minimum 40% af sessionsprisen eksklusive moms afsættes efter betaling.',
   robots: { index: true, follow: true },
   icons: {
     icon: '/naetwork-logo.svg',
     apple: '/naetwork-logo.svg',
   },
+  applicationName: 'Naetwork',
+  category: 'career development',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    title: 'Naetwork',
+    statusBarStyle: 'default',
+  },
+};
+
+export const viewport: Viewport = {
+  colorScheme: 'light',
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

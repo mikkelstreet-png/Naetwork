@@ -7,6 +7,9 @@ export const PRICE_MAX = 1800
 export const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
 export const CONTRIBUTION_MIN = 40
 export const CONTRIBUTION_MAX = 90
+export const CONTRIBUTION_OPTIONS = [40, 60, 80, 90] as const
+export const VAT_RATE_PERCENT = 25
+export const PLATFORM_FEE_DKK = 49
 
 export const INDUSTRIES = [
   { id: 'AI', slug: 'ai', accent: 'bg-cyan-300', surface: 'bg-[#d8f7fb]' },
@@ -17,6 +20,7 @@ export const INDUSTRIES = [
 
 export type Industry = typeof INDUSTRIES[number]['id']
 export type PriceOption = typeof PRICE_OPTIONS[number]
+export type ContributionOption = typeof CONTRIBUTION_OPTIONS[number]
 
 export function normalizePrice(value: unknown): PriceOption {
   const parsed = typeof value === 'number' ? value : Number(value)
@@ -24,6 +28,26 @@ export function normalizePrice(value: unknown): PriceOption {
   return PRICE_OPTIONS.reduce((closest, option) =>
     Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
   )
+}
+
+export function normalizeContributionPercent(value: unknown): ContributionOption {
+  const parsed = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(parsed)) return CONTRIBUTION_OPTIONS[0]
+  return CONTRIBUTION_OPTIONS.reduce((closest, option) =>
+    Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
+  )
+}
+
+export function normalizeLinkedInUrl(value: unknown) {
+  if (typeof value !== 'string' || !value.trim()) return null
+  try {
+    const url = new URL(value.trim())
+    if (url.protocol !== 'https:' || !/(^|\.)linkedin\.com$/i.test(url.hostname)) return null
+    url.hash = ''
+    return url.toString()
+  } catch {
+    return null
+  }
 }
 
 export const FOCUS_AREAS = [
@@ -69,9 +93,39 @@ export function industryAccent(industry?: string) {
   return INDUSTRIES.find((item) => item.id === industry)?.accent ?? 'bg-gray-300'
 }
 
-export function contributionAmount(price: number, percentage: number) {
-  const safePercentage = Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, percentage))
-  return Math.round(price * safePercentage / 100)
+export function priceBeforeVat(grossPrice: number) {
+  return Math.round(grossPrice / (1 + VAT_RATE_PERCENT / 100))
+}
+
+export function vatAmount(grossPrice: number) {
+  return grossPrice - priceBeforeVat(grossPrice)
+}
+
+export function contributionAmount(grossPrice: number, percentage: number) {
+  const normalizedPercentage = normalizeContributionPercent(percentage)
+  return Math.round(priceBeforeVat(grossPrice) * normalizedPercentage / 100)
+}
+
+export function sessionEconomics(grossPrice: number, percentage: number) {
+  const candidatePrice = normalizePrice(grossPrice)
+  const contributionPercent = normalizeContributionPercent(percentage)
+  const netPrice = priceBeforeVat(candidatePrice)
+  const vat = candidatePrice - netPrice
+  const contribution = contributionAmount(candidatePrice, contributionPercent)
+  const availableAfterContribution = Math.max(0, netPrice - contribution)
+  const platformFee = Math.min(PLATFORM_FEE_DKK, availableAfterContribution)
+  const professionalPayout = Math.max(0, availableAfterContribution - platformFee)
+
+  return {
+    candidatePrice,
+    netPrice,
+    vat,
+    contributionPercent,
+    contribution,
+    platformFee,
+    professionalPayout,
+    platformAbsorbsRounding: platformFee < PLATFORM_FEE_DKK,
+  }
 }
 
 export function formatDkk(amount: number) {

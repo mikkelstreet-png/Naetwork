@@ -118,7 +118,7 @@ export default function DashboardPage() {
 
   const candidateActions = [
     { number: '01', title: 'Find fokus', body: 'To valg prioriterer de mest relevante profiler.', href: '/match', cta: 'Start match', accent: 'bg-cyan-300' },
-    { number: '02', title: 'Sammenlign profiler', body: 'Se erfaring, fokus, pris og minimumsbidrag.', href: '/professionals', cta: 'Se profiler', accent: 'bg-blue-300' },
+    { number: '02', title: 'Sammenlign profiler', body: 'Se erfaring, fokus, totalpris og konkret bidrag.', href: '/professionals', cta: 'Se profiler', accent: 'bg-blue-300' },
     { number: '03', title: 'Følg dine bookinger', body: 'Se anmodninger, bekræftelser og kommende sessioner.', href: '/profil/bookings', cta: 'Se status', accent: 'bg-lime-300' },
   ];
 

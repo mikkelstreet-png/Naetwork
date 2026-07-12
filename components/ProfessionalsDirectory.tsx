@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import BookingDrawer from '@/components/BookingDrawer'
-import { ChevronDown, RefreshCw, Search } from 'lucide-react'
+import { CheckCircle2, ChevronDown, RefreshCw, Search } from 'lucide-react'
 import { contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
+import { professionalBestFor, professionalInitials, professionalPrimaryOutput } from '@/lib/professionalPresentation'
 
 type Industry = 'all' | PlatformIndustry
 type Need = 'direction' | 'materials' | 'interview' | 'case'
@@ -29,30 +30,6 @@ function industryLabel(industry: Industry, isDa: boolean) {
 function accentFor(pro: ProfessionalCard) {
   const primary = PLATFORM_INDUSTRIES.find((industry) => pro.industries.includes(industry.id))?.id
   return industryAccent(primary ?? pro.industries[0])
-}
-
-function initials(name: string) {
-  return name.split(' ').filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join('') || 'N'
-}
-
-function bestFor(pro: ProfessionalCard, isDa: boolean) {
-  const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og PE-interview' : 'PE / investment case'
-  if (focus.includes('banking_technicals')) return isDa ? 'Tekniske spørgsmål og Banking-interview' : 'Banking technicals'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Cases og personligt interview' : 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-roller og positionering' : 'AI career strategy'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Ansøgning og profil' : 'Applications'
-  return isDa ? 'Karriereretning' : 'Career clarity'
-}
-
-function primaryOutputFor(pro: ProfessionalCard, isDa: boolean) {
-  const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'Skarpere investeringsvurdering' : 'Investment case and deal thinking'
-  if (focus.includes('banking_technicals')) return isDa ? 'Teknisk sikkerhed og interviewklarhed' : 'Technicals and interview bar'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og personlig kommunikation' : 'Case structure and fit'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
-  return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
 }
 
 function isIndustry(value: string | null): value is Industry {
@@ -78,6 +55,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   const isDa = lang === 'da'
   const [industryFilter, setIndustryFilter] = useState<Industry>('all')
   const [recommendedNeed, setRecommendedNeed] = useState<Need | null>(null)
+  const [maxPrice, setMaxPrice] = useState<number | null>(null)
   const [search, setSearch] = useState('')
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>(initialProfessionals)
   const [bookTarget, setBookTarget] = useState<ProfessionalCard | null>(null)
@@ -121,21 +99,23 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       .join(' ')
       .toLowerCase()
       .includes(searchLower)
-    return matchesIndustry && matchesSearch
+    const matchesNeed = !recommendedNeed || relevanceFor(p, recommendedNeed) > 0
+    const matchesPrice = maxPrice === null || p.price <= maxPrice
+    return matchesIndustry && matchesSearch && matchesNeed && matchesPrice
   }).sort((a, b) => relevanceFor(b, recommendedNeed) - relevanceFor(a, recommendedNeed))
 
   const t = {
     heading: isDa ? 'Find den relevante erfaring.' : 'Find the relevant experience.',
     subheading: isDa
-      ? 'Sammenlign dokumenteret baggrund, konkret fokus, pris og minimumsbidrag, før du sender en anmodning.'
-      : 'Compare documented background, concrete focus, price and minimum contribution before sending a request.',
+      ? 'Sammenlign gennemgået baggrund, konkret fokus, totalpris og bidrag, før du sender en anmodning.'
+      : 'Compare reviewed background, concrete focus, total price and contribution before sending a request.',
     searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Book' : 'Book',
     noResults: isDa ? 'Ingen match' : 'No match',
     noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
-    impact: isDa ? 'Min. 40% afsættes ved en betalt session' : 'Min. 40% allocated from a paid session',
+    impact: isDa ? 'Min. 40% af pris ekskl. moms afsættes' : 'Min. 40% of price excl. VAT is allocated',
     emptyTitle: isDa ? 'De første profiler er på vej' : 'The first profiles are on their way',
     emptyBody: isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.',
     errorTitle: isDa ? 'Vi kunne ikke hente profilerne' : 'We could not load the profiles',
@@ -153,6 +133,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     setSearch('')
     setIndustryFilter('all')
     setRecommendedNeed(null)
+    setMaxPrice(null)
     window.history.replaceState(null, '', '/professionals')
   }
 
@@ -186,7 +167,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               {[
                 ['60 min', isDa ? 'Format' : 'Format'],
                 ['4', isDa ? 'Prisvalg' : 'Price points'],
-                ['40-90%', isDa ? 'Afsættes' : 'Allocated'],
+                ['40-90%', isDa ? 'Bidragsvalg' : 'Contribution'],
               ].map(([value, label]) => (
                 <div key={label} className="border-r border-white/15 py-3 last:border-r-0 md:flex md:items-center md:justify-between md:border-b md:border-r-0 md:py-2.5">
                   <dd className="font-['Space_Grotesk'] text-sm font-semibold text-white md:text-base">{value}</dd>
@@ -236,6 +217,27 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               ))}
             </div>
           </div>}
+          {!loadError && (
+            <div className="grid grid-cols-2 border-x border-b border-white/25 bg-white text-gray-950 sm:grid-cols-[1fr_1fr_auto]">
+              <label className="relative flex items-center gap-3 border-r border-gray-200 px-4">
+                <span className="hidden text-xs font-bold text-gray-400 sm:block">{isDa ? 'Behov' : 'Need'}</span>
+                <select value={recommendedNeed ?? ''} onChange={(event) => setRecommendedNeed((event.target.value || null) as Need | null)} className="min-w-0 flex-1 appearance-none bg-transparent py-3.5 pr-7 text-sm font-bold outline-none" aria-label={isDa ? 'Filtrer efter behov' : 'Filter by need'}>
+                  <option value="">{isDa ? 'Alle behov' : 'All needs'}</option>
+                  {Object.entries(needLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-4 text-gray-400" aria-hidden="true" />
+              </label>
+              <label className="relative flex items-center gap-3 px-4 sm:border-r sm:border-gray-200">
+                <span className="hidden text-xs font-bold text-gray-400 sm:block">{isDa ? 'Maks. pris' : 'Max price'}</span>
+                <select value={maxPrice ?? ''} onChange={(event) => setMaxPrice(event.target.value ? Number(event.target.value) : null)} className="min-w-0 flex-1 appearance-none bg-transparent py-3.5 pr-7 text-sm font-bold outline-none" aria-label={isDa ? 'Filtrer efter maksimal pris' : 'Filter by maximum price'}>
+                  <option value="">{isDa ? 'Alle priser' : 'All prices'}</option>
+                  {[600, 900, 1200, 1800].map((price) => <option key={price} value={price}>Maks. DKK {price.toLocaleString('da-DK')}</option>)}
+                </select>
+                <ChevronDown size={15} className="pointer-events-none absolute right-4 text-gray-400" aria-hidden="true" />
+              </label>
+              <button type="button" onClick={resetFilters} className="col-span-2 border-t border-gray-200 px-4 py-3 text-xs font-bold text-gray-500 hover:text-gray-950 sm:col-span-1 sm:border-t-0">{t.clearFilters}</button>
+            </div>
+          )}
           {!loadError && recommendedNeed && (
             <div className="flex flex-col gap-2.5 border-b border-white/20 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:py-4">
               <p className="text-[13px] leading-relaxed text-white/55 sm:text-sm">
@@ -254,7 +256,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         {!loadError && <div className="mb-4 flex items-center justify-between gap-3 md:mb-7">
           <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser' : 'Loading') : loadError ? (isDa ? 'Midlertidigt utilgængelig' : 'Temporarily unavailable') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'profil' : 'profiler') : (filtered.length === 1 ? 'profile' : 'profiles')}`}</p>
           <p className="shrink-0 text-right text-xs font-bold text-gray-400">
-            <span className="sm:hidden">{isDa ? '40%+ til kræftsagen' : '40%+ to the cancer cause'}</span>
+            <span className="sm:hidden">{isDa ? '40%+ ekskl. moms' : '40%+ excl. VAT'}</span>
             <span className="hidden sm:inline">{t.impact}</span>
           </p>
         </div>}
@@ -319,15 +321,18 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             {filtered.map((pro) => (
               <article key={pro.id} className="group relative mb-3 grid gap-4 overflow-hidden rounded-md border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-gray-400 hover:shadow-[0_16px_45px_rgba(9,9,11,0.07)] md:mb-0 md:rounded-none md:border-x-0 md:border-t-0 md:px-3 md:py-8 md:hover:z-10 lg:grid-cols-[170px_1.1fr_1fr_130px_150px] lg:items-center lg:pl-6">
                 <span className={`absolute left-0 top-7 hidden h-10 w-1 rounded-full lg:block ${accentFor(pro)}`} />
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className={`h-2 w-8 rounded-full lg:hidden ${accentFor(pro)}`} />
                   <p className="text-xs font-black uppercase text-gray-400">
                     {pro.industries[0] ?? (isDa ? 'Professionel' : 'Professional')}
                   </p>
+                  <span title={isDa ? 'Indsendt rolle, virksomhed og LinkedIn er gennemgået' : 'Submitted role, company and LinkedIn have been reviewed'} className="inline-flex items-center gap-1 text-[10px] font-bold uppercase text-emerald-800">
+                    <CheckCircle2 size={12} aria-hidden="true" /> {isDa ? 'Gennemgået' : 'Reviewed'}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-md font-['Space_Grotesk'] text-xs font-bold text-gray-950 transition-transform group-hover:-translate-y-0.5 ${accentFor(pro)}`}>{initials(pro.name)}</span>
+                  <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-md font-['Space_Grotesk'] text-xs font-bold text-gray-950 transition-transform group-hover:-translate-y-0.5 ${accentFor(pro)}`}>{professionalInitials(pro.name)}</span>
                   <div>
                     <h2 className="text-xl font-semibold leading-tight text-gray-950 md:text-2xl">{pro.name}</h2>
                     <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title}{pro.company ? ` · ${pro.company}` : ''}</p>
@@ -335,13 +340,15 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 </div>
 
                 <div className="border-t border-gray-100 pt-4 md:border-0 md:pt-0">
-                  <p className="text-sm font-black text-gray-950">{bestFor(pro, isDa)}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-gray-500">{primaryOutputFor(pro, isDa)}</p>
+                  <p className="text-sm font-black text-gray-950">{professionalBestFor(pro, isDa)}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-gray-500">{professionalPrimaryOutput(pro, isDa)}</p>
                 </div>
 
                 <div className="flex items-end justify-between gap-4 border-t border-gray-100 pt-4 md:block md:border-0 md:pt-0">
                   <p className="text-lg font-black text-gray-950">DKK {pro.price.toLocaleString('da-DK')}</p>
-                  <p className="text-xs font-medium text-gray-400">{isDa ? `${pro.contributionPercent}% / DKK ${contributionAmount(pro.price, pro.contributionPercent).toLocaleString('da-DK')} til kræftsagen` : `${pro.contributionPercent}% / DKK ${contributionAmount(pro.price, pro.contributionPercent).toLocaleString('da-DK')} contribution`}</p>
+                  <p className="mt-0.5 text-[10px] font-semibold uppercase text-gray-400">{isDa ? 'Inkl. moms · 60 min' : 'Incl. VAT · 60 min'}</p>
+                  <p className="mt-1 text-xs font-medium text-gray-400">{isDa ? `${pro.contributionPercent}% / DKK ${contributionAmount(pro.price, pro.contributionPercent).toLocaleString('da-DK')} afsættes` : `${pro.contributionPercent}% / DKK ${contributionAmount(pro.price, pro.contributionPercent).toLocaleString('da-DK')} allocated`}</p>
+                  <p className="mt-2 text-xs font-bold text-gray-600">{pro.nextAvailableAt ? (isDa ? `Næste tid ${new Date(pro.nextAvailableAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', timeZone: 'Europe/Copenhagen' })}` : `Next time ${new Date(pro.nextAvailableAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Copenhagen' })}`) : (isDa ? 'Ingen åbne tider' : 'No open times')}</p>
                 </div>
 
                 <div className="flex gap-2 lg:justify-end">

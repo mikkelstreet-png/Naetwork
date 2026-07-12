@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${field.label} karrieresparring - Naetwork`,
     description: field.description.en,
+    alternates: { canonical: `/fields/${slug}` },
   };
 }
 

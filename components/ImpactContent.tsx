@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PRICE_MAX, PRICE_MIN, SESSION_MINUTES, contributionAmount, formatDkk } from '@/lib/platform';
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PLATFORM_FEE_DKK, PRICE_MAX, PRICE_MIN, SESSION_MINUTES, contributionAmount, formatDkk } from '@/lib/platform';
 
 export function ImpactContent() {
   const { lang } = useLanguage();
@@ -16,7 +16,7 @@ export function ImpactContent() {
 
   const clarity = [
     [isDa ? 'Hvornår bidraget gælder' : 'When it applies', isDa ? 'Bidraget gælder for betalte sessioner. Anmodede, aflyste eller ikke-betalte sessioner tæller ikke som bidrag.' : 'The contribution applies to paid sessions. Requested, cancelled or unpaid sessions do not count as contributions.'],
-    [isDa ? 'Hvordan procenten forstås' : 'How the percentage works', isDa ? 'Procenten beregnes ud fra den viste sessionspris. Minimumsbidraget vises før booking.' : 'The percentage is calculated from the displayed session price. The minimum contribution is visible before booking.'],
+    [isDa ? 'Hvordan procenten forstås' : 'How the percentage works', isDa ? 'Procenten beregnes af sessionsprisen eksklusive moms. Kandidatens totalpris inklusive moms og det konkrete bidrag vises før booking.' : 'The percentage is calculated from the session price excluding VAT. The candidate total including VAT and exact contribution are shown before booking.'],
     [isDa ? 'Hvem formålet er' : 'Who it supports', isDa ? 'Bidraget er tiltænkt Kræftens Bekæmpelse. Naetwork er uafhængig og ikke officielt tilknyttet, medmindre det fremgår eksplicit.' : 'The contribution is intended for Kræftens Bekæmpelse. Naetwork is independent and not officially affiliated unless explicitly stated.'],
     [isDa ? 'Hvad der tæller' : 'What counts', isDa ? 'Kun gennemførte og betalte sessioner tæller. Aflyste, tilbageførte eller refunderede sessioner fjernes fra opgørelsen. Betaling aktiveres først, når aftaler og dokumentation er på plads.' : 'Only completed and paid sessions count. Cancelled, reversed or refunded sessions are excluded. Payments launch only after agreements and documentation are in place.'],
   ] as const;
@@ -32,8 +32,8 @@ export function ImpactContent() {
             </h1>
             <p className="body-lg mt-7 max-w-2xl text-white/55">
               {isDa
-                ? 'Minimum 40% og op til 90% af en gennemført, betalt Naetwork-session afsættes til støtte for Kræftens Bekæmpelse. Den konkrete andel vises, før kandidaten sender sin anmodning.'
-                : 'At least 40% and up to 90% of a completed, paid Naetwork session is allocated in support of Kræftens Bekæmpelse. The exact share is shown before the candidate sends a request.'}
+                ? '40%, 60%, 80% eller 90% af sessionsprisen eksklusive moms afsættes til støtte for Kræftens Bekæmpelse efter en gennemført og betalt session. Det konkrete beløb vises før booking.'
+                : '40%, 60%, 80% or 90% of the session price excluding VAT is allocated in support of Kræftens Bekæmpelse after a completed and paid session. The exact amount is shown before booking.'}
             </p>
           </div>
           <aside className="relative overflow-hidden border border-white/20 bg-white/[0.035] p-7">
@@ -41,7 +41,7 @@ export function ImpactContent() {
             <p className="text-xs font-black uppercase text-white/40">{isDa ? 'Kernemodel' : 'Core model'}</p>
             <p className="mt-5 text-5xl font-black sm:text-6xl">{CONTRIBUTION_MIN}-{CONTRIBUTION_MAX}%</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
-              {isDa ? 'Minimum 40% fra hver betalt session. Professionelle kan vælge et højere bidragsniveau.' : 'Minimum 40% from every paid session. Professionals can choose a higher contribution level.'}
+              {isDa ? 'Fire faste bidragsniveauer. Procenten beregnes af prisen eksklusive moms.' : 'Four fixed contribution levels. The percentage is calculated from the price excluding VAT.'}
             </p>
             <div className="mt-7 grid grid-cols-2 gap-px border border-white/10 bg-white/10">
               <div className="bg-gray-950 p-4">
@@ -64,7 +64,7 @@ export function ImpactContent() {
               <div key={price} className="bg-white p-6">
                 <p className="text-xs font-black uppercase text-gray-400">{price}</p>
                 <p className="mt-5 text-3xl font-black text-gray-950">{impact}</p>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">{percent} {isDa ? 'af sessionsprisen' : 'of the session price'}</p>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">{percent} {isDa ? 'af pris ekskl. moms' : 'of price excl. VAT'}</p>
               </div>
             ))}
           </div>
@@ -93,6 +93,7 @@ export function ImpactContent() {
             <Link href="/professionals" className="pill-dark">{isDa ? 'Book 60 min' : 'Book 60 min'}</Link>
             <Link href="/professional/signup" className="pill-light">{isDa ? 'Bliv professionel' : 'Become a professional'}</Link>
           </div>
+          <p className="mt-6 max-w-3xl text-xs leading-relaxed text-gray-500">{isDa ? `Naetworks platform- og betalingsgebyr er DKK ${PLATFORM_FEE_DKK} pr. gennemført session og ændrer ikke kandidatens viste totalpris. Betaling og bidragsafregning aktiveres først, når de nødvendige aftaler og processer er godkendt.` : `Naetwork's platform and payment fee is DKK ${PLATFORM_FEE_DKK} per completed session and does not change the candidate's displayed total. Payment and contribution settlement will only launch once the required agreements and processes have been approved.`}</p>
         </div>
       </section>
     </main>

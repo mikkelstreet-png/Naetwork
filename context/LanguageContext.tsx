@@ -19,17 +19,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>('da');
 
   useEffect(() => {
-    const stored = localStorage.getItem('naetwork_lang') as Lang | null;
-    if (stored === 'da' || stored === 'en') {
-      setLangState(stored);
-      document.documentElement.lang = stored;
+    try {
+      const stored = localStorage.getItem('naetwork_lang') as Lang | null;
+      if (stored === 'da' || stored === 'en') {
+        setLangState(stored);
+        document.documentElement.lang = stored;
+      }
+    } catch {
+      document.documentElement.lang = 'da';
     }
   }, []);
 
   const setLang = (l: Lang) => {
     setLangState(l);
-    localStorage.setItem('naetwork_lang', l);
     document.documentElement.lang = l;
+    try {
+      localStorage.setItem('naetwork_lang', l);
+    } catch {
+      // The language still applies for the current session when storage is unavailable.
+    }
   };
 
   const tr = (key: string): string => {
