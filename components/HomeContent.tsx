@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -13,8 +12,9 @@ import {
   Target,
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
-import { HERO_SPECTRUM } from '@/lib/heroSpectrum';
 import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
+import { AccessHero } from '@/components/AccessHero';
+import { LivingImpactLine } from '@/components/LivingImpactLine';
 import {
   CONTRIBUTION_MAX,
   CONTRIBUTION_MIN,
@@ -104,54 +104,9 @@ export function HomeContent() {
 
   return (
     <main>
-      <section id="home" className="relative isolate min-h-[calc(100svh-7.5rem)] overflow-hidden bg-[#09090b] text-white md:min-h-[calc(100svh-8rem)]">
-        <Image src={HERO_SPECTRUM} alt="" fill priority quality={85} sizes="100vw" className="-z-20 object-cover object-center opacity-85 saturate-[1.12]" />
-        <div className="absolute inset-0 -z-10 bg-black/50" aria-hidden="true" />
+      <AccessHero />
 
-        <div className="mx-auto flex min-h-[calc(100svh-7.5rem)] max-w-[82rem] flex-col px-5 pb-0 pt-5 sm:px-8 sm:pt-6 md:min-h-[calc(100svh-8rem)] lg:px-12">
-          <div className="flex items-center justify-between border-b border-white/20 pb-4">
-            <p className="editorial-label text-white/60">Naetwork / {brand.category}</p>
-            <p className="editorial-label hidden text-right text-white/45 sm:block">{brand.positioning}</p>
-          </div>
-
-          <div className="flex flex-1 items-center py-7 sm:py-8 md:py-7">
-            <div className="max-w-[970px]">
-              <p className="kicker mb-6 text-white/65">{isDa ? 'Erfaringen bag jobbet' : 'The insight behind the job'}</p>
-              <h1 className="max-w-[1000px] text-[2.75rem] font-medium leading-[0.92] text-white text-balance sm:text-6xl md:text-[4.6rem] lg:text-[4.8rem]">
-                {brand.primaryLine}
-              </h1>
-              <p className="mt-6 max-w-2xl text-base font-medium leading-7 text-white/72 sm:mt-8 sm:text-lg md:text-xl md:leading-8">
-                {brand.oneSentence}
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center">
-                <Link href="/start" className="button-inverse w-full sm:w-auto">
-                  {isDa ? 'Start med din situation' : 'Start with your situation'}
-                  <ArrowRight size={16} aria-hidden="true" />
-                </Link>
-                <Link href="/how-it-works" className="button-ghost-light w-full sm:w-auto">
-                  {isDa ? 'Se hvordan det fungerer' : 'See how it works'}
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="signal-rail" aria-hidden="true"><span /><span /><span /><span /></div>
-          <dl className="grid grid-cols-3 border-x border-white/20 bg-black/25 backdrop-blur-md">
-            {[
-              [isDa ? 'Situation først' : 'Situation first', isDa ? 'Ikke et katalog' : 'Not a directory'],
-              [isDa ? 'Relevant erfaring' : 'Relevant experience', isDa ? 'Ikke popularitet' : 'Not popularity'],
-              [isDa ? 'Næste skridt' : 'Next step', isDa ? 'Konkret resultat' : 'Concrete outcome'],
-            ].map(([value, label], index) => (
-              <div key={index} className="border-r border-white/20 px-3 py-4 last:border-r-0 sm:px-5 sm:py-5 md:flex md:items-end md:justify-between md:gap-4">
-                <dd className="font-['Space_Grotesk'] text-base font-semibold text-white sm:text-xl md:text-2xl">{value}</dd>
-                <dt className="mt-1 text-[10px] font-semibold leading-tight text-white/48 sm:text-xs md:mt-0 md:max-w-24 md:text-right">{label}</dt>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      <section className="border-b border-[#cacac2] bg-white px-5 py-16 sm:px-8 md:py-24 lg:px-12">
+      <section className="border-b border-[#cacac2] bg-white px-5 pb-16 pt-0 sm:px-8 sm:py-20 md:py-24 lg:px-12">
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-6 border-t border-[#cacac2] pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
             <p className="kicker">{isDa ? 'Fire indgange' : 'Four starting points'}</p>
@@ -184,7 +139,7 @@ export function HomeContent() {
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
             <div className="lg:sticky lg:top-28 lg:h-fit">
-              <p className="kicker mb-6 text-white/45">{isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists'}</p>
+              <p className="kicker mb-6 text-white/58">{isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists'}</p>
               <h2 className="max-w-xl text-4xl font-medium leading-[1] text-white text-balance sm:text-5xl md:text-6xl">
                 {brand.problem}
               </h2>
@@ -199,7 +154,7 @@ export function HomeContent() {
                   <div className={`absolute inset-x-0 top-0 h-[3px] ${fields[index].color}`} aria-hidden="true" />
                   <div className="flex items-center justify-between">
                     <span className="flex h-8 w-8 items-center justify-center border border-white/20 text-white/75 sm:h-9 sm:w-9"><Icon size={16} strokeWidth={1.7} aria-hidden="true" /></span>
-                    <span className="editorial-label text-white/30">0{index + 1}</span>
+                    <span className="editorial-label text-white/50" aria-hidden="true">0{index + 1}</span>
                   </div>
                   <h3 className="mt-8 text-base font-semibold leading-tight text-white sm:mt-10 sm:text-xl">{title}</h3>
                   <p className="mt-3 text-xs leading-relaxed text-white/52 sm:text-sm">{body}</p>
@@ -255,7 +210,7 @@ export function HomeContent() {
             <div className="relative flex min-h-[330px] flex-col justify-between bg-[#09090b] p-6 text-white sm:min-h-[380px] sm:p-8">
               <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
               <div className="flex items-start justify-between">
-                <p className="editorial-label text-white/45">Profile record / N-01</p>
+                <p className="editorial-label text-white/58">{isDa ? 'Profil / N-01' : 'Profile / N-01'}</p>
                 <span className="inline-flex items-center gap-2 border border-white/20 px-3 py-1.5 text-[10px] font-bold uppercase text-white/65"><Check size={12} aria-hidden="true" /> {isDa ? 'Gennemgået' : 'Reviewed'}</span>
               </div>
               <div>
@@ -292,7 +247,7 @@ export function HomeContent() {
       <section id="pricing" className="bg-[#09090b] px-5 py-16 text-white sm:px-8 md:py-24 lg:px-12">
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-8 border-t border-white/20 pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker text-white/45">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
+            <p className="kicker text-white/58">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
             <div>
               <h2 className="max-w-4xl text-4xl font-medium leading-[1] text-white text-balance sm:text-5xl md:text-6xl">
                 {isDa ? 'Fire priser. Ét transparent format.' : 'Four prices. One transparent format.'}
@@ -303,25 +258,29 @@ export function HomeContent() {
             </div>
           </div>
 
-          <div className="mt-10 border-t border-white/20">
+          <div className="mt-10">
+            <LivingImpactLine />
+          </div>
+
+          <div className="mt-8 border-t border-white/20">
             <div className="hidden grid-cols-[90px_1fr_1.2fr_1fr_120px] gap-6 border-b border-white/20 py-3 md:grid">
-              <p className="editorial-label text-white/30">{isDa ? 'Valg' : 'Option'}</p>
-              <p className="editorial-label text-white/30">{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</p>
-              <p className="editorial-label text-white/30">{isDa ? 'Profilniveau' : 'Profile level'}</p>
-              <p className="editorial-label text-white/30">{isDa ? 'Minimum afsættes' : 'Minimum allocated'}</p>
-              <p className="editorial-label text-right text-white/30">Format</p>
+              <p className="editorial-label text-white/55">{isDa ? 'Valg' : 'Option'}</p>
+              <p className="editorial-label text-white/55">{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</p>
+              <p className="editorial-label text-white/55">{isDa ? 'Profilniveau' : 'Profile level'}</p>
+              <p className="editorial-label text-white/55">{isDa ? 'Minimum afsættes' : 'Minimum allocated'}</p>
+              <p className="editorial-label text-right text-white/55">Format</p>
             </div>
             {PRICE_OPTIONS.map((amount, index) => (
               <div key={amount} className="price-row group grid grid-cols-[46px_1fr_auto] items-center gap-4 border-b border-white/20 py-5 transition-colors duration-300 hover:bg-white/[0.04] md:grid-cols-[90px_1fr_1.2fr_1fr_120px] md:gap-6 md:px-3 md:py-6">
-                <p className="editorial-label text-white/35">0{index + 1}</p>
+                <p className="editorial-label text-white/55">0{index + 1}</p>
                 <div>
                   <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{formatDkk(amount)}</p>
-                  <p className="mt-1 text-[10px] font-semibold leading-tight text-white/38 md:hidden">{isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} afsættes` : `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} allocated`}</p>
+                  <p className="mt-1 text-[10px] font-semibold leading-tight text-white/60 md:hidden">{isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} afsættes` : `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} allocated`}</p>
                   <p className="mt-1 text-[10px] font-semibold leading-tight text-white/55 md:hidden">{priceTiers[index]}</p>
                 </div>
                 <p className="hidden text-sm font-semibold text-white/68 md:block">{priceTiers[index]}</p>
                 <p className="hidden text-sm font-semibold text-white/60 md:block">{formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))}</p>
-                <p className="text-right text-xs font-semibold text-white/45">{SESSION_MINUTES} min</p>
+                <p className="text-right text-xs font-semibold text-white/60">{SESSION_MINUTES} min</p>
               </div>
             ))}
           </div>
@@ -329,7 +288,7 @@ export function HomeContent() {
           <div className="mt-10 flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{isDa ? 'Find erfaringen bag dit næste valg.' : 'Find the experience behind your next decision.'}</p>
-              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/40">{isDa ? 'Bidrag beregnes af prisen ekskl. moms. Bookinganmodninger er aktive; betaling er endnu ikke aktiveret.' : 'Contributions are calculated from the price excl. VAT. Booking requests are active; payments are not yet enabled.'}</p>
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/60">{isDa ? 'Bidrag beregnes af prisen ekskl. moms. Bookinganmodninger er aktive; betaling er endnu ikke aktiveret.' : 'Contributions are calculated from the price excl. VAT. Booking requests are active; payments are not yet enabled.'}</p>
             </div>
             <Link href="/start" className="button-inverse w-fit">
               {isDa ? 'Start med din situation' : 'Start with your situation'}

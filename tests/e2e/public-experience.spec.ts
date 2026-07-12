@@ -107,6 +107,35 @@ test('core public actions remain clear', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
 })
 
+test('interactive Access hero explains the selected situation without fake matching', async ({ page }) => {
+  await page.goto('/')
+  const cv = page.getByRole('button', { name: 'Jeg vil have vurderet mit CV' })
+  await expect(cv).toHaveCount(1)
+  await cv.click()
+  await expect(cv).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.access-console__result')).toContainText('Har vurderet lignende profiler')
+  await expect(page.locator('.access-console__result').getByRole('link', { name: 'Fortsæt med denne situation' })).toHaveAttribute('href', '/start?situation=cv')
+  await expect(page.locator('#home img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
+  await expectNoHorizontalOverflow(page)
+})
+
+test('Access motion respects reduced-motion preferences', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  const duration = await page.getByRole('button', { name: 'Jeg har en jobsamtale' }).evaluate((element) => getComputedStyle(element).transitionDuration)
+  expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
+})
+
+test('compact mobile hero leaves the next section in view', async ({ page }) => {
+  test.skip((page.viewportSize()?.height ?? 1000) > 720, 'Small-height mobile contract')
+  await page.goto('/')
+  const position = await page.getByText('Fire indgange', { exact: true }).evaluate((element) => ({
+    top: element.getBoundingClientRect().top,
+    viewport: window.innerHeight,
+  }))
+  expect(position.top).toBeLessThan(position.viewport)
+})
+
 test('critical public routes expose specific metadata', async ({ page }) => {
   for (const [route, title] of [
     ['/start', 'Start med din karrieresituation'],

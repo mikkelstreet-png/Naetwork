@@ -66,7 +66,7 @@ export function Footer() {
             <p className="mt-5 max-w-md text-sm leading-relaxed text-white/55">
               {brand.oneSentence}
             </p>
-            <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/40">
+            <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/60">
               {isDa ? 'Minimum 40% af sessionsprisen eksklusive moms afsættes efter en gennemført, betalt session.' : 'At least 40% of the session price excluding VAT is allocated after a completed, paid session.'}
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -80,7 +80,7 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-white/15 pt-7 text-sm sm:grid-cols-4">
             {columns.map((column) => (
               <div key={column.title}>
-                <p className="editorial-label mb-5 text-white/35">{column.title}</p>
+                <p className="editorial-label mb-5 text-white/55">{column.title}</p>
                 <div className="space-y-3">
                   {column.links.map((link) => (
                     <Link key={link.href} href={link.href} className="block font-medium text-white/60 transition-colors hover:text-white">
@@ -95,10 +95,10 @@ export function Footer() {
 
         <div className="mt-14 grid gap-5 border-t border-white/15 pt-6 md:grid-cols-[1fr_auto] md:items-end">
           <div>
-            <p className="max-w-2xl text-xs leading-relaxed text-white/35">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
-            <address className="mt-3 text-xs not-italic leading-relaxed text-white/35">{LEGAL_OPERATOR} · <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="underline decoration-white/20 underline-offset-3 hover:text-white">{PUBLIC_SUPPORT_EMAIL}</a></address>
+            <p className="max-w-2xl text-xs leading-relaxed text-white/58">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
+            <address className="mt-3 text-xs not-italic leading-relaxed text-white/58">{LEGAL_OPERATOR} · <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="underline decoration-white/30 underline-offset-3 hover:text-white">{PUBLIC_SUPPORT_EMAIL}</a></address>
           </div>
-          <p className="shrink-0 text-xs text-white/35">{isDa ? `© ${currentYear} Naetwork. Alle rettigheder forbeholdes.` : `© ${currentYear} Naetwork. All rights reserved.`}</p>
+          <p className="shrink-0 text-xs text-white/58">{isDa ? `© ${currentYear} Naetwork. Alle rettigheder forbeholdes.` : `© ${currentYear} Naetwork. All rights reserved.`}</p>
         </div>
 
         <p aria-hidden="true" className="mt-12 overflow-hidden border-t border-white/10 pt-8 font-['Space_Grotesk'] text-[3.6rem] font-medium leading-none text-white/[0.08] sm:text-[7rem] md:text-[9rem]">Naetwork</p>

@@ -5,25 +5,24 @@ import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { ACCESS_PATHS, SESSION_CONCEPTS, accessPath, localized } from '@/lib/brand'
 import { SESSION_MINUTES } from '@/lib/platform'
+import { PublicPageHero } from '@/components/PublicPageHero'
 
 export function SessionsContent() {
   const { lang } = useLanguage()
 
   return (
     <main className="page-shell">
-      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-20 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <p className="kicker mb-5 text-white/50">Career Access / {lang === 'da' ? 'Sessioner' : 'Sessions'}</p>
-          <h1 className="display-xl max-w-5xl text-white">
-            {lang === 'da' ? 'Start med resultatet, du har brug for.' : 'Start with the outcome you need.'}
-          </h1>
-          <p className="body-lg mt-7 max-w-2xl text-white/65">
-            {lang === 'da'
-              ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Forskellen ligger i situationen, forberedelsen og det konkrete resultat.`
-              : `Every session lasts ${SESSION_MINUTES} minutes. The difference is the situation, preparation and concrete outcome.`}
-          </p>
-        </div>
-      </section>
+      <PublicPageHero
+        eyebrow={`Career Access / ${lang === 'da' ? 'Sessioner' : 'Sessions'}`}
+        title={lang === 'da' ? 'Start med resultatet, du har brug for.' : 'Start with the outcome you need.'}
+        body={lang === 'da'
+          ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Forskellen ligger i situationen, forberedelsen og det konkrete resultat.`
+          : `Every session lasts ${SESSION_MINUTES} minutes. The difference is the situation, preparation and concrete outcome.`}
+        action={{ href: '/start', label: lang === 'da' ? 'Find den relevante session' : 'Find the relevant session' }}
+        sequence={lang === 'da'
+          ? ['Situation', 'Relevant erfaring', 'Konkret resultat']
+          : ['Situation', 'Relevant experience', 'Concrete outcome']}
+      />
 
       <section className="px-5 py-14 sm:px-8 md:py-20 lg:px-12">
         <div className="mx-auto max-w-[82rem]">

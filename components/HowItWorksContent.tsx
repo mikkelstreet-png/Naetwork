@@ -1,9 +1,9 @@
 'use client'
 
-import Link from 'next/link'
-import { ArrowRight, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { BRAND_COPY } from '@/lib/brand'
+import { PublicPageHero } from '@/components/PublicPageHero'
 
 export function HowItWorksContent() {
   const { lang } = useLanguage()
@@ -26,17 +26,15 @@ export function HowItWorksContent() {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <p className="kicker mb-5 text-white/50">{copy.category}</p>
-          <h1 className="display-xl max-w-5xl text-white">{copy.positioning}</h1>
-          <p className="body-lg mt-7 max-w-2xl text-white/65">{copy.oneSentence}</p>
-          <Link href="/start" className="button-inverse mt-8">
-            {lang === 'da' ? 'Start med din situation' : 'Start with your situation'}
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
+      <PublicPageHero
+        eyebrow={copy.category}
+        title={copy.positioning}
+        body={copy.oneSentence}
+        action={{ href: '/start', label: lang === 'da' ? 'Start med din situation' : 'Start with your situation' }}
+        sequence={lang === 'da'
+          ? ['Beskriv situationen', 'Mød relevant erfaring', 'Gå videre med klarhed']
+          : ['Describe the situation', 'Meet relevant experience', 'Leave with clarity']}
+      />
 
       <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-12">
         <div className="mx-auto max-w-[82rem]">

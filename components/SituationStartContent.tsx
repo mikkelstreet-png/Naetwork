@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { ACCESS_PATHS, ACCESS_SITUATIONS, accessPath, localized, situation, type AccessPathId, type SituationId } from '@/lib/brand'
 import { INDUSTRIES } from '@/lib/platform'
+import { PublicPageHero } from '@/components/PublicPageHero'
 
 function isSituationId(value: string | null): value is SituationId {
   return ACCESS_SITUATIONS.some((item) => item.id === value)
@@ -57,17 +58,16 @@ export function SituationStartContent() {
 
   return (
     <main className="min-h-screen bg-[#f4f4f0]">
-      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-20 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <p className="kicker mb-5 text-white/50">Career Access</p>
-          <h1 className="display-xl max-w-5xl text-white">{lang === 'da' ? 'Hvad står du overfor?' : 'What are you facing?'}</h1>
-          <p className="body-lg mt-6 max-w-2xl text-white/65">
-            {lang === 'da'
-              ? 'Start med situationen, ikke med et profilkatalog. Vi bruger dit valg til at vise den erfaring, der er relevant for næste skridt.'
-              : 'Start with the situation, not a profile directory. We use your choice to show the experience relevant to the next step.'}
-          </p>
-        </div>
-      </section>
+      <PublicPageHero
+        eyebrow="Career Access"
+        title={lang === 'da' ? 'Hvad står du overfor?' : 'What are you facing?'}
+        body={lang === 'da'
+          ? 'Start med situationen, ikke med et profilkatalog. Dit valg hjælper med at afgrænse den erfaring, der er relevant for næste skridt.'
+          : 'Start with the situation, not a profile directory. Your choice helps narrow the experience relevant to the next step.'}
+        sequence={lang === 'da'
+          ? ['Vælg situation', 'Vælg felt', 'Se relevant erfaring']
+          : ['Choose situation', 'Choose field', 'See relevant experience']}
+      />
 
       <section className="px-5 py-10 sm:px-8 md:py-16 lg:px-12">
         <div className="mx-auto grid max-w-[82rem] gap-8 lg:grid-cols-[1fr_400px]">
@@ -121,7 +121,8 @@ export function SituationStartContent() {
             </section>
           </div>
 
-          <aside aria-live="polite" className="h-fit overflow-hidden rounded-md bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:p-7">
+          <aside aria-live="polite" className="access-selection-panel h-fit overflow-hidden p-6 text-white lg:sticky lg:top-24 lg:p-7">
+            <div className="signal-rail absolute inset-x-0 top-0" aria-hidden="true"><span /><span /><span /><span /></div>
             <p className="editorial-label text-white/50">{lang === 'da' ? 'Din adgang' : 'Your access'}</p>
             <h2 className="mt-4 text-3xl font-semibold leading-tight">{selected ? localized(selected.label, lang) : lang === 'da' ? 'Start med situationen' : 'Start with the situation'}</h2>
             <p className="mt-4 text-sm leading-relaxed text-white/65">

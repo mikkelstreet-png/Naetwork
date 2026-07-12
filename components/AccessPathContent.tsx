@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { ACCESS_SITUATIONS, SESSION_CONCEPTS, accessPath, localized, type AccessPathId } from '@/lib/brand'
+import { PublicPageHero } from '@/components/PublicPageHero'
 
 export function AccessPathContent({ pathId }: { pathId: AccessPathId }) {
   const { lang } = useLanguage()
@@ -13,17 +14,15 @@ export function AccessPathContent({ pathId }: { pathId: AccessPathId }) {
 
   return (
     <main className="page-shell">
-      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-20 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <p className="kicker mb-5 text-white/50">Career Access / {path.label[lang]}</p>
-          <h1 className="display-xl max-w-5xl text-white">{localized(path.title, lang)}</h1>
-          <p className="body-lg mt-6 max-w-2xl text-white/65">{localized(path.description, lang)}</p>
-          <Link href={`/start?path=${path.id}`} className="button-inverse mt-8">
-            {lang === 'da' ? 'Start med din situation' : 'Start with your situation'}
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
+      <PublicPageHero
+        eyebrow={`Career Access / ${path.label[lang]}`}
+        title={localized(path.title, lang)}
+        body={localized(path.description, lang)}
+        action={{ href: `/start?path=${path.id}`, label: lang === 'da' ? 'Start med din situation' : 'Start with your situation' }}
+        sequence={lang === 'da'
+          ? ['Genkend situationen', 'Vælg relevant erfaring', 'Få et næste skridt']
+          : ['Recognize the situation', 'Choose relevant experience', 'Get a next step']}
+      />
 
       <section className="px-5 py-14 sm:px-8 md:py-20 lg:px-12">
         <div className="mx-auto grid max-w-[82rem] gap-12 lg:grid-cols-[0.75fr_1.25fr]">
