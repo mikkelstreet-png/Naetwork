@@ -67,7 +67,7 @@ const sections: LegalSection[] = [
     title: '5. Modtagere og databehandlere',
     body: [
       'Bookingoplysninger deles mellem den kandidat og den professionelle, der er part i bookingen. Vi deler kun det, der er nødvendigt for at planlægge og levere sessionen.',
-      'Tekniske leverandører kan behandle oplysninger efter instruks og relevant aftale. De aktuelle kategorier omfatter database og login (Supabase), hosting og levering (Vercel), transaktionelle e-mails (Resend, når integrationen er aktiveret) samt betaling og rådgiververificering (Stripe, når betaling aktiveres).',
+      'Tekniske leverandører kan behandle oplysninger efter instruks og relevant aftale. De aktuelle kategorier omfatter database og login (Supabase), hosting og levering (Vercel), transaktionelle e-mails (Resend, når integrationen er aktiveret) samt betaling og verificering af professionelle (Stripe, når betaling aktiveres).',
       'Oplysninger kan også udleveres, hvis lovgivning eller en gyldig myndighedsanmodning kræver det, eller hvis det er nødvendigt for at beskytte rettigheder og sikkerhed.',
     ],
   },

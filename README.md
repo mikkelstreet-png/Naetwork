@@ -1,8 +1,10 @@
 # Naetwork
 
-Naetwork connects candidates with reviewed professionals from AI, Banking, Management Consulting, and Private Equity for focused 60-minute career sessions at one of four prices: DKK 600, 900, 1,200, or 1,800.
+Naetwork is a Career Access platform: the access layer between a concrete career decision and people with relevant experience from the other side. Users start with their situation, not a profile catalogue, and move through Explore, Prepare, Apply, or Perform before reaching relevant professionals.
 
-Every paid session is designed to allocate 40%, 60%, 80% or 90% of its price excluding VAT in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
+Every session lasts 60 minutes and is designed around a concrete outcome rather than time alone. A completed paid session is designed to allocate 40%, 60%, 80% or 90% of its price excluding VAT in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
+
+The canonical public entry points are `/start`, `/how-it-works`, `/sessions`, `/explore`, `/prepare`, `/apply`, and `/perform`. Legacy `/match` and `/onboarding` routes redirect to `/start`.
 
 ## Stack
 

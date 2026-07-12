@@ -159,7 +159,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
   const t = {
     back: isDa ? 'Tilbage til profiler' : 'Back to profiles',
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
-    bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
+    bookCta: isDa ? 'Anmod om session' : 'Request a session',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
     briefing: isDa ? `Du vælger selv fokus. Efter en gennemført og betalt session afsættes ${professional.contributionPercent}% / DKK ${minimumImpact} af prisen ekskl. moms til støtte for Kræftens Bekæmpelse.` : `You choose the focus. After a completed and paid session, ${professional.contributionPercent}% / DKK ${minimumImpact} of the price excl. VAT is allocated in support of Kræftens Bekæmpelse.`,
     bestFor: isDa ? 'Bedst til' : 'Best for',

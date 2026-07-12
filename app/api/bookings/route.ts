@@ -263,7 +263,7 @@ export async function POST(request: Request) {
         to: professionalUser.user.email,
         subject: `Ny bookinganmodning fra ${candidateName}`,
         title: 'Ny bookinganmodning',
-        intro: `${candidateName} ønsker 60 minutters karrieresparring med dig. Log ind for at bekræfte eller afvise tidspunktet.`,
+        intro: `${candidateName} ønsker en 60-minutters Career Access-session med dig. Log ind for at bekræfte eller afvise tidspunktet.`,
         rows: [
           { label: 'Ønsket tidspunkt', value: formattedDate },
           { label: 'Fokus', value: selectedFocusLabel },

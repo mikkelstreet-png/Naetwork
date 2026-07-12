@@ -18,9 +18,8 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? '
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
-  title: 'Naetwork - Karrieresparring med mening',
-  description:
-    'Book 60 minutters karrieresparring med gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity. Minimum 40% af sessionsprisen eksklusive moms afsættes efter betaling.',
+  title: 'Naetwork - Vid mere, før dit næste træk',
+  description: 'Naetwork giver dig adgang til relevant erfaring bag de roller, virksomheder og karriereveje, du overvejer.',
   robots: { index: true, follow: true },
   icons: {
     icon: '/naetwork-logo.svg',

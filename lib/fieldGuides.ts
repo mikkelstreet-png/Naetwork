@@ -4,8 +4,8 @@ export const FIELD_GUIDES = {
     query: 'AI',
     accent: 'bg-cyan-300',
     title: {
-      da: 'Karrieresparring inden for AI',
-      en: 'AI career sessions',
+      da: 'Career Access inden for AI',
+      en: 'AI Career Access',
     },
     description: {
       da: 'For dig, der sigter mod produkt-, strategi-, drifts- eller kommercielle roller inden for AI og vil positionere din erfaring skarpere.',
@@ -29,8 +29,8 @@ export const FIELD_GUIDES = {
     query: 'Banking',
     accent: 'bg-emerald-300',
     title: {
-      da: 'Karrieresparring inden for Banking',
-      en: 'Banking career sessions',
+      da: 'Career Access inden for Banking',
+      en: 'Banking Career Access',
     },
     description: {
       da: 'For dig, der forbereder dig til processer inden for Investment Banking, M&A, Corporate Finance eller Capital Markets.',
@@ -54,8 +54,8 @@ export const FIELD_GUIDES = {
     query: 'Management Consulting',
     accent: 'bg-blue-300',
     title: {
-      da: 'Karrieresparring inden for Management Consulting',
-      en: 'Consulting career sessions',
+      da: 'Career Access inden for Management Consulting',
+      en: 'Consulting Career Access',
     },
     description: {
       da: 'For dig, der forbereder ansøgninger, cases, personlige interviews eller finalerunder til Management Consulting.',
@@ -79,8 +79,8 @@ export const FIELD_GUIDES = {
     query: 'Private Equity',
     accent: 'bg-lime-300',
     title: {
-      da: 'Karrieresparring inden for Private Equity',
-      en: 'Private Equity career sessions',
+      da: 'Career Access inden for Private Equity',
+      en: 'Private Equity Career Access',
     },
     description: {
       da: 'For dig, der sigter mod investeringsroller, deal teams, investment cases eller et skifte fra Banking eller Consulting.',

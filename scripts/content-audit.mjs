@@ -2,11 +2,14 @@ import { readFile } from 'node:fs/promises'
 
 const files = [
   'lib/platform.ts',
+  'lib/brand.ts',
   'lib/legal.ts',
   'lib/constants.ts',
-  'lib/content.ts',
   'lib/fieldGuides.ts',
   'components/HomeContent.tsx',
+  'components/SituationStartContent.tsx',
+  'components/HowItWorksContent.tsx',
+  'components/SessionsContent.tsx',
   'components/Navbar.tsx',
   'components/Footer.tsx',
   'components/ImpactContent.tsx',
@@ -20,6 +23,9 @@ const files = [
   'scripts/preflight.mjs',
   'app/professionals/page.tsx',
   'app/professionals/[id]/page.tsx',
+  'app/start/page.tsx',
+  'app/how-it-works/page.tsx',
+  'app/sessions/page.tsx',
   'app/professional/signup/page.tsx',
   'app/profil/page.tsx',
   'app/profil/professionel/page.tsx',
@@ -59,6 +65,8 @@ const forbidden = [
   ['unsupported identity verification claim', /gennemgår identitet/i],
   ['outdated legal date', /7\. juli 2026|2026[-]07[-]07/],
   ['overstated contribution in social image', new RegExp('Minimum 40% til Kræftens ' + 'Bekæmpelse')],
+  ['legacy browse-first homepage CTA', /Find den rette professionelle/],
+  ['legacy match route in public navigation', /href=["']\/match/],
 ]
 
 const errors = forbidden.filter(([, pattern]) => pattern.test(corpus)).map(([label]) => `Forbidden content: ${label}`)
@@ -71,6 +79,11 @@ const required = [
   ['lib/platform.ts', /export const CONTRIBUTION_MAX = 90/],
   ['lib/platform.ts', /export const CONTRIBUTION_OPTIONS = \[40, 60, 80, 90\]/],
   ['lib/platform.ts', /export const PLATFORM_FEE_DKK = 49/],
+  ['lib/brand.ts', /category: 'Career Access'/],
+  ['lib/brand.ts', /primaryLine: 'Know more before your next move\.'/],
+  ['lib/brand.ts', /positioning: 'The access layer behind better career decisions\.'/],
+  ['lib/brand.ts', /id: 'explore'/],
+  ['lib/brand.ts', /id: 'perform'/],
   ['lib/legal.ts', /export const LEGAL_OPERATOR/],
   ['lib/legal.ts', /export const LEGAL_UPDATED_ISO = '2026-07-12'/],
   ['app/terms/page.tsx', /14 dages fortrydelsesret/],
@@ -98,6 +111,10 @@ const required = [
   ['scripts/preflight.mjs', /8-digit CVR number/],
   ['app/professionals/page.tsx', /initialProfessionals/],
   ['components/HomeContent.tsx', /<main>/],
+  ['components/HomeContent.tsx', /href="\/start"/],
+  ['components/Navbar.tsx', /Start med din situation/],
+  ['components/SituationStartContent.tsx', /Hvad står du overfor/],
+  ['app/start/page.tsx', /Start med din karrieresituation/],
 ]
 
 for (const [file, pattern] of required) {

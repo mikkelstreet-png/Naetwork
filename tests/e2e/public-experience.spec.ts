@@ -2,8 +2,14 @@ import { expect, test, type Page } from '@playwright/test'
 
 const publicRoutes = [
   '/',
+  '/start',
+  '/how-it-works',
+  '/sessions',
+  '/explore',
+  '/prepare',
+  '/apply',
+  '/perform',
   '/professionals',
-  '/match',
   '/impact',
   '/mission',
   '/contact',
@@ -44,8 +50,8 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('button', { name: /luk menu|close menu/i })).toHaveAttribute('aria-expanded', 'true')
-  await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Priser|Pricing/)
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Book 60 min|Find en professionel|Find a professional/i })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Sessioner|Sessions/)
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
@@ -67,7 +73,7 @@ test('profile filters remain usable on mobile and desktop', async ({ page, isMob
 })
 
 test('Danish public UI avoids mixed interface labels', async ({ page }) => {
-  for (const route of ['/', '/professionals', '/impact', '/professional/signup']) {
+  for (const route of ['/', '/start', '/how-it-works', '/professionals', '/impact', '/professional/signup']) {
     await page.goto(route)
     const body = await page.locator('body').innerText()
     expect(body).not.toMatch(/\b(?:Become a professional|Edit profile|Session brief|Best for|Account|Application Review|Career Direction|Professional profile)\b/)
@@ -90,27 +96,56 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Karrieresparring fra den side af bordet|Career guidance from the side of the table/i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Find den rette professionelle|Find the right professional/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Vid mere, før dit næste træk|Know more before your next move/i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
   await expect(page.locator('#pricing')).toContainText('DKK 192')
   await expect(page.locator('#pricing')).toContainText(/ekskl\. moms|excl\. VAT/i)
   await expect(page.getByRole('heading', { name: /Klare svar|Clear answers/i })).toBeVisible()
-  await page.goto('/match')
-  await expect(page.getByRole('heading', { name: /Find den rigtige erfaring på to valg|Find the right experience in two choices/i })).toBeVisible()
+  await page.goto('/start')
+  await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
 })
 
 test('critical public routes expose specific metadata', async ({ page }) => {
   for (const [route, title] of [
-    ['/professionals', 'Find en professionel'],
-    ['/match', 'Find dit fokus'],
+    ['/start', 'Start med din karrieresituation'],
+    ['/how-it-works', 'Sådan fungerer Career Access'],
+    ['/sessions', 'Career Access-sessioner'],
+    ['/professionals', 'Find relevant erfaring'],
     ['/contact', 'Kontakt'],
     ['/professional/signup', 'Bliv professionel'],
   ] as const) {
     await page.goto(route)
     await expect(page).toHaveTitle(new RegExp(title, 'i'))
   }
+})
+
+test('legacy matching routes lead to the situation-first entry', async ({ page }) => {
+  for (const route of ['/match', '/onboarding']) {
+    await page.goto(route)
+    await expect(page).toHaveURL(/\/start$/)
+    await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
+  }
+})
+
+test('situation-first entry produces a relevant directory route', async ({ page }) => {
+  await page.goto('/start')
+  await page.getByRole('button', { name: /Jeg overvejer en bestemt rolle/i }).click()
+  await page.getByRole('button', { name: 'AI' }).click()
+  const next = page.getByRole('link', { name: /Se relevant erfaring/i })
+  await expect(next).toBeVisible()
+  await expect(next).toHaveAttribute('href', /\/professionals\?field=AI&need=direction/)
+})
+
+test('English positioning mirrors the Danish product contract', async ({ page }) => {
+  await page.goto('/')
+  await page.evaluate(() => localStorage.setItem('naetwork_lang', 'en'))
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Know more before your next move.' })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: 'Start with your situation' })).toBeVisible()
+  await page.goto('/how-it-works')
+  await expect(page.getByRole('heading', { name: 'The access layer behind better career decisions.' })).toBeVisible()
 })
 
 test('homepage publishes complete brand and offer metadata', async ({ page }) => {
@@ -122,6 +157,16 @@ test('homepage publishes complete brand and offer metadata', async ({ page }) =>
   const service = JSON.parse(structuredData ?? '{}')
   expect(service['@type']).toBe('Service')
   expect(service.hasOfferCatalog.itemListElement.map((offer: { price: number }) => offer.price)).toEqual([600, 900, 1200, 1800])
+})
+
+test('sitemap publishes the Career Access information architecture', async ({ page }) => {
+  const response = await page.goto('/sitemap.xml')
+  expect(response?.status()).toBe(200)
+  const sitemap = await page.locator('body').innerText()
+  for (const route of ['/start', '/how-it-works', '/sessions', '/explore', '/prepare', '/apply', '/perform']) {
+    expect(sitemap).toContain(route)
+  }
+  expect(sitemap).not.toContain('/match')
 })
 
 test('account creation distinguishes terms acceptance from privacy notice', async ({ page }) => {
@@ -189,7 +234,7 @@ test('focused account pages omit the marketing footer', async ({ page }) => {
 test('protected member pages redirect to login', async ({ page }) => {
   await page.goto('/dashboard')
   await expect(page).toHaveURL(/\/login\?(?:next=(?:%2F|\/)dashboard|error=service_unavailable)/)
-  await expect(page.getByRole('heading', { name: /Fortsæt din karrieresparring/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Fortsæt fra din situation/i })).toBeVisible()
   if (page.url().includes('service_unavailable')) {
     await expect(page.getByText('Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.', { exact: true })).toBeVisible()
   }

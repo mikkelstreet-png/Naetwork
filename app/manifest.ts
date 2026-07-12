@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Naetwork - Karrieresparring med mening',
+    name: 'Naetwork - Career Access',
     short_name: 'Naetwork',
-    description: '60 minutters fokuseret karrieresparring med gennemgåede professionelle.',
+    description: 'Adgang til relevant erfaring bag bedre karrierevalg.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

@@ -76,7 +76,7 @@ export default function SignupPage() {
           <h1 className="text-4xl font-medium leading-[0.96] text-white text-balance sm:text-5xl md:text-6xl">Find den erfaring, du mangler adgang til.</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/55 md:text-lg">Opret en kandidatkonto for at sende bookinganmodninger og samle dine sessioner ét sted.</p>
           <div className="mt-10 border-t border-white/20 pt-5">
-            <p className="text-sm font-semibold text-white/40">Vil du tilbyde sparring?</p>
+            <p className="text-sm font-semibold text-white/40">Vil du gøre din erfaring tilgængelig?</p>
             <Link href="/professional/signup" className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-white underline decoration-white/30 underline-offset-4">Ansøg som professionel <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           </div>

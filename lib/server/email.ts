@@ -67,7 +67,7 @@ export async function sendTransactionalEmail(email: TransactionalEmail) {
               ${rows ? `<table role="presentation" style="width:100%;margin-top:24px;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;border-collapse:collapse;">${rows}</table>` : ''}
               ${email.note ? `<p style="margin:20px 0 0;padding:14px;background:#f7f7f4;color:#4b5563;font-size:13px;line-height:1.6;">${escapeHtml(email.note)}</p>` : ''}
               ${email.cta ? `<a href="${escapeHtml(email.cta.href)}" style="display:inline-block;margin-top:24px;background:#0a0a0a;color:#ffffff;padding:12px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:700;">${escapeHtml(email.cta.label)}</a>` : ''}
-              <p style="margin:32px 0 0;color:#9ca3af;font-size:12px;line-height:1.5;">Karrieresparring med mening. Svar på denne mail eller skriv til kontakt@naetwork.dk, hvis du har spørgsmål.</p>
+              <p style="margin:32px 0 0;color:#9ca3af;font-size:12px;line-height:1.5;">Naetwork · Career Access. Svar på denne mail eller skriv til kontakt@naetwork.dk, hvis du har spørgsmål.</p>
             </div>
           </div>
         </body>

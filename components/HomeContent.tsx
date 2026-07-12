@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowRight,
-  CalendarDays,
   Check,
   CheckCircle2,
   Compass,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { HERO_SPECTRUM } from '@/lib/heroSpectrum';
+import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
 import {
   CONTRIBUTION_MAX,
   CONTRIBUTION_MIN,
@@ -30,61 +30,42 @@ export function HomeContent() {
   const { lang } = useLanguage();
   const isDa = lang === 'da';
 
-  const fields = [
-    {
-      name: 'AI',
-      href: '/fields/ai',
-      color: 'bg-[#bcecf0]',
-      body: isDa ? 'Rollevalg · positionering · produkt' : 'Role choice · positioning · product',
-    },
-    {
-      name: 'Banking',
-      href: '/fields/banking',
-      color: 'bg-[#ccead8]',
-      body: isDa ? 'Technicals · motivation · interview' : 'Technicals · motivation · interviews',
-    },
-    {
-      name: 'Management Consulting',
-      href: '/fields/consulting',
-      color: 'bg-[#cdddf2]',
-      body: isDa ? 'Cases · struktur · personlig fit' : 'Cases · structure · personal fit',
-    },
-    {
-      name: 'Private Equity',
-      href: '/fields/private-equity',
-      color: 'bg-[#dce8ad]',
-      body: isDa ? 'Investment cases · deals · interview' : 'Investment cases · deals · interviews',
-    },
-  ] as const;
+  const brand = BRAND_COPY[lang];
+  const accessColors = ['bg-[#bcecf0]', 'bg-[#ccead8]', 'bg-[#cdddf2]', 'bg-[#dce8ad]'] as const;
+  const fields = ACCESS_PATHS.map((path, index) => ({
+    name: localized(path.label, lang),
+    href: path.href,
+    color: accessColors[index],
+    body: localized(path.description, lang),
+  }));
 
   const outcomes = [
     {
       icon: Compass,
-      title: isDa ? 'Afklar din retning' : 'Clarify your direction',
-      body: isDa ? 'Test rollevalg og positionering mod erfaring fra det felt, du overvejer.' : 'Test role choice and positioning against experience from the field you are considering.',
+      title: isDa ? 'Forstå arbejdet' : 'Understand the work',
+      body: isDa ? 'Få den kontekst om rolle, virksomhed og forventninger, som jobopslaget ikke giver.' : 'Get the context on the role, company and expectations that the job description leaves out.',
     },
     {
       icon: MessageSquare,
-      title: isDa ? 'Forbered dit interview' : 'Prepare for your interview',
-      body: isDa ? 'Træn motivation, svar og personlige eksempler mod den relevante interviewbarre.' : 'Practice motivation, answers and personal examples against the relevant interview bar.',
+      title: isDa ? 'Se hvor du står' : 'See where you stand',
+      body: isDa ? 'Få et ærligt syn på dit udgangspunkt, dine stærkeste argumenter og de reelle huller.' : 'Get an honest view of your position, strongest arguments and real gaps.',
     },
     {
       icon: Target,
-      title: isDa ? 'Skærp din case' : 'Sharpen your case',
-      body: isDa ? 'Få modspil på struktur, antagelser og kommunikation, før det gælder.' : 'Pressure-test structure, assumptions and communication before it counts.',
+      title: isDa ? 'Forbered processen' : 'Prepare for the process',
+      body: isDa ? 'Arbejd konkret med CV, ansøgning, interview, case eller forhandling.' : 'Work concretely on your CV, application, interview, case or negotiation.',
     },
     {
       icon: FileText,
-      title: isDa ? 'Forbedr dit materiale' : 'Improve your materials',
-      body: isDa ? 'Prioritér konkrete ændringer til CV, ansøgning eller LinkedIn.' : 'Prioritize concrete changes to your CV, application or LinkedIn.',
+      title: isDa ? 'Vælg næste skridt' : 'Choose the next step',
+      body: isDa ? 'Afslut med klarhed om, hvad du bør gøre, ændre eller undersøge nu.' : 'Finish with clarity on what to do, change or investigate next.',
     },
   ] as const;
 
   const steps = [
-    [Search, isDa ? 'Sammenlign' : 'Compare', isDa ? 'Rolle, virksomhed, fokus, pris og bidrag.' : 'Role, company, focus, price and contribution.'],
-    [Target, isDa ? 'Definér målet' : 'Define the goal', isDa ? 'Beskriv den beslutning eller færdighed, du vil skærpe.' : 'Describe the decision or skill you want to sharpen.'],
-    [CalendarDays, isDa ? 'Anmod om tid' : 'Request a time', isDa ? 'Vælg et ønsket tidspunkt og del dit korte brief.' : 'Choose a preferred time and share your short brief.'],
-    [CheckCircle2, isDa ? 'Få bekræftet' : 'Get confirmed', isDa ? 'Den professionelle accepterer eller foreslår en ændring.' : 'The professional accepts or proposes a change.'],
+    [Target, isDa ? 'Fortæl, hvad du overvejer' : 'Tell us what you are considering', isDa ? 'Start med rollen, virksomheden, ansøgningen eller beslutningen foran dig.' : 'Start with the role, company, application or decision in front of you.'],
+    [Search, isDa ? 'Mød relevant erfaring' : 'Meet relevant experience', isDa ? 'Find mennesker, der kender situationen fra den anden side.' : 'Find people who know the situation from the other side.'],
+    [CheckCircle2, isDa ? 'Gå videre med klarhed' : 'Leave with clarity', isDa ? 'Brug sessionen på ét konkret spørgsmål og prioritér næste skridt.' : 'Use the session for one concrete question and prioritize the next step.'],
   ] as const;
 
   const profileFacts = [
@@ -129,27 +110,25 @@ export function HomeContent() {
 
         <div className="mx-auto flex min-h-[calc(100svh-7.5rem)] max-w-[82rem] flex-col px-5 pb-0 pt-5 sm:px-8 sm:pt-6 md:min-h-[calc(100svh-8rem)] lg:px-12">
           <div className="flex items-center justify-between border-b border-white/20 pb-4">
-            <p className="editorial-label text-white/60">Naetwork / Career access</p>
-            <p className="editorial-label hidden text-right text-white/45 sm:block">AI · Banking · Consulting · Private Equity</p>
+            <p className="editorial-label text-white/60">Naetwork / {brand.category}</p>
+            <p className="editorial-label hidden text-right text-white/45 sm:block">{brand.positioning}</p>
           </div>
 
           <div className="flex flex-1 items-center py-7 sm:py-8 md:py-7">
             <div className="max-w-[970px]">
-              <p className="kicker mb-6 text-white/65">{isDa ? 'Karrieresparring med mening' : 'Career guidance with purpose'}</p>
+              <p className="kicker mb-6 text-white/65">{isDa ? 'Erfaringen bag jobbet' : 'The insight behind the job'}</p>
               <h1 className="max-w-[1000px] text-[2.75rem] font-medium leading-[0.92] text-white text-balance sm:text-6xl md:text-[4.6rem] lg:text-[4.8rem]">
-                {isDa ? 'Karrieresparring fra den side af bordet, du vil ind på.' : 'Career guidance from the side of the table you want to join.'}
+                {brand.primaryLine}
               </h1>
               <p className="mt-6 max-w-2xl text-base font-medium leading-7 text-white/72 sm:mt-8 sm:text-lg md:text-xl md:leading-8">
-                {isDa
-                  ? 'Book 60 minutter med en gennemgået professionel fra AI, Banking, Management Consulting eller Private Equity. Brug tiden på CV, interview, case eller dit næste karrieretræk.'
-                  : 'Book 60 minutes with a reviewed professional from AI, Banking, Management Consulting or Private Equity. Use the time for your CV, interview, case or next career move.'}
+                {brand.oneSentence}
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center">
-                <Link href="/professionals" className="button-inverse w-full sm:w-auto">
-                  {isDa ? 'Find den rette professionelle' : 'Find the right professional'}
+                <Link href="/start" className="button-inverse w-full sm:w-auto">
+                  {isDa ? 'Start med din situation' : 'Start with your situation'}
                   <ArrowRight size={16} aria-hidden="true" />
                 </Link>
-                <Link href="#how-it-works" className="button-ghost-light w-full sm:w-auto">
+                <Link href="/how-it-works" className="button-ghost-light w-full sm:w-auto">
                   {isDa ? 'Se hvordan det fungerer' : 'See how it works'}
                 </Link>
               </div>
@@ -159,9 +138,9 @@ export function HomeContent() {
           <div className="signal-rail" aria-hidden="true"><span /><span /><span /><span /></div>
           <dl className="grid grid-cols-3 border-x border-white/20 bg-black/25 backdrop-blur-md">
             {[
-              [`${SESSION_MINUTES} min`, isDa ? 'Fokuseret 1:1' : 'Focused 1:1'],
-              [<><span className="sm:hidden">DKK 600+</span><span className="hidden sm:inline">{formatDkk(PRICE_MIN)}-{PRICE_MAX.toLocaleString('da-DK')}</span></>, isDa ? 'Fast pris' : 'Fixed price'],
-              [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Til kræftsagen' : 'To the cancer cause'],
+              [isDa ? 'Situation først' : 'Situation first', isDa ? 'Ikke et katalog' : 'Not a directory'],
+              [isDa ? 'Relevant erfaring' : 'Relevant experience', isDa ? 'Ikke popularitet' : 'Not popularity'],
+              [isDa ? 'Næste skridt' : 'Next step', isDa ? 'Konkret resultat' : 'Concrete outcome'],
             ].map(([value, label], index) => (
               <div key={index} className="border-r border-white/20 px-3 py-4 last:border-r-0 sm:px-5 sm:py-5 md:flex md:items-end md:justify-between md:gap-4">
                 <dd className="font-['Space_Grotesk'] text-base font-semibold text-white sm:text-xl md:text-2xl">{value}</dd>
@@ -175,12 +154,12 @@ export function HomeContent() {
       <section className="border-b border-[#cacac2] bg-white px-5 py-16 sm:px-8 md:py-24 lg:px-12">
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-6 border-t border-[#cacac2] pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker">{isDa ? 'Fire erfaringsspor' : 'Four experience tracks'}</p>
+            <p className="kicker">{isDa ? 'Fire indgange' : 'Four starting points'}</p>
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <h2 className="max-w-3xl text-3xl font-medium leading-[1.02] text-gray-950 text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Gå direkte til den erfaring, du søger.' : 'Go straight to the experience you need.'}
+                {isDa ? 'Start der, hvor du står.' : 'Start where you are.'}
               </h2>
-              <p className="max-w-xs text-sm leading-relaxed text-gray-500">{isDa ? 'Fire felter. Samme præcise 60-minutters format.' : 'Four fields. The same precise 60-minute format.'}</p>
+              <p className="max-w-xs text-sm leading-relaxed text-gray-500">{isDa ? 'Explore, Prepare, Apply eller Perform hjælper dig med at vælge den relevante vej ind.' : 'Explore, Prepare, Apply or Perform helps you choose the relevant way in.'}</p>
             </div>
           </div>
 
@@ -205,12 +184,12 @@ export function HomeContent() {
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
             <div className="lg:sticky lg:top-28 lg:h-fit">
-              <p className="kicker mb-6 text-white/45">{isDa ? 'Én session. Dit fokus.' : 'One session. Your focus.'}</p>
+              <p className="kicker mb-6 text-white/45">{isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists'}</p>
               <h2 className="max-w-xl text-4xl font-medium leading-[1] text-white text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Kom med et konkret spørgsmål. Gå med et skarpere næste træk.' : 'Bring a concrete question. Leave with a sharper next move.'}
+                {brand.problem}
               </h2>
               <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/55 md:text-base">
-                {isDa ? 'Dit brief sætter retningen. Den professionelle bringer erfaringen, konteksten og det ærlige modspil.' : 'Your brief sets the direction. The professional brings experience, context and honest challenge.'}
+                {isDa ? 'Naetwork gør den viden mindre tilfældig og strukturerer den omkring beslutningen foran dig.' : 'Naetwork makes that knowledge less random and structures it around the decision in front of you.'}
               </p>
             </div>
 
@@ -235,13 +214,13 @@ export function HomeContent() {
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-8 md:grid-cols-[0.7fr_1.3fr] md:items-end">
             <div>
-              <p className="kicker mb-5">{isDa ? 'Fra valg til session' : 'From choice to session'}</p>
-              <h2 className="text-4xl font-medium leading-none text-gray-950 sm:text-5xl">{isDa ? 'Fire klare trin.' : 'Four clear steps.'}</h2>
+              <p className="kicker mb-5">{isDa ? 'Fra situation til næste skridt' : 'From situation to next step'}</p>
+              <h2 className="text-4xl font-medium leading-none text-gray-950 sm:text-5xl">{isDa ? 'Tre klare trin.' : 'Three clear steps.'}</h2>
             </div>
-            <p className="max-w-lg text-sm leading-relaxed text-gray-600 md:justify-self-end md:text-right">{isDa ? 'Ingen pakker eller komplicerede valg. Find erfaringen, definer målet og send en anmodning.' : 'No packages or complicated choices. Find the experience, define the goal and send a request.'}</p>
+            <p className="max-w-lg text-sm leading-relaxed text-gray-600 md:justify-self-end md:text-right">{isDa ? 'Fortæl, hvad du overvejer. Mød relevant erfaring. Gå videre med klarhed.' : 'Tell us what you are considering. Meet relevant experience. Leave with clarity.'}</p>
           </div>
 
-          <ol className="process-grid mt-10 grid grid-cols-2 border-l border-t border-[#bfbfb7] lg:grid-cols-4">
+          <ol className="process-grid mt-10 grid grid-cols-1 border-l border-t border-[#bfbfb7] sm:grid-cols-3">
             {steps.map(([Icon, title, body], index) => (
               <li key={title} className="relative min-h-[220px] border-b border-r border-[#bfbfb7] bg-white/45 p-4 sm:min-h-[245px] sm:p-7">
                 <div className={`absolute inset-x-0 top-0 h-1 ${fields[index].color}`} aria-hidden="true" />
@@ -260,13 +239,13 @@ export function HomeContent() {
       <section id="profile-universe" className="bg-white px-5 py-16 sm:px-8 md:py-24 lg:px-12">
         <div className="mx-auto max-w-[82rem]">
           <div className="grid gap-8 border-t border-[#cacac2] pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker">{isDa ? 'Profilstandarden' : 'The profile standard'}</p>
+            <p className="kicker">{isDa ? 'Relevant erfaring' : 'Relevant experience'}</p>
             <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
               <h2 className="max-w-3xl text-4xl font-medium leading-[1] text-gray-950 text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Se præcis, hvem du booker.' : 'Know exactly who you are booking.'}
+                {isDa ? 'Se præcis, hvorfor erfaringen er relevant.' : 'See exactly why the experience is relevant.'}
               </h2>
-              <Link href="/professionals" className="button-secondary w-fit whitespace-nowrap">
-                {isDa ? 'Se profiluniverset' : 'Explore profiles'}
+              <Link href="/start" className="button-secondary w-fit whitespace-nowrap">
+                {isDa ? 'Start med din situation' : 'Start with your situation'}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
             </div>
@@ -280,8 +259,8 @@ export function HomeContent() {
                 <span className="inline-flex items-center gap-2 border border-white/20 px-3 py-1.5 text-[10px] font-bold uppercase text-white/65"><Check size={12} aria-hidden="true" /> {isDa ? 'Gennemgået' : 'Reviewed'}</span>
               </div>
               <div>
-                <p className="max-w-md font-['Space_Grotesk'] text-[1.7rem] font-medium leading-tight sm:text-4xl">{isDa ? 'Den erfaring, der er relevant for dit konkrete næste skridt.' : 'The experience relevant to your concrete next step.'}</p>
-                <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">{isDa ? 'Indsendt baggrund, tydeligt fokus, fast pris og konkret bidrag. Det relevante er synligt, før du sender en anmodning.' : 'Submitted background, clear focus, fixed price and concrete contribution. What matters is visible before you send a request.'}</p>
+                <p className="max-w-md font-['Space_Grotesk'] text-[1.7rem] font-medium leading-tight sm:text-4xl">{isDa ? 'Relevans før titel. Erfaring før popularitet.' : 'Relevance before title. Experience before popularity.'}</p>
+                <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">{isDa ? 'Profilen viser, hvilke situationer personen kan hjælpe med, og hvad du konkret kan forvente af sessionen.' : 'The profile shows which situations the person can help with and what you can concretely expect from the session.'}</p>
               </div>
             </div>
 
@@ -349,11 +328,11 @@ export function HomeContent() {
 
           <div className="mt-10 flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{isDa ? 'Find den rette sparringspartner.' : 'Find the right sparring partner.'}</p>
+              <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{isDa ? 'Find erfaringen bag dit næste valg.' : 'Find the experience behind your next decision.'}</p>
               <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/40">{isDa ? 'Bidrag beregnes af prisen ekskl. moms. Bookinganmodninger er aktive; betaling er endnu ikke aktiveret.' : 'Contributions are calculated from the price excl. VAT. Booking requests are active; payments are not yet enabled.'}</p>
             </div>
-            <Link href="/professionals" className="button-inverse w-fit">
-              {isDa ? 'Sammenlign profiler' : 'Compare profiles'}
+            <Link href="/start" className="button-inverse w-fit">
+              {isDa ? 'Start med din situation' : 'Start with your situation'}
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>

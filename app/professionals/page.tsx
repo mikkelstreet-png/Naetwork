@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Find en professionel | Naetwork',
-  description: 'Sammenlign gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity efter erfaring, fokus, pris og bidrag.',
+  title: 'Find relevant erfaring | Naetwork',
+  description: 'Sammenlign gennemgåede professionelle ud fra den erfaring, der er relevant for din situation, dit felt og dit ønskede resultat.',
   alternates: { canonical: '/professionals' },
 }
 

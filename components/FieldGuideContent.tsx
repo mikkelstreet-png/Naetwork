@@ -27,8 +27,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               <Link href={profileHrefForField(slug)} className="button-primary">
                 {isDa ? 'Se relevante profiler' : 'Browse relevant profiles'}
               </Link>
-              <Link href="/match" className="button-secondary">
-                {isDa ? 'Find dit fokus' : 'Find your focus'}
+              <Link href="/start" className="button-secondary">
+                {isDa ? 'Start med din situation' : 'Start with your situation'}
               </Link>
             </div>
           </div>

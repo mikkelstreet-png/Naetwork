@@ -164,9 +164,9 @@ export default function ProfessionalSignupPage() {
         <aside className="relative overflow-hidden rounded-md border border-gray-900 bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:h-fit lg:p-9">
           <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
           <p className="editorial-label mb-5 text-white/45 sm:mb-7">For professionelle</p>
-          <h1 className="text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-5xl">Gør din erfaring bookbar med mening.</h1>
+          <h1 className="text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-5xl">Gør relevant erfaring tilgængelig.</h1>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-gray-400 sm:mt-6 sm:text-sm">
-            Ansøg med din nuværende rolle, virksomhed og LinkedIn. Vi gennemgår baggrunden før publicering. Du vælger fokus, en fast pris og ét af fire bidragsniveauer.
+            Vis hvilke situationer din erfaring kan hjælpe med, hvem den er relevant for, og hvad kandidaten konkret kan forvente. Vi gennemgår baggrunden før publicering.
           </p>
           <div className="mt-5 hidden grid-cols-3 gap-3 sm:grid lg:mt-8">
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">

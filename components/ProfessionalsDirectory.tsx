@@ -110,7 +110,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       ? 'Sammenlign gennemgået baggrund, konkret fokus, totalpris og bidrag, før du sender en anmodning.'
       : 'Compare reviewed background, concrete focus, total price and contribution before sending a request.',
     searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
-    bookCta: isDa ? 'Book' : 'Book',
+    bookCta: isDa ? 'Anmod om session' : 'Request session',
     noResults: isDa ? 'Ingen match' : 'No match',
     noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
     clearFilters: isDa ? 'Nulstil' : 'Clear',
@@ -252,7 +252,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         </div>
       </section>
 
-      <section id="marketplace" className="mx-auto max-w-[82rem] px-5 py-8 sm:px-8 md:py-16 lg:px-12" aria-busy={loading}>
+      <section id="profile-directory" className="mx-auto max-w-[82rem] px-5 py-8 sm:px-8 md:py-16 lg:px-12" aria-busy={loading}>
         {!loadError && <div className="mb-4 flex items-center justify-between gap-3 md:mb-7">
           <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser' : 'Loading') : loadError ? (isDa ? 'Midlertidigt utilgængelig' : 'Temporarily unavailable') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'profil' : 'profiler') : (filtered.length === 1 ? 'profile' : 'profiles')}`}</p>
           <p className="shrink-0 text-right text-xs font-bold text-gray-400">

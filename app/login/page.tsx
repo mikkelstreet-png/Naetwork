@@ -49,7 +49,7 @@ export default function LoginPage() {
           <div className="mx-auto w-full max-w-3xl lg:mx-0 lg:ml-auto lg:pr-16">
           <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
           <p className="kicker mb-5 text-white/40">Log ind</p>
-          <h1 className="text-4xl font-medium leading-[0.96] text-white text-balance sm:text-5xl md:text-6xl">Fortsæt din karrieresparring.</h1>
+          <h1 className="text-4xl font-medium leading-[0.96] text-white text-balance sm:text-5xl md:text-6xl">Fortsæt fra din situation.</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/55 md:text-lg">Se dine bookinger, administrer din profil og fortsæt der, hvor du slap.</p>
           <div className="mt-10 grid max-w-xl grid-cols-3 border-y border-white/20">
             {[

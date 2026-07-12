@@ -1,15 +1,17 @@
 import type { Metadata } from 'next'
 import { HomeContent } from '@/components/HomeContent'
 import { PRICE_OPTIONS, SESSION_MINUTES } from '@/lib/platform'
+import { BRAND_COPY } from '@/lib/brand'
+
+const brand = BRAND_COPY.da
 
 export const metadata: Metadata = {
-  title: 'Naetwork - Karrieresparring med mening',
-  description:
-    'Book 60 minutters fokuseret karrieresparring med gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity. Fire priser inklusive moms fra DKK 600.',
+  title: 'Naetwork - Vid mere, før dit næste træk',
+  description: brand.oneSentence,
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Naetwork - Karrieresparring med mening',
-    description: '60 minutters fokuseret karrieresparring med tydelige priser, gennemgåede profiler og et konkret bidrag til kræftsagen.',
+    title: 'Naetwork - Vid mere, før dit næste træk',
+    description: brand.oneSentence,
     siteName: 'Naetwork',
     type: 'website',
     locale: 'da_DK',
@@ -17,8 +19,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Naetwork - Karrieresparring med mening',
-    description: 'Fokuseret karrieresparring med professionelle fra AI, Banking, Management Consulting og Private Equity.',
+    title: 'Naetwork - Vid mere, før dit næste træk',
+    description: brand.oneSentence,
   },
 }
 
@@ -27,11 +29,11 @@ export default function Home() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: 'Naetwork karrieresparring',
+    name: 'Naetwork Career Access',
     url: siteUrl,
-    description: 'Fokuseret karrieresparring med gennemgåede professionelle fra AI, Banking, Management Consulting og Private Equity.',
+    description: brand.oneSentence,
     areaServed: 'DK',
-    serviceType: `${SESSION_MINUTES} minutters karrieresparring`,
+    serviceType: `Career Access-session på ${SESSION_MINUTES} minutter`,
     provider: {
       '@type': 'Organization',
       name: 'Naetwork',
@@ -44,7 +46,7 @@ export default function Home() {
         '@type': 'Offer',
         price,
         priceCurrency: 'DKK',
-        url: `${siteUrl}/professionals`,
+        url: `${siteUrl}/start`,
         availability: 'https://schema.org/OnlineOnly',
       })),
     },

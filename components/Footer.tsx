@@ -5,6 +5,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
 import { isBilingualPublicRoute, isFocusedAppRoute } from '@/lib/navigation';
 import { LEGAL_OPERATOR, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal';
+import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -16,19 +17,15 @@ export function Footer() {
     {
       title: 'Platform',
       links: [
-        { href: '/professionals', label: isDa ? 'Profiler' : 'Profiles' },
-        { href: '/match', label: isDa ? 'Find fokus' : 'Find focus' },
+        { href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' },
+        { href: '/how-it-works', label: isDa ? 'Sådan fungerer det' : 'How it works' },
+        { href: '/sessions', label: isDa ? 'Sessioner' : 'Sessions' },
         { href: '/contact', label: isDa ? 'Kontakt' : 'Contact' },
       ],
     },
     {
-      title: isDa ? 'Felter' : 'Fields',
-      links: [
-        { href: '/fields/ai', label: 'AI' },
-        { href: '/fields/banking', label: 'Banking' },
-        { href: '/fields/consulting', label: 'Management Consulting' },
-        { href: '/fields/private-equity', label: 'Private Equity' },
-      ],
+      title: isDa ? 'Indgange' : 'Starting points',
+      links: ACCESS_PATHS.map((path) => ({ href: path.href, label: localized(path.label, isDa ? 'da' : 'en') })),
     },
     {
       title: isDa ? 'Om Naetwork' : 'About Naetwork',
@@ -51,6 +48,8 @@ export function Footer() {
 
   if (isFocusedAppRoute(pathname)) return null;
 
+  const brand = BRAND_COPY[isDa ? 'da' : 'en'];
+
   return (
     <footer className="bg-[#09090b] text-white">
       <div className="signal-rail"><span /><span /><span /><span /></div>
@@ -62,19 +61,17 @@ export function Footer() {
               <span className="block font-['Space_Grotesk'] text-xl font-bold text-white">Naetwork</span>
             </Link>
             <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-4xl">
-              {isDa
-                ? 'Erfaring, du kan handle på. En session med mening.'
-                : 'Experience you can act on. A session with purpose.'}
+              {brand.positioning}
             </p>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-white/55">
-              {isDa ? 'Fokuseret karrieresparring fra AI, Banking, Management Consulting og Private Equity.' : 'Focused career guidance from AI, Banking, Management Consulting and Private Equity.'}
+              {brand.oneSentence}
             </p>
             <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/40">
               {isDa ? 'Minimum 40% af sessionsprisen eksklusive moms afsættes efter en gennemført, betalt session.' : 'At least 40% of the session price excluding VAT is allocated after a completed, paid session.'}
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/professionals" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
-                {isDa ? 'Sammenlign profiler' : 'Compare profiles'} <span aria-hidden="true">→</span>
+              <Link href="/start" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
+                {isDa ? 'Start med din situation' : 'Start with your situation'} <span aria-hidden="true">→</span>
               </Link>
               <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="inline-flex text-sm font-medium text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white hover:decoration-white">{PUBLIC_SUPPORT_EMAIL}</a>
             </div>

@@ -8,6 +8,7 @@ import { LanguageToggle } from './LanguageToggle';
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { isBilingualPublicRoute } from '@/lib/navigation';
+import { PRIMARY_NAV_ITEMS, localized } from '@/lib/brand';
 
 export function Navbar() {
   const { lang } = useLanguage();
@@ -103,12 +104,10 @@ export function Navbar() {
     window.location.href = '/';
   }
 
-  const navLinks = [
-    { href: '/#how-it-works', label: displayDa ? 'Sådan fungerer det' : 'How it works' },
-    { href: '/#pricing', label: displayDa ? 'Priser' : 'Pricing' },
-    { href: '/impact', label: displayDa ? 'Bidrag' : 'Impact' },
-    { href: '/professional/signup', label: displayDa ? 'For professionelle' : 'For professionals' },
-  ];
+  const navLinks = PRIMARY_NAV_ITEMS.map((item) => ({
+    href: item.href,
+    label: localized(item.label, displayDa ? 'da' : 'en'),
+  }));
 
   if (pathname.startsWith('/admin')) return null;
 
@@ -143,10 +142,10 @@ export function Navbar() {
           </div>
 
           <Link
-            href="/professionals"
+            href="/start"
             className="button-primary hidden min-h-10 px-4 py-2.5 lg:inline-flex"
           >
-            {displayDa ? 'Book 60 min' : 'Book 60 min'}
+            {displayDa ? 'Start med din situation' : 'Start with your situation'}
           </Link>
 
           {session === null ? <span aria-hidden="true" className="hidden h-9 w-16 lg:block" /> : session ? (
@@ -169,7 +168,7 @@ export function Navbar() {
                     <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Overblik' : 'Overview'}</Link>
-                  <Link href="/match" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
+                  <Link href="/start" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Start med din situation' : 'Start with your situation'}</Link>
                   <button type="button" onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{displayDa ? 'Log ud' : 'Log out'}</button>
                 </div>
               )}
@@ -209,8 +208,8 @@ export function Navbar() {
             ))}
           </div>
           <div className="mt-4 grid gap-2">
-            <Link href="/professionals" className="button-primary" onClick={() => setMobileOpen(false)}>
-              {displayDa ? 'Book 60 min' : 'Book 60 min'}
+            <Link href="/start" className="button-primary" onClick={() => setMobileOpen(false)}>
+              {displayDa ? 'Start med din situation' : 'Start with your situation'}
             </Link>
             {session ? (
               <div className="grid grid-cols-2 gap-2">

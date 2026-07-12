@@ -28,12 +28,12 @@ export function ImpactContent() {
           <div>
             <p className="kicker mb-5 text-white/40">{isDa ? 'Bidragsmodel' : 'Impact model'}</p>
             <h1 className="display-xl max-w-5xl text-white">
-              {isDa ? 'Karrieresparring skal skabe værdi efter timen.' : 'Career guidance should create value beyond the hour.'}
+              {isDa ? 'Én session. Tre former for værdi.' : 'One session. Three forms of value.'}
             </h1>
             <p className="body-lg mt-7 max-w-2xl text-white/55">
               {isDa
-                ? '40%, 60%, 80% eller 90% af sessionsprisen eksklusive moms afsættes til støtte for Kræftens Bekæmpelse efter en gennemført og betalt session. Det konkrete beløb vises før booking.'
-                : '40%, 60%, 80% or 90% of the session price excluding VAT is allocated in support of Kræftens Bekæmpelse after a completed and paid session. The exact amount is shown before booking.'}
+                ? 'Kandidaten får relevant indsigt. Den professionelle gør sin erfaring tilgængelig. 40%, 60%, 80% eller 90% af sessionsprisen eksklusive moms afsættes til støtte for Kræftens Bekæmpelse efter en gennemført og betalt session.'
+                : 'The candidate gets relevant insight. The professional makes experience accessible. 40%, 60%, 80% or 90% of the session price excluding VAT is allocated in support of Kræftens Bekæmpelse after a completed and paid session.'}
             </p>
           </div>
           <aside className="relative overflow-hidden border border-white/20 bg-white/[0.035] p-7">
@@ -90,7 +90,7 @@ export function ImpactContent() {
           </div>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link href="/professionals" className="pill-dark">{isDa ? 'Book 60 min' : 'Book 60 min'}</Link>
+            <Link href="/start" className="pill-dark">{isDa ? 'Start med din situation' : 'Start with your situation'}</Link>
             <Link href="/professional/signup" className="pill-light">{isDa ? 'Bliv professionel' : 'Become a professional'}</Link>
           </div>
           <p className="mt-6 max-w-3xl text-xs leading-relaxed text-gray-500">{isDa ? `Naetworks platform- og betalingsgebyr er DKK ${PLATFORM_FEE_DKK} pr. gennemført session og ændrer ikke kandidatens viste totalpris. Betaling og bidragsafregning aktiveres først, når de nødvendige aftaler og processer er godkendt.` : `Naetwork's platform and payment fee is DKK ${PLATFORM_FEE_DKK} per completed session and does not change the candidate's displayed total. Payment and contribution settlement will only launch once the required agreements and processes have been approved.`}</p>

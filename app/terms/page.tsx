@@ -4,7 +4,7 @@ import { LEGAL_OPERATOR, LEGAL_UPDATED_DA, PUBLIC_SUPPORT_EMAIL } from '@/lib/le
 
 export const metadata: Metadata = {
   title: 'Vilkår for brug - Naetwork',
-  description: 'Vilkår for konti, professionelle profiler og booking af 60 minutters karrieresparring på Naetwork.',
+  description: 'Vilkår for konti, professionelle profiler og booking af 60-minutters Career Access-sessioner på Naetwork.',
   alternates: { canonical: '/terms' },
 }
 
@@ -33,9 +33,9 @@ const sections: LegalSection[] = [
     id: 'platformens-rolle',
     title: '2. Platformens rolle',
     body: [
-      'Naetwork stiller søgning, profiler, bookinganmodninger og relateret kommunikation til rådighed. Den professionelle leverer selve sparringen og er ansvarlig for at møde forberedt og levere sessionen med rimelig omhu og professionalisme.',
+      'Naetwork stiller situationsbaseret navigation, profiler, bookinganmodninger og relateret kommunikation til rådighed. Den professionelle leverer selve sessionen og er ansvarlig for at møde forberedt og levere den med rimelig omhu og professionalisme.',
       'Så længe betaling ikke er aktiveret, er en bookinganmodning ikke et køb gennem Naetwork. Før checkout åbnes, vil det fremgå klart, hvem der er aftalepart og sælger, hvem der fakturerer, og hvordan Naetwork handler på parternes vegne.',
-      'Karrieresparring er vejledende og er ikke en garanti for ansættelse, interview, optagelse, afkast eller andre bestemte resultater. Sessioner er ikke juridisk, skattemæssig, investeringsmæssig eller lægefaglig rådgivning.',
+      'Career Access-sessioner er vejledende og er ikke en garanti for ansættelse, interview, optagelse, afkast eller andre bestemte resultater. Sessioner er ikke juridisk, skattemæssig, investeringsmæssig eller lægefaglig rådgivning.',
     ],
   },
   {

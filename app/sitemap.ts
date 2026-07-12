@@ -4,7 +4,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? 'https://naetwork.dk';
   const siteUrl = (base.startsWith('http') ? base : `https://${base}`).replace(/\/$/, '');
   const routes = [
-    '', '/professionals', '/match', '/professional/signup', '/mission', '/impact', '/contact',
+    '', '/start', '/how-it-works', '/sessions', '/explore', '/prepare', '/apply', '/perform',
+    '/professionals', '/professional/signup', '/mission', '/impact', '/contact',
     '/fields/ai', '/fields/banking', '/fields/consulting', '/fields/private-equity',
     '/terms', '/privacy', '/cookies', '/afbestilling',
   ];
@@ -12,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => ({
     url: `${siteUrl}${route}`,
     lastModified: new Date('2026-07-12'),
-    changeFrequency: route === '' || route === '/professionals' ? 'weekly' : 'monthly',
-    priority: route === '' ? 1 : route === '/professionals' ? 0.9 : 0.6,
+    changeFrequency: route === '' || route === '/start' || route === '/sessions' ? 'weekly' : 'monthly',
+    priority: route === '' ? 1 : route === '/start' ? 0.9 : route === '/sessions' ? 0.8 : 0.6,
   }));
 }
