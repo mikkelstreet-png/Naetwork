@@ -23,6 +23,11 @@ export function AccessHero() {
         className="access-hero__spectrum"
       />
       <div className="access-hero__veil" aria-hidden="true" />
+      <div className="access-hero__aperture" aria-hidden="true" data-special-effect="access-aperture">
+        <span />
+        <span />
+        <span />
+      </div>
 
       <div className="access-hero__shell">
         <div className="access-hero__copy">
