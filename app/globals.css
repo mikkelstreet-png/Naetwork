@@ -847,7 +847,7 @@ time,
     transform: translate3d(0, 16px, 0);
   }
   [data-scroll-reveal][data-reveal-state='visible'] {
-    animation: scroll-reveal-in 680ms var(--ease-access) var(--reveal-delay);
+    animation: scroll-reveal-in 680ms var(--ease-access) var(--reveal-delay) backwards;
   }
   [data-reveal-delay='1'] { --reveal-delay: 70ms; }
   [data-reveal-delay='2'] { --reveal-delay: 140ms; }
