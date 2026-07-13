@@ -173,7 +173,7 @@ export function HomeContent() {
             </div>
           </div>
           <p className="pricing-disclosure">
-            {isDa ? 'Ved DKK 600 er nettoprisen DKK 480: DKK 96 til Naetwork, DKK 144 til Kræftens Bekæmpelse og DKK 240 til den professionelle. Betaling er endnu ikke aktiveret.' : 'At DKK 600, the net price is DKK 480: DKK 96 to Naetwork, DKK 144 to Kræftens Bekæmpelse and DKK 240 to the professional. Payments are not yet enabled.'}
+            {isDa ? 'Ved DKK 600 inkl. moms er fordelingsgrundlaget DKK 480 ekskl. moms: DKK 96 til Naetwork, DKK 144 til Kræftens Bekæmpelse og DKK 240 til den professionelle. Betaling er endnu ikke aktiveret.' : 'At DKK 600 incl. VAT, the distribution basis is DKK 480 excl. VAT: DKK 96 to Naetwork, DKK 144 to Kræftens Bekæmpelse and DKK 240 to the professional. Payments are not yet enabled.'}
           </p>
           <Link href="/impact" className="access-hero__text-link home-price-link">
             {isDa ? 'Se hele regnestykket' : 'See the full calculation'}
