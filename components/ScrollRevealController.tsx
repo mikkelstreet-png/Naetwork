@@ -27,8 +27,8 @@ export function ScrollRevealController() {
         observer.unobserve(element)
       })
     }, {
-      rootMargin: '0px 0px -9% 0px',
-      threshold: 0.12,
+      rootMargin: '0px 0px -4% 0px',
+      threshold: 0.06,
     })
 
     elements.forEach((element) => observer.observe(element))
