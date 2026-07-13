@@ -513,25 +513,9 @@ time,
     font-weight: 700;
   }
 
-  @keyframes access-aperture-open {
-    from { opacity: 0; clip-path: inset(0 0 0 100%); transform: translate3d(34px, 0, var(--frame-depth)) scale(0.965); }
-    to { opacity: 1; clip-path: inset(0 0 0 0); transform: translate3d(0, 0, var(--frame-depth)) scale(1); }
-  }
-
-  @keyframes access-signal-open {
-    from { opacity: 0; transform: scaleY(0); }
-    to { opacity: 1; transform: scaleY(1); }
-  }
-
-  @keyframes access-portal-scan {
-    from { opacity: 0; transform: translateX(-125%); }
-    25% { opacity: 1; }
-    to { opacity: 0; transform: translateX(125%); }
-  }
-
-  @keyframes access-caption-in {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes scroll-reveal-in {
+    from { opacity: 0; transform: translate3d(0, 16px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
   }
 
   @keyframes impact-value-in {
@@ -857,11 +841,19 @@ time,
   .section-heading--light h2 { color: #fff; }
   .section-heading--light > p:last-child { color: rgba(255, 255, 255, 0.62); }
 
+  [data-scroll-reveal] { --reveal-delay: 0ms; }
+  [data-scroll-reveal][data-reveal-state='pending'] {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  [data-scroll-reveal][data-reveal-state='visible'] {
+    animation: scroll-reveal-in 680ms var(--ease-access) var(--reveal-delay);
+  }
+  [data-reveal-delay='1'] { --reveal-delay: 70ms; }
+  [data-reveal-delay='2'] { --reveal-delay: 140ms; }
+  [data-reveal-delay='3'] { --reveal-delay: 210ms; }
+
   .access-hero {
-    --access-tilt-x: 0deg;
-    --access-tilt-y: 0deg;
-    --access-shift-x: 0px;
-    --access-shift-y: 0px;
     position: relative;
     isolation: isolate;
     min-height: min(700px, calc(100svh - 7rem));
@@ -877,9 +869,7 @@ time,
     object-position: 78% center;
     filter: saturate(1.04) contrast(1.02) brightness(0.86);
     clip-path: none;
-    transform: scale(1.035) translate3d(var(--access-shift-x), var(--access-shift-y), 0);
-    transition: transform 260ms var(--ease-access);
-    will-change: transform;
+    transform: scale(1.015);
   }
 
   .access-hero__veil {
@@ -888,124 +878,6 @@ time,
     z-index: 1;
     background: linear-gradient(90deg, rgba(9, 10, 11, 1) 0%, rgba(9, 10, 11, 0.98) 52%, rgba(9, 10, 11, 0.7) 72%, rgba(9, 10, 11, 0.26) 100%);
     pointer-events: none;
-  }
-
-  .access-hero__aperture {
-    position: absolute;
-    top: 50%;
-    right: clamp(1.5rem, 4vw, 4.5rem);
-    z-index: 2;
-    width: min(36vw, 33rem);
-    height: min(78%, 37rem);
-    transform: translateY(-50%) perspective(1100px) rotateX(var(--access-tilt-x)) rotateY(var(--access-tilt-y));
-    transform-style: preserve-3d;
-    transition: transform 260ms var(--ease-access);
-    will-change: transform;
-    pointer-events: none;
-  }
-
-  .access-hero__aperture span {
-    --frame-depth: 0px;
-    position: absolute;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-left-color: rgba(255, 255, 255, 0.46);
-    background: linear-gradient(125deg, rgba(255, 255, 255, 0.035), transparent 48%);
-    box-shadow: inset 0 0 0 1px rgba(9, 10, 11, 0.16), 0 24px 70px rgba(9, 10, 11, 0.08);
-    backdrop-filter: saturate(1.08) brightness(1.025);
-    opacity: 0;
-    clip-path: inset(0 0 0 100%);
-    transform-style: preserve-3d;
-    animation: access-aperture-open 940ms var(--ease-access) forwards;
-  }
-
-  .access-hero__aperture span:nth-child(1) { inset: 0; --frame-depth: 0px; animation-delay: 60ms; }
-  .access-hero__aperture span:nth-child(2) { inset: 9% 8% 9% 13%; --frame-depth: 24px; animation-delay: 140ms; }
-  .access-hero__aperture span:nth-child(3) { inset: 20% 17% 20% 27%; --frame-depth: 48px; animation-delay: 220ms; }
-  .access-hero__aperture span:nth-child(4) {
-    inset: 33% 27% 33% 43%;
-    --frame-depth: 72px;
-    border-color: rgba(255, 255, 255, 0.28);
-    border-left-color: var(--cyan);
-    background: rgba(255, 255, 255, 0.055);
-    box-shadow: inset 0 0 34px rgba(255, 255, 255, 0.035), 0 30px 70px rgba(9, 10, 11, 0.16);
-    backdrop-filter: blur(2px) saturate(1.28) brightness(1.1);
-    animation-delay: 300ms;
-  }
-
-  .access-hero__aperture span:nth-child(4)::before,
-  .access-hero__aperture span:nth-child(4)::after {
-    content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border-color: rgba(255, 255, 255, 0.72);
-  }
-
-  .access-hero__aperture span:nth-child(4)::before {
-    top: -1px;
-    right: -1px;
-    border-top: 1px solid;
-    border-right: 1px solid;
-  }
-
-  .access-hero__aperture span:nth-child(4)::after {
-    bottom: -1px;
-    left: -1px;
-    border-bottom: 1px solid;
-    border-left: 1px solid;
-  }
-
-  .access-hero__aperture::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background: linear-gradient(102deg, transparent 28%, rgba(255, 255, 255, 0.12) 49%, transparent 68%);
-    transform: translateX(-125%);
-    animation: access-portal-scan 1050ms var(--ease-access) 560ms both;
-  }
-
-  .access-hero__aperture::after {
-    content: '';
-    position: absolute;
-    inset: 33% auto 33% 43%;
-    z-index: 3;
-    width: 2px;
-    background: linear-gradient(180deg, var(--cyan), var(--mint) 36%, var(--blue) 68%, var(--lime));
-    box-shadow: 0 0 18px rgba(134, 229, 237, 0.32);
-    transform: scaleY(0);
-    transform-origin: top;
-    animation: access-signal-open 620ms var(--ease-access) 520ms forwards;
-  }
-
-  .access-hero__aperture-caption {
-    position: absolute;
-    right: 0;
-    bottom: -1.8rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: rgba(255, 255, 255, 0.58);
-    opacity: 0;
-    animation: access-caption-in 520ms var(--ease-access) 820ms forwards;
-  }
-
-  .access-hero__aperture-caption::before {
-    content: '';
-    width: 2.5rem;
-    height: 1px;
-    background: linear-gradient(90deg, var(--cyan), var(--blue));
-  }
-
-  .access-hero__aperture-caption small {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.52rem;
-    text-transform: uppercase;
-  }
-
-  .access-hero__aperture-caption strong {
-    font-size: 0.62rem;
-    font-weight: 650;
   }
 
   .access-hero__shell {
@@ -1414,10 +1286,6 @@ time,
   .public-cta .button-primary { grid-column: 1; }
 }
 
-@media (min-width: 641px) and (max-width: 1024px) {
-  .access-hero__aperture { display: none; }
-}
-
 @media (max-width: 640px) {
   .home-section,
   .public-section { padding-block: 3.75rem; }
@@ -1437,19 +1305,7 @@ time,
   .access-hero__text-link { width: fit-content; }
   .access-hero__facts { display: grid; gap: 0.38rem; margin-top: 1.15rem; font-size: 0.64rem; }
   .access-hero__facts li + li::before { display: none; }
-  .access-hero__aperture {
-    top: auto;
-    right: 1.25rem;
-    bottom: 1.15rem;
-    width: 46%;
-    height: 6.8rem;
-    transform: none;
-    opacity: 0.72;
-  }
-  .access-hero__aperture span { backdrop-filter: none; box-shadow: none; }
-  .access-hero__aperture span:nth-child(4) { backdrop-filter: none; }
-  .access-hero__aperture-caption { display: none; }
-  .access-hero__spectrum { transform: none; transition: none; }
+  .access-hero__spectrum { transform: scale(1.01); }
 
   .access-path-grid { grid-template-columns: 1fr; }
   .access-path-card { min-height: 10.75rem; border-right: 0; border-bottom: 1px solid rgba(15, 17, 18, 0.15); }
@@ -1517,23 +1373,20 @@ time,
   .path-session-list { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 340px) {
+  .access-hero__copy { padding: 1.9rem 0 2.35rem; }
+  .access-hero__copy h1 { margin-top: 0.9rem; font-size: 2.72rem; }
+  .access-hero__intro { margin-top: 0.9rem; font-size: 0.82rem; line-height: 1.46; }
+  .access-hero__actions { gap: 0.8rem; margin-top: 1.05rem; }
+  .access-hero__facts { gap: 0.3rem; margin-top: 0.9rem; font-size: 0.6rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .access-hero__aperture span {
-    opacity: 1;
-    clip-path: none;
+  [data-scroll-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
     animation: none !important;
   }
-
-  .access-hero__aperture::after {
-    opacity: 1;
-    transform: scaleY(1);
-    animation: none !important;
-  }
-
-  .access-hero__aperture::before { display: none; }
-  .access-hero__aperture-caption { opacity: 1; animation: none !important; }
-  .access-hero__spectrum { transform: none; transition: none !important; }
-  .access-hero__aperture { transform: translateY(-50%); transition: none !important; }
 
   .impact-line__split span {
     transform: scaleX(1);
@@ -1542,10 +1395,6 @@ time,
 
   .impact-line__split span::after,
   .impact-line__prices button::after { animation: none !important; }
-}
-
-@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
-  .access-hero__aperture { transform: none; }
 }
 
 @layer components {
