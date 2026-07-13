@@ -69,7 +69,7 @@ export function LivingImpactLine() {
         </div>
       </div>
 
-      <div className="impact-line__split" data-visible={isVisible} aria-hidden="true" data-special-effect="impact-split">
+      <div key={`split-${price}`} className="impact-line__split" data-visible={isVisible} aria-hidden="true" data-special-effect="impact-split">
         <span style={{ width: `${PLATFORM_SHARE_PERCENT}%` }} />
         <span style={{ width: `${CONTRIBUTION_PERCENT}%` }} />
         <span style={{ width: `${PROFESSIONAL_SHARE_PERCENT}%` }} />
