@@ -57,12 +57,15 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
 
 test('profile filters remain usable on mobile and desktop', async ({ page, isMobile }) => {
   await page.goto('/professionals')
-  const serviceError = page.getByRole('alert')
-  if (await serviceError.count()) {
+  const searchbox = page.getByRole('searchbox')
+  const retryButton = page.getByRole('button', { name: /Prøv igen|Try again/i })
+  await expect(searchbox.or(retryButton)).toBeVisible()
+
+  if (await retryButton.isVisible()) {
     await expect(page.getByRole('searchbox')).toHaveCount(0)
-    await expect(page.getByRole('button', { name: /Prøv igen|Try again/i })).toBeVisible()
+    await expect(retryButton).toBeVisible()
   } else {
-    await expect(page.getByRole('searchbox')).toBeVisible()
+    await expect(searchbox).toBeVisible()
     if (isMobile) {
       await expect(page.getByRole('combobox', { name: /Vælg felt|Choose field/i })).toBeVisible()
     } else {
