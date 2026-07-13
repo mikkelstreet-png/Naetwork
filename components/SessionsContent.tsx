@@ -80,7 +80,7 @@ export function SessionsContent() {
           <h2>{isDa ? 'Ikke sikker på, hvilken session der passer?' : 'Not sure which session fits?'}</h2>
           <p>{isDa ? 'Beskriv situationen med dine egne ord. Du behøver ikke vælge produktet på forhånd.' : 'Describe the situation in your own words. You do not need to choose the product in advance.'}</p>
           <Link href="/start" className="button-primary">
-            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>

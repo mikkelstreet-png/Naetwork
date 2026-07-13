@@ -51,7 +51,7 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('button', { name: /luk menu|close menu/i })).toHaveAttribute('aria-expanded', 'true')
   await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Sessioner|Sessions/)
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Beskriv din situation|Describe your situation/i })).toBeVisible()
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
@@ -96,8 +96,8 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Få den viden, jobopslaget mangler|Get the insight the job description leaves out/i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Beskriv din situation|Describe your situation/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Talent er bredt fordelt\. Adgang er det ikke\.|Talent is widely distributed\. Access is not\./i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
   await expect(page.locator('#pricing')).toContainText('DKK 192')
@@ -107,29 +107,29 @@ test('core public actions remain clear', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
 })
 
-test('interactive Access hero explains the selected situation without fake matching', async ({ page }) => {
+test('minimal Access hero keeps one message and one primary action', async ({ page }) => {
   await page.goto('/')
-  const cv = page.getByRole('button', { name: 'Jeg vil have vurderet mit CV' })
-  await expect(cv).toHaveCount(1)
-  await cv.click()
-  await expect(cv).toHaveAttribute('aria-pressed', 'true')
-  await expect(page.locator('.access-brief__result')).toContainText('Har vurderet lignende profiler')
-  await expect(page.locator('.access-brief__result').getByRole('link', { name: 'Fortsæt' })).toHaveAttribute('href', '/start?situation=cv')
-  await expect(page.locator('#home img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
+  const hero = page.locator('#home')
+  await expect(hero.getByRole('heading', { name: 'Talent er bredt fordelt. Adgang er det ikke.' })).toBeVisible()
+  await expect(hero.getByRole('link', { name: 'Start med din situation' })).toHaveAttribute('href', '/start')
+  await expect(hero.getByRole('link', { name: 'Sådan fungerer det' })).toHaveAttribute('href', '/how-it-works')
+  await expect(hero.locator('button')).toHaveCount(0)
+  await expect(hero.locator('.access-hero__colorline span')).toHaveCount(4)
+  await expect(hero.locator('img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
   await expectNoHorizontalOverflow(page)
 })
 
 test('Access motion respects reduced-motion preferences', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
-  const duration = await page.getByRole('button', { name: 'Jeg har en jobsamtale' }).evaluate((element) => getComputedStyle(element).transitionDuration)
+  const duration = await page.locator('#home').getByRole('link', { name: 'Sådan fungerer det' }).evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
 })
 
 test('compact mobile hero leaves the next section in view', async ({ page }) => {
   test.skip((page.viewportSize()?.height ?? 1000) > 720, 'Small-height mobile contract')
   await page.goto('/')
-  const position = await page.getByRole('heading', { name: 'Hvad står du overfor?' }).evaluate((element) => ({
+  const position = await page.locator('.access-hero + .home-section').evaluate((element) => ({
     top: element.getBoundingClientRect().top,
     viewport: window.innerHeight,
   }))
@@ -171,8 +171,8 @@ test('English positioning mirrors the Danish product contract', async ({ page })
   await page.goto('/')
   await page.evaluate(() => localStorage.setItem('naetwork_lang', 'en'))
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Get the insight the job description leaves out.' })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: 'Describe your situation' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Talent is widely distributed. Access is not.' })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: 'Start with your situation' })).toBeVisible()
   await page.goto('/how-it-works')
   await expect(page.getByRole('heading', { name: 'From a question to an answer you can use.' })).toBeVisible()
 })

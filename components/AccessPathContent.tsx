@@ -19,7 +19,7 @@ export function AccessPathContent({ pathId }: { pathId: AccessPathId }) {
         eyebrow={`${isDa ? 'Din vej ind' : 'Your starting point'} / ${localized(path.label, lang)}`}
         title={localized(path.title, lang)}
         body={localized(path.description, lang)}
-        action={{ href: `/start?path=${path.id}`, label: isDa ? 'Beskriv din situation' : 'Describe your situation' }}
+        action={{ href: `/start?path=${path.id}`, label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa
           ? ['Genkend situationen', 'Se relevant erfaring', 'Vælg næste skridt']
           : ['Recognize the situation', 'See relevant experience', 'Choose the next step']}

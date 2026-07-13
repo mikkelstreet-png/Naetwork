@@ -35,13 +35,13 @@ The spectrum is not a general decoration. It identifies an opening, a selected p
 
 ## Components
 
-### Interactive Access Hero
+### Access Hero
 
-`AccessHero` explains the offer before it demonstrates the product. The value proposition, 60-minute format, starting price and minimum contribution are visible before the five-situation selector. Selecting a situation updates the experience Naetwork would prioritize. It uses real navigation links and makes no match percentage or AI claim.
+`AccessHero` is intentionally non-interactive. One brand truth, one concrete explanation, one primary action and three practical facts carry the first screen. The spectrum remains visible as an architectural opening, while the situation selector begins in the next section where the user expects to make a choice.
 
-Fallback: the default role state is complete and understandable without interaction.
+This separation keeps positioning and product interaction from competing for attention. The hero makes no match percentage, AI or outcome claim.
 
-Mobile: the secondary CTA is removed, practical facts stack vertically and the start of the situation selector remains visible even at 375 x 667.
+Mobile: the primary action spans the content width, the secondary action becomes a text link, practical facts stack, and the next section remains visible at 375 x 667.
 
 Reduced motion: all transitions collapse to `0.01ms` through the global media query.
 
@@ -51,7 +51,7 @@ Reduced motion: all transitions collapse to `0.01ms` through the global media qu
 
 ### Editorial sections
 
-Public pages use ledger rows, restrained rules and asymmetric headings instead of repeated card grids. The homepage is organized around six questions: what the product is, why it exists, where the user starts, what relevant experience means, what a session produces and what it costs.
+Public pages use ledger rows, restrained rules and asymmetric headings instead of repeated card grids. The homepage moves from the brand truth to the user's situation, relevant experience, session outcomes, process and transparent pricing without a duplicate positioning section.
 
 ### Living Impact Line
 
@@ -74,7 +74,7 @@ The primary navigation uses plain labels, one active-state rule and one decisive
 
 - No new runtime or animation dependencies.
 - The 16KB spectrum is served as `/public/naetwork-spectrum.webp`; it is no longer embedded in the client JavaScript bundle.
-- Hero interactivity uses React state and CSS transitions only.
+- The hero has no client-side interaction or animation dependency.
 - Decorative media is non-blocking outside the homepage hero.
 - No layout shift is introduced by the image because every hero has stable geometry.
 

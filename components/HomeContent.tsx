@@ -1,17 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
-import { LivingImpactLine } from '@/components/LivingImpactLine'
 import { useLanguage } from '@/context/LanguageContext'
-import { ACCESS_PATHS, BRAND_COPY, SESSION_CONCEPTS, localized } from '@/lib/brand'
+import { ACCESS_PATHS, SESSION_CONCEPTS, localized } from '@/lib/brand'
 import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, SESSION_MINUTES } from '@/lib/platform'
 
 export function HomeContent() {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
-  const brand = BRAND_COPY[lang]
   const pathColors = ['access-path-card--1', 'access-path-card--2', 'access-path-card--3', 'access-path-card--4'] as const
   const featuredSessionIds = ['inside-the-role', 'cv-reality-check', 'interview-ready', 'offer-review']
   const featuredSessions = SESSION_CONCEPTS.filter((session) => featuredSessionIds.includes(session.id))
@@ -21,13 +19,11 @@ export function HomeContent() {
         ['Rollen', 'Har selv udført arbejdet', 'Kan forklare hverdagen, kravene og de kompromiser, jobopslaget ikke viser.'],
         ['Rekrutteringen', 'Har vurderet lignende kandidater', 'Kan se, hvad der styrker dit match, og hvad der reelt vil skabe tvivl.'],
         ['Karriereskiftet', 'Har gennemført en relevant overgang', 'Kan udfordre din plan med erfaring fra de barrierer og mellemtrin, skiftet kræver.'],
-        ['Det afgørende øjeblik', 'Kender interviewet, casen eller forhandlingen', 'Kan træne den konkrete situation og give direkte feedback, mens den stadig kan bruges.'],
       ]
     : [
         ['The role', 'Has done the work', 'Can explain the day-to-day reality, expectations and trade-offs the job description leaves out.'],
         ['The hiring process', 'Has assessed similar candidates', 'Can see what strengthens your fit and what will genuinely create doubt.'],
         ['The career change', 'Has made a relevant transition', 'Can challenge your plan with experience of the barriers and intermediate moves involved.'],
-        ['The decisive moment', 'Knows the interview, case or negotiation', 'Can rehearse the specific situation and give direct feedback while it still matters.'],
       ]
 
   const steps = isDa
@@ -47,48 +43,25 @@ export function HomeContent() {
         ['Hvad kan en session bruges til?', 'Til ét konkret karrierespørgsmål: eksempelvis om du bør søge en rolle, hvordan dit CV bør målrettes, hvad du skal forvente i et interview, eller hvordan et jobtilbud bør vurderes.'],
         ['Hvem møder jeg?', 'En professionel med erfaring, der er relevant for din konkrete situation. Naetwork gennemgår rolle, virksomhedserfaring og LinkedIn før publicering. Det er kvalitetskontrol - ikke en garanti for et bestemt resultat.'],
         ['Hvad får jeg efter 60 minutter?', 'Målet aftales i briefet. Du skal som minimum stå med et klarere svar, de vigtigste risici eller huller og prioriterede næste skridt.'],
-        ['Hvad koster det?', 'Den professionelle vælger én af fire faste priser: DKK 600, 900, 1.200 eller 1.800 inklusive moms. Den fulde pris vises før booking.'],
-        ['Hvordan fungerer bidraget?', `Den professionelle vælger at afsætte ${CONTRIBUTION_MIN}%, 60%, 80% eller ${CONTRIBUTION_MAX}% af sessionsprisen eksklusive moms. Det præcise beløb vises før booking. Naetwork er et uafhængigt initiativ og ikke officielt tilknyttet Kræftens Bekæmpelse.`],
+        ['Hvad koster det, og hvordan fungerer bidraget?', `Prisen er DKK 600, 900, 1.200 eller 1.800 inklusive moms. Den professionelle vælger at afsætte ${CONTRIBUTION_MIN}%, 60%, 80% eller ${CONTRIBUTION_MAX}% af prisen eksklusive moms. Det præcise beløb vises før booking.`],
       ]
     : [
         ['What can a session be used for?', 'One concrete career question: whether to apply, how to target your CV, what to expect in an interview or how to assess an offer.'],
         ['Who will I meet?', 'A professional with experience relevant to your situation. Naetwork reviews role, company experience and LinkedIn before publication. This is quality control, not a guarantee of a particular result.'],
         ['What should I have after 60 minutes?', 'The intended outcome is set in the brief. At minimum, you should leave with a clearer answer, the main risks or gaps and prioritized next steps.'],
-        ['What does it cost?', 'The professional selects one of four fixed prices: DKK 600, 900, 1,200 or 1,800 including VAT. The full price is shown before booking.'],
-        ['How does the contribution work?', `The professional allocates ${CONTRIBUTION_MIN}%, 60%, 80% or ${CONTRIBUTION_MAX}% of the session price excluding VAT. The exact amount is shown before booking. Naetwork is independent and not officially affiliated with Kræftens Bekæmpelse.`],
+        ['What does it cost, and how does the contribution work?', `The price is DKK 600, 900, 1,200 or 1,800 including VAT. The professional allocates ${CONTRIBUTION_MIN}%, 60%, 80% or ${CONTRIBUTION_MAX}% of the price excluding VAT. The exact amount is shown before booking.`],
       ]
 
   return (
     <main>
       <AccessHero />
 
-      <section className="home-thesis">
-        <div className="home-shell home-thesis__grid">
-          <div>
-            <p className="section-eyebrow">{isDa ? 'Hvorfor Career Access' : 'Why Career Access'}</p>
-            <h2>{brand.problem}</h2>
-          </div>
-          <div className="home-thesis__answer">
-            <p className="home-thesis__lead">
-              {isDa
-                ? 'Naetwork gør den viden tilgængelig i et klart format: én relevant person, ét konkret spørgsmål og 60 minutter med et aftalt resultat.'
-                : 'Naetwork makes that knowledge accessible in a clear format: one relevant person, one concrete question and 60 minutes with an agreed outcome.'}
-            </p>
-            <div className="home-thesis__principles">
-              <span>{isDa ? 'Situation før profil' : 'Situation before profile'}</span>
-              <span>{isDa ? 'Relevans før senioritet' : 'Relevance before seniority'}</span>
-              <span>{isDa ? 'Resultat før samtaletid' : 'Outcome before conversation time'}</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="home-section home-section--paper">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Fire måder at begynde' : 'Four ways to begin'}</p>
+            <p className="section-eyebrow">{isDa ? 'Vælg din indgang' : 'Choose your starting point'}</p>
             <h2>{isDa ? 'Start med det, du skal have afklaret.' : 'Start with what you need to clarify.'}</h2>
-            <p>{isDa ? 'Du behøver ikke kende den rigtige session eller person på forhånd.' : 'You do not need to know the right session or person in advance.'}</p>
+            <p>{isDa ? 'Naetwork finder den relevante erfaring ud fra situationen.' : 'Naetwork finds relevant experience from the situation.'}</p>
           </div>
           <div className="access-path-grid">
             {ACCESS_PATHS.map((path, index) => (
@@ -109,9 +82,9 @@ export function HomeContent() {
       <section className="home-section home-section--ink">
         <div className="home-shell">
           <div className="section-heading section-heading--light">
-            <p className="section-eyebrow">{isDa ? 'Sådan vurderes relevans' : 'How relevance is assessed'}</p>
-            <h2>{isDa ? 'Ikke den mest kendte profil. Den mest relevante erfaring.' : 'Not the most prominent profile. The most relevant experience.'}</h2>
-            <p>{isDa ? 'Hvert match skal kunne forklares med erfaring, der er konkret nyttig i din situation.' : 'Every match should be explainable through experience that is concretely useful in your situation.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Relevans' : 'Relevance'}</p>
+            <h2>{isDa ? 'Relevant erfaring. Ikke bare senioritet.' : 'Relevant experience. Not seniority alone.'}</h2>
+            <p>{isDa ? 'Hvert match forklares med det, personen faktisk ved.' : 'Every match is explained by what the person actually knows.'}</p>
           </div>
           <div className="experience-ledger">
             {accessExamples.map(([context, evidence, value], index) => (
@@ -124,7 +97,7 @@ export function HomeContent() {
             ))}
           </div>
           <Link href="/start" className="button-inverse home-inline-action">
-            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
@@ -172,10 +145,7 @@ export function HomeContent() {
               </li>
             ))}
           </ol>
-          <div className="trust-note">
-            <ShieldCheck size={20} aria-hidden="true" />
-            <p>{isDa ? 'Du opretter først en konto, når du vil sende en bookinganmodning. Du vælger selv, hvilken kontekst og hvilke dokumenter du deler.' : 'You only create an account when sending a booking request. You choose what context and documents to share.'}</p>
-          </div>
+          <p className="home-privacy-note">{isDa ? 'Du opretter først en konto, når du sender en bookinganmodning. Du vælger selv, hvad du deler.' : 'You only create an account when sending a booking request. You choose what to share.'}</p>
         </div>
       </section>
 
@@ -183,13 +153,30 @@ export function HomeContent() {
         <div className="home-shell">
           <div className="section-heading section-heading--light">
             <p className="section-eyebrow">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
-            <h2>{isDa ? 'Fire faste priser. Ét transparent regnestykke.' : 'Four fixed prices. One transparent calculation.'}</h2>
-            <p>{isDa ? 'DKK 600, 900, 1.200 eller 1.800 inklusive moms. Den professionelle vælger også, om 40%, 60%, 80% eller 90% af prisen eksklusive moms afsættes.' : 'DKK 600, 900, 1,200 or 1,800 including VAT. The professional also chooses whether 40%, 60%, 80% or 90% of the price excluding VAT is allocated.'}</p>
+            <h2>{isDa ? 'Enkel pris. Synligt bidrag.' : 'Simple pricing. Visible contribution.'}</h2>
+            <p>{isDa ? 'Fire faste priser. Ingen skjulte gebyrer.' : 'Four fixed prices. No hidden fees.'}</p>
           </div>
-          <LivingImpactLine />
+          <div className="home-price-summary">
+            <div>
+              <span>{isDa ? 'Session' : 'Session'}</span>
+              <strong>{SESSION_MINUTES} min.</strong>
+            </div>
+            <div>
+              <span>{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</span>
+              <strong>DKK 600-1.800</strong>
+            </div>
+            <div className="home-price-summary__impact">
+              <span>{isDa ? 'Afsættes af pris ekskl. moms' : 'Allocated from price excl. VAT'}</span>
+              <strong>{CONTRIBUTION_MIN}-{CONTRIBUTION_MAX}%</strong>
+            </div>
+          </div>
           <p className="pricing-disclosure">
-            {isDa ? 'Bidrag gælder først efter en gennemført, betalt session. Betaling er endnu ikke aktiveret.' : 'Contributions apply only after a completed, paid session. Payments are not yet enabled.'}
+            {isDa ? 'Ved DKK 600 svarer bidraget til DKK 192-432. Se hele regnestykket under Bidrag. Betaling er endnu ikke aktiveret.' : 'At DKK 600, the contribution is DKK 192-432. See the full calculation under Impact. Payments are not yet enabled.'}
           </p>
+          <Link href="/impact" className="access-hero__text-link home-price-link">
+            {isDa ? 'Se hele regnestykket' : 'See the full calculation'}
+            <ArrowRight size={15} aria-hidden="true" />
+          </Link>
         </div>
       </section>
 
@@ -220,7 +207,7 @@ export function HomeContent() {
           <h2>{isDa ? 'Start med beslutningen foran dig.' : 'Start with the decision in front of you.'}</h2>
           <p>{isDa ? 'Beskriv situationen. Så viser Naetwork, hvilken erfaring der er relevant.' : 'Describe the situation. Naetwork will show which experience is relevant.'}</p>
           <Link href="/start" className="button-primary">
-            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>

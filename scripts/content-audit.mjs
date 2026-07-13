@@ -80,7 +80,8 @@ const required = [
   ['lib/platform.ts', /export const CONTRIBUTION_OPTIONS = \[40, 60, 80, 90\]/],
   ['lib/platform.ts', /export const PLATFORM_FEE_DKK = 49/],
   ['lib/brand.ts', /category: 'Career Access'/],
-  ['lib/brand.ts', /primaryLine: 'Get the insight the job description leaves out\.'/],
+  ['lib/brand.ts', /primaryLine: 'Talent is widely distributed\. Access is not\.'/],
+  ['lib/brand.ts', /primaryLine: 'Talent er bredt fordelt\. Adgang er det ikke\.'/],
   ['lib/brand.ts', /positioning: 'Relevant experience for real career decisions\.'/],
   ['lib/brand.ts', /id: 'explore'/],
   ['lib/brand.ts', /id: 'perform'/],
@@ -112,7 +113,7 @@ const required = [
   ['app/professionals/page.tsx', /initialProfessionals/],
   ['components/HomeContent.tsx', /<main>/],
   ['components/HomeContent.tsx', /href="\/start"/],
-  ['components/Navbar.tsx', /Beskriv din situation/],
+  ['components/Navbar.tsx', /Start med din situation/],
   ['components/SituationStartContent.tsx', /Hvad står du overfor/],
   ['app/start/page.tsx', /Start med din karrieresituation/],
 ]

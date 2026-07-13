@@ -45,7 +45,7 @@ export function ImpactContent() {
         body={isDa
           ? `Den professionelle vælger at afsætte ${CONTRIBUTION_MIN}%, 60%, 80% eller ${CONTRIBUTION_MAX}% af sessionsprisen eksklusive moms. Beløbet skal altid være synligt før booking.`
           : `The professional allocates ${CONTRIBUTION_MIN}%, 60%, 80% or ${CONTRIBUTION_MAX}% of the session price excluding VAT. The amount must always be visible before booking.`}
-        action={{ href: '/start', label: isDa ? 'Beskriv din situation' : 'Describe your situation' }}
+        action={{ href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa ? ['Indsigt', 'Erfaring', 'Bidrag'] : ['Insight', 'Experience', 'Contribution']}
       />
 
@@ -102,7 +102,7 @@ export function ImpactContent() {
           <h2>{isDa ? 'Start med karrierebeslutningen.' : 'Start with the career decision.'}</h2>
           <p>{isDa ? 'Pris og konkret bidrag vises, før du sender en bookinganmodning.' : 'The price and exact contribution are shown before you send a booking request.'}</p>
           <Link href="/start" className="button-primary">
-            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>

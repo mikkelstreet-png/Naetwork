@@ -13,13 +13,14 @@ import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { BRAND_COPY } from '@/lib/brand';
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? 'https://naetwork.dk';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
-  title: 'Naetwork - Få den viden, jobopslaget mangler',
-  description: 'Book 60 minutters sparring med en professionel, der kender rollen, virksomheden eller processen fra den anden side.',
+  title: 'Naetwork - Adgang til erfaringen bag bedre karrierevalg',
+  description: BRAND_COPY.da.oneSentence,
   robots: { index: true, follow: true },
   icons: {
     icon: '/naetwork-logo.svg',

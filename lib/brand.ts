@@ -8,18 +8,18 @@ type LocalizedText = Record<BrandLocale, string>
 export const BRAND_COPY = {
   da: {
     category: 'Career Access',
-    primaryLine: 'Få den viden, jobopslaget mangler.',
+    primaryLine: 'Talent er bredt fordelt. Adgang er det ikke.',
     productLine: 'Tal med en, der kender jobbet, før du søger.',
     positioning: 'Relevant erfaring til konkrete karrierevalg.',
-    oneSentence: 'Book 60 minutters sparring med en professionel, der kender rollen, virksomheden eller processen fra den anden side.',
+    oneSentence: 'Naetwork giver dig adgang til mennesker med direkte erfaring fra den rolle, virksomhed eller rekrutteringsproces, du overvejer.',
     problem: 'Jobopslaget beskriver rollen. Ikke hvordan arbejdet faktisk er.',
   },
   en: {
     category: 'Career Access',
-    primaryLine: 'Get the insight the job description leaves out.',
+    primaryLine: 'Talent is widely distributed. Access is not.',
     productLine: 'Meet someone who knows the job before you apply.',
     positioning: 'Relevant experience for real career decisions.',
-    oneSentence: 'Book a 60-minute session with a professional who knows the role, company or process from the other side.',
+    oneSentence: 'Naetwork gives you access to people with direct experience of the role, company or hiring process you are considering.',
     problem: 'A job description explains the role. Not what the work is really like.',
   },
 } as const

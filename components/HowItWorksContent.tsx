@@ -37,7 +37,7 @@ export function HowItWorksContent() {
         body={isDa
           ? 'Du starter med situationen. Naetwork hjælper dig med at finde relevant erfaring, forberede samtalen og gøre resultatet konkret.'
           : 'You start with the situation. Naetwork helps you find relevant experience, prepare the conversation and make the outcome concrete.'}
-        action={{ href: '/start', label: isDa ? 'Beskriv din situation' : 'Describe your situation' }}
+        action={{ href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa
           ? ['Situation', 'Relevant erfaring', 'Næste skridt']
           : ['Situation', 'Relevant experience', 'Next step']}
@@ -88,7 +88,7 @@ export function HowItWorksContent() {
           <h2>{isDa ? 'Hvilken beslutning står du med?' : 'What decision are you facing?'}</h2>
           <p>{isDa ? 'Start uden at oprette en konto. Vælg situationen, og se hvilken erfaring der er relevant.' : 'Start without creating an account. Choose the situation and see what experience is relevant.'}</p>
           <Link href="/start" className="button-primary">
-            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>

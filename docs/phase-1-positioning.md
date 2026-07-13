@@ -6,7 +6,7 @@ Naetwork gives people access to relevant experience behind the roles, companies 
 
 Category: Career Access.
 
-Primary line: Get the insight the job description leaves out.
+Primary line: Talent is widely distributed. Access is not.
 
 Product line: Meet someone who knows the job before you apply.
 
@@ -14,7 +14,7 @@ Positioning: Relevant experience for real career decisions.
 
 Danish product line: Tal med en, der kender jobbet, før du søger.
 
-Danish primary line: Få den viden, jobopslaget mangler.
+Danish primary line: Talent er bredt fordelt. Adgang er det ikke.
 
 ## Information architecture
 
@@ -57,7 +57,7 @@ All new routes are static or client-only public routes. Phase 1 requires no data
 
 - Career Access is explicit and explainable in one sentence.
 - The primary journey starts with the user's situation.
-- Navigation exposes How it works, Sessions, For professionals, Impact, Sign in and Describe your situation.
+- Navigation exposes How it works, Sessions, For professionals, Impact, Sign in and Start with your situation.
 - Explore, Prepare, Apply and Perform have canonical routes.
 - Central public copy, metadata, sitemap and redirects use the same positioning.
 - Danish and English express the same product principles.
