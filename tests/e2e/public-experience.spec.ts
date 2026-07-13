@@ -120,6 +120,7 @@ test('minimal Access hero keeps one message and one primary action', async ({ pa
   await expect(hero.getByRole('link', { name: 'Sådan fungerer det' })).toHaveAttribute('href', '/how-it-works')
   await expect(hero.locator('button')).toHaveCount(0)
   await expect(hero.locator('.access-hero__colorline span')).toHaveCount(4)
+  await expect(hero.locator('[data-special-effect="access-aperture"] span')).toHaveCount(3)
   await expect(hero.locator('img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
   await expectNoHorizontalOverflow(page)
 })
@@ -129,6 +130,22 @@ test('Access motion respects reduced-motion preferences', async ({ page }) => {
   await page.goto('/')
   const duration = await page.locator('#home').getByRole('link', { name: 'Sådan fungerer det' }).evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
+  const apertureAnimation = await page.locator('[data-special-effect="access-aperture"] span').first().evaluate((element) => getComputedStyle(element).animationDuration)
+  expect(Number.parseFloat(apertureAnimation)).toBeLessThanOrEqual(0.00001)
+})
+
+test('impact split visualizes the fixed model and updates exact amounts', async ({ page }) => {
+  await page.goto('/impact')
+  const split = page.locator('[data-special-effect="impact-split"]')
+  await expect(split.locator('span')).toHaveCount(3)
+  await expect(split.locator('span').nth(0)).toHaveAttribute('style', /width: 20%/)
+  await expect(split.locator('span').nth(1)).toHaveAttribute('style', /width: 30%/)
+  await expect(split.locator('span').nth(2)).toHaveAttribute('style', /width: 50%/)
+
+  await page.getByRole('button', { name: 'DKK 1.800' }).click()
+  await expect(page.locator('.impact-line__distribution')).toContainText('DKK 288')
+  await expect(page.locator('.impact-line__distribution')).toContainText('DKK 432')
+  await expect(page.locator('.impact-line__distribution')).toContainText('DKK 720')
 })
 
 test('compact mobile hero leaves the next section in view', async ({ page }) => {
