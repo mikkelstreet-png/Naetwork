@@ -120,19 +120,28 @@ test('minimal Access hero keeps one message and one primary action', async ({ pa
   await expect(hero.getByRole('link', { name: 'Sådan fungerer det' })).toHaveAttribute('href', '/how-it-works')
   await expect(hero.locator('button')).toHaveCount(0)
   await expect(hero.locator('.access-hero__colorline span')).toHaveCount(4)
-  await expect(hero.locator('[data-special-effect="access-aperture"] > span')).toHaveCount(4)
-  await expect(hero.locator('[data-special-effect="access-aperture"]')).toHaveAttribute('role', 'img')
+  await expect(hero.locator('[data-special-effect="access-aperture"]')).toHaveCount(0)
   await expect(hero.locator('img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
   await expectNoHorizontalOverflow(page)
 })
 
-test('Access motion respects reduced-motion preferences', async ({ page }) => {
+test('homepage copy reveals as sections enter the viewport', async ({ page }) => {
+  await page.goto('/')
+  const finalHeading = page.locator('.home-final h2')
+  await expect(finalHeading).toHaveAttribute('data-reveal-state', 'pending')
+  await finalHeading.scrollIntoViewIfNeeded()
+  await expect(finalHeading).toHaveAttribute('data-reveal-state', 'visible')
+})
+
+test('scroll reveal respects reduced-motion preferences', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
   const duration = await page.locator('#home').getByRole('link', { name: 'Sådan fungerer det' }).evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
-  const apertureAnimation = await page.locator('[data-special-effect="access-aperture"] span').first().evaluate((element) => getComputedStyle(element).animationDuration)
-  expect(Number.parseFloat(apertureAnimation)).toBeLessThanOrEqual(0.00001)
+  const reveal = page.locator('[data-scroll-reveal]').first()
+  await expect(reveal).toHaveAttribute('data-reveal-state', 'visible')
+  const revealAnimation = await reveal.evaluate((element) => getComputedStyle(element).animationDuration)
+  expect(Number.parseFloat(revealAnimation)).toBeLessThanOrEqual(0.00001)
 })
 
 test('impact split visualizes the fixed model and updates exact amounts', async ({ page }) => {
