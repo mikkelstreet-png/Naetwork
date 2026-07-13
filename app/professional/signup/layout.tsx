@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Bliv professionel - Naetwork',
-  description: 'Ansøg om en gennemgået professionel profil og tilbyd 60 minutters karrieresparring inden for AI, Banking, Management Consulting eller Private Equity.',
+  description: 'Ansøg om en gennemgået profil og gør relevant arbejdserfaring tilgængelig gennem fokuserede Career Access-sessioner.',
   alternates: { canonical: '/professional/signup' },
 }
 

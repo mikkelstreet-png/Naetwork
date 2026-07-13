@@ -5,8 +5,10 @@ export const SESSION_MINUTES = 60
 export const PRICE_MIN = 600
 export const PRICE_MAX = 1800
 export const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
-export const CONTRIBUTION_MIN = 40
-export const CONTRIBUTION_MAX = 90
+export const VAT_RATE_PERCENT = 25
+export const PLATFORM_SHARE_PERCENT = 20
+export const CONTRIBUTION_PERCENT = 30
+export const PROFESSIONAL_SHARE_PERCENT = 50
 
 export const INDUSTRIES = [
   { id: 'AI', slug: 'ai', accent: 'bg-cyan-300', surface: 'bg-[#d8f7fb]' },
@@ -24,6 +26,18 @@ export function normalizePrice(value: unknown): PriceOption {
   return PRICE_OPTIONS.reduce((closest, option) =>
     Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
   )
+}
+
+export function normalizeLinkedInUrl(value: unknown) {
+  if (typeof value !== 'string' || !value.trim()) return null
+  try {
+    const url = new URL(value.trim())
+    if (url.protocol !== 'https:' || !/(^|\.)linkedin\.com$/i.test(url.hostname)) return null
+    url.hash = ''
+    return url.toString()
+  } catch {
+    return null
+  }
 }
 
 export const FOCUS_AREAS = [
@@ -69,9 +83,37 @@ export function industryAccent(industry?: string) {
   return INDUSTRIES.find((item) => item.id === industry)?.accent ?? 'bg-gray-300'
 }
 
-export function contributionAmount(price: number, percentage: number) {
-  const safePercentage = Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, percentage))
-  return Math.round(price * safePercentage / 100)
+export function priceBeforeVat(grossPrice: number) {
+  return Math.round(grossPrice / (1 + VAT_RATE_PERCENT / 100))
+}
+
+export function vatAmount(grossPrice: number) {
+  return grossPrice - priceBeforeVat(grossPrice)
+}
+
+export function contributionAmount(grossPrice: number) {
+  return Math.round(priceBeforeVat(normalizePrice(grossPrice)) * CONTRIBUTION_PERCENT / 100)
+}
+
+export function sessionEconomics(grossPrice: number) {
+  const candidatePrice = normalizePrice(grossPrice)
+  const netPrice = priceBeforeVat(candidatePrice)
+  const vat = candidatePrice - netPrice
+  const platformShare = Math.round(netPrice * PLATFORM_SHARE_PERCENT / 100)
+  const contribution = Math.round(netPrice * CONTRIBUTION_PERCENT / 100)
+  const professionalPayout = netPrice - platformShare - contribution
+
+  return {
+    candidatePrice,
+    netPrice,
+    vat,
+    platformSharePercent: PLATFORM_SHARE_PERCENT,
+    contributionPercent: CONTRIBUTION_PERCENT,
+    professionalSharePercent: PROFESSIONAL_SHARE_PERCENT,
+    contribution,
+    platformShare,
+    professionalPayout,
+  }
 }
 
 export function formatDkk(amount: number) {

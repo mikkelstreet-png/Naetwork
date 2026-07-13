@@ -15,7 +15,11 @@ interface Professional {
   name: string
   title: string | null
   company: string | null
+  bio: string | null
   industries: string[] | null
+  focus_areas: string[] | null
+  price_dkk: number
+  linkedin_url: string | null
   visibility: Visibility
   review_status: ReviewStatus
   created_at: string
@@ -31,6 +35,16 @@ function ReviewBadge({ status, visibility }: { status: ReviewStatus; visibility:
   return <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${tone}`}>{label}</span>
 }
 
+function verifiedLinkedInUrl(value: string | null) {
+  if (!value) return null
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && /(^|\.)linkedin\.com$/i.test(url.hostname) ? url.toString() : null
+  } catch {
+    return null
+  }
+}
+
 export default function ProfessionalsPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([])
   const [filter, setFilter] = useState<ReviewStatus | 'all'>('all')
@@ -43,7 +57,7 @@ export default function ProfessionalsPage() {
     setLoading(true)
     setError('')
     const supabase = createClient()
-    const { data, error: loadError } = await supabase.from('professional_profiles').select('id, profile_id, title, company, industries, visibility, review_status, created_at').order('created_at', { ascending: false })
+    const { data, error: loadError } = await supabase.from('professional_profiles').select('id, profile_id, title, company, bio, industries, focus_areas, price_dkk, linkedin_url, visibility, review_status, created_at').order('created_at', { ascending: false })
     if (loadError) {
       setError('Profilerne kunne ikke indlæses. Kontrollér systemstatus og prøv igen.')
       setProfessionals([])
@@ -99,13 +113,15 @@ export default function ProfessionalsPage() {
 
       <AdminTableFrame>
         {loading ? <AdminEmptyState title="Indlæser profiler..." /> : filtered.length === 0 ? <AdminEmptyState title="Ingen profiler i denne visning" body="Skift filter for at se andre profilstatusser." /> : (
-          <table className="min-w-[980px] w-full border-collapse">
-            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Profil</th><th className="px-4 py-3">Felt</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Oprettet</th><th className="px-4 py-3 text-right">Handlinger</th></tr></thead>
+          <table className="min-w-[1180px] w-full border-collapse">
+            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Profil</th><th className="px-4 py-3">Felt og fokus</th><th className="px-4 py-3">Pris og bidrag</th><th className="px-4 py-3">Verifikation</th><th className="px-4 py-3">Status</th><th className="px-4 py-3">Oprettet</th><th className="px-4 py-3 text-right">Handlinger</th></tr></thead>
             <tbody className="divide-y divide-gray-100">
               {filtered.map((profile) => (
                 <tr key={profile.id} className="hover:bg-gray-50/70">
-                  <td className="px-4 py-4"><p className="text-sm font-black text-gray-950">{profile.name}</p><p className="mt-1 text-xs text-gray-500">{[profile.title, profile.company].filter(Boolean).join(' · ') || 'Titel og virksomhed mangler'}</p></td>
-                  <td className="px-4 py-4 text-sm text-gray-600">{profile.industries?.join(', ') || 'Ikke valgt'}</td>
+                  <td className="max-w-[260px] px-4 py-4"><p className="text-sm font-black text-gray-950">{profile.name}</p><p className="mt-1 text-xs text-gray-500">{[profile.title, profile.company].filter(Boolean).join(' · ') || 'Titel og virksomhed mangler'}</p><p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-400">{profile.bio || 'Bio mangler'}</p></td>
+                  <td className="max-w-[210px] px-4 py-4 text-xs text-gray-600"><p className="font-bold text-gray-950">{profile.industries?.join(', ') || 'Ikke valgt'}</p><p className="mt-2 line-clamp-2 leading-relaxed text-gray-500">{profile.focus_areas?.join(', ') || 'Fokus mangler'}</p></td>
+                  <td className="px-4 py-4"><p className="text-sm font-black text-gray-950">DKK {profile.price_dkk.toLocaleString('da-DK')}</p><p className="mt-1 text-xs text-gray-500">20 / 30 / 50% af nettopris</p>{profile.price_dkk === 1800 && <span className="mt-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-black text-amber-800">Verificér højeste pris</span>}</td>
+                  <td className="px-4 py-4">{verifiedLinkedInUrl(profile.linkedin_url) ? <a href={verifiedLinkedInUrl(profile.linkedin_url)!} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-black text-gray-700 underline decoration-gray-300 underline-offset-4">LinkedIn <ExternalLink size={11} aria-hidden="true" /></a> : <span className="text-xs font-bold text-red-700">Gyldigt LinkedIn mangler</span>}</td>
                   <td className="px-4 py-4"><ReviewBadge status={profile.review_status} visibility={profile.visibility} /></td>
                   <td className="px-4 py-4 text-xs tabular-nums text-gray-500">{new Date(profile.created_at).toLocaleDateString('da-DK')}</td>
                   <td className="px-4 py-4"><div className="flex justify-end gap-2">

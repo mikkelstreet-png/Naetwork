@@ -1,18 +1,18 @@
 import type { Metadata } from 'next'
 import { LegalDocument, type LegalSection } from '@/components/LegalDocument'
+import { LEGAL_UPDATED_DA, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Cookiepolitik - Naetwork',
   description: 'Præcis information om nødvendige cookies og lokal lagring på Naetwork.',
+  alternates: { canonical: '/cookies' },
 }
-
-const updated = '7. juli 2026'
 
 const facts: Array<[string, string]> = [
   ['Status', 'Kun nødvendige teknologier'],
   ['Statistik', 'Ikke aktiveret'],
   ['Marketing', 'Ikke aktiveret'],
-  ['Kontakt', 'kontakt@naetwork.dk'],
+  ['Kontakt', PUBLIC_SUPPORT_EMAIL],
 ]
 
 const sections: LegalSection[] = [
@@ -58,5 +58,5 @@ const sections: LegalSection[] = [
 ]
 
 export default function CookiesPage() {
-  return <LegalDocument title="Cookiepolitik" intro="Hvilke teknologier Naetwork gemmer i din browser, hvorfor de er nødvendige, og hvordan du rydder dem." updated={updated} facts={facts} sections={sections} />
+  return <LegalDocument title="Cookiepolitik" intro="Hvilke teknologier Naetwork gemmer i din browser, hvorfor de er nødvendige, og hvordan du rydder dem." updated={LEGAL_UPDATED_DA} facts={facts} sections={sections} />
 }

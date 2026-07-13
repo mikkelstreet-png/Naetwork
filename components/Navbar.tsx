@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { createClient } from '@/lib/supabase';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
 import { LanguageToggle } from './LanguageToggle';
 import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { isBilingualPublicRoute } from '@/lib/navigation';
+import { PRIMARY_NAV_ITEMS, localized } from '@/lib/brand';
 
 export function Navbar() {
   const { lang } = useLanguage();
@@ -20,10 +21,15 @@ export function Navbar() {
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const isDa = lang === 'da';
   const pathname = usePathname();
+  const previousPathnameRef = useRef(pathname);
   const bilingual = isBilingualPublicRoute(pathname);
   const displayDa = isDa || !bilingual;
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setSession(false);
+      return;
+    }
     const supabase = createClient();
     supabase.auth.getSession().then(({ data }) => {
       setSession(!!data.session);
@@ -37,8 +43,11 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
-    setDropdownOpen(false);
+    if (previousPathnameRef.current !== pathname) {
+      setMobileOpen(false);
+      setDropdownOpen(false);
+      previousPathnameRef.current = pathname;
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -46,7 +55,26 @@ export function Navbar() {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     window.requestAnimationFrame(() => mobilePanelRef.current?.querySelector<HTMLElement>('a[href]')?.focus());
-    return () => { document.body.style.overflow = previousOverflow; };
+    function trapMobileFocus(event: KeyboardEvent) {
+      if (event.key !== 'Tab' || !mobilePanelRef.current || !mobileButtonRef.current) return;
+      const panelItems = Array.from(mobilePanelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'))
+        .filter((element) => element.offsetParent !== null);
+      const focusable = [mobileButtonRef.current, ...panelItems];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener('keydown', trapMobileFocus);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', trapMobileFocus);
+    };
   }, [mobileOpen]);
 
   useEffect(() => {
@@ -76,35 +104,29 @@ export function Navbar() {
     window.location.href = '/';
   }
 
-  const navLinks = [
-    { href: '/#how-it-works', label: displayDa ? 'Sådan fungerer det' : 'How it works' },
-    { href: '/#pricing', label: displayDa ? 'Priser' : 'Pricing' },
-    { href: '/impact', label: displayDa ? 'Bidrag' : 'Impact' },
-    { href: '/professional/signup', label: displayDa ? 'For professionelle' : 'For professionals' },
-  ];
+  const navLinks = PRIMARY_NAV_ITEMS.map((item) => ({
+    href: item.href,
+    label: localized(item.label, displayDa ? 'da' : 'en'),
+  }));
 
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="sticky top-0 z-50 border-b border-black/[0.09] bg-white/[0.92] backdrop-blur-2xl">
-      <div className="mx-auto flex h-[4.75rem] max-w-[82rem] items-center justify-between px-5 sm:px-8 lg:px-12">
+    <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="nav-shell">
+      <div className="nav-inner">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={displayDa ? 'Naetwork forside' : 'Naetwork home'}>
           <span className="brand-mark transition-transform duration-200 group-hover:-translate-y-0.5">N</span>
-          <span>
-            <span className="block font-['Space_Grotesk'] text-[16px] font-semibold leading-none text-gray-950">Naetwork</span>
-            <span className="mt-1 hidden font-['JetBrains_Mono'] text-[8px] uppercase text-gray-400 sm:block">Career access</span>
-          </span>
+          <span className="block font-['Space_Grotesk'] text-[16px] font-semibold leading-none text-gray-950">Naetwork</span>
         </Link>
 
         <div className="hidden items-center gap-7 lg:flex">
-          {navLinks.map((link, index) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               aria-current={link.href.startsWith('/#') ? undefined : pathname === link.href ? 'page' : undefined}
-              className={`group/link relative flex items-center gap-1.5 py-2 text-[13px] font-semibold transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-gray-950 after:transition-transform hover:text-gray-950 hover:after:scale-x-100 ${pathname === link.href ? 'text-gray-950 after:scale-x-100' : 'text-gray-500'}`}
+              className={`nav-link ${pathname === link.href ? 'nav-link--active' : ''}`}
             >
-              <span className="font-['JetBrains_Mono'] text-[8px] font-medium text-gray-400 transition-colors group-hover/link:text-gray-600">0{index + 1}</span>
               {link.label}
             </Link>
           ))}
@@ -114,13 +136,6 @@ export function Navbar() {
           <div className={bilingual ? 'hidden sm:block' : 'hidden'}>
             <LanguageToggle />
           </div>
-
-          <Link
-            href="/professionals"
-            className="button-primary hidden min-h-10 px-4 py-2.5 lg:inline-flex"
-          >
-            {displayDa ? 'Book 60 min' : 'Book 60 min'}
-          </Link>
 
           {session === null ? <span aria-hidden="true" className="hidden h-9 w-16 lg:block" /> : session ? (
             <div className="relative" ref={dropdownRef}>
@@ -142,7 +157,7 @@ export function Navbar() {
                     <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Overblik' : 'Overview'}</Link>
-                  <Link href="/match" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>Match</Link>
+                  <Link href="/start" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Start med din situation' : 'Start with your situation'}</Link>
                   <button type="button" onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{displayDa ? 'Log ud' : 'Log out'}</button>
                 </div>
               )}
@@ -153,16 +168,24 @@ export function Navbar() {
             </Link>
           )}
 
+          <Link
+            href="/start"
+            className="button-primary hidden min-h-10 px-4 py-2.5 lg:inline-flex"
+          >
+            {displayDa ? 'Start med din situation' : 'Start with your situation'}
+          </Link>
+
           <button
             ref={mobileButtonRef}
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-950 transition-colors hover:border-gray-400 lg:hidden"
+            className="icon-button h-11 w-11 lg:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen
               ? (displayDa ? 'Luk menu' : 'Close menu')
               : (displayDa ? 'Åbn menu' : 'Open menu')}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
+            aria-haspopup="true"
           >
             {mobileOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>
@@ -181,8 +204,8 @@ export function Navbar() {
             ))}
           </div>
           <div className="mt-4 grid gap-2">
-            <Link href="/professionals" className="button-primary" onClick={() => setMobileOpen(false)}>
-              {displayDa ? 'Book 60 min' : 'Book 60 min'}
+            <Link href="/start" className="button-primary" onClick={() => setMobileOpen(false)}>
+              {displayDa ? 'Start med din situation' : 'Start with your situation'}
             </Link>
             {session ? (
               <div className="grid grid-cols-2 gap-2">

@@ -4,6 +4,7 @@ import { Check, Mail, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { LEGAL_OPERATOR, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal';
 
 const EMPTY_FORM = { name: '', email: '', subject: 'booking', message: '', website: '' };
 
@@ -50,21 +51,22 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
-      <section className="border-b border-gray-200 bg-white px-5 py-8 sm:px-8 md:py-14">
+      <section className="border-b border-white/15 bg-[#09090b] px-5 py-12 text-white sm:px-8 md:py-20 lg:px-12">
         <div className="mx-auto max-w-6xl">
-          <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Kontakt' : 'Contact'}</p>
-          <h1 className="max-w-4xl text-4xl font-black leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">
-            {isDa ? 'Hvordan kan vi hjælpe?' : 'How can we help?'}
+          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+          <p className="kicker mb-5 text-white/40">{isDa ? 'Kontakt' : 'Contact'}</p>
+          <h1 className="max-w-4xl text-4xl font-medium leading-[0.96] text-white text-balance sm:text-6xl md:text-7xl">
+            {isDa ? 'Få et klart svar.' : 'Get a clear answer.'}
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
-            {isDa ? 'Skriv kort, hvad din henvendelse handler om. Vi vender tilbage så hurtigt som muligt.' : 'Tell us briefly what your request is about. We will get back to you as soon as possible.'}
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/55 md:text-lg">
+            {isDa ? 'Fortæl, hvad du har brug for hjælp til. Vi svarer på den e-mail, du angiver.' : 'Tell us what you need help with. We will reply to the email address you provide.'}
           </p>
         </div>
       </section>
 
       <section className="px-5 py-7 sm:px-8 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_320px]">
-          <div className="border border-gray-200 bg-white p-5 sm:p-7">
+          <div className="border-t border-gray-300 pt-6">
             {status === 'sent' ? (
               <div role="status" className="flex min-h-[430px] flex-col items-center justify-center text-center">
                 <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-gray-950 text-white"><Check size={24} aria-hidden="true" /></span>
@@ -78,18 +80,18 @@ export default function ContactPage() {
               <form onSubmit={submit} className="space-y-5" aria-busy={status === 'sending'}>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="contact-name" className="mb-2 block text-sm font-black text-gray-950">{isDa ? 'Navn' : 'Name'}</label>
-                    <input id="contact-name" autoComplete="name" required minLength={2} maxLength={100} value={form.name} onChange={(event) => update('name', event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" />
+                    <label htmlFor="contact-name" className="form-label">{isDa ? 'Navn' : 'Name'}</label>
+                    <input id="contact-name" autoComplete="name" required minLength={2} maxLength={100} value={form.name} onChange={(event) => update('name', event.target.value)} className="field-control" />
                   </div>
                   <div>
-                    <label htmlFor="contact-email" className="mb-2 block text-sm font-black text-gray-950">E-mail</label>
-                    <input id="contact-email" type="email" autoComplete="email" required maxLength={254} value={form.email} onChange={(event) => update('email', event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" />
+                    <label htmlFor="contact-email" className="form-label">E-mail</label>
+                    <input id="contact-email" type="email" autoComplete="email" required maxLength={254} value={form.email} onChange={(event) => update('email', event.target.value)} className="field-control" />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="contact-subject" className="mb-2 block text-sm font-black text-gray-950">{isDa ? 'Emne' : 'Subject'}</label>
-                  <select id="contact-subject" value={form.subject} onChange={(event) => update('subject', event.target.value)} className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950">
+                  <label htmlFor="contact-subject" className="form-label">{isDa ? 'Emne' : 'Subject'}</label>
+                  <select id="contact-subject" value={form.subject} onChange={(event) => update('subject', event.target.value)} className="field-control">
                     {subjects.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </div>
@@ -98,15 +100,15 @@ export default function ContactPage() {
 
                 <div>
                   <div className="mb-2 flex items-center justify-between gap-4">
-                    <label htmlFor="contact-message" className="text-sm font-black text-gray-950">{isDa ? 'Besked' : 'Message'}</label>
+                    <label htmlFor="contact-message" className="text-sm font-semibold text-gray-800">{isDa ? 'Besked' : 'Message'}</label>
                     <span className="text-xs text-gray-400">{form.message.length}/2000</span>
                   </div>
-                  <textarea id="contact-message" required minLength={20} maxLength={2000} rows={8} value={form.message} onChange={(event) => update('message', event.target.value)} className="w-full resize-none rounded-lg border border-gray-200 bg-white px-4 py-3 outline-none transition-colors focus:border-gray-950" placeholder={isDa ? 'Beskriv kort, hvad du har brug for hjælp til.' : 'Briefly describe what you need help with.'} />
+                  <textarea id="contact-message" required minLength={20} maxLength={2000} rows={8} value={form.message} onChange={(event) => update('message', event.target.value)} className="field-control resize-none" placeholder={isDa ? 'Beskriv kort, hvad du har brug for hjælp til.' : 'Briefly describe what you need help with.'} />
                 </div>
 
-                {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+                {error && <p role="alert" className="notice-error">{error}</p>}
 
-                <button type="submit" disabled={status === 'sending'} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-950 px-5 py-3.5 text-sm font-black text-white transition-colors hover:bg-gray-800 disabled:cursor-wait disabled:opacity-60">
+                <button type="submit" disabled={status === 'sending'} className="button-primary w-full disabled:cursor-wait disabled:opacity-60">
                   {status === 'sending' ? (isDa ? 'Sender...' : 'Sending...') : (isDa ? 'Send besked' : 'Send message')}
                   {status !== 'sending' && <Send size={16} aria-hidden="true" />}
                 </button>
@@ -119,11 +121,12 @@ export default function ContactPage() {
             <Mail size={20} aria-hidden="true" />
             <h2 className="mt-5 text-2xl font-black text-gray-950">{isDa ? 'Direkte kontakt' : 'Direct contact'}</h2>
             <p className="mt-3 text-sm leading-relaxed text-gray-600">{isDa ? 'Du kan også skrive direkte til os. Undlad følsomme personoplysninger i almindelig e-mail.' : 'You can also email us directly. Avoid sensitive personal information in regular email.'}</p>
-            <a href="mailto:kontakt@naetwork.dk" className="mt-5 inline-flex text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">kontakt@naetwork.dk</a>
+            <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="mt-5 inline-flex text-sm font-black text-gray-950 underline decoration-gray-300 underline-offset-4">{PUBLIC_SUPPORT_EMAIL}</a>
             <div className="mt-8 border-y border-gray-200 py-5">
               <p className="text-xs font-black uppercase text-gray-400">{isDa ? 'Privatliv' : 'Privacy'}</p>
               <p className="mt-2 text-sm leading-relaxed text-gray-600">{isDa ? 'Kontaktbeskeder bruges kun til at håndtere din henvendelse og administreres af Naetwork.' : 'Contact messages are only used to handle your request and are managed by Naetwork.'}</p>
             </div>
+            <address className="mt-5 text-xs not-italic leading-relaxed text-gray-500">{LEGAL_OPERATOR}</address>
           </aside>
         </div>
       </section>

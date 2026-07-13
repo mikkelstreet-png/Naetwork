@@ -1,16 +1,18 @@
 import Link from 'next/link'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { AdminPageHeader } from '@/components/AdminShell'
+import { STRIPE_REQUIRED_WEBHOOKS, paymentConfiguration } from '@/lib/server/payments'
 
 const REQUIREMENTS = [
   'Handelsoplysninger, operatør og CVR er publiceret',
   'Checkout viser pris, afbestilling og fortrydelsesvilkår før køb',
   'Stripe, kvitteringer, refunds og webhooks er testet end to end',
-  'Regnskabs- og skattemodel for professionelle og bidrag er godkendt',
+  'Regnskabs- og skattemodel for den faste 20/30/50-fordeling er godkendt',
   'Bidrag kan dokumenteres, afstemmes og korrigeres ved refundering',
 ]
 
 export default function PaymentsPage() {
+  const configuration = paymentConfiguration()
   return (
     <>
       <AdminPageHeader title="Betaling" description="Betaling er bevidst deaktiveret. Denne side beskriver den release-gate, der skal være opfyldt, før der kan trækkes penge." />
@@ -24,6 +26,10 @@ export default function PaymentsPage() {
           <ol className="mt-4 divide-y divide-gray-200 border-t border-gray-200">{REQUIREMENTS.map((requirement, index) => <li key={requirement} className="grid grid-cols-[32px_1fr] gap-3 py-4"><span className="text-xs font-black text-gray-300">0{index + 1}</span><p className="text-sm font-bold leading-relaxed text-gray-700">{requirement}</p></li>)}</ol>
           <div className="mt-6 flex flex-wrap gap-3"><Link href="/admin/legal" className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-black text-white">Juridiske blokkere <ArrowRight size={15} aria-hidden="true" /></Link><Link href="/admin/system" className="inline-flex items-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-black text-gray-700">Systemstatus</Link></div>
         </div>
+      </section>
+      <section className="mt-7 grid gap-6 lg:grid-cols-2">
+        <div className="border border-gray-200 bg-white p-6"><p className="editorial-label">Valgt arkitektur</p><h2 className="mt-3 text-xl font-black text-gray-950">Stripe Connect · destination charge</h2><p className="mt-3 text-sm leading-relaxed text-gray-600">Én kandidat betaler for én professionel pr. session. Momsen skilles ud, hvorefter nettoprisen bogføres som 20% til Naetwork, 30% til Kræftens Bekæmpelse og 50% til den professionelle. Naetwork håndterer Stripe-gebyrer, refunds og chargebacks inden for sin andel.</p><dl className="mt-5 border-t border-gray-200">{[['Stripe-nøgler', configuration.configured ? 'Sat' : 'Mangler'], ['Aktivering', configuration.enabled ? 'Aktiv' : 'Låst'], ['Valuta', 'DKK'], ['Checkout', 'Hosted Checkout']].map(([label, value]) => <div key={label} className="flex justify-between gap-4 border-b border-gray-200 py-3 text-sm"><dt className="text-gray-500">{label}</dt><dd className="font-bold text-gray-950">{value}</dd></div>)}</dl></div>
+        <div className="border border-gray-200 bg-white p-6"><p className="editorial-label">Webhook-kontrakt</p><h2 className="mt-3 text-xl font-black text-gray-950">{STRIPE_REQUIRED_WEBHOOKS.length} hændelser</h2><div className="mt-5 border-t border-gray-200">{STRIPE_REQUIRED_WEBHOOKS.map((event) => <div key={event} className="border-b border-gray-200 py-2.5 font-mono text-xs text-gray-600">{event}</div>)}</div></div>
       </section>
     </>
   )

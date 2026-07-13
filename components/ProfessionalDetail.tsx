@@ -5,43 +5,15 @@ import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import Link from 'next/link'
 import BookingDrawer from '@/components/BookingDrawer'
-import { RefreshCw } from 'lucide-react'
-import { contributionAmount, focusLabel, industryAccent } from '@/lib/platform'
+import { CheckCircle2, RefreshCw } from 'lucide-react'
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT, contributionAmount, focusLabel, industryAccent } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
+import { professionalBestFor, professionalInitials, professionalPrimaryOutput } from '@/lib/professionalPresentation'
 
 type Professional = ProfessionalCard
 
-function initials(name: string) {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('') || 'N'
-}
-
 function accentFor(pro: Professional) {
   return industryAccent(pro.industries[0])
-}
-
-function bestFor(pro: Professional, isDa: boolean) {
-  const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'Investment case og PE-interview' : 'PE / investment case'
-  if (focus.includes('banking_technicals')) return isDa ? 'Tekniske spørgsmål og Banking-interview' : 'Banking technicals'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Cases og personligt interview' : 'Consulting cases'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-roller og positionering' : 'AI career strategy'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Ansøgningsmateriale' : 'Applications'
-  return isDa ? 'Karriereafklaring' : 'Career clarity'
-}
-
-function primaryOutputFor(pro: Professional, isDa: boolean) {
-  const focus = pro.focus_areas ?? []
-  if (focus.includes('pe_investment_case')) return isDa ? 'Skarpere investeringsvurdering' : 'Investment case and deal thinking'
-  if (focus.includes('banking_technicals')) return isDa ? 'Teknisk sikkerhed og interviewklarhed' : 'Technicals and interview bar'
-  if (focus.includes('consulting_cases') || focus.includes('case_prep')) return isDa ? 'Casestruktur og personlig kommunikation' : 'Case structure and fit'
-  if (focus.includes('ai_career_strategy') || focus.includes('industry_insight')) return isDa ? 'AI-positionering' : 'AI positioning'
-  if (focus.includes('cv_linkedin') || focus.includes('application_review')) return isDa ? 'Skarpere materiale' : 'Sharper materials'
-  return isDa ? 'Klarere næste skridt' : 'Clearer next steps'
 }
 
 function useCasesFor(pro: Professional, isDa: boolean) {
@@ -178,18 +150,18 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
     </main>
   )
 
-  const minimumImpact = contributionAmount(professional.price, professional.contributionPercent)
+  const contribution = contributionAmount(professional.price)
   const focusAreas = professional.focus_areas ?? []
-  const bestFit = bestFor(professional, isDa)
-  const primaryOutput = primaryOutputFor(professional, isDa)
+  const bestFit = professionalBestFor(professional, isDa)
+  const primaryOutput = professionalPrimaryOutput(professional, isDa)
   const useCases = useCasesFor(professional, isDa)
   const outcomes = outcomesFor(professional, isDa)
   const t = {
     back: isDa ? 'Tilbage til profiler' : 'Back to profiles',
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
-    bookCta: isDa ? 'Book 60 min' : 'Book 60 min',
+    bookCta: isDa ? 'Anmod om session' : 'Request a session',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
-    briefing: isDa ? `Du vælger selv fokus. Ved gennemført betaling afsættes ${professional.contributionPercent}% / DKK ${minimumImpact} til støtte for Kræftens Bekæmpelse.` : `You choose the focus. Once completed and paid, ${professional.contributionPercent}% / DKK ${minimumImpact} is allocated in support of Kræftens Bekæmpelse.`,
+    briefing: isDa ? `Du vælger selv fokus. Nettoprisen fordeles fast: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% / DKK ${contribution} til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle.` : `You choose the focus. The net price has a fixed split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% / DKK ${contribution} to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional.`,
     bestFor: isDa ? 'Bedst til' : 'Best for',
     sessionBrief: isDa ? 'Brief til sessionen' : 'Session brief',
     sessionBriefBody: isDa
@@ -202,8 +174,10 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
   }
   const facts = [
     { label: isDa ? 'Format' : 'Format', value: '60 min' },
-    { label: isDa ? 'Pris' : 'Price', value: `DKK ${professional.price}` },
-    { label: t.impact, value: `${professional.contributionPercent}% / DKK ${minimumImpact}` },
+    { label: isDa ? 'Pris inkl. moms' : 'Price incl. VAT', value: `DKK ${professional.price}` },
+    { label: t.impact, value: `${CONTRIBUTION_PERCENT}% / DKK ${contribution}` },
+    { label: isDa ? 'Næste ledige tid' : 'Next available', value: professional.nextAvailableAt ? new Date(professional.nextAvailableAt).toLocaleString(isDa ? 'da-DK' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' }) : (isDa ? 'Ingen åbne tider' : 'No open times') },
+    { label: isDa ? 'Svarfrist' : 'Response window', value: isDa ? `Op til ${professional.responseTimeHours} timer` : `Up to ${professional.responseTimeHours} hours` },
     { label: t.bestFor, value: bestFit },
     { label: isDa ? 'Output' : 'Output', value: primaryOutput },
   ]
@@ -219,9 +193,10 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
           <div className="grid gap-12 lg:grid-cols-[1fr_340px] lg:items-end">
             <div>
               <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-              <p className="kicker mb-4 text-white/40 md:mb-6">
-                {professional.industries.join(' / ')}
-              </p>
+              <div className="mb-4 flex flex-wrap items-center gap-4 md:mb-6">
+                <p className="kicker text-white/40">{professional.industries.join(' / ')}</p>
+                <span title={isDa ? 'Indsendt rolle, virksomhed og LinkedIn er gennemgået' : 'Submitted role, company and LinkedIn have been reviewed'} className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-200"><CheckCircle2 size={13} aria-hidden="true" />{isDa ? 'Profil gennemgået' : 'Profile reviewed'}</span>
+              </div>
               <h1 className="max-w-4xl text-5xl font-medium leading-[0.94] text-white text-balance sm:text-6xl md:text-8xl">{professional.name}</h1>
               <p className="mt-5 font-['Space_Grotesk'] text-base font-semibold text-white/70 md:mt-7 md:text-xl">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
               <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/52 md:mt-7 md:text-lg">{professional.bio}</p>
@@ -229,12 +204,14 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
 
             <aside className="hidden border border-white/20 bg-white/[0.035] p-6 text-white lg:block">
               <div className={`flex h-12 w-12 items-center justify-center rounded-md font-['Space_Grotesk'] text-sm font-bold text-gray-950 ${accentFor(professional)}`}>
-                {initials(professional.name)}
+                {professionalInitials(professional.name)}
               </div>
               <div className="mt-6 border-y border-white/15 py-5">
                 <p className="editorial-label text-white/40">{t.session}</p>
                 <p className="mt-3 font-['Space_Grotesk'] text-3xl font-semibold text-white">DKK {professional.price}</p>
+                <p className="mt-1 text-xs font-semibold text-white/40">{isDa ? 'Inkl. moms' : 'Incl. VAT'}</p>
                 <p className="mt-3 text-sm leading-relaxed text-white/55">{t.briefing}</p>
+                <p className="mt-3 text-xs font-semibold text-white/40">{professional.nextAvailableAt ? (isDa ? 'Aktuelle tider vises i bookingflowet.' : 'Current times are shown in booking.') : (isDa ? 'Der er ingen åbne tider lige nu.' : 'There are no open times right now.')}</p>
               </div>
               <button type="button" onClick={() => setDrawerOpen(true)} className="button-inverse mt-5 w-full">
                 {t.bookCta}
@@ -317,8 +294,8 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-12px_40px_rgba(9,9,11,0.10)] backdrop-blur-xl md:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-black text-gray-950">DKK {professional.price} · 60 min</p>
-              <p className="truncate text-[11px] font-semibold text-gray-500">{isDa ? `DKK ${minimumImpact} afsættes ved betaling` : `DKK ${minimumImpact} allocated when paid`}</p>
+              <p className="text-sm font-black text-gray-950">DKK {professional.price} {isDa ? 'inkl. moms' : 'incl. VAT'} · 60 min</p>
+              <p className="truncate text-[11px] font-semibold text-gray-500">{isDa ? `DKK ${contribution} til Kræftens Bekæmpelse` : `DKK ${contribution} to Kræftens Bekæmpelse`}</p>
             </div>
             <button type="button" onClick={() => setDrawerOpen(true)} className="button-primary min-h-11 shrink-0 px-5 py-2.5">
               {t.bookCta}

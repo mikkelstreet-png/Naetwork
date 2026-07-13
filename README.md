@@ -1,8 +1,10 @@
 # Naetwork
 
-Naetwork connects candidates with reviewed professionals from AI, Banking, Management Consulting, and Private Equity for focused 60-minute career sessions at one of four prices: DKK 600, 900, 1,200, or 1,800.
+Naetwork is a Career Access platform: the access layer between a concrete career decision and people with relevant experience from the other side. Users start with their situation, not a profile catalogue, and move through Explore, Prepare, Apply, or Perform before reaching relevant professionals.
 
-Every paid session is designed to allocate 40-90% of its listed price in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
+Every session lasts 60 minutes and is designed around a concrete outcome rather than time alone. A completed paid session is designed to allocate 40%, 60%, 80% or 90% of its price excluding VAT in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
+
+The canonical public entry points are `/start`, `/how-it-works`, `/sessions`, `/explore`, `/prepare`, `/apply`, and `/perform`. Legacy `/match` and `/onboarding` routes redirect to `/start`.
 
 ## Stack
 
@@ -14,7 +16,7 @@ Every paid session is designed to allocate 40-90% of its listed price in support
 
 ## Local setup
 
-Use Node.js 20 or newer.
+Use Node.js 22.13 or newer.
 
 1. Copy `.env.example` to `.env.local` and provide every value.
 2. Apply the SQL files in `supabase/migrations` in numeric order.
@@ -36,6 +38,8 @@ The following Vercel variables are required for Preview and Production:
 - `NEXT_PUBLIC_LEGAL_ADDRESS`
 - `NEXT_PUBLIC_LEGAL_REGISTRATION`
 - `SUPPORT_EMAIL`
+
+Set `NEXT_PUBLIC_SUPPORT_EMAIL` to the same address when the public contact address differs from `kontakt@naetwork.dk`.
 
 Transactional email can remain pending until Resend is activated:
 
@@ -73,5 +77,8 @@ Admin access is enforced server-side and by row-level security. Professional pro
 - Contact messages are stored in the admin inbox and notify the configured support address.
 - Admins can run the published 12/24-month data-retention baseline from system administration after migration `007_data_retention.sql` is applied.
 - Terms acceptance, privacy-notice versions, and the four-price database constraint require migration `008_consent_and_price_integrity.sql`.
+- Fixed contribution choices and immutable booking-economics snapshots require migration `009_pricing_and_contribution_integrity.sql`.
+- Auditable marketing consent timestamps and change history require migration `010_marketing_consent_audit.sql`.
+- Public professional discovery, real availability, review records, and integration audit tables require migration `011_marketplace_foundation.sql`.
 - Payment remains disabled and no card or charge is created.
 - Payment must remain disabled until every critical legal blocker introduced in `006_legal_release_gates.sql` has been manually reviewed and resolved.

@@ -13,7 +13,13 @@ export function safeInternalPath(value: string | null | undefined, fallback = '/
 
 export function isBilingualPublicRoute(pathname: string) {
   return pathname === '/'
-    || pathname === '/match'
+    || pathname === '/start'
+    || pathname === '/how-it-works'
+    || pathname === '/sessions'
+    || pathname === '/explore'
+    || pathname === '/prepare'
+    || pathname === '/apply'
+    || pathname === '/perform'
     || pathname === '/impact'
     || pathname === '/mission'
     || pathname === '/contact'

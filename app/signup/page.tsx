@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { ArrowRight, Mail } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
+import { accountErrorMessage } from '@/lib/authErrors';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -43,9 +44,7 @@ export default function SignupPage() {
     });
 
     if (authError) {
-      setError(/fetch|network/i.test(authError.message)
-        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
-        : authError.message);
+      setError(accountErrorMessage(authError, 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.'));
       setLoading(false);
       return;
     }
@@ -77,7 +76,7 @@ export default function SignupPage() {
           <h1 className="text-4xl font-medium leading-[0.96] text-white text-balance sm:text-5xl md:text-6xl">Find den erfaring, du mangler adgang til.</h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-white/55 md:text-lg">Opret en kandidatkonto for at sende bookinganmodninger og samle dine sessioner ét sted.</p>
           <div className="mt-10 border-t border-white/20 pt-5">
-            <p className="text-sm font-semibold text-white/40">Vil du tilbyde sparring?</p>
+            <p className="text-sm font-semibold text-white/40">Vil du gøre din erfaring tilgængelig?</p>
             <Link href="/professional/signup" className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-white underline decoration-white/30 underline-offset-4">Ansøg som professionel <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           </div>

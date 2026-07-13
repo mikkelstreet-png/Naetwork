@@ -7,6 +7,7 @@ const required = [
   'NEXT_PUBLIC_LEGAL_NAME',
   'NEXT_PUBLIC_LEGAL_ADDRESS',
   'NEXT_PUBLIC_LEGAL_REGISTRATION',
+  'NEXT_PUBLIC_SUPPORT_EMAIL',
   'SUPPORT_EMAIL',
 ]
 
@@ -20,6 +21,9 @@ for (const name of ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_APP_URL', 'APP_BASE
   try {
     const url = new URL(value)
     if (url.protocol !== 'https:') errors.push(`${name} must use https`)
+    if ((name === 'NEXT_PUBLIC_APP_URL' || name === 'APP_BASE_URL') && (url.pathname !== '/' || url.search || url.hash)) {
+      errors.push(`${name} must be an origin without path, query, or fragment`)
+    }
   } catch {
     errors.push(`${name} must be a valid absolute URL`)
   }
@@ -48,6 +52,14 @@ if (process.env.NEXT_PUBLIC_LEGAL_REGISTRATION && !/\d{8}/.test(process.env.NEXT
 
 if (process.env.SUPPORT_EMAIL && !/^\S+@\S+\.\S+$/.test(process.env.SUPPORT_EMAIL)) {
   errors.push('SUPPORT_EMAIL must be a valid email address')
+}
+
+if (process.env.NEXT_PUBLIC_SUPPORT_EMAIL && !/^\S+@\S+\.\S+$/.test(process.env.NEXT_PUBLIC_SUPPORT_EMAIL)) {
+  errors.push('NEXT_PUBLIC_SUPPORT_EMAIL must be a valid email address')
+}
+
+if (process.env.NEXT_PUBLIC_SUPPORT_EMAIL && process.env.SUPPORT_EMAIL && process.env.NEXT_PUBLIC_SUPPORT_EMAIL.toLowerCase() !== process.env.SUPPORT_EMAIL.toLowerCase()) {
+  errors.push('NEXT_PUBLIC_SUPPORT_EMAIL and SUPPORT_EMAIL must match')
 }
 
 if (missing.length || errors.length) {

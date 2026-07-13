@@ -4,7 +4,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { safeInternalPath } from '@/lib/navigation';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, normalizePrice } from '@/lib/platform';
+import {
+  CONTRIBUTION_PERCENT,
+  PLATFORM_SHARE_PERCENT,
+  PROFESSIONAL_SHARE_PERCENT,
+  normalizeLinkedInUrl,
+  normalizePrice,
+  sessionEconomics,
+} from '@/lib/platform';
 
 function text(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -16,12 +23,6 @@ function stringArray(value: unknown): string[] {
 
 function price(value: unknown): number {
   return normalizePrice(value);
-}
-
-function percentage(value: unknown): number {
-  const parsed = typeof value === 'number' ? value : Number(value);
-  if (!Number.isFinite(parsed)) return CONTRIBUTION_MIN;
-  return Math.min(CONTRIBUTION_MAX, Math.max(CONTRIBUTION_MIN, Math.round(parsed)));
 }
 
 export async function GET(request: NextRequest) {
@@ -80,8 +81,7 @@ export async function GET(request: NextRequest) {
               industries: text(metadata.industry) ? [text(metadata.industry)] : [],
               focus_areas: stringArray(metadata.sessionTypes),
               price_dkk: price(metadata.priceDkk),
-              linkedin_url: text(metadata.linkedin),
-              contribution_percent: percentage(metadata.contributionPercent),
+              linkedin_url: normalizeLinkedInUrl(metadata.linkedin),
               review_status: 'pending',
               visibility: 'hidden',
             }, { onConflict: 'profile_id' });
@@ -90,8 +90,8 @@ export async function GET(request: NextRequest) {
 
         if (user?.email) {
           const isProfessional = metadata.role === 'professional';
-          const contributionPercent = percentage(metadata.contributionPercent);
           const sessionPrice = price(metadata.priceDkk);
+          const economics = sessionEconomics(sessionPrice);
           await sendTransactionalEmail({
             to: user.email,
             subject: isProfessional ? 'Din Naetwork-profil er modtaget' : 'Velkommen til Naetwork',
@@ -101,8 +101,10 @@ export async function GET(request: NextRequest) {
               : `Hej ${text(metadata.name) ?? 'der'}. Din konto er bekræftet, og du kan nu finde en relevant professionel og sende en bookinganmodning.`,
             rows: isProfessional ? [
               { label: 'Session', value: '60 minutter' },
-              { label: 'Pris', value: `DKK ${sessionPrice.toLocaleString('da-DK')}` },
-              { label: 'Bidrag ved betaling', value: `${contributionPercent}%` },
+              { label: 'Pris inkl. moms', value: `DKK ${sessionPrice.toLocaleString('da-DK')}` },
+              { label: 'Naetwork', value: `${PLATFORM_SHARE_PERCENT}% / DKK ${economics.platformShare.toLocaleString('da-DK')}` },
+              { label: 'Kræftens Bekæmpelse', value: `${CONTRIBUTION_PERCENT}% / DKK ${economics.contribution.toLocaleString('da-DK')}` },
+              { label: 'Din andel', value: `${PROFESSIONAL_SHARE_PERCENT}% / DKK ${economics.professionalPayout.toLocaleString('da-DK')} før skat` },
             ] : undefined,
             note: 'Betaling er ikke aktiveret endnu. Der trækkes ikke noget beløb ved bookinganmodninger.',
             cta: {

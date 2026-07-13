@@ -1,30 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, FOCUS_AREAS, INDUSTRIES, PRICE_OPTIONS } from '@/lib/platform';
+import {
+  CONTRIBUTION_PERCENT,
+  FOCUS_AREAS,
+  INDUSTRIES,
+  PLATFORM_SHARE_PERCENT,
+  PRICE_OPTIONS,
+  PROFESSIONAL_SHARE_PERCENT,
+  formatDkk,
+  normalizeLinkedInUrl,
+  sessionEconomics,
+} from '@/lib/platform';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
+import { accountErrorMessage } from '@/lib/authErrors';
 
-const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
+const STEP_LABELS = ['Profil', 'Session', 'Fordeling', 'Bekræft'];
 
 export default function ProfessionalSignupPage() {
   const [step, setStep] = useState(1);
+  const [isInteractive, setIsInteractive] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', password: '',
     title: '', company: '', industry: '',
     bio: '', linkedin: '',
     sessionTypes: [] as string[], priceDkk: 1200,
-    contributionPercent: 40,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [accepted, setAccepted] = useState(false);
 
-  const estimatedContribution = Math.round(form.priceDkk * (form.contributionPercent / 100));
-  const estimatedProfessionalShare = form.priceDkk - estimatedContribution;
+  useEffect(() => {
+    setIsInteractive(true);
+  }, []);
+
+  const economics = sessionEconomics(form.priceDkk);
   const set = (key: string, value: unknown) => setForm(f => ({ ...f, [key]: value }));
   const toggleSessionType = (t: string) =>
     set('sessionTypes', form.sessionTypes.includes(t) ? form.sessionTypes.filter(x => x !== t) : [...form.sessionTypes, t]);
@@ -67,8 +81,7 @@ export default function ProfessionalSignupPage() {
       industries: form.industry ? [form.industry] : [],
       focus_areas: form.sessionTypes,
       price_dkk: form.priceDkk,
-      linkedin_url: form.linkedin,
-      contribution_percent: form.contributionPercent,
+      linkedin_url: normalizeLinkedInUrl(form.linkedin),
       review_status: 'pending',
       visibility: 'hidden',
     }, { onConflict: 'profile_id' });
@@ -76,6 +89,11 @@ export default function ProfessionalSignupPage() {
 
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2)) return;
+    if (!normalizeLinkedInUrl(form.linkedin)) {
+      setStep(1);
+      setError('Indtast et gyldigt LinkedIn-link, der starter med https://.');
+      return;
+    }
     if (!accepted) {
       setError('Accepter vilkårene og bekræft, at du har læst privatlivspolitikken.');
       return;
@@ -95,11 +113,10 @@ export default function ProfessionalSignupPage() {
           company: form.company,
           industry: form.industry,
           bio: form.bio,
-          linkedin: form.linkedin,
+          linkedin: normalizeLinkedInUrl(form.linkedin),
           sessionTypes: form.sessionTypes,
           priceDkk: form.priceDkk,
           donatesToCharity: true,
-          contributionPercent: form.contributionPercent,
           termsAcceptedAt: new Date().toISOString(),
           termsVersion: TERMS_VERSION,
           privacyNoticedAt: new Date().toISOString(),
@@ -110,9 +127,7 @@ export default function ProfessionalSignupPage() {
     });
 
     if (authErr || !authData.user) {
-      setError(authErr && /fetch|network/i.test(authErr.message)
-        ? 'Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.'
-        : authErr?.message || 'Kunne ikke oprette konto.');
+      setError(accountErrorMessage(authErr, 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.'));
       setLoading(false);
       return;
     }
@@ -148,9 +163,9 @@ export default function ProfessionalSignupPage() {
         <aside className="relative overflow-hidden rounded-md border border-gray-900 bg-[#09090b] p-6 text-white shadow-[0_24px_70px_rgba(9,9,11,0.14)] lg:sticky lg:top-24 lg:h-fit lg:p-9">
           <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
           <p className="editorial-label mb-5 text-white/45 sm:mb-7">For professionelle</p>
-          <h1 className="text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-5xl">Gør din erfaring bookbar med mening.</h1>
+          <h1 className="text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-5xl">Gør relevant erfaring tilgængelig.</h1>
           <p className="mt-3 max-w-md text-xs leading-relaxed text-gray-400 sm:mt-6 sm:text-sm">
-            Ansøg med din nuværende rolle, virksomhed og LinkedIn. Profiler gennemgås før publicering. Du vælger selv fokus, pris og et konkret bidrag mellem 40% og 90%.
+            Vis hvilke situationer din erfaring kan hjælpe med, hvem den er relevant for, og hvad kandidaten konkret kan forvente. Vi gennemgår baggrunden før publicering.
           </p>
           <div className="mt-5 hidden grid-cols-3 gap-3 sm:grid lg:mt-8">
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
@@ -162,13 +177,13 @@ export default function ProfessionalSignupPage() {
               <p className="mt-1 text-[11px] text-gray-500">DKK</p>
             </div>
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-lg font-black">40-90%</p>
+              <p className="text-lg font-black">30%</p>
               <p className="mt-1 text-[11px] text-gray-500">bidrag</p>
             </div>
           </div>
         </aside>
 
-        <section>
+        <section aria-busy={!isInteractive} data-interactive={isInteractive ? 'true' : 'false'}>
           <div className="mb-4 grid grid-cols-4 gap-1.5 sm:mb-5 sm:gap-2">
             {STEP_LABELS.map((label, index) => {
               const n = index + 1;
@@ -191,37 +206,37 @@ export default function ProfessionalSignupPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="professional-name" className="mb-1 block text-sm font-semibold text-gray-700">Fulde navn</label>
-                    <input id="professional-name" required aria-required="true" autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="field-control text-sm" placeholder="Mikkel Jensen" />
+                    <input id="professional-name" required aria-required="true" disabled={!isInteractive} autoComplete="name" value={form.name} onChange={e => set('name', e.target.value)} className="field-control text-sm" placeholder="Mikkel Jensen" />
                   </div>
                   <div>
                     <label htmlFor="professional-email" className="mb-1 block text-sm font-semibold text-gray-700">E-mail</label>
-                    <input id="professional-email" type="email" required aria-required="true" autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="field-control text-sm" placeholder="mikkel@firma.dk" />
+                    <input id="professional-email" type="email" required aria-required="true" disabled={!isInteractive} autoComplete="email" value={form.email} onChange={e => set('email', e.target.value)} className="field-control text-sm" placeholder="mikkel@firma.dk" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="professional-password" className="mb-1 block text-sm font-semibold text-gray-700">Adgangskode</label>
-                  <input id="professional-password" type="password" required aria-required="true" autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="field-control text-sm" placeholder="Min. 8 tegn" />
+                  <input id="professional-password" type="password" required aria-required="true" disabled={!isInteractive} autoComplete="new-password" minLength={8} value={form.password} onChange={e => set('password', e.target.value)} className="field-control text-sm" placeholder="Min. 8 tegn" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="professional-title" className="mb-1 block text-sm font-semibold text-gray-700">Jobtitel</label>
-                    <input id="professional-title" required aria-required="true" autoComplete="organization-title" value={form.title} onChange={e => set('title', e.target.value)} className="field-control text-sm" placeholder="Senior Manager" />
+                    <input id="professional-title" required aria-required="true" disabled={!isInteractive} autoComplete="organization-title" value={form.title} onChange={e => set('title', e.target.value)} className="field-control text-sm" placeholder="Senior Manager" />
                   </div>
                   <div>
                     <label htmlFor="professional-company" className="mb-1 block text-sm font-semibold text-gray-700">Virksomhed</label>
-                    <input id="professional-company" required aria-required="true" autoComplete="organization" value={form.company} onChange={e => set('company', e.target.value)} className="field-control text-sm" placeholder="Nordea" />
+                    <input id="professional-company" required aria-required="true" disabled={!isInteractive} autoComplete="organization" value={form.company} onChange={e => set('company', e.target.value)} className="field-control text-sm" placeholder="Nordea" />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="professional-industry" className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
-                  <select id="professional-industry" required aria-required="true" value={form.industry} onChange={e => set('industry', e.target.value)} className="field-control text-sm">
+                  <select id="professional-industry" required aria-required="true" disabled={!isInteractive} value={form.industry} onChange={e => set('industry', e.target.value)} className="field-control text-sm">
                     <option value="">Vælg industri</option>
                     {INDUSTRIES.map((industry) => <option key={industry.id} value={industry.id}>{industry.id}</option>)}
                   </select>
                 </div>
                 <div>
                   <label htmlFor="professional-linkedin" className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
-                  <input id="professional-linkedin" type="url" required aria-required="true" inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="field-control text-sm" placeholder="https://linkedin.com/in/..." />
+                  <input id="professional-linkedin" type="url" required aria-required="true" disabled={!isInteractive} inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="field-control text-sm" placeholder="https://linkedin.com/in/..." />
                   <p className="mt-1 text-xs text-gray-400">Bruges til at gennemgå din professionelle baggrund.</p>
                 </div>
               </div>
@@ -246,7 +261,7 @@ export default function ProfessionalSignupPage() {
                   </div>
                 </div>
                 <fieldset className="rounded-lg border border-gray-200 bg-gray-50 p-5">
-                  <legend className="px-1 text-sm font-semibold text-gray-700">Pris pr. 60 minutter</legend>
+                  <legend className="px-1 text-sm font-semibold text-gray-700">Pris pr. 60 minutter, inkl. moms</legend>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {PRICE_OPTIONS.map((amount) => (
                       <button key={amount} type="button" aria-pressed={form.priceDkk === amount} onClick={() => set('priceDkk', amount)} className={`rounded-lg border px-3 py-3 text-sm font-black transition-colors ${form.priceDkk === amount ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
@@ -254,6 +269,7 @@ export default function ProfessionalSignupPage() {
                       </button>
                     ))}
                   </div>
+                  <p className="mt-3 text-xs leading-relaxed text-gray-500">DKK 1.800 kræver særskilt godkendelse som del af profilgennemgangen.</p>
                 </fieldset>
                 <div>
                   <label htmlFor="professional-bio" className="mb-1 block text-sm font-semibold text-gray-700">Bio (valgfri)</label>
@@ -266,25 +282,28 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 03</p>
-                  <h2 className="mt-2 text-2xl font-black text-gray-950">Bidrag pr. session</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Ved aktiveret betaling afsættes minimum 40% og op til 90% af en gennemført sessions pris til støtte for Kræftens Bekæmpelse.</p>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Fast fordeling pr. session</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Momsen skilles først ud. Derefter fordeles hele sessionsprisen ekskl. moms efter samme model for alle professionelle.</p>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
-                  <label htmlFor="professional-contribution" className="mb-4 block text-sm font-semibold text-gray-700">Bidrag pr. betalt session: <span className="font-black text-gray-950">{form.contributionPercent}%</span></label>
-                  <input id="professional-contribution" type="range" min={CONTRIBUTION_MIN} max={CONTRIBUTION_MAX} step={5} value={form.contributionPercent} onChange={e => set('contributionPercent', Number(e.target.value))}
-                    className="w-full accent-gray-950" />
-                  <div className="mt-2 flex justify-between text-xs font-medium text-gray-400"><span>40%</span><span>90%</span></div>
+                  <p className="text-sm font-semibold text-gray-700">Fordelingsgrundlag: {formatDkk(economics.netPrice)} ekskl. moms</p>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-500">Kandidatens pris er {formatDkk(economics.candidatePrice)} inkl. moms. De tre andele nedenfor summerer altid til hele nettoprisen.</p>
                 </div>
-                <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-2">
+                <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-3">
                   <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Afsættes til støtte</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">DKK {estimatedContribution.toLocaleString('da-DK')}</p>
-                    <p className="mt-1 text-sm text-gray-500">Ved gennemført og betalt session</p>
+                    <p className="text-xs font-black uppercase text-gray-400">Naetwork · {PLATFORM_SHARE_PERCENT}%</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.platformShare)}</p>
+                    <p className="mt-1 text-sm text-gray-500">Platformens andel</p>
                   </div>
                   <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Din andel</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">DKK {estimatedProfessionalShare.toLocaleString('da-DK')}</p>
-                    <p className="mt-1 text-sm text-gray-500">Før skat og eventuelle gebyrer</p>
+                    <p className="text-xs font-black uppercase text-gray-400">Kræftens Bekæmpelse · {CONTRIBUTION_PERCENT}%</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.contribution)}</p>
+                    <p className="mt-1 text-sm text-gray-500">Afsættes efter gennemførelse</p>
+                  </div>
+                  <div className="bg-white p-5">
+                    <p className="text-xs font-black uppercase text-gray-400">Din andel · {PROFESSIONAL_SHARE_PERCENT}%</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.professionalPayout)}</p>
+                    <p className="mt-1 text-sm text-gray-500">Forventet udbetaling før skat</p>
                   </div>
                 </div>
               </div>
@@ -301,8 +320,10 @@ export default function ProfessionalSignupPage() {
                     ['Navn', form.name],
                     ['Titel', form.title],
                     ['Industri', form.industry],
-                    ['Pris', `DKK ${form.priceDkk.toLocaleString('da-DK')}/60 min`],
-                    ['Bidrag', `${form.contributionPercent}% / ca. DKK ${estimatedContribution.toLocaleString('da-DK')}`],
+                    ['Pris', `${formatDkk(form.priceDkk)} inkl. moms / 60 min`],
+                    ['Naetwork', `${PLATFORM_SHARE_PERCENT}% / ${formatDkk(economics.platformShare)}`],
+                    ['Kræftens Bekæmpelse', `${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)}`],
+                    ['Din andel', `${PROFESSIONAL_SHARE_PERCENT}% / ${formatDkk(economics.professionalPayout)} før skat`],
                     ['Fokusområder', `${form.sessionTypes.length} valgt`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">
@@ -323,7 +344,7 @@ export default function ProfessionalSignupPage() {
             <div className="mt-8 flex gap-3">
               {step > 1 && <button type="button" onClick={() => { setError(''); setStep(s => s - 1); }} className="button-secondary flex-1">Tilbage</button>}
               {step < 4
-                ? <button type="button" onClick={() => { if (validateStep(step)) setStep(s => s + 1); }} className="button-primary flex-1">Næste</button>
+                ? <button type="button" disabled={!isInteractive} onClick={() => { if (validateStep(step)) setStep(s => s + 1); }} className="button-primary flex-1 disabled:cursor-wait disabled:opacity-70">Næste</button>
                 : <button type="button" onClick={handleSubmit} disabled={loading} className="button-primary flex-1 disabled:opacity-50">{loading ? 'Opretter...' : 'Opret profil'}</button>
               }
             </div>

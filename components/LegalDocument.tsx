@@ -16,6 +16,19 @@ interface LegalDocumentProps {
   sections: LegalSection[]
 }
 
+function ContentsNav({ title, sections }: Pick<LegalDocumentProps, 'title' | 'sections'>) {
+  return (
+    <nav aria-label={`Indhold i ${title}`} className="border-t border-gray-200">
+      {sections.map((section, index) => (
+        <a key={section.id} href={`#${section.id}`} className="grid grid-cols-[28px_1fr] gap-2 border-b border-gray-200 py-3 text-xs font-bold leading-relaxed text-gray-500 transition-colors hover:text-gray-950">
+          <span className="text-gray-300">{String(index + 1).padStart(2, '0')}</span>
+          <span>{section.title.replace(/^\d+\.\s*/, '')}</span>
+        </a>
+      ))}
+    </nav>
+  )
+}
+
 export function LegalDocument({ title, intro, updated, facts, sections }: LegalDocumentProps) {
   return (
     <main className="bg-white">
@@ -42,23 +55,20 @@ export function LegalDocument({ title, intro, updated, facts, sections }: LegalD
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[82rem] gap-12 px-5 py-12 sm:px-8 md:py-20 lg:grid-cols-[240px_1fr] lg:gap-20 lg:px-12">
-        <aside className="h-fit lg:sticky lg:top-24">
+      <div className="mx-auto max-w-[82rem] px-5 py-10 sm:px-8 md:py-20 lg:grid lg:grid-cols-[240px_1fr] lg:gap-20 lg:px-12">
+        <details className="group mb-10 border-y border-gray-200 py-4 lg:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-bold text-gray-950"><span>Indhold</span><span className="relative h-4 w-4" aria-hidden="true"><span className="absolute left-0 top-1/2 h-px w-4 bg-gray-950" /><span className="absolute left-1/2 top-0 h-4 w-px bg-gray-950 transition-transform group-open:scale-y-0" /></span></summary>
+          <div className="mt-4"><ContentsNav title={title} sections={sections} /></div>
+        </details>
+        <aside className="hidden h-fit lg:sticky lg:top-24 lg:block">
           <p className="kicker mb-4">Indhold</p>
-          <nav aria-label={`Indhold i ${title}`} className="border-t border-gray-200">
-            {sections.map((section, index) => (
-              <a key={section.id} href={`#${section.id}`} className="grid grid-cols-[28px_1fr] gap-2 border-b border-gray-200 py-3 text-xs font-bold leading-relaxed text-gray-500 transition-colors hover:text-gray-950">
-                <span className="text-gray-300">{String(index + 1).padStart(2, '0')}</span>
-                <span>{section.title.replace(/^\d+\.\s*/, '')}</span>
-              </a>
-            ))}
-          </nav>
+          <ContentsNav title={title} sections={sections} />
         </aside>
 
         <div className="border-t border-gray-200">
           {sections.map((section) => (
             <section key={section.id} id={section.id} className="scroll-mt-24 border-b border-gray-200 py-8 md:py-10">
-              <h2 className="text-xl font-black text-gray-950 md:text-2xl">{section.title}</h2>
+              <h2 className="text-xl font-semibold text-gray-950 md:text-2xl">{section.title}</h2>
               <div className="mt-4 max-w-3xl space-y-4">
                 {section.body.map((paragraph) => <p key={paragraph} className="text-sm leading-7 text-gray-600">{paragraph}</p>)}
                 {section.bullets && (

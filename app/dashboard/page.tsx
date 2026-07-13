@@ -117,8 +117,8 @@ export default function DashboardPage() {
   const proCompletion = proChecklist.filter((item) => item.done).length;
 
   const candidateActions = [
-    { number: '01', title: 'Find fokus', body: 'To valg prioriterer de mest relevante profiler.', href: '/match', cta: 'Start match', accent: 'bg-cyan-300' },
-    { number: '02', title: 'Sammenlign profiler', body: 'Se erfaring, fokus, pris og minimumsbidrag.', href: '/professionals', cta: 'Se profiler', accent: 'bg-blue-300' },
+    { number: '01', title: 'Start med situationen', body: 'Fortæl, hvilken beslutning eller proces du står overfor.', href: '/start', cta: 'Start her', accent: 'bg-cyan-300' },
+    { number: '02', title: 'Se relevant erfaring', body: 'Forstå hvorfor en professionels erfaring er relevant for dit behov.', href: '/professionals', cta: 'Se profiler', accent: 'bg-blue-300' },
     { number: '03', title: 'Følg dine bookinger', body: 'Se anmodninger, bekræftelser og kommende sessioner.', href: '/profil/bookings', cta: 'Se status', accent: 'bg-lime-300' },
   ];
 
@@ -130,11 +130,11 @@ export default function DashboardPage() {
             <p className="text-xs font-black uppercase text-gray-400">Dit Naetwork</p>
             <h1 className="mt-3 text-4xl font-black leading-none text-gray-950 md:text-6xl">Hej, {displayName}.</h1>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-600 md:text-base">
-              {isProfessional ? 'Administrer din profil og svar på sessionanmodninger.' : 'Find det rette match og hold styr på dine 60-minutters sessioner.'}
+              {isProfessional ? 'Administrer din profil og svar på sessionanmodninger.' : 'Start med situationen foran dig, og hold styr på dine sessioner.'}
             </p>
           </div>
-          <Link href={isProfessional ? '/profil/professionel' : '/professionals'} className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
-            {isProfessional ? 'Rediger profil' : 'Book 60 min'} <ArrowRight size={16} aria-hidden="true" />
+          <Link href={isProfessional ? '/profil/professionel' : '/start'} className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
+            {isProfessional ? 'Rediger profil' : 'Start med din situation'} <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </section>
@@ -218,7 +218,7 @@ export default function DashboardPage() {
               <div className="border-t border-gray-300 bg-white">
                 {bookings.slice(0, 5).map((booking) => (
                   <div key={booking.id} className="grid gap-3 border-b border-gray-300 px-4 py-5 sm:grid-cols-[1fr_180px_auto] sm:items-center">
-                    <div><p className="font-black text-gray-950">{booking.counterpart_name}</p><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title || '60 min karrieresparring'}</p></div>
+                    <div><p className="font-black text-gray-950">{booking.counterpart_name}</p><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title || '60 min Career Access-session'}</p></div>
                     <div><p className="text-sm font-bold text-gray-950">{new Date(booking.starts_at).toLocaleString('da-DK', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Copenhagen' })}</p><p className="mt-1 text-xs text-gray-400">DKK {(booking.price_dkk ?? 0).toLocaleString('da-DK')}</p></div>
                     <StatusBadge status={booking.status} />
                   </div>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { FIELD_GUIDES, profileHrefForField } from '@/lib/fieldGuides';
 import type { FieldSlug } from '@/lib/fieldGuides';
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, INDUSTRIES, PRICE_MAX, PRICE_MIN, SESSION_MINUTES, formatDkk } from '@/lib/platform';
+import { CONTRIBUTION_PERCENT, INDUSTRIES, PLATFORM_SHARE_PERCENT, PRICE_MAX, PRICE_MIN, PROFESSIONAL_SHARE_PERCENT, SESSION_MINUTES, formatDkk } from '@/lib/platform';
 
 export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
   const { lang } = useLanguage();
@@ -27,8 +27,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               <Link href={profileHrefForField(slug)} className="button-primary">
                 {isDa ? 'Se relevante profiler' : 'Browse relevant profiles'}
               </Link>
-              <Link href="/match" className="button-secondary">
-                {isDa ? 'Find dit fokus' : 'Find your focus'}
+              <Link href="/start" className="button-secondary">
+                {isDa ? 'Start med din situation' : 'Start with your situation'}
               </Link>
             </div>
           </div>
@@ -37,8 +37,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
             <dl className="border-t border-white/15">
               {[
                 [`${SESSION_MINUTES} min`, isDa ? 'Fleksibelt format' : 'Flexible format'],
-                [`${formatDkk(PRICE_MIN)}-${formatDkk(PRICE_MAX).replace('DKK ', '')}`, isDa ? 'Pris før booking' : 'Price before booking'],
-                [`${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}%`, isDa ? 'Til kræftsagen' : 'To the cancer cause'],
+                [`${formatDkk(PRICE_MIN)}-${formatDkk(PRICE_MAX).replace('DKK ', '')}`, isDa ? 'Pris inkl. moms' : 'Price incl. VAT'],
+                [`${PLATFORM_SHARE_PERCENT} · ${CONTRIBUTION_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`, isDa ? 'Fast fordeling' : 'Fixed split'],
               ].map(([value, label]) => <div key={label} className="flex items-center justify-between gap-4 border-b border-white/15 py-3"><dt className="text-xs font-semibold text-white/45">{label}</dt><dd className="text-sm font-bold text-white">{value}</dd></div>)}
             </dl>
           </aside>
@@ -84,8 +84,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Bidrag' : 'Impact'}</p>
               <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
                 {isDa
-                  ? 'Minimum 40% og op til 90% af en gennemført, betalt session afsættes til støtte for Kræftens Bekæmpelse. Pris og minimumsbeløb vises før anmodningen.'
-                  : 'At least 40% and up to 90% of a completed, paid session is allocated in support of Kræftens Bekæmpelse. Price and minimum amount are shown before the request.'}
+                  ? `${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse efter en gennemført, betalt session. De øvrige ${PLATFORM_SHARE_PERCENT}% går til Naetwork og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle. De konkrete beløb vises før anmodningen.`
+                  : `${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse after a completed, paid session. The remaining ${PLATFORM_SHARE_PERCENT}% goes to Naetwork and ${PROFESSIONAL_SHARE_PERCENT}% to the professional. Exact amounts are shown before the request.`}
               </p>
             </section>
           </div>

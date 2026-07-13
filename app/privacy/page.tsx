@@ -1,17 +1,15 @@
 import type { Metadata } from 'next'
 import { LegalDocument, type LegalSection } from '@/components/LegalDocument'
+import { LEGAL_OPERATOR, LEGAL_UPDATED_DA, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Privatlivspolitik - Naetwork',
   description: 'Sådan indsamler, bruger, deler, opbevarer og sletter Naetwork personoplysninger.',
+  alternates: { canonical: '/privacy' },
 }
 
-const updated = '7. juli 2026'
-const legalName = process.env.NEXT_PUBLIC_LEGAL_NAME ?? 'Naetwork'
-const legalAddress = process.env.NEXT_PUBLIC_LEGAL_ADDRESS
-const legalRegistration = process.env.NEXT_PUBLIC_LEGAL_REGISTRATION
-const supportEmail = process.env.SUPPORT_EMAIL ?? 'kontakt@naetwork.dk'
-const controller = [legalName, legalRegistration, legalAddress].filter(Boolean).join(', ')
+const supportEmail = PUBLIC_SUPPORT_EMAIL
+const controller = LEGAL_OPERATOR
 
 const facts: Array<[string, string]> = [
   ['Dataansvarlig', controller],
@@ -35,11 +33,13 @@ const sections: LegalSection[] = [
     body: ['Vi begrænser indsamlingen til oplysninger, der er relevante for platformens konkrete funktioner.'],
     bullets: [
       'Konto: navn, e-mail, bruger-ID, rolle, loginstatus og sikkerhedsrelaterede hændelser.',
-      'Professionel profil: titel, virksomhed, bio, LinkedIn-link, brancher, fokusområder, pris, bidragsniveau, synlighed og gennemgangsstatus.',
-      'Booking: valgte parter, ønsket dato og tid, fokus, mål, eventuelt materialelink, status, pris og forventet bidrag.',
-      'Dokumentation: tidspunkt og version for accept af vilkår samt tidspunkt og version for den privatlivsinformation, der blev vist ved oprettelse.',
+      'Professionel profil: titel, virksomhed, bio, LinkedIn-link, brancher, fokusområder, pris, synlighed og gennemgangsstatus.',
+      'Booking: valgte parter, faktisk ledig tid, fokus, mål, eventuelt materialelink, status, pris, betalingsstatus og forventet bidrag.',
+      'Kvalitet og drift: ratings, frivillig feedback, hændelseslog for bookinger og dataminimerede produktmålinger.',
+      'Dokumentation: tidspunkt og version for accept af vilkår, tidspunkt og version for den privatlivsinformation, der blev vist ved oprettelse, samt ændringshistorik for et eventuelt markedsføringssamtykke.',
       'Kommunikation: kontaktformular, service-e-mails, supporthenvendelser og leveringsstatus for e-mails.',
       'Teknik: nødvendige cookies, lokal lagring, IP- og enhedsoplysninger i sikkerheds- og hostinglogs samt fejldata.',
+      'Uden de nødvendige konto- eller bookingoplysninger kan vi ikke oprette kontoen eller behandle anmodningen. Valgfrie felter kan undlades.',
     ],
   },
   {
@@ -67,7 +67,7 @@ const sections: LegalSection[] = [
     title: '5. Modtagere og databehandlere',
     body: [
       'Bookingoplysninger deles mellem den kandidat og den professionelle, der er part i bookingen. Vi deler kun det, der er nødvendigt for at planlægge og levere sessionen.',
-      'Tekniske leverandører kan behandle oplysninger efter instruks og databehandleraftale. De aktuelle kategorier omfatter database og login (Supabase), hosting og levering (Vercel) samt transaktionelle e-mails (Resend, når integrationen er aktiveret).',
+      'Tekniske leverandører kan behandle oplysninger efter instruks og relevant aftale. De aktuelle kategorier omfatter database og login (Supabase), hosting og levering (Vercel), transaktionelle e-mails (Resend, når integrationen er aktiveret) samt betaling og verificering af professionelle (Stripe, når betaling aktiveres).',
       'Oplysninger kan også udleveres, hvis lovgivning eller en gyldig myndighedsanmodning kræver det, eller hvis det er nødvendigt for at beskytte rettigheder og sikkerhed.',
     ],
   },
@@ -95,7 +95,8 @@ const sections: LegalSection[] = [
       'Bookingoplysninger uden betaling: op til 24 måneder efter den seneste aktivitet for support, tvister og dokumentation.',
       'Kontaktbeskeder: op til 12 måneder efter afsluttet henvendelse, medmindre længere opbevaring er nødvendig for en konkret sag.',
       'Sikkerheds- og driftslogs: normalt op til 90 dage, medmindre en hændelse kræver længere undersøgelse.',
-      'Samtykkedokumentation og oplysninger om gennemførte betalinger opbevares efter de lovpligtige perioder, når disse funktioner aktiveres.',
+      'Dokumentation for markedsføringssamtykke og tilbagetrækning opbevares, så længe det er nødvendigt for at dokumentere lovligheden. Oplysninger om gennemførte betalinger opbevares efter de lovpligtige perioder, når betaling aktiveres.',
+      'Materialelinks og bookingbrief slettes eller anonymiseres efter den gældende bookingperiode og kan fjernes tidligere på anmodning, medmindre en konkret tvist eller retlig pligt kræver begrænset opbevaring.',
     ],
   },
   {
@@ -103,7 +104,8 @@ const sections: LegalSection[] = [
     title: '9. Dine rettigheder',
     body: [
       'Du kan efter omstændighederne få indsigt, rettelse, sletning, begrænsning og dataportabilitet samt gøre indsigelse mod behandling baseret på legitim interesse. Du kan altid trække et samtykke tilbage.',
-      `Send din anmodning til ${supportEmail}. Vi kan bede om oplysninger, der er nødvendige for at bekræfte din identitet. Du kan klage til Datatilsynet, hvis du mener, at behandlingen er i strid med reglerne.`,
+      `Send din anmodning til ${supportEmail}. Vi kan bede om oplysninger, der er nødvendige for at bekræfte din identitet. Vi svarer uden unødig forsinkelse og som udgangspunkt senest en måned efter modtagelsen. Hvis fristen lovligt forlænges, får du besked om hvorfor.`,
+      'Du kan klage til Datatilsynet, hvis du mener, at behandlingen er i strid med reglerne. Vi anbefaler, at du først kontakter os, så vi får mulighed for at undersøge forholdet.',
     ],
     link: { href: 'https://www.datatilsynet.dk/borger/klage', label: 'Læs om klage til Datatilsynet', external: true },
   },
@@ -133,5 +135,5 @@ const sections: LegalSection[] = [
 ]
 
 export default function PrivacyPage() {
-  return <LegalDocument title="Privatlivspolitik" intro="Et præcist overblik over hvilke oplysninger vi behandler, hvorfor vi gør det, og hvilke valg du har." updated={updated} facts={facts} sections={sections} />
+  return <LegalDocument title="Privatlivspolitik" intro="Et præcist overblik over hvilke oplysninger vi behandler, hvorfor vi gør det, og hvilke valg du har." updated={LEGAL_UPDATED_DA} facts={facts} sections={sections} />
 }
