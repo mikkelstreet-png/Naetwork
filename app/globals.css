@@ -996,6 +996,8 @@ time,
   .home-price-summary > div:last-child { border-right: 0; }
   .home-price-summary span { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: rgba(255, 255, 255, 0.56); }
   .home-price-summary strong { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.8rem, 3vw, 3rem); font-weight: 500; line-height: 1; }
+  .home-price-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1.25rem; }
+  .home-price-options strong { font-size: clamp(1.05rem, 1.7vw, 1.45rem); white-space: nowrap; }
   .home-price-summary__impact { background: #a8dfbd; color: #111214; }
   .home-price-summary__impact span { color: rgba(17, 18, 20, 0.58); }
   .pricing-disclosure { margin-top: 1.25rem; font-size: 0.72rem; line-height: 1.55; color: rgba(255, 255, 255, 0.56); }

@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
 import { useLanguage } from '@/context/LanguageContext'
 import { ACCESS_PATHS, SESSION_CONCEPTS, localized } from '@/lib/brand'
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, SESSION_MINUTES } from '@/lib/platform'
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PRICE_OPTIONS, SESSION_MINUTES, formatDkk } from '@/lib/platform'
 
 export function HomeContent() {
   const { lang } = useLanguage()
@@ -163,7 +163,9 @@ export function HomeContent() {
             </div>
             <div>
               <span>{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</span>
-              <strong>DKK 600-1.800</strong>
+              <div className="home-price-options" aria-label={isDa ? 'Faste sessionspriser' : 'Fixed session prices'}>
+                {PRICE_OPTIONS.map((price) => <strong key={price}>{formatDkk(price)}</strong>)}
+              </div>
             </div>
             <div className="home-price-summary__impact">
               <span>{isDa ? 'Afsættes af pris ekskl. moms' : 'Allocated from price excl. VAT'}</span>
