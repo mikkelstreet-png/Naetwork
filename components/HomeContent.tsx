@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
+import { ScrollRevealController } from '@/components/ScrollRevealController'
 import { useLanguage } from '@/context/LanguageContext'
 import { ACCESS_PATHS, SESSION_CONCEPTS, localized } from '@/lib/brand'
 import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PRICE_OPTIONS, PROFESSIONAL_SHARE_PERCENT, SESSION_MINUTES, formatDkk } from '@/lib/platform'
@@ -42,18 +43,19 @@ export function HomeContent() {
 
   return (
     <main>
+      <ScrollRevealController />
       <AccessHero />
 
       <section className="home-section home-section--paper">
         <div className="home-shell">
-          <div className="section-heading">
+          <div className="section-heading" data-scroll-reveal>
             <p className="section-eyebrow">{isDa ? 'Hvor står du?' : 'Where are you now?'}</p>
             <h2>{isDa ? 'Start med situationen. Ikke profilen.' : 'Start with the situation. Not the profile.'}</h2>
             <p>{isDa ? 'Vælg det, du skal forstå, forbedre eller beslutte.' : 'Choose what you need to understand, improve or decide.'}</p>
           </div>
           <div className="access-path-grid">
             {ACCESS_PATHS.map((path, index) => (
-              <Link key={path.id} href={path.href} className={`access-path-card ${pathColors[index]}`}>
+              <Link key={path.id} href={path.href} className={`access-path-card ${pathColors[index]}`} data-scroll-reveal data-reveal-delay={index}>
                 <span className="access-path-card__index">0{index + 1}</span>
                 <div>
                   <p>{localized(path.label, lang)}</p>
@@ -69,14 +71,14 @@ export function HomeContent() {
 
       <section className="home-section home-section--ink">
         <div className="home-shell">
-          <div className="section-heading section-heading--light">
+          <div className="section-heading section-heading--light" data-scroll-reveal>
             <p className="section-eyebrow">{isDa ? 'Sådan matcher vi' : 'How matching works'}</p>
             <h2>{isDa ? 'Den mest relevante erfaring. Ikke den højeste titel.' : 'The most relevant experience. Not the highest title.'}</h2>
             <p>{isDa ? 'Du kan se præcis, hvorfor hver professionel passer til din situation.' : 'You can see exactly why each professional fits your situation.'}</p>
           </div>
           <div className="experience-ledger">
             {accessExamples.map(([context, evidence, value], index) => (
-              <article key={context}>
+              <article key={context} data-scroll-reveal data-reveal-delay={index}>
                 <span>0{index + 1}</span>
                 <p>{context}</p>
                 <h3>{evidence}</h3>
@@ -89,14 +91,14 @@ export function HomeContent() {
 
       <section className="home-section home-section--white">
         <div className="home-shell">
-          <div className="section-heading">
+          <div className="section-heading" data-scroll-reveal>
             <p className="section-eyebrow">{SESSION_MINUTES} {isDa ? 'minutter' : 'minutes'}</p>
             <h2>{isDa ? 'Én session. Ét konkret resultat.' : 'One session. One concrete outcome.'}</h2>
             <p>{isDa ? 'Fokus aftales før mødet, så tiden bruges på vurdering, feedback eller træning.' : 'Set the focus before the meeting, then use the time for assessment, feedback or practice.'}</p>
           </div>
           <div className="session-index">
             {featuredSessions.map((session, index) => (
-              <Link key={session.id} href={`/sessions#${session.id}`}>
+              <Link key={session.id} href={`/sessions#${session.id}`} data-scroll-reveal data-reveal-delay={index}>
                 <span className="session-index__number">0{index + 1}</span>
                 <div>
                   <h3>{localized(session.title, lang)}</h3>
@@ -107,7 +109,7 @@ export function HomeContent() {
               </Link>
             ))}
           </div>
-          <Link href="/sessions" className="button-secondary home-inline-action">
+          <Link href="/sessions" className="button-secondary home-inline-action" data-scroll-reveal>
             {isDa ? 'Se alle sessioner' : 'See all sessions'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
@@ -116,12 +118,12 @@ export function HomeContent() {
 
       <section id="pricing" className="home-section home-section--ink">
         <div className="home-shell">
-          <div className="section-heading section-heading--light">
+          <div className="section-heading section-heading--light" data-scroll-reveal>
             <p className="section-eyebrow">{isDa ? 'Pris' : 'Price'}</p>
             <h2>{isDa ? 'Vælg pris. Fordelingen er fast.' : 'Choose the price. The split is fixed.'}</h2>
             <p>{isDa ? 'Fire prisniveauer. Samme 20/30/50-model.' : 'Four price points. The same 20/30/50 split.'}</p>
           </div>
-          <div className="home-price-summary">
+          <div className="home-price-summary" data-scroll-reveal data-reveal-delay="1">
             <div>
               <span>{isDa ? 'Session' : 'Session'}</span>
               <strong>{SESSION_MINUTES} min.</strong>
@@ -137,10 +139,10 @@ export function HomeContent() {
               <strong>{PLATFORM_SHARE_PERCENT} · {CONTRIBUTION_PERCENT} · {PROFESSIONAL_SHARE_PERCENT}%</strong>
             </div>
           </div>
-          <p className="pricing-disclosure">
+          <p className="pricing-disclosure" data-scroll-reveal data-reveal-delay="2">
             {isDa ? 'Ved DKK 600 inkl. moms er fordelingsgrundlaget DKK 480 ekskl. moms: DKK 96 til Naetwork, DKK 144 til Kræftens Bekæmpelse og DKK 240 til den professionelle. Betaling er endnu ikke aktiveret.' : 'At DKK 600 incl. VAT, the distribution basis is DKK 480 excl. VAT: DKK 96 to Naetwork, DKK 144 to Kræftens Bekæmpelse and DKK 240 to the professional. Payments are not yet enabled.'}
           </p>
-          <Link href="/impact" className="access-hero__text-link home-price-link">
+          <Link href="/impact" className="access-hero__text-link home-price-link" data-scroll-reveal data-reveal-delay="3">
             {isDa ? 'Se hele regnestykket' : 'See the full calculation'}
             <ArrowRight size={15} aria-hidden="true" />
           </Link>
@@ -149,13 +151,13 @@ export function HomeContent() {
 
       <section className="home-section home-section--paper">
         <div className="home-shell faq-layout">
-          <div className="section-heading">
+          <div className="section-heading" data-scroll-reveal>
             <p className="section-eyebrow">{isDa ? 'Spørgsmål' : 'Questions'}</p>
             <h2>{isDa ? 'Før du booker.' : 'Before you book.'}</h2>
           </div>
           <div className="faq-list">
             {faqs.map(([question, answer], index) => (
-              <details key={question}>
+              <details key={question} data-scroll-reveal data-reveal-delay={index}>
                 <summary>
                   <span>0{index + 1}</span>
                   <strong>{question}</strong>
@@ -170,10 +172,10 @@ export function HomeContent() {
 
       <section className="home-final">
         <div className="home-shell">
-          <p className="section-eyebrow">{isDa ? 'Næste skridt' : 'Next step'}</p>
-          <h2>{isDa ? 'Hvad skal være klarere?' : 'What needs to be clearer?'}</h2>
-          <p>{isDa ? 'Beskriv situationen. Vi viser den mest relevante erfaring.' : 'Describe the situation. We will show the most relevant experience.'}</p>
-          <Link href="/start" className="button-primary">
+          <p className="section-eyebrow" data-scroll-reveal>{isDa ? 'Næste skridt' : 'Next step'}</p>
+          <h2 data-scroll-reveal data-reveal-delay="1">{isDa ? 'Hvad skal være klarere?' : 'What needs to be clearer?'}</h2>
+          <p data-scroll-reveal data-reveal-delay="2">{isDa ? 'Beskriv situationen. Vi viser den mest relevante erfaring.' : 'Describe the situation. We will show the most relevant experience.'}</p>
+          <Link href="/start" className="button-primary" data-scroll-reveal data-reveal-delay="3">
             {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
