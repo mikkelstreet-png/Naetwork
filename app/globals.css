@@ -1224,7 +1224,11 @@ time,
   .public-hero__spectrum { clip-path: inset(60% 0 0 0); opacity: 0.7; }
   .public-hero__veil { background: linear-gradient(180deg, rgba(9, 10, 11, 0.99) 0%, rgba(9, 10, 11, 0.95) 65%, rgba(9, 10, 11, 0.45) 100%); }
   .public-hero__inner { padding-top: 3.75rem; }
-  .public-hero h1 { font-size: clamp(2.8rem, 13vw, 3.65rem); }
+  .public-hero h1 {
+    max-width: 100%;
+    font-size: clamp(2.05rem, 10vw, 3.1rem);
+    overflow-wrap: break-word;
+  }
   .public-hero__sequence li { min-height: 4.2rem; padding: 0.65rem; font-size: 0.62rem; }
 
   .editorial-journey li { grid-template-columns: 2.4rem 1fr; gap: 0.65rem 1rem; }
