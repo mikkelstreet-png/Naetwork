@@ -138,9 +138,9 @@ test('impact split visualizes the fixed model and updates exact amounts', async 
   await page.goto('/impact')
   const split = page.locator('[data-special-effect="impact-split"]')
   await expect(split.locator('span')).toHaveCount(3)
-  await expect(split.locator('span').nth(0)).toHaveAttribute('style', /width: 20%/)
-  await expect(split.locator('span').nth(1)).toHaveAttribute('style', /width: 30%/)
-  await expect(split.locator('span').nth(2)).toHaveAttribute('style', /width: 50%/)
+  await expect(split.locator('span').nth(0)).toHaveAttribute('style', /width:\s*20%/)
+  await expect(split.locator('span').nth(1)).toHaveAttribute('style', /width:\s*30%/)
+  await expect(split.locator('span').nth(2)).toHaveAttribute('style', /width:\s*50%/)
 
   await page.getByRole('button', { name: 'DKK 1.800' }).click()
   await expect(page.locator('.impact-line__distribution')).toContainText('DKK 288')
