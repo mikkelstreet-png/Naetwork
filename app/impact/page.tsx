@@ -3,7 +3,7 @@ import { ImpactContent } from '@/components/ImpactContent';
 
 export const metadata: Metadata = {
   title: 'Pris og bidrag | Naetwork',
-  description: 'Sådan afsætter hver betalt Naetwork-session 40-90% af sessionsprisen eksklusive moms til støtte for Kræftens Bekæmpelse.',
+  description: 'Se den faste fordeling af nettoprisen: 20% til Naetwork, 30% til Kræftens Bekæmpelse og 50% til den professionelle.',
   alternates: { canonical: '/impact' },
 };
 

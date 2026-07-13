@@ -1,4 +1,4 @@
-import { normalizeContributionPercent, normalizePrice } from './platform'
+import { normalizePrice } from './platform'
 
 export interface PublicProfessionalRow {
   id: string
@@ -7,7 +7,6 @@ export interface PublicProfessionalRow {
   company: string | null
   bio: string | null
   price_dkk: number | null
-  contribution_percent: number | null
   industries: string[] | null
   focus_areas: string[] | null
   languages?: string[] | null
@@ -27,7 +26,6 @@ export interface ProfessionalCard {
   industries: string[]
   focus_areas: string[]
   price: number
-  contributionPercent: number
   bio: string
   languages: string[]
   seniority: string | null
@@ -49,7 +47,6 @@ export function mapPublicProfessionals(data: unknown): ProfessionalCard[] {
     industries: profile.industries ?? [],
     focus_areas: profile.focus_areas ?? [],
     price: normalizePrice(profile.price_dkk),
-    contributionPercent: normalizeContributionPercent(profile.contribution_percent),
     bio: profile.bio?.trim() ?? '',
     languages: profile.languages ?? ['da', 'en'],
     seniority: profile.seniority?.trim() || null,

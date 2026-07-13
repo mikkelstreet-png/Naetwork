@@ -18,12 +18,12 @@ export async function GET() {
 
     const { data: professional } = await admin
       .from('professional_profiles')
-      .select('id, title, company, bio, industries, focus_areas, languages, seniority, years_experience, price_dkk, contribution_percent, visibility, review_status, created_at, updated_at')
+      .select('id, title, company, bio, industries, focus_areas, languages, seniority, years_experience, price_dkk, visibility, review_status, created_at, updated_at')
       .eq('profile_id', profile.id)
       .maybeSingle();
     const { data: bookings } = await admin
       .from('bookings')
-      .select('id, starts_at, ends_at, status, payment_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, contribution_dkk, focus_area, goal, material_url, time_zone, meeting_mode, created_at, updated_at')
+      .select('id, starts_at, ends_at, status, payment_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, contribution_dkk, platform_fee_dkk, professional_payout_dkk, focus_area, goal, material_url, time_zone, meeting_mode, created_at, updated_at')
       .or(`candidate_profile_id.eq.${profile.id}${professional ? `,professional_profile_id.eq.${professional.id}` : ''}`)
       .order('created_at', { ascending: false });
     const { data: consentEvents } = await admin

@@ -5,21 +5,19 @@ import { ArrowRight } from 'lucide-react'
 import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import {
-  CONTRIBUTION_MAX,
-  CONTRIBUTION_MIN,
+  CONTRIBUTION_PERCENT,
+  PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
-  contributionAmount,
+  PROFESSIONAL_SHARE_PERCENT,
   formatDkk,
+  sessionEconomics,
 } from '@/lib/platform'
 
 export function LivingImpactLine() {
   const { lang } = useLanguage()
   const [price, setPrice] = useState<number>(PRICE_OPTIONS[0])
   const isDa = lang === 'da'
-  const net = Math.round(price / 1.25)
-  const minimum = contributionAmount(price, CONTRIBUTION_MIN)
-  const maximum = contributionAmount(price, CONTRIBUTION_MAX)
-  const contributionRange = `DKK ${minimum.toLocaleString('da-DK')}-${maximum.toLocaleString('da-DK')}`
+  const economics = sessionEconomics(price)
 
   return (
     <div className="impact-line" data-interactive="true">
@@ -43,22 +41,33 @@ export function LivingImpactLine() {
           <p>{formatDkk(price)}</p>
           <small>{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</small>
         </div>
-        <span className="impact-line__connector" aria-hidden="true" />
         <div>
           <span className="impact-line__index">02</span>
-          <p>{formatDkk(net)}</p>
-          <small>{isDa ? 'Pris ekskl. moms' : 'Price excl. VAT'}</small>
+          <p>{formatDkk(economics.netPrice)}</p>
+          <small>{isDa ? `Nettopris · moms ${formatDkk(economics.vat)}` : `Net price · VAT ${formatDkk(economics.vat)}`}</small>
         </div>
-        <span className="impact-line__connector" aria-hidden="true" />
+      </div>
+
+      <div className="impact-line__distribution" aria-live="polite">
+        <div>
+          <span>{PLATFORM_SHARE_PERCENT}%</span>
+          <p>{formatDkk(economics.platformShare)}</p>
+          <small>Naetwork</small>
+        </div>
         <div className="impact-line__outcome">
-          <span className="impact-line__index">03</span>
-          <p>{contributionRange}</p>
-          <small>{isDa ? `${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% afsættes` : `${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% allocated`}</small>
+          <span>{CONTRIBUTION_PERCENT}%</span>
+          <p>{formatDkk(economics.contribution)}</p>
+          <small>Kræftens Bekæmpelse</small>
+        </div>
+        <div>
+          <span>{PROFESSIONAL_SHARE_PERCENT}%</span>
+          <p>{formatDkk(economics.professionalPayout)}</p>
+          <small>{isDa ? 'Den professionelle · før skat' : 'The professional · before tax'}</small>
         </div>
       </div>
 
       <div className="impact-line__footer">
-        <p>{isDa ? 'Gælder efter en gennemført, betalt session. Naetwork er et uafhængigt initiativ.' : 'Applies after a completed, paid session. Naetwork is an independent initiative.'}</p>
+        <p>{isDa ? 'Fordelingen beregnes af nettoprisen og gælder efter en gennemført, betalt session.' : 'The split is calculated from the net price and applies after a completed, paid session.'}</p>
         <Link href="/impact">
           {isDa ? 'Se bidragsmodellen' : 'See the contribution model'}
           <ArrowRight size={14} aria-hidden="true" />

@@ -1,5 +1,5 @@
-export const LEGAL_UPDATED_ISO = '2026-07-12'
-export const LEGAL_UPDATED_DA = '12. juli 2026'
+export const LEGAL_UPDATED_ISO = '2026-07-13'
+export const LEGAL_UPDATED_DA = '13. juli 2026'
 export const TERMS_VERSION = LEGAL_UPDATED_ISO
 export const PRIVACY_VERSION = LEGAL_UPDATED_ISO
 

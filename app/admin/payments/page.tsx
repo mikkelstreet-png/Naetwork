@@ -7,7 +7,7 @@ const REQUIREMENTS = [
   'Handelsoplysninger, operatør og CVR er publiceret',
   'Checkout viser pris, afbestilling og fortrydelsesvilkår før køb',
   'Stripe, kvitteringer, refunds og webhooks er testet end to end',
-  'Regnskabs- og skattemodel for professionelle og bidrag er godkendt',
+  'Regnskabs- og skattemodel for den faste 20/30/50-fordeling er godkendt',
   'Bidrag kan dokumenteres, afstemmes og korrigeres ved refundering',
 ]
 
@@ -28,7 +28,7 @@ export default function PaymentsPage() {
         </div>
       </section>
       <section className="mt-7 grid gap-6 lg:grid-cols-2">
-        <div className="border border-gray-200 bg-white p-6"><p className="editorial-label">Valgt arkitektur</p><h2 className="mt-3 text-xl font-black text-gray-950">Stripe Connect · destination charge</h2><p className="mt-3 text-sm leading-relaxed text-gray-600">Én kandidat betaler for én professionel pr. session. Platformen er ansvarlig for Stripe-gebyrer, refunds og chargebacks; rådgiveren onboardes som connected account. Bidraget bogføres separat og må først tælle efter gennemført, betalt session.</p><dl className="mt-5 border-t border-gray-200">{[['Stripe-nøgler', configuration.configured ? 'Sat' : 'Mangler'], ['Aktivering', configuration.enabled ? 'Aktiv' : 'Låst'], ['Valuta', 'DKK'], ['Checkout', 'Hosted Checkout']].map(([label, value]) => <div key={label} className="flex justify-between gap-4 border-b border-gray-200 py-3 text-sm"><dt className="text-gray-500">{label}</dt><dd className="font-bold text-gray-950">{value}</dd></div>)}</dl></div>
+        <div className="border border-gray-200 bg-white p-6"><p className="editorial-label">Valgt arkitektur</p><h2 className="mt-3 text-xl font-black text-gray-950">Stripe Connect · destination charge</h2><p className="mt-3 text-sm leading-relaxed text-gray-600">Én kandidat betaler for én professionel pr. session. Momsen skilles ud, hvorefter nettoprisen bogføres som 20% til Naetwork, 30% til Kræftens Bekæmpelse og 50% til den professionelle. Naetwork håndterer Stripe-gebyrer, refunds og chargebacks inden for sin andel.</p><dl className="mt-5 border-t border-gray-200">{[['Stripe-nøgler', configuration.configured ? 'Sat' : 'Mangler'], ['Aktivering', configuration.enabled ? 'Aktiv' : 'Låst'], ['Valuta', 'DKK'], ['Checkout', 'Hosted Checkout']].map(([label, value]) => <div key={label} className="flex justify-between gap-4 border-b border-gray-200 py-3 text-sm"><dt className="text-gray-500">{label}</dt><dd className="font-bold text-gray-950">{value}</dd></div>)}</dl></div>
         <div className="border border-gray-200 bg-white p-6"><p className="editorial-label">Webhook-kontrakt</p><h2 className="mt-3 text-xl font-black text-gray-950">{STRIPE_REQUIRED_WEBHOOKS.length} hændelser</h2><div className="mt-5 border-t border-gray-200">{STRIPE_REQUIRED_WEBHOOKS.map((event) => <div key={event} className="border-b border-gray-200 py-2.5 font-mono text-xs text-gray-600">{event}</div>)}</div></div>
       </section>
     </>

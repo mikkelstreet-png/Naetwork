@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import BookingDrawer from '@/components/BookingDrawer'
 import { CheckCircle2, ChevronDown, RefreshCw, Search } from 'lucide-react'
-import { contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
+import { CONTRIBUTION_PERCENT, contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
 import { professionalBestFor, professionalInitials, professionalPrimaryOutput } from '@/lib/professionalPresentation'
 
@@ -115,7 +115,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
-    impact: isDa ? 'Min. 40% af pris ekskl. moms afsættes' : 'Min. 40% of price excl. VAT is allocated',
+    impact: isDa ? '30% af nettoprisen går til kræftsagen' : '30% of the net price supports the cancer cause',
     emptyTitle: isDa ? 'De første profiler er på vej' : 'The first profiles are on their way',
     emptyBody: isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.',
     errorTitle: isDa ? 'Vi kunne ikke hente profilerne' : 'We could not load the profiles',
@@ -167,7 +167,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               {[
                 ['60 min', isDa ? 'Format' : 'Format'],
                 ['4', isDa ? 'Prisvalg' : 'Price points'],
-                ['40-90%', isDa ? 'Bidragsvalg' : 'Contribution'],
+                ['20 · 30 · 50%', isDa ? 'Fast fordeling' : 'Fixed split'],
               ].map(([value, label]) => (
                 <div key={label} className="border-r border-white/15 py-3 last:border-r-0 md:flex md:items-center md:justify-between md:border-b md:border-r-0 md:py-2.5">
                   <dd className="font-['Space_Grotesk'] text-sm font-semibold text-white md:text-base">{value}</dd>
@@ -256,7 +256,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         {!loadError && <div className="mb-4 flex items-center justify-between gap-3 md:mb-7">
           <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser' : 'Loading') : loadError ? (isDa ? 'Midlertidigt utilgængelig' : 'Temporarily unavailable') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'profil' : 'profiler') : (filtered.length === 1 ? 'profile' : 'profiles')}`}</p>
           <p className="shrink-0 text-right text-xs font-bold text-gray-400">
-            <span className="sm:hidden">{isDa ? '40%+ ekskl. moms' : '40%+ excl. VAT'}</span>
+            <span className="sm:hidden">{isDa ? '30% til kræftsagen' : '30% to the cancer cause'}</span>
             <span className="hidden sm:inline">{t.impact}</span>
           </p>
         </div>}
@@ -347,7 +347,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 <div className="flex items-end justify-between gap-4 border-t border-gray-100 pt-4 md:block md:border-0 md:pt-0">
                   <p className="text-lg font-black text-gray-950">DKK {pro.price.toLocaleString('da-DK')}</p>
                   <p className="mt-0.5 text-[10px] font-semibold uppercase text-gray-400">{isDa ? 'Inkl. moms · 60 min' : 'Incl. VAT · 60 min'}</p>
-                  <p className="mt-1 text-xs font-medium text-gray-400">{isDa ? `${pro.contributionPercent}% / DKK ${contributionAmount(pro.price, pro.contributionPercent).toLocaleString('da-DK')} afsættes` : `${pro.contributionPercent}% / DKK ${contributionAmount(pro.price, pro.contributionPercent).toLocaleString('da-DK')} allocated`}</p>
+                  <p className="mt-1 text-xs font-medium text-gray-400">{isDa ? `${CONTRIBUTION_PERCENT}% / DKK ${contributionAmount(pro.price).toLocaleString('da-DK')} til kræftsagen` : `${CONTRIBUTION_PERCENT}% / DKK ${contributionAmount(pro.price).toLocaleString('da-DK')} to the cancer cause`}</p>
                   <p className="mt-2 text-xs font-bold text-gray-600">{pro.nextAvailableAt ? (isDa ? `Næste tid ${new Date(pro.nextAvailableAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', timeZone: 'Europe/Copenhagen' })}` : `Next time ${new Date(pro.nextAvailableAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Copenhagen' })}`) : (isDa ? 'Ingen åbne tider' : 'No open times')}</p>
                 </div>
 

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { CalendarX2, Check, LockKeyhole, RefreshCw, X } from 'lucide-react'
-import { BOOKING_FOCUS_AREAS, contributionAmount, focusLabel, formatDkk } from '@/lib/platform'
+import { BOOKING_FOCUS_AREAS, CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT, focusLabel, formatDkk, sessionEconomics } from '@/lib/platform'
 import { SESSION_TIME_ZONE } from '@/lib/dateTime'
 
 interface Professional {
@@ -13,7 +13,6 @@ interface Professional {
   title: string
   company: string
   price: number
-  contributionPercent: number
 }
 
 interface BookingDrawerProps {
@@ -51,7 +50,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const [notificationSent, setNotificationSent] = useState(true)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  const minimumContribution = contributionAmount(professional.price, professional.contributionPercent)
+  const economics = sessionEconomics(professional.price)
   const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB'
   const slotsByDay = slots.reduce<Record<string, AvailabilitySlot[]>>((groups, slot) => {
     const key = new Intl.DateTimeFormat('sv-SE', { timeZone: SESSION_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(slot.starts_at))
@@ -132,10 +131,10 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     step2Title: locale === 'da' ? 'Brief til sessionen' : 'Session brief',
     duration: '60 min',
     price: `${formatDkk(professional.price)} ${locale === 'da' ? 'inkl. moms' : 'incl. VAT'} / 60 min`,
-    impactLabel: locale === 'da' ? 'Bidrag' : 'Contribution',
+    impactLabel: locale === 'da' ? 'Fast fordeling' : 'Fixed split',
     impactValue: locale === 'da'
-      ? `${professional.contributionPercent}% / ${formatDkk(minimumContribution)} af prisen ekskl. moms afsættes til støtte for Kræftens Bekæmpelse`
-      : `${professional.contributionPercent}% / ${formatDkk(minimumContribution)} of the price excl. VAT is allocated in support of Kræftens Bekæmpelse`,
+      ? `${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)} Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% professionel`
+      : `${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)} Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% professional`,
     focusLabel: locale === 'da' ? 'Hvad skal sessionen handle om?' : 'What should the session focus on?',
     goalLabel: locale === 'da' ? 'Hvad vil du gerne opnå?' : 'What would you like to achieve?',
     goalPlaceholder: locale === 'da'

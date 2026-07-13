@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { MemberNav } from '@/components/MemberNav';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useLanguage } from '@/context/LanguageContext';
-import { focusLabel } from '@/lib/platform';
+import { CONTRIBUTION_PERCENT, focusLabel } from '@/lib/platform';
 
 interface Booking {
   id: string;
@@ -14,7 +14,6 @@ interface Booking {
   ends_at: string;
   status: string;
   price_dkk: number | null;
-  contribution_percent: number | null;
   contribution_dkk: number | null;
   professional_payout_dkk: number | null;
   payment_status: string;
@@ -197,7 +196,7 @@ export default function BookingsPage() {
                 <div>
                   <p className="text-sm font-black text-gray-950">DKK {(booking.price_dkk ?? 0).toLocaleString('da-DK')}</p>
                   <p className="mt-1 text-xs text-gray-400">{isDa ? 'Inkl. moms · betaling ikke aktiv' : 'Incl. VAT · payment not active'}</p>
-                  {booking.viewer_role === 'candidate' && booking.contribution_dkk != null && <p className="mt-1 text-xs font-semibold text-gray-600">{isDa ? `Bidrag: DKK ${booking.contribution_dkk.toLocaleString('da-DK')} (${booking.contribution_percent}%)` : `Contribution: DKK ${booking.contribution_dkk.toLocaleString('da-DK')} (${booking.contribution_percent}%)`}</p>}
+                  {booking.viewer_role === 'candidate' && booking.contribution_dkk != null && <p className="mt-1 text-xs font-semibold text-gray-600">{isDa ? `Kræftens Bekæmpelse: DKK ${booking.contribution_dkk.toLocaleString('da-DK')} (${CONTRIBUTION_PERCENT}%)` : `Kræftens Bekæmpelse: DKK ${booking.contribution_dkk.toLocaleString('da-DK')} (${CONTRIBUTION_PERCENT}%)`}</p>}
                   {booking.viewer_role === 'professional' && booking.professional_payout_dkk != null && <p className="mt-1 text-xs font-semibold text-gray-600">{isDa ? `Forventet udbetaling: DKK ${booking.professional_payout_dkk.toLocaleString('da-DK')}` : `Expected payout: DKK ${booking.professional_payout_dkk.toLocaleString('da-DK')}`}</p>}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 lg:justify-end">

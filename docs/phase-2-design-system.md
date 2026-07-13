@@ -55,7 +55,7 @@ Public pages use ledger rows, restrained rules and asymmetric headings instead o
 
 ### Living Impact Line
 
-`LivingImpactLine` connects the selected VAT-inclusive price to the VAT-exclusive basis and the exact 40-90% contribution range. It uses no fabricated platform totals.
+`LivingImpactLine` connects the selected VAT-inclusive price to the VAT-exclusive basis and the fixed 20/30/50 split. It shows the exact Naetwork, Kræftens Bekæmpelse and professional amounts without fabricated platform totals.
 
 ### Navigation
 

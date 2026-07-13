@@ -55,7 +55,7 @@ export default function LoginPage() {
             {[
               ['60 min', 'Fast format'],
               ['DKK 600+', 'Tydelige priser'],
-              ['40%+', 'Til kræftsagen'],
+              ['30%', 'Til kræftsagen'],
             ].map(([value, label]) => (
               <div key={label} className="border-r border-white/20 py-4 pr-3 last:border-r-0 last:pl-3 sm:px-4 sm:first:pl-0">
                 <p className="text-lg font-bold text-white">{value}</p>

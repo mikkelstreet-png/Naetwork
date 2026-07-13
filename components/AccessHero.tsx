@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { BRAND_COPY } from '@/lib/brand'
+import { CONTRIBUTION_PERCENT } from '@/lib/platform'
 
 export function AccessHero() {
   const { lang } = useLanguage()
@@ -42,7 +43,7 @@ export function AccessHero() {
           <ul className="access-hero__facts" aria-label={isDa ? 'Praktisk information' : 'Practical information'}>
             <li>{isDa ? '60 minutter' : '60 minutes'}</li>
             <li>{isDa ? 'Fra DKK 600 inkl. moms' : 'From DKK 600 incl. VAT'}</li>
-            <li>{isDa ? '40-90% af prisen ekskl. moms afsættes til støtte for Kræftens Bekæmpelse' : '40-90% of the price excl. VAT is allocated in support of Kræftens Bekæmpelse'}</li>
+            <li>{isDa ? `${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse` : `${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse`}</li>
           </ul>
         </div>
       </div>

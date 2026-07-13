@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
 import {
-  CONTRIBUTION_OPTIONS,
+  CONTRIBUTION_PERCENT,
   FOCUS_AREAS,
   INDUSTRIES,
+  PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
+  PROFESSIONAL_SHARE_PERCENT,
   formatDkk,
   normalizeLinkedInUrl,
   sessionEconomics,
@@ -16,7 +18,7 @@ import {
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
 import { accountErrorMessage } from '@/lib/authErrors';
 
-const STEP_LABELS = ['Profil', 'Session', 'Bidrag', 'Bekræft'];
+const STEP_LABELS = ['Profil', 'Session', 'Fordeling', 'Bekræft'];
 
 export default function ProfessionalSignupPage() {
   const [step, setStep] = useState(1);
@@ -27,7 +29,6 @@ export default function ProfessionalSignupPage() {
     title: '', company: '', industry: '',
     bio: '', linkedin: '',
     sessionTypes: [] as string[], priceDkk: 1200,
-    contributionPercent: 40,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ export default function ProfessionalSignupPage() {
     setIsInteractive(true);
   }, []);
 
-  const economics = sessionEconomics(form.priceDkk, form.contributionPercent);
+  const economics = sessionEconomics(form.priceDkk);
   const set = (key: string, value: unknown) => setForm(f => ({ ...f, [key]: value }));
   const toggleSessionType = (t: string) =>
     set('sessionTypes', form.sessionTypes.includes(t) ? form.sessionTypes.filter(x => x !== t) : [...form.sessionTypes, t]);
@@ -81,7 +82,6 @@ export default function ProfessionalSignupPage() {
       focus_areas: form.sessionTypes,
       price_dkk: form.priceDkk,
       linkedin_url: normalizeLinkedInUrl(form.linkedin),
-      contribution_percent: form.contributionPercent,
       review_status: 'pending',
       visibility: 'hidden',
     }, { onConflict: 'profile_id' });
@@ -117,7 +117,6 @@ export default function ProfessionalSignupPage() {
           sessionTypes: form.sessionTypes,
           priceDkk: form.priceDkk,
           donatesToCharity: true,
-          contributionPercent: form.contributionPercent,
           termsAcceptedAt: new Date().toISOString(),
           termsVersion: TERMS_VERSION,
           privacyNoticedAt: new Date().toISOString(),
@@ -178,7 +177,7 @@ export default function ProfessionalSignupPage() {
               <p className="mt-1 text-[11px] text-gray-500">DKK</p>
             </div>
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-lg font-black">40-90%</p>
+              <p className="text-lg font-black">30%</p>
               <p className="mt-1 text-[11px] text-gray-500">bidrag</p>
             </div>
           </div>
@@ -283,35 +282,28 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 03</p>
-                  <h2 className="mt-2 text-2xl font-black text-gray-950">Bidrag pr. session</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Vælg den faste andel af sessionsprisen ekskl. moms, der afsættes til støtte for Kræftens Bekæmpelse efter en gennemført og betalt session.</p>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Fast fordeling pr. session</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Momsen skilles først ud. Derefter fordeles hele sessionsprisen ekskl. moms efter samme model for alle professionelle.</p>
                 </div>
-                <fieldset className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
-                  <legend className="px-1 text-sm font-semibold text-gray-700">Bidragsniveau</legend>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {CONTRIBUTION_OPTIONS.map((percentage) => (
-                      <button key={percentage} type="button" aria-pressed={form.contributionPercent === percentage} onClick={() => set('contributionPercent', percentage)} className={`rounded-lg border px-3 py-3 text-sm font-black transition-colors ${form.contributionPercent === percentage ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
-                        {percentage}%
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-3 text-xs leading-relaxed text-gray-500">Procenten beregnes af prisen ekskl. moms. Det konkrete beløb vises altid for kandidaten før booking.</p>
-                </fieldset>
+                <div className="rounded-lg border border-gray-200 bg-[#f7f7f4] p-5">
+                  <p className="text-sm font-semibold text-gray-700">Fordelingsgrundlag: {formatDkk(economics.netPrice)} ekskl. moms</p>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-500">Kandidatens pris er {formatDkk(economics.candidatePrice)} inkl. moms. De tre andele nedenfor summerer altid til hele nettoprisen.</p>
+                </div>
                 <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-3">
                   <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Afsættes til støtte</p>
+                    <p className="text-xs font-black uppercase text-gray-400">Naetwork · {PLATFORM_SHARE_PERCENT}%</p>
+                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.platformShare)}</p>
+                    <p className="mt-1 text-sm text-gray-500">Platformens andel</p>
+                  </div>
+                  <div className="bg-white p-5">
+                    <p className="text-xs font-black uppercase text-gray-400">Kræftens Bekæmpelse · {CONTRIBUTION_PERCENT}%</p>
                     <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.contribution)}</p>
-                    <p className="mt-1 text-sm text-gray-500">{economics.contributionPercent}% af pris ekskl. moms</p>
+                    <p className="mt-1 text-sm text-gray-500">Afsættes efter gennemførelse</p>
                   </div>
                   <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Platform og betaling</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.platformFee)}</p>
-                    <p className="mt-1 text-sm text-gray-500">{economics.platformAbsorbsRounding ? 'Naetwork absorberer afrundingsforskellen' : 'Fast gebyr pr. gennemført session'}</p>
-                  </div>
-                  <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Forventet udbetaling</p>
+                    <p className="text-xs font-black uppercase text-gray-400">Din andel · {PROFESSIONAL_SHARE_PERCENT}%</p>
                     <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.professionalPayout)}</p>
-                    <p className="mt-1 text-sm text-gray-500">Efter momsgrundlag, bidrag og gebyr; før skat</p>
+                    <p className="mt-1 text-sm text-gray-500">Forventet udbetaling før skat</p>
                   </div>
                 </div>
               </div>
@@ -329,8 +321,9 @@ export default function ProfessionalSignupPage() {
                     ['Titel', form.title],
                     ['Industri', form.industry],
                     ['Pris', `${formatDkk(form.priceDkk)} inkl. moms / 60 min`],
-                    ['Bidrag', `${form.contributionPercent}% / ${formatDkk(economics.contribution)} af pris ekskl. moms`],
-                    ['Forventet udbetaling', `${formatDkk(economics.professionalPayout)} før skat`],
+                    ['Naetwork', `${PLATFORM_SHARE_PERCENT}% / ${formatDkk(economics.platformShare)}`],
+                    ['Kræftens Bekæmpelse', `${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)}`],
+                    ['Din andel', `${PROFESSIONAL_SHARE_PERCENT}% / ${formatDkk(economics.professionalPayout)} før skat`],
                     ['Fokusområder', `${form.sessionTypes.length} valgt`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">

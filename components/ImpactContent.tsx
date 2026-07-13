@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import { LivingImpactLine } from '@/components/LivingImpactLine'
 import { PublicPageHero } from '@/components/PublicPageHero'
 import { useLanguage } from '@/context/LanguageContext'
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PLATFORM_FEE_DKK } from '@/lib/platform'
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT } from '@/lib/platform'
 
 export function ImpactContent() {
   const { lang } = useLanguage()
@@ -25,13 +25,13 @@ export function ImpactContent() {
 
   const clarity = isDa
     ? [
-        ['Grundlaget', 'Procenten beregnes af sessionsprisen eksklusive moms. Kandidatens samlede pris inklusive moms ændres ikke.'],
+        ['Grundlaget', `Momsen skilles først ud. Derefter går ${PLATFORM_SHARE_PERCENT}% af nettoprisen til Naetwork, ${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle.`],
         ['Tidspunktet', 'Kun en gennemført og betalt session udløser et bidrag. Aflyste, refunderede eller ikke-betalte sessioner tæller ikke.'],
         ['Dokumentationen', 'Det konkrete beløb skal fremgå før booking og efter gennemførelse. Offentlige impacttal må kun bygge på dokumenterede betalinger.'],
         ['Relationen', 'Naetwork er et uafhængigt initiativ og ikke officielt tilknyttet Kræftens Bekæmpelse, medmindre andet fremgår eksplicit.'],
       ]
     : [
-        ['The basis', 'The percentage is calculated from the session price excluding VAT. The candidate total including VAT does not change.'],
+        ['The basis', `VAT is separated first. Then ${PLATFORM_SHARE_PERCENT}% of the net price goes to Naetwork, ${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional.`],
         ['The timing', 'Only a completed and paid session triggers a contribution. Cancelled, refunded or unpaid sessions do not count.'],
         ['The documentation', 'The exact amount must be shown before booking and after completion. Public impact figures must rely on documented payments.'],
         ['The relationship', 'Naetwork is independent and not officially affiliated with Kræftens Bekæmpelse unless explicitly stated otherwise.'],
@@ -43,8 +43,8 @@ export function ImpactContent() {
         eyebrow={isDa ? 'Pris og bidrag' : 'Price and contribution'}
         title={isDa ? 'Karrieresparring, der også skaber et konkret bidrag.' : 'Career insight that also creates a concrete contribution.'}
         body={isDa
-          ? `Den professionelle vælger at afsætte ${CONTRIBUTION_MIN}%, 60%, 80% eller ${CONTRIBUTION_MAX}% af sessionsprisen eksklusive moms. Beløbet skal altid være synligt før booking.`
-          : `The professional allocates ${CONTRIBUTION_MIN}%, 60%, 80% or ${CONTRIBUTION_MAX}% of the session price excluding VAT. The amount must always be visible before booking.`}
+          ? `Hver nettopris fordeles på samme måde: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle.`
+          : `Every net price has the same split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional.`}
         action={{ href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa ? ['Indsigt', 'Erfaring', 'Bidrag'] : ['Insight', 'Experience', 'Contribution']}
       />
@@ -54,7 +54,7 @@ export function ImpactContent() {
           <div className="section-heading section-heading--light">
             <p className="section-eyebrow">{isDa ? 'Regnestykket' : 'The calculation'}</p>
             <h2>{isDa ? 'Det præcise beløb. Ikke en vag formulering.' : 'The exact amount, not a vague statement.'}</h2>
-            <p>{isDa ? 'Vælg en sessionspris og se spændet mellem det laveste og højeste bidragsniveau.' : 'Choose a session price and see the range between the lowest and highest contribution level.'}</p>
+            <p>{isDa ? 'Vælg en sessionspris og se moms, nettopris og alle tre andele i kroner.' : 'Choose a session price and see VAT, net price and all three shares in kroner.'}</p>
           </div>
           <LivingImpactLine />
         </div>
@@ -84,7 +84,7 @@ export function ImpactContent() {
           <div className="section-heading">
             <p className="section-eyebrow">{isDa ? 'Transparens' : 'Transparency'}</p>
             <h2>{isDa ? 'Fire ting, der altid skal være tydelige.' : 'Four things that must always be clear.'}</h2>
-            <p>{isDa ? `Naetworks platform- og betalingsgebyr er DKK ${PLATFORM_FEE_DKK} pr. gennemført session og ændrer ikke kandidatens viste totalpris.` : `Naetwork's platform and payment fee is DKK ${PLATFORM_FEE_DKK} per completed session and does not change the candidate total shown.`}</p>
+            <p>{isDa ? 'Fordelingen er fast og ændrer ikke kandidatens viste totalpris inklusive moms.' : 'The split is fixed and does not change the candidate total including VAT.'}</p>
           </div>
           <div className="situation-index">
             {clarity.map(([title, body], index) => (

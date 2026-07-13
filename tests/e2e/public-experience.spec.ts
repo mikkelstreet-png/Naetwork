@@ -100,7 +100,9 @@ test('core public actions remain clear', async ({ page }) => {
   await expect(page.locator('#home').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
-  await expect(page.locator('#pricing')).toContainText('DKK 192')
+  await expect(page.locator('#pricing')).toContainText('DKK 96')
+  await expect(page.locator('#pricing')).toContainText('DKK 144')
+  await expect(page.locator('#pricing')).toContainText('DKK 240')
   await expect(page.locator('#pricing')).toContainText(/ekskl\. moms|excl\. VAT/i)
   await expect(page.getByRole('heading', { name: /Det vigtigste, før du beslutter dig|What matters before you decide/i })).toBeVisible()
   await page.goto('/start')
@@ -208,7 +210,7 @@ test('account creation distinguishes terms acceptance from privacy notice', asyn
 test('legal documents expose the current policy date', async ({ page }) => {
   for (const route of ['/terms', '/privacy', '/cookies']) {
     await page.goto(route)
-    await expect(page.getByText('Senest opdateret 12. juli 2026', { exact: true })).toBeVisible()
+    await expect(page.getByText('Senest opdateret 13. juli 2026', { exact: true })).toBeVisible()
   }
 })
 
@@ -231,12 +233,12 @@ test('professional application keeps pricing and review expectations concrete', 
   }
   await page.getByRole('button', { name: 'DKK 600' }).click()
   await page.getByRole('button', { name: 'Næste' }).click()
-  for (const percentage of ['40%', '60%', '80%', '90%']) {
-    await expect(page.getByRole('button', { name: percentage })).toBeVisible()
-  }
-  await page.getByRole('button', { name: '80%' }).click()
-  await expect(page.getByText(/Procenten beregnes af prisen ekskl\. moms/i)).toBeVisible()
-  await expect(page.getByText('DKK 384', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Fast fordeling pr. session' })).toBeVisible()
+  await expect(page.getByText(/De tre andele nedenfor summerer altid til hele nettoprisen/i)).toBeVisible()
+  await expect(page.getByText('DKK 96', { exact: true })).toBeVisible()
+  await expect(page.getByText('DKK 144', { exact: true })).toBeVisible()
+  await expect(page.getByText('DKK 240', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: /40%|60%|80%|90%/ })).toHaveCount(0)
   await page.getByRole('button', { name: 'Næste' }).click()
   await expect(page.getByText(/accepterer Naetworks vilkår og bekræfter/i)).toBeVisible()
 })

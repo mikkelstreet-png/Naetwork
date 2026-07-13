@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { isBilingualPublicRoute, isFocusedAppRoute } from '@/lib/navigation';
 import { LEGAL_OPERATOR, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal';
 import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT } from '@/lib/platform';
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -67,7 +68,7 @@ export function Footer() {
               {brand.oneSentence}
             </p>
             <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/60">
-              {isDa ? 'Minimum 40% af sessionsprisen eksklusive moms afsættes efter en gennemført, betalt session.' : 'At least 40% of the session price excluding VAT is allocated after a completed, paid session.'}
+              {isDa ? `Fast fordeling af nettoprisen: ${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% den professionelle.` : `Fixed split of the net price: ${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% the professional.`}
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/start" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">

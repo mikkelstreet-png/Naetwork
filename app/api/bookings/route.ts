@@ -133,7 +133,7 @@ export async function POST(request: Request) {
 
     const { data: professional, error: professionalError } = await admin
       .from('professional_profiles')
-      .select('id, profile_id, title, company, price_dkk, contribution_percent, visibility, review_status')
+      .select('id, profile_id, title, company, price_dkk, visibility, review_status')
       .eq('id', professionalId)
       .eq('visibility', 'published')
       .eq('review_status', 'approved')
@@ -196,7 +196,7 @@ export async function POST(request: Request) {
       material ? `Materiale/link: ${material}` : null,
     ].filter(Boolean).join('\n');
 
-    const economics = sessionEconomics(professional.price_dkk, professional.contribution_percent);
+    const economics = sessionEconomics(professional.price_dkk);
 
     const { data: booking, error: bookingError } = await admin
       .from('bookings')
@@ -209,9 +209,8 @@ export async function POST(request: Request) {
         price_dkk: economics.candidatePrice,
         price_ex_vat_dkk: economics.netPrice,
         vat_dkk: economics.vat,
-        contribution_percent: economics.contributionPercent,
         contribution_dkk: economics.contribution,
-        platform_fee_dkk: economics.platformFee,
+        platform_fee_dkk: economics.platformShare,
         professional_payout_dkk: economics.professionalPayout,
         focus_area: focus,
         goal,
@@ -254,7 +253,9 @@ export async function POST(request: Request) {
           { label: 'Ønsket tidspunkt', value: formattedDate },
           { label: 'Fokus', value: selectedFocusLabel },
           { label: 'Pris inkl. moms', value: `DKK ${economics.candidatePrice.toLocaleString('da-DK')}` },
-          { label: 'Bidrag', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}% af pris ekskl. moms)` },
+          { label: 'Naetwork', value: `DKK ${economics.platformShare.toLocaleString('da-DK')} (${economics.platformSharePercent}% af nettoprisen)` },
+          { label: 'Kræftens Bekæmpelse', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}% af nettoprisen)` },
+          { label: 'Den professionelle', value: `DKK ${economics.professionalPayout.toLocaleString('da-DK')} (${economics.professionalSharePercent}% af nettoprisen)` },
         ],
         note: 'Betaling er ikke aktiveret endnu, og der trækkes ikke noget beløb ved bookinganmodningen.',
         cta: { label: 'Se mine bookinger', href: appUrl('/profil/bookings') },
@@ -268,6 +269,7 @@ export async function POST(request: Request) {
           { label: 'Ønsket tidspunkt', value: formattedDate },
           { label: 'Fokus', value: selectedFocusLabel },
           { label: 'Sessionpris inkl. moms', value: `DKK ${economics.candidatePrice.toLocaleString('da-DK')}` },
+          { label: 'Kræftens Bekæmpelse', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}%)` },
           { label: 'Forventet udbetaling', value: `DKK ${economics.professionalPayout.toLocaleString('da-DK')} før skat` },
         ],
         note: goal || 'Kandidaten har ikke tilføjet et ekstra mål.',

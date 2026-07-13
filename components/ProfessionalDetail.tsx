@@ -6,7 +6,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import Link from 'next/link'
 import BookingDrawer from '@/components/BookingDrawer'
 import { CheckCircle2, RefreshCw } from 'lucide-react'
-import { contributionAmount, focusLabel, industryAccent } from '@/lib/platform'
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT, contributionAmount, focusLabel, industryAccent } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
 import { professionalBestFor, professionalInitials, professionalPrimaryOutput } from '@/lib/professionalPresentation'
 
@@ -150,7 +150,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
     </main>
   )
 
-  const minimumImpact = contributionAmount(professional.price, professional.contributionPercent)
+  const contribution = contributionAmount(professional.price)
   const focusAreas = professional.focus_areas ?? []
   const bestFit = professionalBestFor(professional, isDa)
   const primaryOutput = professionalPrimaryOutput(professional, isDa)
@@ -161,7 +161,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
     focusAreas: isDa ? 'Fokusområder' : 'Focus areas',
     bookCta: isDa ? 'Anmod om session' : 'Request a session',
     session: isDa ? '60 min 1:1 session' : '60 min 1:1 session',
-    briefing: isDa ? `Du vælger selv fokus. Efter en gennemført og betalt session afsættes ${professional.contributionPercent}% / DKK ${minimumImpact} af prisen ekskl. moms til støtte for Kræftens Bekæmpelse.` : `You choose the focus. After a completed and paid session, ${professional.contributionPercent}% / DKK ${minimumImpact} of the price excl. VAT is allocated in support of Kræftens Bekæmpelse.`,
+    briefing: isDa ? `Du vælger selv fokus. Nettoprisen fordeles fast: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% / DKK ${contribution} til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle.` : `You choose the focus. The net price has a fixed split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% / DKK ${contribution} to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional.`,
     bestFor: isDa ? 'Bedst til' : 'Best for',
     sessionBrief: isDa ? 'Brief til sessionen' : 'Session brief',
     sessionBriefBody: isDa
@@ -175,7 +175,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
   const facts = [
     { label: isDa ? 'Format' : 'Format', value: '60 min' },
     { label: isDa ? 'Pris inkl. moms' : 'Price incl. VAT', value: `DKK ${professional.price}` },
-    { label: t.impact, value: `${professional.contributionPercent}% / DKK ${minimumImpact}` },
+    { label: t.impact, value: `${CONTRIBUTION_PERCENT}% / DKK ${contribution}` },
     { label: isDa ? 'Næste ledige tid' : 'Next available', value: professional.nextAvailableAt ? new Date(professional.nextAvailableAt).toLocaleString(isDa ? 'da-DK' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' }) : (isDa ? 'Ingen åbne tider' : 'No open times') },
     { label: isDa ? 'Svarfrist' : 'Response window', value: isDa ? `Op til ${professional.responseTimeHours} timer` : `Up to ${professional.responseTimeHours} hours` },
     { label: t.bestFor, value: bestFit },
@@ -295,7 +295,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-black text-gray-950">DKK {professional.price} {isDa ? 'inkl. moms' : 'incl. VAT'} · 60 min</p>
-              <p className="truncate text-[11px] font-semibold text-gray-500">{isDa ? `DKK ${minimumImpact} afsættes ved betaling` : `DKK ${minimumImpact} allocated when paid`}</p>
+              <p className="truncate text-[11px] font-semibold text-gray-500">{isDa ? `DKK ${contribution} til Kræftens Bekæmpelse` : `DKK ${contribution} to Kræftens Bekæmpelse`}</p>
             </div>
             <button type="button" onClick={() => setDrawerOpen(true)} className="button-primary min-h-11 shrink-0 px-5 py-2.5">
               {t.bookCta}

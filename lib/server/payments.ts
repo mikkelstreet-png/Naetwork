@@ -21,7 +21,6 @@ export interface CheckoutContract {
   candidateEmail: string
   professionalStripeAccountId: string
   priceDkk: number
-  contributionPercent: number
 }
 
 export function paymentConfiguration() {
@@ -41,12 +40,12 @@ export function paymentConfiguration() {
 }
 
 export function checkoutAmounts(contract: CheckoutContract) {
-  const economics = sessionEconomics(contract.priceDkk, contract.contributionPercent)
+  const economics = sessionEconomics(contract.priceDkk)
   return {
     amount: economics.candidatePrice * 100,
     currency: 'dkk' as const,
     professionalTransferAmount: economics.professionalPayout * 100,
-    platformAmount: economics.platformFee * 100,
+    platformAmount: economics.platformShare * 100,
     contributionAmount: economics.contribution * 100,
     vatAmount: economics.vat * 100,
   }

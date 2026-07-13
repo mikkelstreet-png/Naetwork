@@ -33,7 +33,7 @@ const sections: LegalSection[] = [
     body: ['Vi begrænser indsamlingen til oplysninger, der er relevante for platformens konkrete funktioner.'],
     bullets: [
       'Konto: navn, e-mail, bruger-ID, rolle, loginstatus og sikkerhedsrelaterede hændelser.',
-      'Professionel profil: titel, virksomhed, bio, LinkedIn-link, brancher, fokusområder, pris, bidragsniveau, synlighed og gennemgangsstatus.',
+      'Professionel profil: titel, virksomhed, bio, LinkedIn-link, brancher, fokusområder, pris, synlighed og gennemgangsstatus.',
       'Booking: valgte parter, faktisk ledig tid, fokus, mål, eventuelt materialelink, status, pris, betalingsstatus og forventet bidrag.',
       'Kvalitet og drift: ratings, frivillig feedback, hændelseslog for bookinger og dataminimerede produktmålinger.',
       'Dokumentation: tidspunkt og version for accept af vilkår, tidspunkt og version for den privatlivsinformation, der blev vist ved oprettelse, samt ændringshistorik for et eventuelt markedsføringssamtykke.',

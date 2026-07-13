@@ -365,7 +365,7 @@ time,
 
   .impact-line__equation {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 5rem minmax(0, 1fr) 5rem minmax(0, 1.25fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
   }
 
@@ -375,6 +375,10 @@ time,
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+  }
+
+  .impact-line__equation > div:first-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
   }
 
   .impact-line__index {
@@ -398,21 +402,40 @@ time,
     color: rgba(255, 255, 255, 0.62);
   }
 
-  .impact-line__connector {
-    position: relative;
-    border-right: 1px solid rgba(255, 255, 255, 0.16);
-    border-left: 1px solid rgba(255, 255, 255, 0.16);
+  .impact-line__distribution {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
   }
 
-  .impact-line__connector::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 1.5rem;
-    height: 1px;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.45);
+  .impact-line__distribution > div {
+    min-height: 8.5rem;
+    padding: 1.1rem 1.25rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .impact-line__distribution > div:last-child { border-right: 0; }
+
+  .impact-line__distribution span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.58);
+  }
+
+  .impact-line__distribution p {
+    margin-top: 1.8rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.4rem, 2.7vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .impact-line__distribution small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.62);
   }
 
   .impact-line__outcome {
@@ -420,7 +443,7 @@ time,
     color: var(--ink);
   }
 
-  .impact-line__outcome .impact-line__index,
+  .impact-line__outcome span,
   .impact-line__outcome small { color: rgba(9, 9, 11, 0.52); }
 
   .impact-line__footer {
@@ -612,7 +635,7 @@ time,
   .impact-line__prices button:nth-child(-n + 2) { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
 
   .impact-line__equation {
-    grid-template-columns: minmax(0, 1fr) 1rem minmax(0, 1fr) 1rem minmax(0, 1.25fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .impact-line__equation > div {
@@ -622,7 +645,23 @@ time,
 
   .impact-line__equation p { font-size: 1.05rem; }
   .impact-line__equation small { font-size: 0.56rem; }
-  .impact-line__connector::after { width: 0.45rem; }
+
+  .impact-line__distribution { grid-template-columns: 1fr; }
+
+  .impact-line__distribution > div {
+    min-height: 0;
+    padding: 0.9rem;
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .impact-line__distribution > div:last-child { border-bottom: 0; }
+  .impact-line__distribution p { margin-top: 0; font-size: 1.05rem; }
+  .impact-line__distribution small { margin-top: 0; text-align: right; }
 
   .impact-line__footer {
     align-items: flex-start;

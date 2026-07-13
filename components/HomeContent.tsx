@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
 import { useLanguage } from '@/context/LanguageContext'
 import { ACCESS_PATHS, SESSION_CONCEPTS, localized } from '@/lib/brand'
-import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, PRICE_OPTIONS, SESSION_MINUTES, formatDkk } from '@/lib/platform'
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PRICE_OPTIONS, PROFESSIONAL_SHARE_PERCENT, SESSION_MINUTES, formatDkk } from '@/lib/platform'
 
 export function HomeContent() {
   const { lang } = useLanguage()
@@ -43,13 +43,13 @@ export function HomeContent() {
         ['Hvad kan en session bruges til?', 'Til ét konkret karrierespørgsmål: eksempelvis om du bør søge en rolle, hvordan dit CV bør målrettes, hvad du skal forvente i et interview, eller hvordan et jobtilbud bør vurderes.'],
         ['Hvem møder jeg?', 'En professionel med erfaring, der er relevant for din konkrete situation. Naetwork gennemgår rolle, virksomhedserfaring og LinkedIn før publicering. Det er kvalitetskontrol - ikke en garanti for et bestemt resultat.'],
         ['Hvad får jeg efter 60 minutter?', 'Målet aftales i briefet. Du skal som minimum stå med et klarere svar, de vigtigste risici eller huller og prioriterede næste skridt.'],
-        ['Hvad koster det, og hvordan fungerer bidraget?', `Prisen er DKK 600, 900, 1.200 eller 1.800 inklusive moms. Den professionelle vælger at afsætte ${CONTRIBUTION_MIN}%, 60%, 80% eller ${CONTRIBUTION_MAX}% af prisen eksklusive moms. Det præcise beløb vises før booking.`],
+        ['Hvad koster det, og hvordan fordeles prisen?', `Prisen er DKK 600, 900, 1.200 eller 1.800 inklusive moms. Efter moms fordeles nettoprisen fast: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle. De præcise beløb vises før booking.`],
       ]
     : [
         ['What can a session be used for?', 'One concrete career question: whether to apply, how to target your CV, what to expect in an interview or how to assess an offer.'],
         ['Who will I meet?', 'A professional with experience relevant to your situation. Naetwork reviews role, company experience and LinkedIn before publication. This is quality control, not a guarantee of a particular result.'],
         ['What should I have after 60 minutes?', 'The intended outcome is set in the brief. At minimum, you should leave with a clearer answer, the main risks or gaps and prioritized next steps.'],
-        ['What does it cost, and how does the contribution work?', `The price is DKK 600, 900, 1,200 or 1,800 including VAT. The professional allocates ${CONTRIBUTION_MIN}%, 60%, 80% or ${CONTRIBUTION_MAX}% of the price excluding VAT. The exact amount is shown before booking.`],
+        ['What does it cost, and how is the price split?', `The price is DKK 600, 900, 1,200 or 1,800 including VAT. After VAT, the net price has a fixed split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional. Exact amounts are shown before booking.`],
       ]
 
   return (
@@ -168,12 +168,12 @@ export function HomeContent() {
               </div>
             </div>
             <div className="home-price-summary__impact">
-              <span>{isDa ? 'Afsættes af pris ekskl. moms' : 'Allocated from price excl. VAT'}</span>
-              <strong>{CONTRIBUTION_MIN}-{CONTRIBUTION_MAX}%</strong>
+              <span>{isDa ? 'Fast fordeling af nettopris' : 'Fixed split of net price'}</span>
+              <strong>{PLATFORM_SHARE_PERCENT} · {CONTRIBUTION_PERCENT} · {PROFESSIONAL_SHARE_PERCENT}%</strong>
             </div>
           </div>
           <p className="pricing-disclosure">
-            {isDa ? 'Ved DKK 600 svarer bidraget til DKK 192-432. Se hele regnestykket under Bidrag. Betaling er endnu ikke aktiveret.' : 'At DKK 600, the contribution is DKK 192-432. See the full calculation under Impact. Payments are not yet enabled.'}
+            {isDa ? 'Ved DKK 600 er nettoprisen DKK 480: DKK 96 til Naetwork, DKK 144 til Kræftens Bekæmpelse og DKK 240 til den professionelle. Betaling er endnu ikke aktiveret.' : 'At DKK 600, the net price is DKK 480: DKK 96 to Naetwork, DKK 144 to Kræftens Bekæmpelse and DKK 240 to the professional. Payments are not yet enabled.'}
           </p>
           <Link href="/impact" className="access-hero__text-link home-price-link">
             {isDa ? 'Se hele regnestykket' : 'See the full calculation'}

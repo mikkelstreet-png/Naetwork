@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { MemberNav } from '@/components/MemberNav';
 import { AvailabilityManager } from '@/components/AvailabilityManager';
 import {
-  CONTRIBUTION_OPTIONS,
+  CONTRIBUTION_PERCENT,
   FOCUS_AREAS,
   INDUSTRIES,
+  PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
+  PROFESSIONAL_SHARE_PERCENT,
   formatDkk,
-  normalizeContributionPercent,
   normalizeLinkedInUrl,
   normalizePrice,
   sessionEconomics,
@@ -27,7 +28,6 @@ export default function ProfessionalProfilePage() {
     seniority: 'manager',
     years_experience: 5,
     price_dkk: 1200,
-    contribution_percent: 40,
     linkedin_url: '',
     visibility: 'hidden',
     review_status: 'pending',
@@ -87,7 +87,6 @@ export default function ProfessionalProfilePage() {
           seniority: prof.seniority || 'manager',
           years_experience: prof.years_experience || 5,
           price_dkk: normalizePrice(prof.price_dkk),
-          contribution_percent: normalizeContributionPercent(prof.contribution_percent),
           linkedin_url: prof.linkedin_url || '',
           visibility: prof.visibility || 'hidden',
           review_status: prof.review_status || 'pending',
@@ -128,7 +127,6 @@ export default function ProfessionalProfilePage() {
       ...data,
       linkedin_url: linkedinUrl,
       price_dkk: normalizePrice(data.price_dkk),
-      contribution_percent: normalizeContributionPercent(data.contribution_percent),
       updated_at: new Date().toISOString(),
     }, { onConflict: 'profile_id' });
     setSaving(false);
@@ -149,7 +147,7 @@ export default function ProfessionalProfilePage() {
     return <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-white px-5 py-12"><section className="w-full max-w-lg border-y border-gray-200 py-10 text-center"><h1 className="text-3xl font-black text-gray-950">Profilen kunne ikke indlæses</h1><p role="alert" className="mt-3 text-sm leading-relaxed text-gray-500">{error}</p><button type="button" onClick={() => window.location.reload()} className="mt-6 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white">Prøv igen</button></section></main>;
   }
 
-  const economics = sessionEconomics(data.price_dkk, data.contribution_percent);
+  const economics = sessionEconomics(data.price_dkk);
 
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
@@ -172,6 +170,7 @@ export default function ProfessionalProfilePage() {
             {[
               ['Prisvalg', '600 · 900 · 1.200 · 1.800'],
               ['Format', '60 min'],
+              ['Fast fordeling', '20 · 30 · 50%'],
               ['Gennemgang', data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'],
             ].map(([label, value]) => (
               <div key={label} className="border-b border-white/15 py-4">
@@ -257,24 +256,17 @@ export default function ProfessionalProfilePage() {
               <p className="mt-3 text-xs leading-relaxed text-gray-500">DKK 1.800 kræver særskilt godkendelse, før profilen kan publiceres.</p>
             </fieldset>
 
-            <fieldset className="border-b border-gray-200 pb-6">
-              <legend className="pr-3 text-sm font-semibold text-gray-800">Bidrag ved en betalt session</legend>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {CONTRIBUTION_OPTIONS.map((percentage) => (
-                  <button key={percentage} type="button" aria-pressed={data.contribution_percent === percentage} onClick={() => setData(d => ({ ...d, contribution_percent: percentage }))} className={`rounded-[4px] border px-3 py-3 text-sm font-bold transition-colors ${data.contribution_percent === percentage ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-300 bg-white text-gray-700 hover:border-gray-950'}`}>
-                    {percentage}%
-                  </button>
-                ))}
-              </div>
-              <p className="mt-3 text-xs leading-relaxed text-gray-500">{formatDkk(economics.contribution)} afsættes til støtte. Procenten beregnes af sessionsprisen ekskl. moms.</p>
+            <section className="border-b border-gray-200 pb-6" aria-labelledby="profile-revenue-split">
+              <h3 id="profile-revenue-split" className="text-sm font-semibold text-gray-800">Fast fordeling ved en betalt session</h3>
+              <p className="mt-2 text-xs leading-relaxed text-gray-500">Momsen skilles ud først. Nettoprisen på {formatDkk(economics.netPrice)} fordeles derefter ens for alle sessioner.</p>
               <dl className="mt-5 grid gap-px overflow-hidden rounded-md border border-gray-200 bg-gray-200 sm:grid-cols-3">
                 {[
-                  ['Pris ekskl. moms', formatDkk(economics.netPrice)],
-                  ['Platform og betaling', formatDkk(economics.platformFee)],
-                  ['Forventet udbetaling', `${formatDkk(economics.professionalPayout)} før skat`],
+                  [`Naetwork · ${PLATFORM_SHARE_PERCENT}%`, formatDkk(economics.platformShare)],
+                  [`Kræftens Bekæmpelse · ${CONTRIBUTION_PERCENT}%`, formatDkk(economics.contribution)],
+                  [`Din andel · ${PROFESSIONAL_SHARE_PERCENT}%`, `${formatDkk(economics.professionalPayout)} før skat`],
                 ].map(([label, value]) => <div key={label} className="bg-white p-4"><dt className="text-[10px] font-black uppercase text-gray-400">{label}</dt><dd className="mt-2 text-sm font-black text-gray-950">{value}</dd></div>)}
               </dl>
-            </fieldset>
+            </section>
 
             <div>
               <label className="mb-3 block text-sm font-semibold text-gray-700">Publiceringsvalg</label>

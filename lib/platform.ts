@@ -5,11 +5,10 @@ export const SESSION_MINUTES = 60
 export const PRICE_MIN = 600
 export const PRICE_MAX = 1800
 export const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
-export const CONTRIBUTION_MIN = 40
-export const CONTRIBUTION_MAX = 90
-export const CONTRIBUTION_OPTIONS = [40, 60, 80, 90] as const
 export const VAT_RATE_PERCENT = 25
-export const PLATFORM_FEE_DKK = 49
+export const PLATFORM_SHARE_PERCENT = 20
+export const CONTRIBUTION_PERCENT = 30
+export const PROFESSIONAL_SHARE_PERCENT = 50
 
 export const INDUSTRIES = [
   { id: 'AI', slug: 'ai', accent: 'bg-cyan-300', surface: 'bg-[#d8f7fb]' },
@@ -20,20 +19,11 @@ export const INDUSTRIES = [
 
 export type Industry = typeof INDUSTRIES[number]['id']
 export type PriceOption = typeof PRICE_OPTIONS[number]
-export type ContributionOption = typeof CONTRIBUTION_OPTIONS[number]
 
 export function normalizePrice(value: unknown): PriceOption {
   const parsed = typeof value === 'number' ? value : Number(value)
   if (!Number.isFinite(parsed)) return PRICE_OPTIONS[0]
   return PRICE_OPTIONS.reduce((closest, option) =>
-    Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
-  )
-}
-
-export function normalizeContributionPercent(value: unknown): ContributionOption {
-  const parsed = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(parsed)) return CONTRIBUTION_OPTIONS[0]
-  return CONTRIBUTION_OPTIONS.reduce((closest, option) =>
     Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
   )
 }
@@ -101,30 +91,28 @@ export function vatAmount(grossPrice: number) {
   return grossPrice - priceBeforeVat(grossPrice)
 }
 
-export function contributionAmount(grossPrice: number, percentage: number) {
-  const normalizedPercentage = normalizeContributionPercent(percentage)
-  return Math.round(priceBeforeVat(grossPrice) * normalizedPercentage / 100)
+export function contributionAmount(grossPrice: number) {
+  return Math.round(priceBeforeVat(normalizePrice(grossPrice)) * CONTRIBUTION_PERCENT / 100)
 }
 
-export function sessionEconomics(grossPrice: number, percentage: number) {
+export function sessionEconomics(grossPrice: number) {
   const candidatePrice = normalizePrice(grossPrice)
-  const contributionPercent = normalizeContributionPercent(percentage)
   const netPrice = priceBeforeVat(candidatePrice)
   const vat = candidatePrice - netPrice
-  const contribution = contributionAmount(candidatePrice, contributionPercent)
-  const availableAfterContribution = Math.max(0, netPrice - contribution)
-  const platformFee = Math.min(PLATFORM_FEE_DKK, availableAfterContribution)
-  const professionalPayout = Math.max(0, availableAfterContribution - platformFee)
+  const platformShare = Math.round(netPrice * PLATFORM_SHARE_PERCENT / 100)
+  const contribution = Math.round(netPrice * CONTRIBUTION_PERCENT / 100)
+  const professionalPayout = netPrice - platformShare - contribution
 
   return {
     candidatePrice,
     netPrice,
     vat,
-    contributionPercent,
+    platformSharePercent: PLATFORM_SHARE_PERCENT,
+    contributionPercent: CONTRIBUTION_PERCENT,
+    professionalSharePercent: PROFESSIONAL_SHARE_PERCENT,
     contribution,
-    platformFee,
+    platformShare,
     professionalPayout,
-    platformAbsorbsRounding: platformFee < PLATFORM_FEE_DKK,
   }
 }
 
