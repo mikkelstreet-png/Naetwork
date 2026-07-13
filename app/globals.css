@@ -1049,7 +1049,7 @@ time,
   .public-hero__content { align-self: start; max-width: 58rem; }
   .public-hero h1 { margin-top: 1rem; font-size: clamp(3.2rem, 6.2vw, 6rem); line-height: 0.94; }
   .public-hero h1,
-  .access-hero__copy h1 { overflow-wrap: break-word; hyphens: auto; }
+  .access-hero__copy h1 { overflow-wrap: normal; hyphens: none; }
   .public-hero__body { max-width: 44rem; margin-top: 1.35rem; color: rgba(255, 255, 255, 0.7); }
   .public-hero__sequence { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.23); background: rgba(9, 10, 11, 0.35); }
   .public-hero__sequence li { min-height: 4rem; border-color: rgba(255, 255, 255, 0.18); }
