@@ -11,7 +11,7 @@ export const BRAND_COPY = {
     primaryLine: 'Talent er bredt fordelt. Adgang er det ikke.',
     productLine: 'Tal med en, der kender jobbet, før du søger.',
     positioning: 'Relevant erfaring til konkrete karrierevalg.',
-    oneSentence: 'Naetwork giver dig adgang til mennesker med direkte erfaring fra den rolle, virksomhed eller rekrutteringsproces, du overvejer.',
+    oneSentence: 'Få konkret indsigt fra professionelle, der har haft rollen, ansat lignende profiler eller taget det karriereskridt, du overvejer.',
     problem: 'Jobopslaget beskriver rollen. Ikke hvordan arbejdet faktisk er.',
   },
   en: {
@@ -19,7 +19,7 @@ export const BRAND_COPY = {
     primaryLine: 'Talent is widely distributed. Access is not.',
     productLine: 'Meet someone who knows the job before you apply.',
     positioning: 'Relevant experience for real career decisions.',
-    oneSentence: 'Naetwork gives you access to people with direct experience of the role, company or hiring process you are considering.',
+    oneSentence: 'Get concrete insight from professionals who have held the role, hired similar candidates or made the move you are considering.',
     problem: 'A job description explains the role. Not what the work is really like.',
   },
 } as const
@@ -36,30 +36,30 @@ export const ACCESS_PATHS = [
     id: 'explore',
     href: '/explore',
     label: { da: 'Udforsk', en: 'Explore' },
-    title: { da: 'Forstå rollen, før du vælger den.', en: 'Understand the role before you choose it.' },
+    title: { da: 'Forstå rollen.', en: 'Understand the role.' },
     description: {
-      da: 'Få et ærligt billede af arbejdet, virksomheden og de reelle forventninger.',
-      en: 'Get an honest view of the work, company and real expectations.',
+      da: 'Hverdagen, virksomheden og de reelle forventninger.',
+      en: 'The work, company and real expectations.',
     },
   },
   {
     id: 'prepare',
     href: '/prepare',
     label: { da: 'Forbered', en: 'Prepare' },
-    title: { da: 'Styrk dit grundlag, før du går videre.', en: 'Strengthen your position before you move.' },
+    title: { da: 'Styrk dit udgangspunkt.', en: 'Strengthen your position.' },
     description: {
-      da: 'Få konkret feedback på dit CV, dit udgangspunkt eller et planlagt karriereskift.',
-      en: 'Get concrete feedback on your CV, current position or planned career change.',
+      da: 'CV, positionering eller et planlagt karriereskift.',
+      en: 'Your CV, positioning or a planned career change.',
     },
   },
   {
     id: 'apply',
     href: '/apply',
     label: { da: 'Søg', en: 'Apply' },
-    title: { da: 'Søg med et skarpere argument.', en: 'Apply with a sharper case.' },
+    title: { da: 'Vurdér dit match.', en: 'Assess your fit.' },
     description: {
-      da: 'Vurdér dit match, og målret ansøgningen mod det, der faktisk betyder noget.',
-      en: 'Assess your fit and focus the application on what actually matters.',
+      da: 'Prioritér det, der gør ansøgningen troværdig.',
+      en: 'Prioritize what makes the application credible.',
     },
   },
   {
@@ -68,8 +68,8 @@ export const ACCESS_PATHS = [
     label: { da: 'Stå stærkt', en: 'Perform' },
     title: { da: 'Vær klar, når det gælder.', en: 'Be ready when it matters.' },
     description: {
-      da: 'Forbered interview, case, forhandling eller vurderingen af et jobtilbud.',
-      en: 'Prepare for an interview, case, negotiation or offer review.',
+      da: 'Interview, case, forhandling eller jobtilbud.',
+      en: 'Interview, case, negotiation or job offer.',
     },
   },
 ] as const satisfies ReadonlyArray<{

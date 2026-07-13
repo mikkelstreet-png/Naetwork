@@ -11,14 +11,14 @@ export function HowItWorksContent() {
 
   const stages = isDa
     ? [
-        ['Før sessionen', 'Beskriv situationen', 'Vælg ét spørgsmål, del den nødvendige kontekst, og se hvorfor den professionelles erfaring er relevant.'],
-        ['I sessionen', 'Arbejd på det konkrete', 'Brug 60 minutter på vurdering, modspil eller træning - ikke på at forklare hele din baggrund fra bunden.'],
-        ['Efter sessionen', 'Gå videre med et svar', 'Saml konklusionen, de væsentligste risici og de næste handlinger, mens samtalen stadig er frisk.'],
+        ['Før', 'Sæt fokus', 'Vælg ét spørgsmål, del den nødvendige kontekst, og se hvorfor erfaringen er relevant.'],
+        ['Under', 'Arbejd på det konkrete', 'Brug 60 minutter på vurdering, modspil eller træning - ikke på introduktioner.'],
+        ['Efter', 'Gå videre med et svar', 'Saml konklusionen, de vigtigste risici og de næste handlinger.'],
       ]
     : [
-        ['Before the session', 'Describe the situation', 'Choose one question, share the necessary context and see why the professional experience is relevant.'],
-        ['During the session', 'Work on the concrete issue', 'Use 60 minutes for assessment, challenge or practice, not for explaining your entire background from scratch.'],
-        ['After the session', 'Move forward with an answer', 'Capture the conclusion, main risks and next actions while the conversation is still fresh.'],
+        ['Before', 'Set the focus', 'Choose one question, share the necessary context and see why the experience is relevant.'],
+        ['During', 'Work on the concrete issue', 'Use 60 minutes for assessment, challenge or practice, not introductions.'],
+        ['After', 'Move forward with an answer', 'Capture the conclusion, main risks and next actions.'],
       ]
 
   const included = isDa
@@ -33,10 +33,10 @@ export function HowItWorksContent() {
     <main className="page-shell">
       <PublicPageHero
         eyebrow={isDa ? 'Sådan fungerer Naetwork' : 'How Naetwork works'}
-        title={isDa ? 'Fra spørgsmål til et brugbart svar.' : 'From a question to an answer you can use.'}
+        title={isDa ? 'Et konkret spørgsmål. Et brugbart svar.' : 'One concrete question. One answer you can use.'}
         body={isDa
-          ? 'Du starter med situationen. Naetwork hjælper dig med at finde relevant erfaring, forberede samtalen og gøre resultatet konkret.'
-          : 'You start with the situation. Naetwork helps you find relevant experience, prepare the conversation and make the outcome concrete.'}
+          ? 'Start med situationen. Vi hjælper dig med at vælge relevant erfaring, forberede samtalen og definere resultatet.'
+          : 'Start with the situation. We help you choose relevant experience, prepare the conversation and define the outcome.'}
         action={{ href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa
           ? ['Situation', 'Relevant erfaring', 'Næste skridt']
@@ -46,9 +46,9 @@ export function HowItWorksContent() {
       <section className="public-section">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Hele forløbet' : 'The complete journey'}</p>
-            <h2>{isDa ? 'Forberedt før. Fokuseret under. Konkret efter.' : 'Prepared before. Focused during. Concrete after.'}</h2>
-            <p>{isDa ? 'Strukturen er enkel, fordi tiden skal bruges på det, du faktisk skal have afklaret.' : 'The structure is simple because the time should be spent on what you actually need to clarify.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Forløbet' : 'The process'}</p>
+            <h2>{isDa ? 'Tre trin. Ingen spildtid.' : 'Three steps. No wasted time.'}</h2>
+            <p>{isDa ? 'Tiden bruges på det, du faktisk skal have afklaret.' : 'The time is spent on what you actually need to clarify.'}</p>
           </div>
           <ol className="editorial-journey">
             {stages.map(([stage, title, body], index) => (
@@ -66,9 +66,9 @@ export function HowItWorksContent() {
       <section className="public-section public-section--mist">
         <div className="home-shell clarity-split">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Klar forventningsafstemning' : 'Clear expectations'}</p>
-            <h2>{isDa ? 'Hvad du får - og hvad du ikke køber.' : 'What you get - and what you are not buying.'}</h2>
-            <p>{isDa ? 'Naetwork giver adgang til erfaring og et bedre beslutningsgrundlag. Ikke løfter, der ikke kan holdes.' : 'Naetwork provides access to experience and a better basis for a decision, not promises that cannot be kept.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Forventninger' : 'Expectations'}</p>
+            <h2>{isDa ? 'Du køber indsigt. Ikke et løfte.' : 'You are buying insight. Not a promise.'}</h2>
+            <p>{isDa ? 'Relevant erfaring kan styrke din beslutning. Den kan ikke garantere et bestemt resultat.' : 'Relevant experience can strengthen your decision. It cannot guarantee a particular outcome.'}</p>
           </div>
           <div className="clarity-columns">
             <div>

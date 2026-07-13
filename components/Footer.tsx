@@ -5,7 +5,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { usePathname } from 'next/navigation';
 import { isBilingualPublicRoute, isFocusedAppRoute } from '@/lib/navigation';
 import { LEGAL_OPERATOR, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal';
-import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
+import { BRAND_COPY } from '@/lib/brand';
 import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT } from '@/lib/platform';
 
 export function Footer() {
@@ -23,10 +23,6 @@ export function Footer() {
         { href: '/sessions', label: isDa ? 'Sessioner' : 'Sessions' },
         { href: '/contact', label: isDa ? 'Kontakt' : 'Contact' },
       ],
-    },
-    {
-      title: isDa ? 'Indgange' : 'Starting points',
-      links: ACCESS_PATHS.map((path) => ({ href: path.href, label: localized(path.label, isDa ? 'da' : 'en') })),
     },
     {
       title: isDa ? 'Om Naetwork' : 'About Naetwork',
@@ -54,15 +50,15 @@ export function Footer() {
   return (
     <footer className="bg-[#09090b] text-white">
       <div className="signal-rail"><span /><span /><span /><span /></div>
-      <div className="mx-auto max-w-[82rem] px-5 py-14 sm:px-8 md:py-20 lg:px-12">
-        <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-20">
+      <div className="mx-auto max-w-[82rem] px-5 py-12 sm:px-8 md:py-16 lg:px-12">
+        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-20">
           <div>
             <Link href="/" className="inline-flex items-center gap-3" aria-label="Naetwork home">
               <span className="brand-mark border border-white/15 bg-white text-gray-950">N</span>
               <span className="block font-['Space_Grotesk'] text-xl font-bold text-white">Naetwork</span>
             </Link>
-            <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-4xl">
-              {brand.productLine}
+            <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-3xl">
+              {brand.positioning}
             </p>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-white/55">
               {brand.oneSentence}
@@ -70,15 +66,9 @@ export function Footer() {
             <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/60">
               {isDa ? `Fast fordeling af nettoprisen: ${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% den professionelle.` : `Fixed split of the net price: ${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% the professional.`}
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/start" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
-                {isDa ? 'Start med din situation' : 'Start with your situation'} <span aria-hidden="true">→</span>
-              </Link>
-              <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="inline-flex text-sm font-medium text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white hover:decoration-white">{PUBLIC_SUPPORT_EMAIL}</a>
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-white/15 pt-7 text-sm sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-white/15 pt-7 text-sm sm:grid-cols-3">
             {columns.map((column) => (
               <div key={column.title}>
                 <p className="editorial-label mb-5 text-white/55">{column.title}</p>
@@ -94,7 +84,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 grid gap-5 border-t border-white/15 pt-6 md:grid-cols-[1fr_auto] md:items-end">
+        <div className="mt-12 grid gap-5 border-t border-white/15 pt-6 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <p className="max-w-2xl text-xs leading-relaxed text-white/58">{isDa ? 'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet Kræftens Bekæmpelse. Bidrag gælder kun for gennemførte, betalte sessioner. Betaling er endnu ikke aktiveret.' : 'Naetwork is an independent initiative and is not officially affiliated with Kræftens Bekæmpelse. Contributions apply only to completed, paid sessions. Payments are not enabled yet.'}</p>
             <address className="mt-3 text-xs not-italic leading-relaxed text-white/58">{LEGAL_OPERATOR} · <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="underline decoration-white/30 underline-offset-3 hover:text-white">{PUBLIC_SUPPORT_EMAIL}</a></address>

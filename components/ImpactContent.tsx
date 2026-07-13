@@ -41,7 +41,7 @@ export function ImpactContent() {
     <main className="page-shell">
       <PublicPageHero
         eyebrow={isDa ? 'Pris og bidrag' : 'Price and contribution'}
-        title={isDa ? 'Karrieresparring, der også skaber et konkret bidrag.' : 'Career insight that also creates a concrete contribution.'}
+        title={isDa ? 'Indsigt med et konkret bidrag.' : 'Insight with a concrete contribution.'}
         body={isDa
           ? `Hver nettopris fordeles på samme måde: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle.`
           : `Every net price has the same split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional.`}
@@ -53,8 +53,8 @@ export function ImpactContent() {
         <div className="home-shell">
           <div className="section-heading section-heading--light">
             <p className="section-eyebrow">{isDa ? 'Regnestykket' : 'The calculation'}</p>
-            <h2>{isDa ? 'Det præcise beløb. Ikke en vag formulering.' : 'The exact amount, not a vague statement.'}</h2>
-            <p>{isDa ? 'Vælg en sessionspris og se moms, nettopris og alle tre andele i kroner.' : 'Choose a session price and see VAT, net price and all three shares in kroner.'}</p>
+            <h2>{isDa ? 'Se hele fordelingen i kroner.' : 'See the full split in kroner.'}</h2>
+            <p>{isDa ? 'Vælg en pris. Moms, nettopris og alle tre andele vises direkte.' : 'Choose a price. VAT, net price and all three shares are shown directly.'}</p>
           </div>
           <LivingImpactLine />
         </div>
@@ -63,9 +63,9 @@ export function ImpactContent() {
       <section className="public-section">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Tre former for værdi' : 'Three forms of value'}</p>
-            <h2>{isDa ? 'Produktet skal stå stærkt i sig selv.' : 'The product must stand on its own.'}</h2>
-            <p>{isDa ? 'Bidraget giver sessionen ekstra mening. Den primære værdi er fortsat relevant karriereindsigt.' : 'The contribution adds meaning. The primary value remains relevant career insight.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Værdien' : 'The value'}</p>
+            <h2>{isDa ? 'Relevant indsigt først.' : 'Relevant insight first.'}</h2>
+            <p>{isDa ? 'Bidraget giver sessionen ekstra mening. Karriereindsigten er stadig produktet.' : 'The contribution adds meaning. Career insight remains the product.'}</p>
           </div>
           <div className="editorial-journey">
             {values.map(([title, body], index) => (
@@ -83,8 +83,8 @@ export function ImpactContent() {
         <div className="home-shell path-layout">
           <div className="section-heading">
             <p className="section-eyebrow">{isDa ? 'Transparens' : 'Transparency'}</p>
-            <h2>{isDa ? 'Fire ting, der altid skal være tydelige.' : 'Four things that must always be clear.'}</h2>
-            <p>{isDa ? 'Fordelingen er fast og ændrer ikke kandidatens viste totalpris inklusive moms.' : 'The split is fixed and does not change the candidate total including VAT.'}</p>
+            <h2>{isDa ? 'Fast fordeling. Klare betingelser.' : 'Fixed split. Clear terms.'}</h2>
+            <p>{isDa ? 'Den viste totalpris er inklusive moms og ændres ikke af fordelingen.' : 'The displayed total includes VAT and is not changed by the split.'}</p>
           </div>
           <div className="situation-index">
             {clarity.map(([title, body], index) => (

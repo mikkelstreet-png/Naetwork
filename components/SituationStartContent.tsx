@@ -62,8 +62,8 @@ export function SituationStartContent() {
         eyebrow="Career Access"
         title={lang === 'da' ? 'Hvad står du overfor?' : 'What are you facing?'}
         body={lang === 'da'
-          ? 'Vælg den situation, der ligger tættest på din. Så afgrænser Naetwork den erfaring, der er relevant for dit næste skridt.'
-          : 'Choose the situation closest to yours. Naetwork will narrow the experience relevant to your next step.'}
+          ? 'Vælg situation og felt. Så viser Naetwork den mest relevante erfaring.'
+          : 'Choose a situation and field. Naetwork will show the most relevant experience.'}
         sequence={lang === 'da'
           ? ['Vælg situation', 'Vælg felt', 'Se relevant erfaring']
           : ['Choose situation', 'Choose field', 'See relevant experience']}

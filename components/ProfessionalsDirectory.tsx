@@ -105,10 +105,10 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   }).sort((a, b) => relevanceFor(b, recommendedNeed) - relevanceFor(a, recommendedNeed))
 
   const t = {
-    heading: isDa ? 'Find den relevante erfaring.' : 'Find the relevant experience.',
+    heading: isDa ? 'Find erfaring, der passer til din situation.' : 'Find experience that fits your situation.',
     subheading: isDa
-      ? 'Sammenlign gennemgået baggrund, konkret fokus, totalpris og bidrag, før du sender en anmodning.'
-      : 'Compare reviewed background, concrete focus, total price and contribution before sending a request.',
+      ? 'Sammenlign gennemgået erfaring, konkret fokus, pris og bidrag.'
+      : 'Compare reviewed experience, concrete focus, price and contribution.',
     searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
     bookCta: isDa ? 'Anmod om session' : 'Request session',
     noResults: isDa ? 'Ingen match' : 'No match',
@@ -155,13 +155,12 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   return (
     <main className="min-h-screen bg-white">
       <section className="border-b border-white/15 bg-[#09090b] px-5 text-white sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-[82rem] py-10 sm:py-14 md:py-20">
-          <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
+        <div className="mx-auto max-w-[82rem] py-10 sm:py-14 md:py-16">
           <div className="md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-8">
             <div>
-              <p className="kicker mb-4 text-white/45">{isDa ? 'Profiluniverset' : 'Profile universe'}</p>
-              <h1 className="max-w-5xl text-4xl font-medium leading-[0.96] text-white text-balance sm:text-6xl md:text-7xl">{t.heading}</h1>
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/55 md:text-lg">{t.subheading}</p>
+              <p className="kicker mb-4 text-white/45">{isDa ? 'Professionelle' : 'Professionals'}</p>
+              <h1 className="max-w-4xl text-4xl font-medium leading-[1] text-white text-balance sm:text-5xl md:text-6xl">{t.heading}</h1>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/60 md:text-base">{t.subheading}</p>
             </div>
             <dl className="mt-7 grid grid-cols-3 border-y border-white/15 md:mt-0 md:block md:min-w-[230px] md:border-y-0">
               {[
@@ -177,7 +176,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             </dl>
           </div>
 
-          {!loadError && <div className="mt-8 grid overflow-hidden rounded-[4px] border border-white/25 bg-white md:mt-10 lg:grid-cols-[1fr_auto] lg:items-center">
+          {!loadError && <div className="mt-8 grid overflow-hidden border border-white/25 bg-white lg:grid-cols-[1fr_auto] lg:items-center">
             <label className="flex min-w-0 items-center gap-3 px-4 py-3.5 lg:pr-5">
               <Search size={18} className="shrink-0 text-gray-400" aria-hidden="true" />
               <span className="sr-only">{t.searchPlaceholder}</span>

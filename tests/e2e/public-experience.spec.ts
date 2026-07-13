@@ -107,7 +107,7 @@ test('core public actions remain clear', async ({ page }) => {
   await expect(page.locator('#pricing')).toContainText('DKK 144')
   await expect(page.locator('#pricing')).toContainText('DKK 240')
   await expect(page.locator('#pricing')).toContainText(/ekskl\. moms|excl\. VAT/i)
-  await expect(page.getByRole('heading', { name: /Det vigtigste, før du beslutter dig|What matters before you decide/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Før du booker|Before you book/i })).toBeVisible()
   await page.goto('/start')
   await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
 })
@@ -179,7 +179,7 @@ test('English positioning mirrors the Danish product contract', async ({ page })
   await expect(page.getByRole('heading', { name: 'Talent is widely distributed. Access is not.' })).toBeVisible()
   await expect(page.locator('#home').getByRole('link', { name: 'Start with your situation' })).toBeVisible()
   await page.goto('/how-it-works')
-  await expect(page.getByRole('heading', { name: 'From a question to an answer you can use.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'One concrete question. One answer you can use.' })).toBeVisible()
 })
 
 test('homepage publishes complete brand and offer metadata', async ({ page }) => {

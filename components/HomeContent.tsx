@@ -16,26 +16,14 @@ export function HomeContent() {
 
   const accessExamples = isDa
     ? [
-        ['Rollen', 'Har selv udført arbejdet', 'Kan forklare hverdagen, kravene og de kompromiser, jobopslaget ikke viser.'],
-        ['Rekrutteringen', 'Har vurderet lignende kandidater', 'Kan se, hvad der styrker dit match, og hvad der reelt vil skabe tvivl.'],
-        ['Karriereskiftet', 'Har gennemført en relevant overgang', 'Kan udfordre din plan med erfaring fra de barrierer og mellemtrin, skiftet kræver.'],
+        ['Rollen', 'Har selv udført arbejdet', 'Kender hverdagen, kravene og kompromiserne.'],
+        ['Rekruttering', 'Har vurderet lignende kandidater', 'Ved, hvad der styrker dit match, og hvad der skaber tvivl.'],
+        ['Karriereskift', 'Har taget samme skridt', 'Kender barriererne, mellemtrinnene og det realistiske tempo.'],
       ]
     : [
-        ['The role', 'Has done the work', 'Can explain the day-to-day reality, expectations and trade-offs the job description leaves out.'],
-        ['The hiring process', 'Has assessed similar candidates', 'Can see what strengthens your fit and what will genuinely create doubt.'],
-        ['The career change', 'Has made a relevant transition', 'Can challenge your plan with experience of the barriers and intermediate moves involved.'],
-      ]
-
-  const steps = isDa
-    ? [
-        ['Beskriv beslutningen', 'Fortæl kort, hvad du overvejer, og hvad du har brug for at få afklaret.'],
-        ['Se hvorfor erfaringen er relevant', 'Vælg blandt professionelle, hvis erfaring matcher situationen - ikke blot branchen eller titlen.'],
-        ['Brug timen på det væsentlige', 'Del relevant kontekst på forhånd, og afslut med en vurdering og prioriterede næste skridt.'],
-      ]
-    : [
-        ['Describe the decision', 'Tell us what you are considering and what you need to clarify.'],
-        ['See why the experience is relevant', 'Choose professionals whose experience fits the situation, not just the industry or title.'],
-        ['Use the hour on what matters', 'Share relevant context beforehand and finish with an assessment and prioritized next steps.'],
+        ['The role', 'Has done the work', 'Knows the work, expectations and trade-offs.'],
+        ['Hiring', 'Has assessed similar candidates', 'Knows what strengthens your fit and what creates doubt.'],
+        ['Career change', 'Has made the same move', 'Knows the barriers, intermediate steps and realistic pace.'],
       ]
 
   const faqs = isDa
@@ -59,9 +47,9 @@ export function HomeContent() {
       <section className="home-section home-section--paper">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Vælg din indgang' : 'Choose your starting point'}</p>
-            <h2>{isDa ? 'Start med det, du skal have afklaret.' : 'Start with what you need to clarify.'}</h2>
-            <p>{isDa ? 'Naetwork finder den relevante erfaring ud fra situationen.' : 'Naetwork finds relevant experience from the situation.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Hvor står du?' : 'Where are you now?'}</p>
+            <h2>{isDa ? 'Start med situationen. Ikke profilen.' : 'Start with the situation. Not the profile.'}</h2>
+            <p>{isDa ? 'Vælg det, du skal forstå, forbedre eller beslutte.' : 'Choose what you need to understand, improve or decide.'}</p>
           </div>
           <div className="access-path-grid">
             {ACCESS_PATHS.map((path, index) => (
@@ -82,9 +70,9 @@ export function HomeContent() {
       <section className="home-section home-section--ink">
         <div className="home-shell">
           <div className="section-heading section-heading--light">
-            <p className="section-eyebrow">{isDa ? 'Relevans' : 'Relevance'}</p>
-            <h2>{isDa ? 'Relevant erfaring. Ikke bare senioritet.' : 'Relevant experience. Not seniority alone.'}</h2>
-            <p>{isDa ? 'Hvert match forklares med det, personen faktisk ved.' : 'Every match is explained by what the person actually knows.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Sådan matcher vi' : 'How matching works'}</p>
+            <h2>{isDa ? 'Den mest relevante erfaring. Ikke den højeste titel.' : 'The most relevant experience. Not the highest title.'}</h2>
+            <p>{isDa ? 'Du kan se præcis, hvorfor hver professionel passer til din situation.' : 'You can see exactly why each professional fits your situation.'}</p>
           </div>
           <div className="experience-ledger">
             {accessExamples.map(([context, evidence, value], index) => (
@@ -96,19 +84,15 @@ export function HomeContent() {
               </article>
             ))}
           </div>
-          <Link href="/start" className="button-inverse home-inline-action">
-            {isDa ? 'Start med din situation' : 'Start with your situation'}
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
         </div>
       </section>
 
       <section className="home-section home-section--white">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Sessioner med et formål' : 'Sessions with a purpose'}</p>
-            <h2>{isDa ? 'En time med et tydeligt resultat.' : 'One hour with a clear outcome.'}</h2>
-            <p>{isDa ? 'Sessionstypen bestemmer forberedelsen og det, du skal stå tilbage med - ikke længden.' : 'The session type defines the preparation and outcome, not the duration.'}</p>
+            <p className="section-eyebrow">{SESSION_MINUTES} {isDa ? 'minutter' : 'minutes'}</p>
+            <h2>{isDa ? 'Én session. Ét konkret resultat.' : 'One session. One concrete outcome.'}</h2>
+            <p>{isDa ? 'Fokus aftales før mødet, så tiden bruges på vurdering, feedback eller træning.' : 'Set the focus before the meeting, then use the time for assessment, feedback or practice.'}</p>
           </div>
           <div className="session-index">
             {featuredSessions.map((session, index) => (
@@ -130,31 +114,12 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section id="how-it-works" className="home-section home-section--mist">
-        <div className="home-shell">
-          <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Fra tvivl til næste skridt' : 'From uncertainty to a next step'}</p>
-            <h2>{isDa ? 'Forberedt før. Fokuseret under. Konkret efter.' : 'Prepared before. Focused during. Concrete after.'}</h2>
-          </div>
-          <ol className="journey-steps">
-            {steps.map(([title, body], index) => (
-              <li key={title}>
-                <span>0{index + 1}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </li>
-            ))}
-          </ol>
-          <p className="home-privacy-note">{isDa ? 'Du opretter først en konto, når du sender en bookinganmodning. Du vælger selv, hvad du deler.' : 'You only create an account when sending a booking request. You choose what to share.'}</p>
-        </div>
-      </section>
-
       <section id="pricing" className="home-section home-section--ink">
         <div className="home-shell">
           <div className="section-heading section-heading--light">
-            <p className="section-eyebrow">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
-            <h2>{isDa ? 'Enkel pris. Synligt bidrag.' : 'Simple pricing. Visible contribution.'}</h2>
-            <p>{isDa ? 'Fire faste priser. Ingen skjulte gebyrer.' : 'Four fixed prices. No hidden fees.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Pris' : 'Price'}</p>
+            <h2>{isDa ? 'Vælg pris. Fordelingen er fast.' : 'Choose the price. The split is fixed.'}</h2>
+            <p>{isDa ? 'Fire prisniveauer. Samme 20/30/50-model.' : 'Four price points. The same 20/30/50 split.'}</p>
           </div>
           <div className="home-price-summary">
             <div>
@@ -185,8 +150,8 @@ export function HomeContent() {
       <section className="home-section home-section--paper">
         <div className="home-shell faq-layout">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Før du booker' : 'Before you book'}</p>
-            <h2>{isDa ? 'Det vigtigste, før du beslutter dig.' : 'What matters before you decide.'}</h2>
+            <p className="section-eyebrow">{isDa ? 'Spørgsmål' : 'Questions'}</p>
+            <h2>{isDa ? 'Før du booker.' : 'Before you book.'}</h2>
           </div>
           <div className="faq-list">
             {faqs.map(([question, answer], index) => (
@@ -205,9 +170,9 @@ export function HomeContent() {
 
       <section className="home-final">
         <div className="home-shell">
-          <p className="section-eyebrow">{isDa ? 'Dit næste træk' : 'Your next move'}</p>
-          <h2>{isDa ? 'Start med beslutningen foran dig.' : 'Start with the decision in front of you.'}</h2>
-          <p>{isDa ? 'Beskriv situationen. Så viser Naetwork, hvilken erfaring der er relevant.' : 'Describe the situation. Naetwork will show which experience is relevant.'}</p>
+          <p className="section-eyebrow">{isDa ? 'Næste skridt' : 'Next step'}</p>
+          <h2>{isDa ? 'Hvad skal være klarere?' : 'What needs to be clearer?'}</h2>
+          <p>{isDa ? 'Beskriv situationen. Vi viser den mest relevante erfaring.' : 'Describe the situation. We will show the most relevant experience.'}</p>
           <Link href="/start" className="button-primary">
             {isDa ? 'Start med din situation' : 'Start with your situation'}
             <ArrowRight size={16} aria-hidden="true" />

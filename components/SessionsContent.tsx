@@ -26,10 +26,10 @@ export function SessionsContent() {
     <main className="page-shell">
       <PublicPageHero
         eyebrow={isDa ? 'Sessioner' : 'Sessions'}
-        title={isDa ? 'Vælg det, der skal være klarere bagefter.' : 'Choose what should be clearer afterwards.'}
+        title={isDa ? 'Vælg det, du vil have afklaret.' : 'Choose what you need to clarify.'}
         body={isDa
-          ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Situationen bestemmer forberedelsen, den relevante erfaring og det konkrete resultat.`
-          : `Every session lasts ${SESSION_MINUTES} minutes. The situation defines the preparation, relevant experience and concrete outcome.`}
+          ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Formålet afgør forberedelsen og resultatet.`
+          : `Every session lasts ${SESSION_MINUTES} minutes. The purpose defines the preparation and outcome.`}
         action={{ href: '/start', label: isDa ? 'Find den relevante session' : 'Find the relevant session' }}
         sequence={isDa
           ? ['Konkret situation', 'Relevant professionel', 'Aftalt resultat']
@@ -39,9 +39,9 @@ export function SessionsContent() {
       <section className="public-section">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Otte konkrete formål' : 'Eight concrete purposes'}</p>
-            <h2>{isDa ? 'Ikke generel karrieresnak.' : 'Not a generic career conversation.'}</h2>
-            <p>{isDa ? 'Hver session starter med en genkendelig situation og slutter med et defineret resultat.' : 'Every session starts with a recognizable situation and ends with a defined outcome.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Otte formål' : 'Eight purposes'}</p>
+            <h2>{isDa ? 'Én session. Ét konkret formål.' : 'One session. One concrete purpose.'}</h2>
+            <p>{isDa ? 'Vælg situationen. Så er fokus klart før mødet.' : 'Choose the situation. The focus is clear before the meeting.'}</p>
           </div>
 
           <div className="session-catalog">
