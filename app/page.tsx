@@ -6,11 +6,11 @@ import { BRAND_COPY } from '@/lib/brand'
 const brand = BRAND_COPY.da
 
 export const metadata: Metadata = {
-  title: 'Naetwork - Vid mere, før dit næste træk',
+  title: 'Naetwork - Få den viden, jobopslaget mangler',
   description: brand.oneSentence,
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Naetwork - Vid mere, før dit næste træk',
+    title: 'Naetwork - Få den viden, jobopslaget mangler',
     description: brand.oneSentence,
     siteName: 'Naetwork',
     type: 'website',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Naetwork - Vid mere, før dit næste træk',
+    title: 'Naetwork - Få den viden, jobopslaget mangler',
     description: brand.oneSentence,
   },
 }

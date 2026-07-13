@@ -18,8 +18,8 @@ const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? '
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
-  title: 'Naetwork - Vid mere, før dit næste træk',
-  description: 'Naetwork giver dig adgang til relevant erfaring bag de roller, virksomheder og karriereveje, du overvejer.',
+  title: 'Naetwork - Få den viden, jobopslaget mangler',
+  description: 'Book 60 minutters sparring med en professionel, der kender rollen, virksomheden eller processen fra den anden side.',
   robots: { index: true, follow: true },
   icons: {
     icon: '/naetwork-logo.svg',

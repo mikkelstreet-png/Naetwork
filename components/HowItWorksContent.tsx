@@ -1,78 +1,96 @@
 'use client'
 
-import { Check } from 'lucide-react'
-import { useLanguage } from '@/context/LanguageContext'
-import { BRAND_COPY } from '@/lib/brand'
+import Link from 'next/link'
+import { ArrowRight, Check, X } from 'lucide-react'
 import { PublicPageHero } from '@/components/PublicPageHero'
+import { useLanguage } from '@/context/LanguageContext'
 
 export function HowItWorksContent() {
   const { lang } = useLanguage()
-  const copy = BRAND_COPY[lang]
-  const steps = lang === 'da'
+  const isDa = lang === 'da'
+
+  const stages = isDa
     ? [
-        ['Fortæl, hvad du overvejer', 'Start med rollen, virksomheden, ansøgningen eller beslutningen foran dig.'],
-        ['Mød relevant erfaring', 'Naetwork hjælper dig frem til mennesker, der kender situationen fra den anden side.'],
-        ['Gå videre med klarhed', 'Brug sessionen på et konkret spørgsmål og slut med prioriterede næste skridt.'],
+        ['Før sessionen', 'Beskriv situationen', 'Vælg ét spørgsmål, del den nødvendige kontekst, og se hvorfor den professionelles erfaring er relevant.'],
+        ['I sessionen', 'Arbejd på det konkrete', 'Brug 60 minutter på vurdering, modspil eller træning - ikke på at forklare hele din baggrund fra bunden.'],
+        ['Efter sessionen', 'Gå videre med et svar', 'Saml konklusionen, de væsentligste risici og de næste handlinger, mens samtalen stadig er frisk.'],
       ]
     : [
-        ['Tell us what you are considering', 'Start with the role, company, application or decision in front of you.'],
-        ['Meet relevant experience', 'Naetwork helps you reach people who know the situation from the other side.'],
-        ['Leave with clarity', 'Use the session for one concrete question and finish with prioritized next steps.'],
+        ['Before the session', 'Describe the situation', 'Choose one question, share the necessary context and see why the professional experience is relevant.'],
+        ['During the session', 'Work on the concrete issue', 'Use 60 minutes for assessment, challenge or practice, not for explaining your entire background from scratch.'],
+        ['After the session', 'Move forward with an answer', 'Capture the conclusion, main risks and next actions while the conversation is still fresh.'],
       ]
 
-  const boundaries = lang === 'da'
-    ? ['Ikke et socialt netværk', 'Ikke et offentligt CV', 'Ikke generisk karrierecoaching', 'Ikke en jobportal']
-    : ['Not a social network', 'Not a public CV', 'Not generic career coaching', 'Not a job board']
+  const included = isDa
+    ? ['En professionel med relevant, gennemgået erfaring', 'Et brief med ét tydeligt fokus', '60 minutters konkret sparring', 'En klar vurdering og prioriterede næste skridt']
+    : ['A professional with relevant, reviewed experience', 'A brief with one clear focus', '60 minutes of concrete discussion', 'A clear assessment and prioritized next steps']
+
+  const notIncluded = isDa
+    ? ['Garanti for job, interview eller tilbud', 'Juridisk, skattemæssig eller terapeutisk rådgivning', 'Fortrolige oplysninger om arbejdsgivere', 'En erstatning for din egen vurdering']
+    : ['A guarantee of a job, interview or offer', 'Legal, tax or therapeutic advice', 'Confidential employer information', 'A substitute for your own judgment']
 
   return (
     <main className="page-shell">
       <PublicPageHero
-        eyebrow={copy.category}
-        title={copy.positioning}
-        body={copy.oneSentence}
-        action={{ href: '/start', label: lang === 'da' ? 'Start med din situation' : 'Start with your situation' }}
-        sequence={lang === 'da'
-          ? ['Beskriv situationen', 'Mød relevant erfaring', 'Gå videre med klarhed']
-          : ['Describe the situation', 'Meet relevant experience', 'Leave with clarity']}
+        eyebrow={isDa ? 'Sådan fungerer Naetwork' : 'How Naetwork works'}
+        title={isDa ? 'Fra spørgsmål til et brugbart svar.' : 'From a question to an answer you can use.'}
+        body={isDa
+          ? 'Du starter med situationen. Naetwork hjælper dig med at finde relevant erfaring, forberede samtalen og gøre resultatet konkret.'
+          : 'You start with the situation. Naetwork helps you find relevant experience, prepare the conversation and make the outcome concrete.'}
+        action={{ href: '/start', label: isDa ? 'Beskriv din situation' : 'Describe your situation' }}
+        sequence={isDa
+          ? ['Situation', 'Relevant erfaring', 'Næste skridt']
+          : ['Situation', 'Relevant experience', 'Next step']}
       />
 
-      <section className="px-5 py-14 sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-8 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker">{lang === 'da' ? 'Fra situation til næste skridt' : 'From situation to next step'}</p>
-            <h2 className="display-lg">{lang === 'da' ? 'Tre trin. Ét konkret spørgsmål.' : 'Three steps. One concrete question.'}</h2>
+      <section className="public-section">
+        <div className="home-shell">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Hele forløbet' : 'The complete journey'}</p>
+            <h2>{isDa ? 'Forberedt før. Fokuseret under. Konkret efter.' : 'Prepared before. Focused during. Concrete after.'}</h2>
+            <p>{isDa ? 'Strukturen er enkel, fordi tiden skal bruges på det, du faktisk skal have afklaret.' : 'The structure is simple because the time should be spent on what you actually need to clarify.'}</p>
           </div>
-          <ol className="mt-10 grid border-l border-t border-gray-300 md:grid-cols-3">
-            {steps.map(([title, body], index) => (
-              <li key={title} className="min-h-[220px] border-b border-r border-gray-300 bg-white p-6">
-                <p className="editorial-label text-gray-400">0{index + 1}</p>
-                <h3 className="mt-10 text-2xl font-semibold text-gray-950">{title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600">{body}</p>
+          <ol className="editorial-journey">
+            {stages.map(([stage, title, body], index) => (
+              <li key={stage}>
+                <span>0{index + 1}</span>
+                <p>{stage}</p>
+                <h3>{title}</h3>
+                <div>{body}</div>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="border-y border-gray-200 bg-white px-5 py-14 sm:px-8 md:py-20 lg:px-12">
-        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-          <div>
-            <p className="kicker mb-5">{lang === 'da' ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists'}</p>
-            <h2 className="display-lg max-w-3xl">{copy.problem}</h2>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600">
-              {lang === 'da'
-                ? 'Naetwork gør den viden mindre tilfældig: relevant erfaring bliver struktureret omkring den beslutning, du faktisk står overfor.'
-                : 'Naetwork makes that knowledge less random by structuring relevant experience around the decision you actually face.'}
-            </p>
+      <section className="public-section public-section--mist">
+        <div className="home-shell clarity-split">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Klar forventningsafstemning' : 'Clear expectations'}</p>
+            <h2>{isDa ? 'Hvad du får - og hvad du ikke køber.' : 'What you get - and what you are not buying.'}</h2>
+            <p>{isDa ? 'Naetwork giver adgang til erfaring og et bedre beslutningsgrundlag. Ikke løfter, der ikke kan holdes.' : 'Naetwork provides access to experience and a better basis for a decision, not promises that cannot be kept.'}</p>
           </div>
-          <aside className="border-t border-gray-300">
-            {boundaries.map((item) => (
-              <p key={item} className="flex items-center gap-3 border-b border-gray-300 py-4 text-sm font-semibold text-gray-700">
-                <Check size={15} aria-hidden="true" />
-                {item}
-              </p>
-            ))}
-          </aside>
+          <div className="clarity-columns">
+            <div>
+              <h3>{isDa ? 'Det kan du forvente' : 'What to expect'}</h3>
+              {included.map((item) => <p key={item}><Check size={16} aria-hidden="true" />{item}</p>)}
+            </div>
+            <div>
+              <h3>{isDa ? 'Det lover Naetwork ikke' : 'What Naetwork does not promise'}</h3>
+              {notIncluded.map((item) => <p key={item}><X size={16} aria-hidden="true" />{item}</p>)}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="public-cta">
+        <div className="home-shell">
+          <h2>{isDa ? 'Hvilken beslutning står du med?' : 'What decision are you facing?'}</h2>
+          <p>{isDa ? 'Start uden at oprette en konto. Vælg situationen, og se hvilken erfaring der er relevant.' : 'Start without creating an account. Choose the situation and see what experience is relevant.'}</p>
+          <Link href="/start" className="button-primary">
+            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </section>
     </main>

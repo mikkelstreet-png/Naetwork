@@ -1,69 +1,88 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { useLanguage } from '@/context/LanguageContext'
-import { ACCESS_PATHS, SESSION_CONCEPTS, accessPath, localized } from '@/lib/brand'
-import { SESSION_MINUTES } from '@/lib/platform'
+import { ArrowRight, Clock3 } from 'lucide-react'
 import { PublicPageHero } from '@/components/PublicPageHero'
+import { useLanguage } from '@/context/LanguageContext'
+import { SESSION_CONCEPTS, accessPath, localized } from '@/lib/brand'
+import { SESSION_MINUTES } from '@/lib/platform'
+
+const USE_CASES = {
+  'should-i-apply': { da: 'Du overvejer en konkret stilling og vil vide, om din profil er stærk nok.', en: 'You are considering a specific role and want to know whether your profile is strong enough.' },
+  'inside-the-role': { da: 'Du vil forstå hverdagen, kravene og karrierevejen i en bestemt rolle.', en: 'You want to understand the day-to-day work, expectations and path in a specific role.' },
+  'inside-the-company': { da: 'Du overvejer en virksomhed og mangler relevant kontekst før din beslutning.', en: 'You are considering a company and need relevant context before deciding.' },
+  'cv-reality-check': { da: 'Du målretter dit CV mod en bestemt type rolle og ønsker direkte feedback.', en: 'You are targeting a specific type of role and want direct feedback on your CV.' },
+  'interview-ready': { da: 'Du har en konkret jobsamtale og vil træne det sandsynlige format.', en: 'You have a specific interview and want to rehearse the likely format.' },
+  'career-direction': { da: 'Du sammenligner flere realistiske retninger og har brug for at prioritere.', en: 'You are comparing realistic directions and need to prioritize.' },
+  'career-pivot': { da: 'Du vil skifte branche eller funktion og har brug for en troværdig overgangsplan.', en: 'You want to change industry or function and need a credible transition plan.' },
+  'offer-review': { da: 'Du har modtaget et tilbud og vil vurdere rolle, mandat, vilkår og risici.', en: 'You have received an offer and want to assess the role, mandate, terms and risks.' },
+} as const
 
 export function SessionsContent() {
   const { lang } = useLanguage()
+  const isDa = lang === 'da'
 
   return (
     <main className="page-shell">
       <PublicPageHero
-        eyebrow={`Career Access / ${lang === 'da' ? 'Sessioner' : 'Sessions'}`}
-        title={lang === 'da' ? 'Start med resultatet, du har brug for.' : 'Start with the outcome you need.'}
-        body={lang === 'da'
-          ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Forskellen ligger i situationen, forberedelsen og det konkrete resultat.`
-          : `Every session lasts ${SESSION_MINUTES} minutes. The difference is the situation, preparation and concrete outcome.`}
-        action={{ href: '/start', label: lang === 'da' ? 'Find den relevante session' : 'Find the relevant session' }}
-        sequence={lang === 'da'
-          ? ['Situation', 'Relevant erfaring', 'Konkret resultat']
-          : ['Situation', 'Relevant experience', 'Concrete outcome']}
+        eyebrow={isDa ? 'Sessioner' : 'Sessions'}
+        title={isDa ? 'Vælg det, der skal være klarere bagefter.' : 'Choose what should be clearer afterwards.'}
+        body={isDa
+          ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Situationen bestemmer forberedelsen, den relevante erfaring og det konkrete resultat.`
+          : `Every session lasts ${SESSION_MINUTES} minutes. The situation defines the preparation, relevant experience and concrete outcome.`}
+        action={{ href: '/start', label: isDa ? 'Find den relevante session' : 'Find the relevant session' }}
+        sequence={isDa
+          ? ['Konkret situation', 'Relevant professionel', 'Aftalt resultat']
+          : ['Concrete situation', 'Relevant professional', 'Agreed outcome']}
       />
 
-      <section className="px-5 py-14 sm:px-8 md:py-20 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="border-t border-gray-200">
+      <section className="public-section">
+        <div className="home-shell">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Otte konkrete formål' : 'Eight concrete purposes'}</p>
+            <h2>{isDa ? 'Ikke generel karrieresnak.' : 'Not a generic career conversation.'}</h2>
+            <p>{isDa ? 'Hver session starter med en genkendelig situation og slutter med et defineret resultat.' : 'Every session starts with a recognizable situation and ends with a defined outcome.'}</p>
+          </div>
+
+          <div className="session-catalog">
             {SESSION_CONCEPTS.map((session, index) => {
               const path = accessPath(session.path)
               return (
-                <article key={session.id} id={session.id} className="grid gap-4 border-b border-gray-200 py-7 md:grid-cols-[70px_280px_1fr_auto] md:items-start md:gap-8">
-                  <p className="editorial-label text-gray-400">{String(index + 1).padStart(2, '0')}</p>
-                  <div>
-                    <p className="editorial-label mb-2">{localized(path.label, lang)}</p>
-                    <h2 className="text-2xl font-semibold text-gray-950">{session.title}</h2>
+                <article key={session.id} id={session.id}>
+                  <div className="session-catalog__meta">
+                    <span>0{index + 1}</span>
+                    <p>{localized(path.label, lang)}</p>
                   </div>
-                  <p className="max-w-2xl text-sm leading-relaxed text-gray-600">{localized(session.outcome, lang)}</p>
-                  <Link href={`/start?path=${session.path}`} className="inline-flex items-center gap-2 text-sm font-semibold text-gray-950 underline decoration-gray-300 underline-offset-4">
-                    {lang === 'da' ? 'Start her' : 'Start here'}
-                    <ArrowRight size={15} aria-hidden="true" />
-                  </Link>
+                  <div className="session-catalog__main">
+                    <h2>{localized(session.title, lang)}</h2>
+                    <p>{USE_CASES[session.id][lang]}</p>
+                  </div>
+                  <div className="session-catalog__outcome">
+                    <p>{isDa ? 'Du går derfra med' : 'You leave with'}</p>
+                    <strong>{localized(session.outcome, lang)}</strong>
+                  </div>
+                  <div className="session-catalog__action">
+                    <span><Clock3 size={14} aria-hidden="true" /> {SESSION_MINUTES} min</span>
+                    <Link href={`/start?path=${session.path}`} aria-label={`${isDa ? 'Start' : 'Start'}: ${localized(session.title, lang)}`}>
+                      {isDa ? 'Start' : 'Start'}
+                      <ArrowRight size={15} aria-hidden="true" />
+                    </Link>
+                  </div>
                 </article>
               )
             })}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 grid gap-4 border-y border-gray-300 py-8 md:grid-cols-[1fr_auto] md:items-center">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-950">{lang === 'da' ? 'Ikke sikker på sessionen?' : 'Not sure which session fits?'}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">{lang === 'da' ? 'Beskriv situationen. Naetwork hjælper dig med at vælge den relevante indgang.' : 'Describe the situation. Naetwork helps you choose the relevant starting point.'}</p>
-            </div>
-            <Link href="/start" className="button-primary w-fit">
-              {lang === 'da' ? 'Start med din situation' : 'Start with your situation'}
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
-
-          <nav aria-label={lang === 'da' ? 'Indgange til sessioner' : 'Session pathways'} className="mt-10 flex flex-wrap gap-2">
-            {ACCESS_PATHS.map((path) => (
-              <Link key={path.id} href={path.href} className="button-secondary min-h-10 px-4 py-2 text-xs">
-                {localized(path.label, lang)}
-              </Link>
-            ))}
-          </nav>
+      <section className="public-cta">
+        <div className="home-shell">
+          <h2>{isDa ? 'Ikke sikker på, hvilken session der passer?' : 'Not sure which session fits?'}</h2>
+          <p>{isDa ? 'Beskriv situationen med dine egne ord. Du behøver ikke vælge produktet på forhånd.' : 'Describe the situation in your own words. You do not need to choose the product in advance.'}</p>
+          <Link href="/start" className="button-primary">
+            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </section>
     </main>

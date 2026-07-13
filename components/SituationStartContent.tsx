@@ -62,8 +62,8 @@ export function SituationStartContent() {
         eyebrow="Career Access"
         title={lang === 'da' ? 'Hvad står du overfor?' : 'What are you facing?'}
         body={lang === 'da'
-          ? 'Start med situationen, ikke med et profilkatalog. Dit valg hjælper med at afgrænse den erfaring, der er relevant for næste skridt.'
-          : 'Start with the situation, not a profile directory. Your choice helps narrow the experience relevant to the next step.'}
+          ? 'Vælg den situation, der ligger tættest på din. Så afgrænser Naetwork den erfaring, der er relevant for dit næste skridt.'
+          : 'Choose the situation closest to yours. Naetwork will narrow the experience relevant to your next step.'}
         sequence={lang === 'da'
           ? ['Vælg situation', 'Vælg felt', 'Se relevant erfaring']
           : ['Choose situation', 'Choose field', 'See relevant experience']}
@@ -123,8 +123,8 @@ export function SituationStartContent() {
 
           <aside aria-live="polite" className="access-selection-panel h-fit overflow-hidden p-6 text-white lg:sticky lg:top-24 lg:p-7">
             <div className="signal-rail absolute inset-x-0 top-0" aria-hidden="true"><span /><span /><span /><span /></div>
-            <p className="editorial-label text-white/50">{lang === 'da' ? 'Din adgang' : 'Your access'}</p>
-            <h2 className="mt-4 text-3xl font-semibold leading-tight">{selected ? localized(selected.label, lang) : lang === 'da' ? 'Start med situationen' : 'Start with the situation'}</h2>
+            <p className="editorial-label text-white/60">{lang === 'da' ? 'Dit valg' : 'Your choice'}</p>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight">{selected ? localized(selected.label, lang) : lang === 'da' ? 'Vælg en situation' : 'Choose a situation'}</h2>
             <p className="mt-4 text-sm leading-relaxed text-white/65">
               {selected ? localized(selected.result, lang) : lang === 'da' ? 'Dit valg gør det muligt at prioritere relevant erfaring frem for titel eller popularitet.' : 'Your choice lets us prioritize relevant experience over title or popularity.'}
             </p>
@@ -144,7 +144,7 @@ export function SituationStartContent() {
 
             {completed === 2 ? (
               <Link href={profileHref} className="button-inverse mt-6 w-full">
-                {lang === 'da' ? 'Se relevant erfaring' : 'See relevant experience'}
+                {lang === 'da' ? 'Se relevante profiler' : 'See relevant profiles'}
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
             ) : (

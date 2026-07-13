@@ -17,7 +17,7 @@ export function Footer() {
     {
       title: 'Platform',
       links: [
-        { href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' },
+        { href: '/start', label: isDa ? 'Beskriv din situation' : 'Describe your situation' },
         { href: '/how-it-works', label: isDa ? 'Sådan fungerer det' : 'How it works' },
         { href: '/sessions', label: isDa ? 'Sessioner' : 'Sessions' },
         { href: '/contact', label: isDa ? 'Kontakt' : 'Contact' },
@@ -61,7 +61,7 @@ export function Footer() {
               <span className="block font-['Space_Grotesk'] text-xl font-bold text-white">Naetwork</span>
             </Link>
             <p className="mt-7 max-w-md font-['Space_Grotesk'] text-2xl font-medium leading-tight text-white sm:text-4xl">
-              {brand.positioning}
+              {brand.productLine}
             </p>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-white/55">
               {brand.oneSentence}
@@ -71,7 +71,7 @@ export function Footer() {
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/start" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
-                {isDa ? 'Start med din situation' : 'Start with your situation'} <span aria-hidden="true">→</span>
+                {isDa ? 'Beskriv din situation' : 'Describe your situation'} <span aria-hidden="true">→</span>
               </Link>
               <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="inline-flex text-sm font-medium text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white hover:decoration-white">{PUBLIC_SUPPORT_EMAIL}</a>
             </div>
@@ -100,8 +100,6 @@ export function Footer() {
           </div>
           <p className="shrink-0 text-xs text-white/58">{isDa ? `© ${currentYear} Naetwork. Alle rettigheder forbeholdes.` : `© ${currentYear} Naetwork. All rights reserved.`}</p>
         </div>
-
-        <p aria-hidden="true" className="mt-12 overflow-hidden border-t border-white/10 pt-8 font-['Space_Grotesk'] text-[3.6rem] font-medium leading-none text-white/[0.08] sm:text-[7rem] md:text-[9rem]">Naetwork</p>
       </div>
     </footer>
   );

@@ -1,325 +1,230 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import {
-  ArrowRight,
-  Check,
-  CheckCircle2,
-  Compass,
-  FileText,
-  MessageSquare,
-  Search,
-  Target,
-} from 'lucide-react';
-import { useLanguage } from '@/context/LanguageContext';
-import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
-import { AccessHero } from '@/components/AccessHero';
-import { LivingImpactLine } from '@/components/LivingImpactLine';
-import {
-  CONTRIBUTION_MAX,
-  CONTRIBUTION_MIN,
-  PRICE_MAX,
-  PRICE_MIN,
-  PRICE_OPTIONS,
-  SESSION_MINUTES,
-  contributionAmount,
-  formatDkk,
-} from '@/lib/platform';
+import Link from 'next/link'
+import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { AccessHero } from '@/components/AccessHero'
+import { LivingImpactLine } from '@/components/LivingImpactLine'
+import { useLanguage } from '@/context/LanguageContext'
+import { ACCESS_PATHS, BRAND_COPY, SESSION_CONCEPTS, localized } from '@/lib/brand'
+import { CONTRIBUTION_MAX, CONTRIBUTION_MIN, SESSION_MINUTES } from '@/lib/platform'
 
 export function HomeContent() {
-  const { lang } = useLanguage();
-  const isDa = lang === 'da';
+  const { lang } = useLanguage()
+  const isDa = lang === 'da'
+  const brand = BRAND_COPY[lang]
+  const pathColors = ['access-path-card--1', 'access-path-card--2', 'access-path-card--3', 'access-path-card--4'] as const
+  const featuredSessionIds = ['inside-the-role', 'cv-reality-check', 'interview-ready', 'offer-review']
+  const featuredSessions = SESSION_CONCEPTS.filter((session) => featuredSessionIds.includes(session.id))
 
-  const brand = BRAND_COPY[lang];
-  const accessColors = ['bg-[#bcecf0]', 'bg-[#ccead8]', 'bg-[#cdddf2]', 'bg-[#dce8ad]'] as const;
-  const fields = ACCESS_PATHS.map((path, index) => ({
-    name: localized(path.label, lang),
-    href: path.href,
-    color: accessColors[index],
-    body: localized(path.description, lang),
-  }));
+  const accessExamples = isDa
+    ? [
+        ['Rollen', 'Har selv udført arbejdet', 'Kan forklare hverdagen, kravene og de kompromiser, jobopslaget ikke viser.'],
+        ['Rekrutteringen', 'Har vurderet lignende kandidater', 'Kan se, hvad der styrker dit match, og hvad der reelt vil skabe tvivl.'],
+        ['Karriereskiftet', 'Har gennemført en relevant overgang', 'Kan udfordre din plan med erfaring fra de barrierer og mellemtrin, skiftet kræver.'],
+        ['Det afgørende øjeblik', 'Kender interviewet, casen eller forhandlingen', 'Kan træne den konkrete situation og give direkte feedback, mens den stadig kan bruges.'],
+      ]
+    : [
+        ['The role', 'Has done the work', 'Can explain the day-to-day reality, expectations and trade-offs the job description leaves out.'],
+        ['The hiring process', 'Has assessed similar candidates', 'Can see what strengthens your fit and what will genuinely create doubt.'],
+        ['The career change', 'Has made a relevant transition', 'Can challenge your plan with experience of the barriers and intermediate moves involved.'],
+        ['The decisive moment', 'Knows the interview, case or negotiation', 'Can rehearse the specific situation and give direct feedback while it still matters.'],
+      ]
 
-  const outcomes = [
-    {
-      icon: Compass,
-      title: isDa ? 'Forstå arbejdet' : 'Understand the work',
-      body: isDa ? 'Få den kontekst om rolle, virksomhed og forventninger, som jobopslaget ikke giver.' : 'Get the context on the role, company and expectations that the job description leaves out.',
-    },
-    {
-      icon: MessageSquare,
-      title: isDa ? 'Se hvor du står' : 'See where you stand',
-      body: isDa ? 'Få et ærligt syn på dit udgangspunkt, dine stærkeste argumenter og de reelle huller.' : 'Get an honest view of your position, strongest arguments and real gaps.',
-    },
-    {
-      icon: Target,
-      title: isDa ? 'Forbered processen' : 'Prepare for the process',
-      body: isDa ? 'Arbejd konkret med CV, ansøgning, interview, case eller forhandling.' : 'Work concretely on your CV, application, interview, case or negotiation.',
-    },
-    {
-      icon: FileText,
-      title: isDa ? 'Vælg næste skridt' : 'Choose the next step',
-      body: isDa ? 'Afslut med klarhed om, hvad du bør gøre, ændre eller undersøge nu.' : 'Finish with clarity on what to do, change or investigate next.',
-    },
-  ] as const;
+  const steps = isDa
+    ? [
+        ['Beskriv beslutningen', 'Fortæl kort, hvad du overvejer, og hvad du har brug for at få afklaret.'],
+        ['Se hvorfor erfaringen er relevant', 'Vælg blandt professionelle, hvis erfaring matcher situationen - ikke blot branchen eller titlen.'],
+        ['Brug timen på det væsentlige', 'Del relevant kontekst på forhånd, og afslut med en vurdering og prioriterede næste skridt.'],
+      ]
+    : [
+        ['Describe the decision', 'Tell us what you are considering and what you need to clarify.'],
+        ['See why the experience is relevant', 'Choose professionals whose experience fits the situation, not just the industry or title.'],
+        ['Use the hour on what matters', 'Share relevant context beforehand and finish with an assessment and prioritized next steps.'],
+      ]
 
-  const steps = [
-    [Target, isDa ? 'Fortæl, hvad du overvejer' : 'Tell us what you are considering', isDa ? 'Start med rollen, virksomheden, ansøgningen eller beslutningen foran dig.' : 'Start with the role, company, application or decision in front of you.'],
-    [Search, isDa ? 'Mød relevant erfaring' : 'Meet relevant experience', isDa ? 'Find mennesker, der kender situationen fra den anden side.' : 'Find people who know the situation from the other side.'],
-    [CheckCircle2, isDa ? 'Gå videre med klarhed' : 'Leave with clarity', isDa ? 'Brug sessionen på ét konkret spørgsmål og prioritér næste skridt.' : 'Use the session for one concrete question and prioritize the next step.'],
-  ] as const;
-
-  const profileFacts = [
-    [isDa ? 'Baggrund' : 'Background', isDa ? 'Rolle, virksomhed og LinkedIn gennemgås' : 'Role, company and LinkedIn are reviewed'],
-    [isDa ? 'Fokus' : 'Focus', isDa ? 'Konkrete emner og forventet output' : 'Concrete topics and expected output'],
-    [isDa ? 'Pris' : 'Price', `${formatDkk(PRICE_MIN)}-${PRICE_MAX.toLocaleString('da-DK')} ${isDa ? 'inkl. moms' : 'incl. VAT'} / ${SESSION_MINUTES} min`],
-    [isDa ? 'Bidrag' : 'Impact', `${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% ${isDa ? 'af pris ekskl. moms' : 'of the price excl. VAT'}`],
-  ] as const;
-
-  const faqs = [
-    [
-      isDa ? 'Hvad kan de 60 minutter bruges til?' : 'What can the 60 minutes be used for?',
-      isDa ? 'Du vælger ét konkret fokus i dit brief, eksempelvis karriereretning, interview, case eller CV. Sessionen giver kvalificeret modspil og et skarpere næste træk, men lover ikke et bestemt karriereresultat.' : 'Choose one concrete focus in your brief, such as career direction, an interview, a case or your CV. The session provides informed challenge and a sharper next move, not a guaranteed career outcome.',
-    ],
-    [
-      isDa ? 'Hvordan gennemgås de professionelle?' : 'How are professionals reviewed?',
-      isDa ? 'Naetwork gennemgår den indsendte rolle, virksomhedserfaring og LinkedIn, før en profil kan publiceres. Det er en kvalitetskontrol, ikke en baggrundsundersøgelse eller garanti for et bestemt resultat.' : 'Naetwork reviews the submitted role, company experience and LinkedIn before a profile can be published. It is a quality check, not a background investigation or guarantee of a particular outcome.',
-    ],
-    [
-      isDa ? 'Hvorfor varierer prisen?' : 'Why does the price vary?',
-      isDa ? 'Den professionelle vælger mellem fire faste priser ud fra erfaring og fokus. Den samlede pris inklusive moms vises altid, før du sender en bookinganmodning.' : 'The professional selects one of four fixed prices based on experience and focus. The total price including VAT is always shown before you send a booking request.',
-    ],
-    [
-      isDa ? 'Hvordan beregnes bidraget?' : 'How is the contribution calculated?',
-      isDa ? 'Den professionelle vælger 40%, 60%, 80% eller 90% af sessionsprisen eksklusive moms. Det konkrete beløb vises før booking. Naetwork er et uafhængigt initiativ og ikke officielt tilknyttet Kræftens Bekæmpelse.' : 'The professional selects 40%, 60%, 80% or 90% of the session price excluding VAT. The exact amount is shown before booking. Naetwork is independent and is not officially affiliated with Kræftens Bekæmpelse.',
-    ],
-    [
-      isDa ? 'Hvornår er bookingen bindende?' : 'When is the booking binding?',
-      isDa ? 'Din anmodning bliver først til en aftale, når den professionelle bekræfter tidspunktet. Betaling er endnu ikke aktiveret, så der trækkes ikke et beløb nu.' : 'Your request becomes an appointment when the professional confirms the time. Payments are not enabled yet, so no amount is charged now.',
-    ],
-  ] as const;
-
-  const priceTiers = isDa
-    ? ['Specialist', 'Erfaren specialist / manager', 'Senior profil', 'Særligt erfaren profil']
-    : ['Specialist', 'Experienced specialist / manager', 'Senior profile', 'Distinct senior expertise'];
+  const faqs = isDa
+    ? [
+        ['Hvad kan en session bruges til?', 'Til ét konkret karrierespørgsmål: eksempelvis om du bør søge en rolle, hvordan dit CV bør målrettes, hvad du skal forvente i et interview, eller hvordan et jobtilbud bør vurderes.'],
+        ['Hvem møder jeg?', 'En professionel med erfaring, der er relevant for din konkrete situation. Naetwork gennemgår rolle, virksomhedserfaring og LinkedIn før publicering. Det er kvalitetskontrol - ikke en garanti for et bestemt resultat.'],
+        ['Hvad får jeg efter 60 minutter?', 'Målet aftales i briefet. Du skal som minimum stå med et klarere svar, de vigtigste risici eller huller og prioriterede næste skridt.'],
+        ['Hvad koster det?', 'Den professionelle vælger én af fire faste priser: DKK 600, 900, 1.200 eller 1.800 inklusive moms. Den fulde pris vises før booking.'],
+        ['Hvordan fungerer bidraget?', `Den professionelle vælger at afsætte ${CONTRIBUTION_MIN}%, 60%, 80% eller ${CONTRIBUTION_MAX}% af sessionsprisen eksklusive moms. Det præcise beløb vises før booking. Naetwork er et uafhængigt initiativ og ikke officielt tilknyttet Kræftens Bekæmpelse.`],
+      ]
+    : [
+        ['What can a session be used for?', 'One concrete career question: whether to apply, how to target your CV, what to expect in an interview or how to assess an offer.'],
+        ['Who will I meet?', 'A professional with experience relevant to your situation. Naetwork reviews role, company experience and LinkedIn before publication. This is quality control, not a guarantee of a particular result.'],
+        ['What should I have after 60 minutes?', 'The intended outcome is set in the brief. At minimum, you should leave with a clearer answer, the main risks or gaps and prioritized next steps.'],
+        ['What does it cost?', 'The professional selects one of four fixed prices: DKK 600, 900, 1,200 or 1,800 including VAT. The full price is shown before booking.'],
+        ['How does the contribution work?', `The professional allocates ${CONTRIBUTION_MIN}%, 60%, 80% or ${CONTRIBUTION_MAX}% of the session price excluding VAT. The exact amount is shown before booking. Naetwork is independent and not officially affiliated with Kræftens Bekæmpelse.`],
+      ]
 
   return (
     <main>
       <AccessHero />
 
-      <section className="border-b border-[#cacac2] bg-white px-5 pb-16 pt-0 sm:px-8 sm:py-20 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-6 border-t border-[#cacac2] pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker">{isDa ? 'Fire indgange' : 'Four starting points'}</p>
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h2 className="max-w-3xl text-3xl font-medium leading-[1.02] text-gray-950 text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Start der, hvor du står.' : 'Start where you are.'}
-              </h2>
-              <p className="max-w-xs text-sm leading-relaxed text-gray-500">{isDa ? 'Explore, Prepare, Apply eller Perform hjælper dig med at vælge den relevante vej ind.' : 'Explore, Prepare, Apply or Perform helps you choose the relevant way in.'}</p>
+      <section className="home-thesis">
+        <div className="home-shell home-thesis__grid">
+          <div>
+            <p className="section-eyebrow">{isDa ? 'Hvorfor Career Access' : 'Why Career Access'}</p>
+            <h2>{brand.problem}</h2>
+          </div>
+          <div className="home-thesis__answer">
+            <p className="home-thesis__lead">
+              {isDa
+                ? 'Naetwork gør den viden tilgængelig i et klart format: én relevant person, ét konkret spørgsmål og 60 minutter med et aftalt resultat.'
+                : 'Naetwork makes that knowledge accessible in a clear format: one relevant person, one concrete question and 60 minutes with an agreed outcome.'}
+            </p>
+            <div className="home-thesis__principles">
+              <span>{isDa ? 'Situation før profil' : 'Situation before profile'}</span>
+              <span>{isDa ? 'Relevans før senioritet' : 'Relevance before seniority'}</span>
+              <span>{isDa ? 'Resultat før samtaletid' : 'Outcome before conversation time'}</span>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10 grid grid-cols-2 overflow-hidden border border-black/15 lg:grid-cols-4">
-            {fields.map((field, index) => (
-              <Link key={field.name} href={field.href} className={`field-slab group relative flex min-h-[200px] flex-col justify-between border-b border-r border-black/15 p-4 text-gray-950 even:border-r-0 sm:min-h-[250px] sm:p-5 lg:border-b-0 lg:even:border-r lg:last:border-r-0 ${field.color}`}>
-                <div className="flex items-center justify-between">
-                  <span className="editorial-label text-gray-700">N/{String(index + 1).padStart(2, '0')}</span>
-                  <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" size={19} aria-hidden="true" />
-                </div>
+      <section className="home-section home-section--paper">
+        <div className="home-shell">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Fire måder at begynde' : 'Four ways to begin'}</p>
+            <h2>{isDa ? 'Start med det, du skal have afklaret.' : 'Start with what you need to clarify.'}</h2>
+            <p>{isDa ? 'Du behøver ikke kende den rigtige session eller person på forhånd.' : 'You do not need to know the right session or person in advance.'}</p>
+          </div>
+          <div className="access-path-grid">
+            {ACCESS_PATHS.map((path, index) => (
+              <Link key={path.id} href={path.href} className={`access-path-card ${pathColors[index]}`}>
+                <span className="access-path-card__index">0{index + 1}</span>
                 <div>
-                  <h3 className="text-base font-semibold leading-[1.05] sm:text-3xl">{field.name}</h3>
-                  <p className="mt-3 text-xs font-semibold leading-relaxed text-gray-700">{field.body}</p>
+                  <p>{localized(path.label, lang)}</p>
+                  <h3>{localized(path.title, lang)}</h3>
+                  <span>{localized(path.description, lang)}</span>
                 </div>
+                <ArrowRight size={19} aria-hidden="true" />
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-[#09090b] px-5 py-16 text-white sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
-            <div className="lg:sticky lg:top-28 lg:h-fit">
-              <p className="kicker mb-6 text-white/58">{isDa ? 'Hvorfor Naetwork findes' : 'Why Naetwork exists'}</p>
-              <h2 className="max-w-xl text-4xl font-medium leading-[1] text-white text-balance sm:text-5xl md:text-6xl">
-                {brand.problem}
-              </h2>
-              <p className="mt-6 max-w-lg text-sm leading-relaxed text-white/55 md:text-base">
-                {isDa ? 'Naetwork gør den viden mindre tilfældig og strukturerer den omkring beslutningen foran dig.' : 'Naetwork makes that knowledge less random and structures it around the decision in front of you.'}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 border-l border-t border-white/16">
-              {outcomes.map(({ icon: Icon, title, body }, index) => (
-                <article key={title} className="group relative min-h-[220px] border-b border-r border-white/16 p-4 transition-colors duration-300 hover:bg-white/[0.045] sm:min-h-[230px] sm:p-7">
-                  <div className={`absolute inset-x-0 top-0 h-[3px] ${fields[index].color}`} aria-hidden="true" />
-                  <div className="flex items-center justify-between">
-                    <span className="flex h-8 w-8 items-center justify-center border border-white/20 text-white/75 sm:h-9 sm:w-9"><Icon size={16} strokeWidth={1.7} aria-hidden="true" /></span>
-                    <span className="editorial-label text-white/50" aria-hidden="true">0{index + 1}</span>
-                  </div>
-                  <h3 className="mt-8 text-base font-semibold leading-tight text-white sm:mt-10 sm:text-xl">{title}</h3>
-                  <p className="mt-3 text-xs leading-relaxed text-white/52 sm:text-sm">{body}</p>
-                </article>
-              ))}
-            </div>
+      <section className="home-section home-section--ink">
+        <div className="home-shell">
+          <div className="section-heading section-heading--light">
+            <p className="section-eyebrow">{isDa ? 'Sådan vurderes relevans' : 'How relevance is assessed'}</p>
+            <h2>{isDa ? 'Ikke den mest kendte profil. Den mest relevante erfaring.' : 'Not the most prominent profile. The most relevant experience.'}</h2>
+            <p>{isDa ? 'Hvert match skal kunne forklares med erfaring, der er konkret nyttig i din situation.' : 'Every match should be explainable through experience that is concretely useful in your situation.'}</p>
           </div>
+          <div className="experience-ledger">
+            {accessExamples.map(([context, evidence, value], index) => (
+              <article key={context}>
+                <span>0{index + 1}</span>
+                <p>{context}</p>
+                <h3>{evidence}</h3>
+                <div>{value}</div>
+              </article>
+            ))}
+          </div>
+          <Link href="/start" className="button-inverse home-inline-action">
+            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </section>
 
-      <section id="how-it-works" className="border-b border-[#cacac2] bg-[#f1f1ec] px-5 py-16 sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-8 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <div>
-              <p className="kicker mb-5">{isDa ? 'Fra situation til næste skridt' : 'From situation to next step'}</p>
-              <h2 className="text-4xl font-medium leading-none text-gray-950 sm:text-5xl">{isDa ? 'Tre klare trin.' : 'Three clear steps.'}</h2>
-            </div>
-            <p className="max-w-lg text-sm leading-relaxed text-gray-600 md:justify-self-end md:text-right">{isDa ? 'Fortæl, hvad du overvejer. Mød relevant erfaring. Gå videre med klarhed.' : 'Tell us what you are considering. Meet relevant experience. Leave with clarity.'}</p>
+      <section className="home-section home-section--white">
+        <div className="home-shell">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Sessioner med et formål' : 'Sessions with a purpose'}</p>
+            <h2>{isDa ? 'En time med et tydeligt resultat.' : 'One hour with a clear outcome.'}</h2>
+            <p>{isDa ? 'Sessionstypen bestemmer forberedelsen og det, du skal stå tilbage med - ikke længden.' : 'The session type defines the preparation and outcome, not the duration.'}</p>
           </div>
-
-          <ol className="process-grid mt-10 grid grid-cols-1 border-l border-t border-[#bfbfb7] sm:grid-cols-3">
-            {steps.map(([Icon, title, body], index) => (
-              <li key={title} className="relative min-h-[220px] border-b border-r border-[#bfbfb7] bg-white/45 p-4 sm:min-h-[245px] sm:p-7">
-                <div className={`absolute inset-x-0 top-0 h-1 ${fields[index].color}`} aria-hidden="true" />
-                <div className="flex items-center justify-between">
-                  <Icon size={18} strokeWidth={1.7} aria-hidden="true" />
-                  <span className="editorial-label">0{index + 1}</span>
+          <div className="session-index">
+            {featuredSessions.map((session, index) => (
+              <Link key={session.id} href={`/sessions#${session.id}`}>
+                <span className="session-index__number">0{index + 1}</span>
+                <div>
+                  <h3>{localized(session.title, lang)}</h3>
+                  <p>{localized(session.outcome, lang)}</p>
                 </div>
-                <h3 className="mt-9 text-base font-semibold leading-tight text-gray-950 sm:mt-12 sm:text-xl">{title}</h3>
-                <p className="mt-3 text-xs leading-relaxed text-gray-600 sm:text-sm">{body}</p>
+                <span className="session-index__duration">{SESSION_MINUTES} min</span>
+                <ArrowRight size={18} aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+          <Link href="/sessions" className="button-secondary home-inline-action">
+            {isDa ? 'Se alle sessioner' : 'See all sessions'}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="home-section home-section--mist">
+        <div className="home-shell">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Fra tvivl til næste skridt' : 'From uncertainty to a next step'}</p>
+            <h2>{isDa ? 'Forberedt før. Fokuseret under. Konkret efter.' : 'Prepared before. Focused during. Concrete after.'}</h2>
+          </div>
+          <ol className="journey-steps">
+            {steps.map(([title, body], index) => (
+              <li key={title}>
+                <span>0{index + 1}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      <section id="profile-universe" className="bg-white px-5 py-16 sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-8 border-t border-[#cacac2] pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker">{isDa ? 'Relevant erfaring' : 'Relevant experience'}</p>
-            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <h2 className="max-w-3xl text-4xl font-medium leading-[1] text-gray-950 text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Se præcis, hvorfor erfaringen er relevant.' : 'See exactly why the experience is relevant.'}
-              </h2>
-              <Link href="/start" className="button-secondary w-fit whitespace-nowrap">
-                {isDa ? 'Start med din situation' : 'Start with your situation'}
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-10 grid overflow-hidden border border-black/15 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="relative flex min-h-[330px] flex-col justify-between bg-[#09090b] p-6 text-white sm:min-h-[380px] sm:p-8">
-              <div className="signal-rail absolute inset-x-0 top-0"><span /><span /><span /><span /></div>
-              <div className="flex items-start justify-between">
-                <p className="editorial-label text-white/58">{isDa ? 'Profil / N-01' : 'Profile / N-01'}</p>
-                <span className="inline-flex items-center gap-2 border border-white/20 px-3 py-1.5 text-[10px] font-bold uppercase text-white/65"><Check size={12} aria-hidden="true" /> {isDa ? 'Gennemgået' : 'Reviewed'}</span>
-              </div>
-              <div>
-                <p className="max-w-md font-['Space_Grotesk'] text-[1.7rem] font-medium leading-tight sm:text-4xl">{isDa ? 'Relevans før titel. Erfaring før popularitet.' : 'Relevance before title. Experience before popularity.'}</p>
-                <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">{isDa ? 'Profilen viser, hvilke situationer personen kan hjælpe med, og hvad du konkret kan forvente af sessionen.' : 'The profile shows which situations the person can help with and what you can concretely expect from the session.'}</p>
-              </div>
-            </div>
-
-            <dl className="divide-y divide-[#d8d8d1] bg-[#f4f4ef]">
-              {profileFacts.map(([label, value], index) => (
-                <div key={label} className="grid gap-3 p-5 sm:grid-cols-[120px_1fr] sm:items-center sm:p-6">
-                  <dt className="editorial-label">0{index + 1} / {label}</dt>
-                  <dd className="font-['Space_Grotesk'] text-base font-semibold leading-snug text-gray-950 sm:text-lg">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <div className="mt-8 grid border-y border-[#d4d4cd] sm:grid-cols-3">
-            {[
-              isDa ? 'Profilen viser konkret, hvad sessionen kan bruges til' : 'The profile shows what the session can be used for',
-              isDa ? 'En anmodning er først en aftale, når tiden er bekræftet' : 'A request becomes an agreement once the time is confirmed',
-              isDa ? 'Der trækkes ingen betaling, før checkout er aktiveret' : 'No payment is collected until checkout is enabled',
-            ].map((item) => (
-              <div key={item} className="flex items-start gap-3 border-b border-[#d4d4cd] py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0">
-                <Check className="mt-0.5 shrink-0" size={15} strokeWidth={2.2} aria-hidden="true" />
-                <p className="text-xs font-semibold leading-relaxed text-gray-700">{item}</p>
-              </div>
-            ))}
+          <div className="trust-note">
+            <ShieldCheck size={20} aria-hidden="true" />
+            <p>{isDa ? 'Du opretter først en konto, når du vil sende en bookinganmodning. Du vælger selv, hvilken kontekst og hvilke dokumenter du deler.' : 'You only create an account when sending a booking request. You choose what context and documents to share.'}</p>
           </div>
         </div>
       </section>
 
-      <section id="pricing" className="bg-[#09090b] px-5 py-16 text-white sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto max-w-[82rem]">
-          <div className="grid gap-8 border-t border-white/20 pt-6 md:grid-cols-[0.7fr_1.3fr] md:items-end">
-            <p className="kicker text-white/58">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
-            <div>
-              <h2 className="max-w-4xl text-4xl font-medium leading-[1] text-white text-balance sm:text-5xl md:text-6xl">
-                {isDa ? 'Fire priser. Ét transparent format.' : 'Four prices. One transparent format.'}
-              </h2>
-              <p className="mt-6 max-w-2xl text-sm leading-relaxed text-white/52 md:text-base">
-                {isDa ? `Den professionelle vælger mellem fire faste priser og fire bidragsniveauer. ${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% af sessionsprisen ekskl. moms afsættes efter en gennemført, betalt session.` : `The professional selects from four fixed prices and four contribution levels. ${CONTRIBUTION_MIN}-${CONTRIBUTION_MAX}% of the session price excl. VAT is allocated after a completed, paid session.`}
-              </p>
-            </div>
+      <section id="pricing" className="home-section home-section--ink">
+        <div className="home-shell">
+          <div className="section-heading section-heading--light">
+            <p className="section-eyebrow">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
+            <h2>{isDa ? 'Fire faste priser. Ét transparent regnestykke.' : 'Four fixed prices. One transparent calculation.'}</h2>
+            <p>{isDa ? 'DKK 600, 900, 1.200 eller 1.800 inklusive moms. Den professionelle vælger også, om 40%, 60%, 80% eller 90% af prisen eksklusive moms afsættes.' : 'DKK 600, 900, 1,200 or 1,800 including VAT. The professional also chooses whether 40%, 60%, 80% or 90% of the price excluding VAT is allocated.'}</p>
           </div>
-
-          <div className="mt-10">
-            <LivingImpactLine />
-          </div>
-
-          <div className="mt-8 border-t border-white/20">
-            <div className="hidden grid-cols-[90px_1fr_1.2fr_1fr_120px] gap-6 border-b border-white/20 py-3 md:grid">
-              <p className="editorial-label text-white/55">{isDa ? 'Valg' : 'Option'}</p>
-              <p className="editorial-label text-white/55">{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</p>
-              <p className="editorial-label text-white/55">{isDa ? 'Profilniveau' : 'Profile level'}</p>
-              <p className="editorial-label text-white/55">{isDa ? 'Minimum afsættes' : 'Minimum allocated'}</p>
-              <p className="editorial-label text-right text-white/55">Format</p>
-            </div>
-            {PRICE_OPTIONS.map((amount, index) => (
-              <div key={amount} className="price-row group grid grid-cols-[46px_1fr_auto] items-center gap-4 border-b border-white/20 py-5 transition-colors duration-300 hover:bg-white/[0.04] md:grid-cols-[90px_1fr_1.2fr_1fr_120px] md:gap-6 md:px-3 md:py-6">
-                <p className="editorial-label text-white/55">0{index + 1}</p>
-                <div>
-                  <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{formatDkk(amount)}</p>
-                  <p className="mt-1 text-[10px] font-semibold leading-tight text-white/60 md:hidden">{isDa ? `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} afsættes` : `Min. ${formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))} allocated`}</p>
-                  <p className="mt-1 text-[10px] font-semibold leading-tight text-white/55 md:hidden">{priceTiers[index]}</p>
-                </div>
-                <p className="hidden text-sm font-semibold text-white/68 md:block">{priceTiers[index]}</p>
-                <p className="hidden text-sm font-semibold text-white/60 md:block">{formatDkk(contributionAmount(amount, CONTRIBUTION_MIN))}</p>
-                <p className="text-right text-xs font-semibold text-white/60">{SESSION_MINUTES} min</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10 flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="font-['Space_Grotesk'] text-2xl font-medium text-white md:text-3xl">{isDa ? 'Find erfaringen bag dit næste valg.' : 'Find the experience behind your next decision.'}</p>
-              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-white/60">{isDa ? 'Bidrag beregnes af prisen ekskl. moms. Bookinganmodninger er aktive; betaling er endnu ikke aktiveret.' : 'Contributions are calculated from the price excl. VAT. Booking requests are active; payments are not yet enabled.'}</p>
-            </div>
-            <Link href="/start" className="button-inverse w-fit">
-              {isDa ? 'Start med din situation' : 'Start with your situation'}
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </div>
+          <LivingImpactLine />
+          <p className="pricing-disclosure">
+            {isDa ? 'Bidrag gælder først efter en gennemført, betalt session. Betaling er endnu ikke aktiveret.' : 'Contributions apply only after a completed, paid session. Payments are not yet enabled.'}
+          </p>
         </div>
       </section>
 
-      <section className="border-b border-[#cacac2] bg-[#f4f4ef] px-5 py-16 sm:px-8 md:py-24 lg:px-12">
-        <div className="mx-auto grid max-w-[82rem] gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
-          <div>
-            <p className="kicker mb-5">{isDa ? 'Før du booker' : 'Before you book'}</p>
-            <h2 className="max-w-lg text-4xl font-medium leading-[1] text-gray-950 text-balance sm:text-5xl">{isDa ? 'Klare svar. Ingen småt gemt væk.' : 'Clear answers. Nothing important hidden.'}</h2>
+      <section className="home-section home-section--paper">
+        <div className="home-shell faq-layout">
+          <div className="section-heading">
+            <p className="section-eyebrow">{isDa ? 'Før du booker' : 'Before you book'}</p>
+            <h2>{isDa ? 'Det vigtigste, før du beslutter dig.' : 'What matters before you decide.'}</h2>
           </div>
-          <div className="border-t border-[#cacac2]">
+          <div className="faq-list">
             {faqs.map(([question, answer], index) => (
-              <details key={question} className="group border-b border-[#cacac2] py-5 open:pb-6">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 text-left marker:content-none">
-                  <span className="flex min-w-0 items-start gap-4">
-                    <span className="editorial-label mt-1 text-gray-400">0{index + 1}</span>
-                    <span className="font-['Space_Grotesk'] text-base font-semibold text-gray-950 sm:text-lg">{question}</span>
-                  </span>
-                  <span className="relative h-5 w-5 shrink-0" aria-hidden="true"><span className="absolute left-1/2 top-1/2 h-px w-4 -translate-x-1/2 bg-gray-950" /><span className="absolute left-1/2 top-1/2 h-4 w-px -translate-y-1/2 bg-gray-950 transition-transform group-open:scale-y-0" /></span>
+              <details key={question}>
+                <summary>
+                  <span>0{index + 1}</span>
+                  <strong>{question}</strong>
+                  <i aria-hidden="true" />
                 </summary>
-                <p className="ml-10 mt-4 max-w-2xl text-sm leading-relaxed text-gray-600 sm:ml-12">{answer}</p>
+                <p>{answer}</p>
               </details>
             ))}
           </div>
         </div>
       </section>
+
+      <section className="home-final">
+        <div className="home-shell">
+          <p className="section-eyebrow">{isDa ? 'Dit næste træk' : 'Your next move'}</p>
+          <h2>{isDa ? 'Start med beslutningen foran dig.' : 'Start with the decision in front of you.'}</h2>
+          <p>{isDa ? 'Beskriv situationen. Så viser Naetwork, hvilken erfaring der er relevant.' : 'Describe the situation. Naetwork will show which experience is relevant.'}</p>
+          <Link href="/start" className="button-primary">
+            {isDa ? 'Beskriv din situation' : 'Describe your situation'}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
     </main>
-  );
+  )
 }

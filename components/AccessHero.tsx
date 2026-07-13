@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, Check, Clock3 } from 'lucide-react'
 import { useState } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { BRAND_COPY, situation, type SituationId } from '@/lib/brand'
@@ -56,7 +56,7 @@ const HERO_SITUATIONS = [
 
 export function AccessHero() {
   const { lang } = useLanguage()
-  const [selectedId, setSelectedId] = useState<SituationId>('interview')
+  const [selectedId, setSelectedId] = useState<SituationId>('role')
   const copy = BRAND_COPY[lang]
   const selected = situation(selectedId)
   const preview = HERO_SITUATIONS.find((item) => item.id === selectedId)!
@@ -76,32 +76,40 @@ export function AccessHero() {
 
       <div className="access-hero__shell">
         <div className="access-hero__meta">
-          <p>Naetwork / {copy.category}</p>
-          <p className="access-hero__positioning hidden sm:block">{copy.positioning}</p>
+          <p>{copy.category}</p>
+          <p className="access-hero__positioning">{isDa ? 'Relevant erfaring. Ét konkret spørgsmål.' : 'Relevant experience. One concrete question.'}</p>
         </div>
 
         <div className="access-hero__copy">
-          <p className="kicker text-white/58">{isDa ? 'Erfaringen bag jobbet' : 'The insight behind the job'}</p>
+          <p className="kicker text-white/62">{isDa ? 'Karriereindsigt fra mennesker, der har været der' : 'Career insight from people who have been there'}</p>
           <h1>{copy.primaryLine}</h1>
           <p className="access-hero__intro">{copy.oneSentence}</p>
           <div className="access-hero__actions">
             <Link href={`/start?situation=${selectedId}`} className="button-inverse">
-              {isDa ? 'Start med din situation' : 'Start with your situation'}
+              {isDa ? 'Beskriv din situation' : 'Describe your situation'}
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
             <Link href="/how-it-works" className="button-ghost-light">
-              {isDa ? 'Se hvordan det fungerer' : 'See how it works'}
+              {isDa ? 'Sådan fungerer det' : 'How it works'}
             </Link>
           </div>
+          <ul className="access-hero__facts" aria-label={isDa ? 'Praktisk information' : 'Practical information'}>
+            <li><Clock3 size={14} aria-hidden="true" /> {isDa ? '60 minutter' : '60 minutes'}</li>
+            <li>{isDa ? 'Fra DKK 600 inkl. moms' : 'From DKK 600 incl. VAT'}</li>
+            <li>{isDa ? 'Mindst 40% af pris ekskl. moms afsættes' : 'At least 40% of the price excl. VAT is allocated'}</li>
+          </ul>
         </div>
 
-        <div className="access-console">
-          <div className="access-console__header">
-            <p className="editorial-label text-white/55">{isDa ? 'Vælg situation' : 'Choose a situation'}</p>
-            <p className="editorial-label hidden text-white/55 sm:block">{isDa ? 'Produktpreview' : 'Product preview'}</p>
+        <div className="access-brief">
+          <div className="access-brief__header">
+            <div>
+              <p className="access-brief__eyebrow">{isDa ? 'Start her' : 'Start here'}</p>
+              <h2>{isDa ? 'Hvad står du overfor?' : 'What are you facing?'}</h2>
+            </div>
+            <p>{isDa ? 'Vælg den situation, der ligger tættest på.' : 'Choose the situation closest to yours.'}</p>
           </div>
 
-          <div className="access-console__choices" role="group" aria-label={isDa ? 'Karrieresituation' : 'Career situation'}>
+          <div className="access-brief__choices" role="group" aria-label={isDa ? 'Karrieresituation' : 'Career situation'}>
             {HERO_SITUATIONS.map((item, index) => (
               <button
                 key={item.id}
@@ -110,26 +118,20 @@ export function AccessHero() {
                 aria-label={situation(item.id).label[lang]}
                 onClick={() => setSelectedId(item.id)}
               >
-                <span className="access-console__number">0{index + 1}</span>
+                <span className="access-brief__number">0{index + 1}</span>
                 <span>{item.shortLabel[lang]}</span>
               </button>
             ))}
           </div>
 
-          <div className="access-console__result" aria-live="polite">
-            <div className="access-console__situation">
-              <p className="editorial-label text-white/58">{isDa ? 'Din situation' : 'Your situation'}</p>
-              <p className="access-console__situation-title">{selected.label[lang]}</p>
-              <p className="access-console__situation-body">{selected.result[lang]}</p>
+          <div className="access-brief__result" aria-live="polite">
+            <div className="access-brief__situation">
+              <p className="access-brief__eyebrow">{isDa ? 'Dit fokus' : 'Your focus'}</p>
+              <p className="access-brief__situation-title">{selected.label[lang]}</p>
+              <p className="access-brief__situation-body">{selected.result[lang]}</p>
             </div>
-
-            <div className="access-console__passage" aria-hidden="true">
-              <span />
-              <span />
-            </div>
-
-            <div className="access-console__reveal">
-              <p className="editorial-label text-gray-500">{isDa ? 'Relevant erfaring' : 'Relevant experience'}</p>
+            <div className="access-brief__relevance">
+              <p className="access-brief__eyebrow">{isDa ? 'Vi prioriterer erfaring fra en, der' : 'We prioritize someone who'}</p>
               <ul>
                 {preview.access[lang].map((item) => (
                   <li key={item}>
@@ -138,8 +140,8 @@ export function AccessHero() {
                   </li>
                 ))}
               </ul>
-              <Link href={`/start?situation=${selectedId}`} className="access-console__continue">
-                {isDa ? 'Fortsæt med denne situation' : 'Continue with this situation'}
+              <Link href={`/start?situation=${selectedId}`} className="access-brief__continue">
+                {isDa ? 'Fortsæt' : 'Continue'}
                 <ArrowRight size={15} aria-hidden="true" />
               </Link>
             </div>

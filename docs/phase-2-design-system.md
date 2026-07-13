@@ -2,7 +2,7 @@
 
 ## Direction
 
-Naetwork uses an **Architectural Access** design language. The interface is primarily black, white and neutral grey. A four-colour spectrum is only revealed through openings, rails and active states. This keeps the product calm while making the idea of access recognisable without the logo.
+Naetwork uses an **Architectural Access** design language. The interface is primarily black, white and neutral grey. A restrained cyan, mint, blue and lime spectrum appears through the hero aperture, the start panel and four fully coloured situation cards. Colour identifies a meaningful choice; it is not ambient decoration.
 
 The system is designed around three product movements:
 
@@ -30,24 +30,28 @@ The spectrum is not a general decoration. It identifies an opening, a selected p
 
 - Space Grotesk carries headings and decisive product statements.
 - Inter carries body text, controls and operational content.
-- JetBrains Mono carries short system labels, sequence numbers and metadata.
+- Inter carries labels and metadata. Monospace typography is reserved for rare system data where it improves scanning.
 - Text sizes use controlled jumps and explicit line lengths. Font sizes do not scale directly with viewport width.
 
 ## Components
 
 ### Interactive Access Hero
 
-`AccessHero` previews the product before account creation. Five recognisable situations update the experience Naetwork would look for. It uses real navigation links and makes no match percentage or AI claim.
+`AccessHero` explains the offer before it demonstrates the product. The value proposition, 60-minute format, starting price and minimum contribution are visible before the five-situation selector. Selecting a situation updates the experience Naetwork would prioritize. It uses real navigation links and makes no match percentage or AI claim.
 
-Fallback: the default interview state is complete and understandable without interaction.
+Fallback: the default role state is complete and understandable without interaction.
 
-Mobile: choices become a horizontally scrollable control while the result remains visible in the first viewport.
+Mobile: the secondary CTA is removed, practical facts stack vertically and the start of the situation selector remains visible even at 375 x 667.
 
 Reduced motion: all transitions collapse to `0.01ms` through the global media query.
 
 ### Public Page Hero
 
-`PublicPageHero` gives `/start`, `/how-it-works`, `/sessions`, `/explore`, `/prepare`, `/apply` and `/perform` a shared entry grammar. The image is revealed through an architectural opening; page-specific content remains on a high-contrast ink surface.
+`PublicPageHero` gives `/start`, `/how-it-works`, `/sessions`, `/explore`, `/prepare`, `/apply`, `/perform` and `/impact` a shared but compact entry grammar. Page-specific copy leads; the spectrum remains a supporting aperture rather than the subject.
+
+### Editorial sections
+
+Public pages use ledger rows, restrained rules and asymmetric headings instead of repeated card grids. The homepage is organized around six questions: what the product is, why it exists, where the user starts, what relevant experience means, what a session produces and what it costs.
 
 ### Living Impact Line
 

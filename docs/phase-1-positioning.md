@@ -6,20 +6,24 @@ Naetwork gives people access to relevant experience behind the roles, companies 
 
 Category: Career Access.
 
-Primary line: Know more before your next move.
+Primary line: Get the insight the job description leaves out.
 
 Product line: Meet someone who knows the job before you apply.
 
-Positioning: The access layer behind better career decisions.
+Positioning: Relevant experience for real career decisions.
+
+Danish product line: Tal med en, der kender jobbet, før du søger.
+
+Danish primary line: Få den viden, jobopslaget mangler.
 
 ## Information architecture
 
 The public journey starts at `/start` with a concrete situation. Four lightweight paths organize the product without becoming separate products:
 
-- `/explore`: roles, companies, industries and career paths.
-- `/prepare`: current position, materials and career changes.
-- `/apply`: a specific role or application.
-- `/perform`: interviews, cases, negotiations and offers.
+- `/explore`: Udforsk / Explore - roles, companies, industries and career paths.
+- `/prepare`: Forbered / Prepare - current position, materials and career changes.
+- `/apply`: Søg / Apply - a specific role or application.
+- `/perform`: Stå stærkt / Perform - interviews, cases, negotiations and offers.
 
 Supporting routes:
 
@@ -36,7 +40,8 @@ Legacy `/match` and `/onboarding` routes redirect within the application flow to
 - Start with the decision, not the professional.
 - Describe relevance through actual experience, not status or popularity.
 - Sell clarity and next steps, not an hour of time.
-- Use one primary line and at most one supporting line on a surface.
+- Use natural Danish in the Danish interface. English product labels belong only in the English interface or the Career Access category name.
+- Use one primary line and at most one supporting explanation on a surface.
 - Avoid coaching, mentoring, networking and marketplace framing.
 - Keep impact concrete and transparent without making it the primary product value.
 
@@ -52,7 +57,7 @@ All new routes are static or client-only public routes. Phase 1 requires no data
 
 - Career Access is explicit and explainable in one sentence.
 - The primary journey starts with the user's situation.
-- Navigation exposes How it works, Sessions, For professionals, Impact, Sign in and Start with your situation.
+- Navigation exposes How it works, Sessions, For professionals, Impact, Sign in and Describe your situation.
 - Explore, Prepare, Apply and Perform have canonical routes.
 - Central public copy, metadata, sitemap and redirects use the same positioning.
 - Danish and English express the same product principles.

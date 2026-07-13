@@ -26,7 +26,7 @@ export function LivingImpactLine() {
       <div className="impact-line__header">
         <div>
           <p className="editorial-label text-white/58">{isDa ? 'Bidrag i praksis' : 'Contribution in practice'}</p>
-          <h3>{isDa ? 'Se præcis, hvordan bidraget hænger sammen.' : 'See exactly how the contribution connects.'}</h3>
+          <h3>{isDa ? 'Se præcis, hvordan bidraget beregnes.' : 'See exactly how the contribution is calculated.'}</h3>
         </div>
         <div className="impact-line__prices" role="group" aria-label={isDa ? 'Vælg sessionspris' : 'Choose session price'}>
           {PRICE_OPTIONS.map((amount) => (

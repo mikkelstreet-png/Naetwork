@@ -8,19 +8,19 @@ type LocalizedText = Record<BrandLocale, string>
 export const BRAND_COPY = {
   da: {
     category: 'Career Access',
-    primaryLine: 'Vid mere, før dit næste træk.',
-    productLine: 'Mød en, der kender jobbet, før du søger.',
-    positioning: 'Adgangslaget bag bedre karrierevalg.',
-    oneSentence: 'Naetwork giver dig adgang til relevant erfaring bag de roller, virksomheder og karriereveje, du overvejer.',
-    problem: 'Den mest nyttige karriereviden står sjældent i et jobopslag. Den findes hos mennesker, der har udført arbejdet.',
+    primaryLine: 'Få den viden, jobopslaget mangler.',
+    productLine: 'Tal med en, der kender jobbet, før du søger.',
+    positioning: 'Relevant erfaring til konkrete karrierevalg.',
+    oneSentence: 'Book 60 minutters sparring med en professionel, der kender rollen, virksomheden eller processen fra den anden side.',
+    problem: 'Jobopslaget beskriver rollen. Ikke hvordan arbejdet faktisk er.',
   },
   en: {
     category: 'Career Access',
-    primaryLine: 'Know more before your next move.',
+    primaryLine: 'Get the insight the job description leaves out.',
     productLine: 'Meet someone who knows the job before you apply.',
-    positioning: 'The access layer behind better career decisions.',
-    oneSentence: 'Naetwork gives you access to relevant experience behind the roles, companies and career paths you are considering.',
-    problem: 'The most useful career knowledge rarely sits in a job description. It sits with people who have done the work.',
+    positioning: 'Relevant experience for real career decisions.',
+    oneSentence: 'Book a 60-minute session with a professional who knows the role, company or process from the other side.',
+    problem: 'A job description explains the role. Not what the work is really like.',
   },
 } as const
 
@@ -35,41 +35,41 @@ export const ACCESS_PATHS = [
   {
     id: 'explore',
     href: '/explore',
-    label: { da: 'Explore', en: 'Explore' },
-    title: { da: 'Forstå arbejdet, før du forfølger det.', en: 'Understand the work before you pursue it.' },
+    label: { da: 'Udforsk', en: 'Explore' },
+    title: { da: 'Forstå rollen, før du vælger den.', en: 'Understand the role before you choose it.' },
     description: {
-      da: 'Til dig, der undersøger en rolle, virksomhed, branche eller karrierevej.',
-      en: 'For decisions about a role, company, industry or career path.',
+      da: 'Få et ærligt billede af arbejdet, virksomheden og de reelle forventninger.',
+      en: 'Get an honest view of the work, company and real expectations.',
     },
   },
   {
     id: 'prepare',
     href: '/prepare',
-    label: { da: 'Prepare', en: 'Prepare' },
-    title: { da: 'Se klart, hvor du står.', en: 'Get an honest view of where you stand.' },
+    label: { da: 'Forbered', en: 'Prepare' },
+    title: { da: 'Styrk dit grundlag, før du går videre.', en: 'Strengthen your position before you move.' },
     description: {
-      da: 'Til dig, der vil styrke dit materiale, vurdere dit udgangspunkt eller planlægge et karriereskift.',
-      en: 'For strengthening your materials, assessing your position or planning a career change.',
+      da: 'Få konkret feedback på dit CV, dit udgangspunkt eller et planlagt karriereskift.',
+      en: 'Get concrete feedback on your CV, current position or planned career change.',
     },
   },
   {
     id: 'apply',
     href: '/apply',
-    label: { da: 'Apply', en: 'Apply' },
-    title: { da: 'Gør den konkrete ansøgning stærkere.', en: 'Make the specific application stronger.' },
+    label: { da: 'Søg', en: 'Apply' },
+    title: { da: 'Søg med et skarpere argument.', en: 'Apply with a sharper case.' },
     description: {
-      da: 'Til dig, der overvejer eller søger en bestemt stilling.',
-      en: 'For deciding whether to pursue a specific role and how to position your application.',
+      da: 'Vurdér dit match, og målret ansøgningen mod det, der faktisk betyder noget.',
+      en: 'Assess your fit and focus the application on what actually matters.',
     },
   },
   {
     id: 'perform',
     href: '/perform',
-    label: { da: 'Perform', en: 'Perform' },
-    title: { da: 'Forbered det øjeblik, der tæller.', en: 'Prepare for the moment that matters.' },
+    label: { da: 'Stå stærkt', en: 'Perform' },
+    title: { da: 'Vær klar, når det gælder.', en: 'Be ready when it matters.' },
     description: {
-      da: 'Til dig, der står foran interview, case, forhandling eller et jobtilbud.',
-      en: 'For an interview, case, negotiation or job offer.',
+      da: 'Forbered interview, case, forhandling eller vurderingen af et jobtilbud.',
+      en: 'Prepare for an interview, case, negotiation or offer review.',
     },
   },
 ] as const satisfies ReadonlyArray<{
@@ -146,18 +146,18 @@ export const ACCESS_SITUATIONS = [
 }>
 
 export const SESSION_CONCEPTS = [
-  { id: 'should-i-apply', path: 'apply', title: 'Should I Apply?', outcome: { da: 'Et realistisk syn på dit match og de vigtigste ændringer før ansøgning.', en: 'A realistic view of your fit and the changes that matter before applying.' } },
-  { id: 'inside-the-role', path: 'explore', title: 'Inside the Role', outcome: { da: 'Arbejdet, forventningerne, karrierevejene og det jobopslaget ikke fortæller.', en: 'The work, expectations, career paths and what the job description leaves out.' } },
-  { id: 'inside-the-company', path: 'explore', title: 'Inside the Company', outcome: { da: 'Relevant kontekst om arbejdsform, kultur, rekruttering og udviklingsmuligheder.', en: 'Relevant context on ways of working, culture, hiring and development.' } },
-  { id: 'cv-reality-check', path: 'prepare', title: 'CV Reality Check', outcome: { da: 'De tre vigtigste ændringer til et CV målrettet den rolle, du søger.', en: 'The three most important changes to a CV aimed at the role you want.' } },
-  { id: 'interview-ready', path: 'perform', title: 'Interview Ready', outcome: { da: 'Realistisk træning, konkret feedback og en plan for den specifikke samtale.', en: 'Realistic practice, concrete feedback and a plan for the specific interview.' } },
-  { id: 'career-direction', path: 'explore', title: 'Career Direction', outcome: { da: 'Realistiske karrierespor, centrale fravalg og et konkret næste skridt.', en: 'Realistic career paths, meaningful trade-offs and a concrete next step.' } },
-  { id: 'career-pivot', path: 'prepare', title: 'Career Pivot', outcome: { da: 'Overførbare styrker, reelle barrierer og en troværdig overgangsplan.', en: 'Transferable strengths, real barriers and a credible transition plan.' } },
-  { id: 'offer-review', path: 'perform', title: 'Offer Review', outcome: { da: 'Et klart syn på rolle, mandat, vilkår, risici og langsigtet værdi.', en: 'A clear view of the role, mandate, terms, risks and long-term value.' } },
+  { id: 'should-i-apply', path: 'apply', title: { da: 'Skal jeg søge?', en: 'Should I Apply?' }, outcome: { da: 'Et realistisk syn på dit match og de vigtigste ændringer før ansøgning.', en: 'A realistic view of your fit and the changes that matter before applying.' } },
+  { id: 'inside-the-role', path: 'explore', title: { da: 'Indblik i rollen', en: 'Inside the Role' }, outcome: { da: 'Arbejdet, forventningerne, karrierevejene og det jobopslaget ikke fortæller.', en: 'The work, expectations, career paths and what the job description leaves out.' } },
+  { id: 'inside-the-company', path: 'explore', title: { da: 'Indblik i virksomheden', en: 'Inside the Company' }, outcome: { da: 'Relevant kontekst om arbejdsform, kultur, rekruttering og udviklingsmuligheder.', en: 'Relevant context on ways of working, culture, hiring and development.' } },
+  { id: 'cv-reality-check', path: 'prepare', title: { da: 'Kritisk CV-gennemgang', en: 'CV Reality Check' }, outcome: { da: 'De tre vigtigste ændringer til et CV målrettet den rolle, du søger.', en: 'The three most important changes to a CV aimed at the role you want.' } },
+  { id: 'interview-ready', path: 'perform', title: { da: 'Klar til samtalen', en: 'Interview Ready' }, outcome: { da: 'Realistisk træning, konkret feedback og en plan for den specifikke samtale.', en: 'Realistic practice, concrete feedback and a plan for the specific interview.' } },
+  { id: 'career-direction', path: 'explore', title: { da: 'Karriereretning', en: 'Career Direction' }, outcome: { da: 'Realistiske karrierespor, centrale fravalg og et konkret næste skridt.', en: 'Realistic career paths, meaningful trade-offs and a concrete next step.' } },
+  { id: 'career-pivot', path: 'prepare', title: { da: 'Plan for karriereskift', en: 'Career Pivot' }, outcome: { da: 'Overførbare styrker, reelle barrierer og en troværdig overgangsplan.', en: 'Transferable strengths, real barriers and a credible transition plan.' } },
+  { id: 'offer-review', path: 'perform', title: { da: 'Gennemgang af jobtilbud', en: 'Offer Review' }, outcome: { da: 'Et klart syn på rolle, mandat, vilkår, risici og langsigtet værdi.', en: 'A clear view of the role, mandate, terms, risks and long-term value.' } },
 ] as const satisfies ReadonlyArray<{
   id: string
   path: AccessPathId
-  title: string
+  title: LocalizedText
   outcome: LocalizedText
 }>
 
