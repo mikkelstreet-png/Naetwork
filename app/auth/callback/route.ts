@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
+import { normalizeCategoryAreas } from '@/lib/categories';
 import { safeInternalPath } from '@/lib/navigation';
 import {
   CONTRIBUTION_PERCENT,
@@ -77,6 +78,8 @@ export async function GET(request: NextRequest) {
             .maybeSingle();
 
           if (profile?.id) {
+            const submittedAreas = stringArray(metadata.areas);
+            const legacyCategoryValue = text(metadata.industry);
             await supabase
               .from('profiles')
               .update({ name: text(metadata.name) ?? user.email })
@@ -87,7 +90,7 @@ export async function GET(request: NextRequest) {
               title: text(metadata.title),
               company: text(metadata.company),
               bio: text(metadata.bio)?.slice(0, 500) ?? null,
-              industries: text(metadata.industry) ? [text(metadata.industry)] : [],
+              industries: normalizeCategoryAreas(submittedAreas.length > 0 ? submittedAreas : legacyCategoryValue ? [legacyCategoryValue] : []),
               focus_areas: stringArray(metadata.sessionTypes),
               price_dkk: price(metadata.priceDkk),
               linkedin_url: normalizeLinkedInUrl(metadata.linkedin),

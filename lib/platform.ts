@@ -10,14 +10,6 @@ export const PLATFORM_SHARE_PERCENT = 20
 export const CONTRIBUTION_PERCENT = 10
 export const PROFESSIONAL_SHARE_PERCENT = 70
 
-export const INDUSTRIES = [
-  { id: 'AI', slug: 'ai', accent: 'bg-cyan-300', surface: 'bg-[#d8f7fb]' },
-  { id: 'Banking', slug: 'banking', accent: 'bg-emerald-300', surface: 'bg-[#dff4e7]' },
-  { id: 'Management Consulting', slug: 'consulting', accent: 'bg-blue-300', surface: 'bg-[#dfeafb]' },
-  { id: 'Private Equity', slug: 'private-equity', accent: 'bg-lime-300', surface: 'bg-[#edf4cf]' },
-] as const
-
-export type Industry = typeof INDUSTRIES[number]['id']
 export type PriceOption = typeof PRICE_OPTIONS[number]
 
 export function normalizePrice(value: unknown): PriceOption {
@@ -45,12 +37,8 @@ export const FOCUS_AREAS = [
   { id: 'application_review', da: 'Ansøgning', en: 'Application review' },
   { id: 'interview_prep', da: 'Interviewforberedelse', en: 'Interview preparation' },
   { id: 'case_prep', da: 'Caseforberedelse', en: 'Case preparation' },
-  { id: 'banking_technicals', da: 'Banking technicals', en: 'Banking technicals' },
-  { id: 'consulting_cases', da: 'Consulting-cases', en: 'Consulting cases' },
-  { id: 'pe_investment_case', da: 'PE-investment case', en: 'PE investment case' },
   { id: 'career_direction', da: 'Karriereretning', en: 'Career direction' },
   { id: 'graduate_internship', da: 'Graduate- og internship-rådgivning', en: 'Graduate and internship guidance' },
-  { id: 'ai_career_strategy', da: 'AI-karrierestrategi', en: 'AI career strategy' },
   { id: 'industry_insight', da: 'Brancheindsigt', en: 'Industry insight' },
 ] as const
 
@@ -72,6 +60,10 @@ const LEGACY_FOCUS_LABELS: Record<string, { da: string; en: string }> = {
   career_strategy: { da: 'Karriereretning', en: 'Career direction' },
   career_advice: { da: 'Karriereretning', en: 'Career direction' },
   informal_chat: { da: 'Brancheindsigt', en: 'Industry insight' },
+  banking_technicals: { da: 'Finance technicals', en: 'Finance technicals' },
+  consulting_cases: { da: 'Consulting-cases', en: 'Consulting cases' },
+  pe_investment_case: { da: 'Investment case', en: 'Investment case' },
+  ai_career_strategy: { da: 'Transformation og teknologistrategi', en: 'Transformation and technology strategy' },
 }
 
 export const FOCUS_LABELS: Record<string, { da: string; en: string }> = Object.fromEntries([
@@ -81,10 +73,6 @@ export const FOCUS_LABELS: Record<string, { da: string; en: string }> = Object.f
 
 export function focusLabel(id: string, locale: 'da' | 'en' = 'da') {
   return FOCUS_LABELS[id]?.[locale] ?? id
-}
-
-export function industryAccent(industry?: string) {
-  return INDUSTRIES.find((item) => item.id === industry)?.accent ?? 'bg-gray-300'
 }
 
 export function priceBeforeVat(grossPrice: number) {

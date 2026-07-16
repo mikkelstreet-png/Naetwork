@@ -3,11 +3,11 @@ import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { claimAuthEmailRequest, markAuthEmailSent } from '@/lib/server/authEmailRateLimit';
 import { isSameSiteRequest } from '@/lib/server/requestSecurity';
-import { FOCUS_AREAS, INDUSTRIES, PRICE_OPTIONS, normalizeLinkedInUrl } from '@/lib/platform';
+import { areasBelongToCategory, isCategoryArea, isCategoryId } from '@/lib/categories';
+import { FOCUS_AREAS, PRICE_OPTIONS, normalizeLinkedInUrl } from '@/lib/platform';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 const FOCUS_IDS = new Set<string>(FOCUS_AREAS.map((focus) => focus.id));
-const INDUSTRY_IDS = new Set<string>(INDUSTRIES.map((industry) => industry.id));
 const PRICES = new Set<number>(PRICE_OPTIONS);
 
 function clean(value: unknown, max: number) {
@@ -41,17 +41,20 @@ export async function POST(request: Request) {
     if (role === 'professional') {
       const title = clean(body.title, 100);
       const company = clean(body.company, 100);
-      const industry = clean(body.industry, 80);
+      const category = clean(body.category, 40);
+      const areas = Array.isArray(body.areas)
+        ? Array.from(new Set<string>(body.areas.filter((item: unknown) => isCategoryArea(item)) as string[]))
+        : [];
       const bio = clean(body.bio, 500);
       const linkedin = normalizeLinkedInUrl(body.linkedin);
       const priceDkk = Number(body.priceDkk);
       const sessionTypes = Array.isArray(body.sessionTypes)
         ? Array.from(new Set(body.sessionTypes.filter((item: unknown): item is string => typeof item === 'string' && FOCUS_IDS.has(item))))
         : [];
-      if (!title || !company || !INDUSTRY_IDS.has(industry) || !linkedin || !PRICES.has(priceDkk) || sessionTypes.length === 0) {
+      if (!title || !company || !isCategoryId(category) || !areasBelongToCategory(category, areas) || !linkedin || !PRICES.has(priceDkk) || sessionTypes.length === 0) {
         return NextResponse.json({ error: 'Den professionelle profil mangler obligatoriske eller gyldige oplysninger.' }, { status: 400 });
       }
-      Object.assign(metadata, { title, company, industry, bio, linkedin, sessionTypes, priceDkk });
+      Object.assign(metadata, { title, company, category, areas, bio, linkedin, sessionTypes, priceDkk });
     }
 
     const requestId = await claimAuthEmailRequest(email, 'signup');

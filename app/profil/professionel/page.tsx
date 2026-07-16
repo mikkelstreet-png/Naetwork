@@ -4,9 +4,9 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { MemberNav } from '@/components/MemberNav';
 import { AvailabilityManager } from '@/components/AvailabilityManager';
+import { CATEGORIES, categoryForAreas, normalizeCategoryAreas, type CategoryId } from '@/lib/categories';
 import {
   CONTRIBUTION_PERCENT,
-  INDUSTRIES,
   PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
   PROFESSIONAL_SHARE_PERCENT,
@@ -18,6 +18,7 @@ import {
 import { SESSION_TYPES } from '@/lib/sessionTypes';
 
 export default function ProfessionalProfilePage() {
+  const [category, setCategory] = useState<CategoryId>('Consulting');
   const [data, setData] = useState({
     title: '',
     company: '',
@@ -77,11 +78,13 @@ export default function ProfessionalProfilePage() {
         return;
       }
       if (prof) {
+        const normalizedAreas = normalizeCategoryAreas(prof.industries || []);
+        setCategory(categoryForAreas(normalizedAreas)?.id ?? 'Consulting');
         setData({
           title: prof.title || '',
           company: prof.company || '',
           bio: prof.bio || '',
-          industries: prof.industries || [],
+          industries: normalizedAreas,
           focus_areas: prof.focus_areas || [],
           languages: prof.languages || ['da', 'en'],
           seniority: prof.seniority || 'manager',
@@ -106,7 +109,7 @@ export default function ProfessionalProfilePage() {
     e.preventDefault();
     setError('');
     if (!data.title.trim() || !data.company.trim() || !data.bio.trim() || !data.linkedin_url.trim() || data.industries.length === 0 || data.focus_areas.length === 0 || data.languages.length === 0) {
-      setError('Udfyld titel, virksomhed, bio, LinkedIn, mindst én branche, ét fokusområde og ét sessionssprog.');
+      setError('Udfyld titel, virksomhed, bio, LinkedIn, kategori, mindst ét fagområde, én sessionstype og ét sessionssprog.');
       return;
     }
     const linkedinUrl = normalizeLinkedInUrl(data.linkedin_url);
@@ -170,6 +173,7 @@ export default function ProfessionalProfilePage() {
             {[
               ['Prisvalg', '600 · 900 · 1.200 · 1.800'],
               ['Format', '60 min'],
+              ['Kategori', category],
               ['Fast fordeling', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`],
               ['Gennemgang', data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'],
             ].map(([label, value]) => (
@@ -196,7 +200,7 @@ export default function ProfessionalProfilePage() {
               </div>
               <div>
                 <label htmlFor="profile-company" className="form-label">Virksomhed / erfaring</label>
-                <input id="profile-company" type="text" value={data.company} onChange={e => setData(d => ({ ...d, company: e.target.value }))} className="field-control" placeholder="Goldman Sachs, McKinsey, OpenAI" />
+                <input id="profile-company" type="text" value={data.company} onChange={e => setData(d => ({ ...d, company: e.target.value }))} className="field-control" placeholder="Nordea, McKinsey, Gorrissen Federspiel" />
               </div>
             </div>
 
@@ -211,14 +215,27 @@ export default function ProfessionalProfilePage() {
               <p className="form-help">Bruges af Naetwork ved gennemgang og vises ikke offentligt.</p>
             </div>
 
-            <div>
-              <label className="mb-3 block text-sm font-semibold text-gray-700">Brancher</label>
-              <div className="flex flex-wrap gap-2">
-                {INDUSTRIES.map((industry) => (
-                  <button key={industry.id} type="button" aria-pressed={data.industries.includes(industry.id)} onClick={() => setData(d => ({ ...d, industries: toggleArr(d.industries, industry.id) }))} className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${data.industries.includes(industry.id) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>{industry.id}</button>
+            <fieldset>
+              <legend className="mb-3 text-sm font-semibold text-gray-700">Kategori</legend>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {CATEGORIES.map((item) => (
+                  <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => { if (item.id !== category) { setCategory(item.id); setData((current) => ({ ...current, industries: [] })); } }} className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${category === item.id ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>
+                    <span className="block">{item.id}</span>
+                    <span className={`mt-1 block text-xs font-normal leading-relaxed ${category === item.id ? 'text-white/60' : 'text-gray-400'}`}>{item.description.da}</span>
+                  </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
+
+            <fieldset>
+              <legend className="mb-2 text-sm font-semibold text-gray-700">Relaterede fagområder</legend>
+              <p className="mb-3 text-xs leading-relaxed text-gray-500">Vælg mindst ét område, hvor din erfaring er konkret og aktuel.</p>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES.find((item) => item.id === category)!.areas.map((area) => (
+                  <button key={area} type="button" aria-pressed={data.industries.includes(area)} onClick={() => setData((current) => ({ ...current, industries: toggleArr(current.industries, area) }))} className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${data.industries.includes(area) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>{area}</button>
+                ))}
+              </div>
+            </fieldset>
 
             <div>
               <label className="mb-3 block text-sm font-semibold text-gray-700">Sessionstyper</label>

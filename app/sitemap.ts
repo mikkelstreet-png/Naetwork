@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '', '/start', '/how-it-works', '/sessions', '/explore', '/prepare', '/apply', '/perform',
     '/professionals', '/professional/signup', '/mission', '/impact', '/contact',
-    '/fields/ai', '/fields/banking', '/fields/consulting', '/fields/private-equity',
+    '/fields/consulting', '/fields/finance', '/fields/legal',
     '/terms', '/privacy', '/cookies', '/afbestilling',
   ];
 

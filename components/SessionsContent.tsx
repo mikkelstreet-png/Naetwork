@@ -6,6 +6,7 @@ import { PublicPageHero } from '@/components/PublicPageHero'
 import { RevenueSplit } from '@/components/RevenueSplit'
 import { useLanguage } from '@/context/LanguageContext'
 import { localized } from '@/lib/brand'
+import { CATEGORIES } from '@/lib/categories'
 import { PRICE_OPTIONS, SESSION_MINUTES } from '@/lib/platform'
 import { SESSION_TYPES } from '@/lib/sessionTypes'
 
@@ -33,6 +34,16 @@ export function SessionsContent() {
             <p className="section-eyebrow">{isDa ? 'Sessionkatalog' : 'Session catalogue'}</p>
             <h2>{isDa ? 'Start med det, du vil have hjælp til.' : 'Start with what you need help with.'}</h2>
             <p>{isDa ? 'Alle sessioner varer 60 minutter. Forskellen er forberedelsen og det output, du går derfra med.' : 'Every session lasts 60 minutes. The difference is the preparation and the output you leave with.'}</p>
+          </div>
+
+          <div className="mb-10 grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3" aria-label={isDa ? 'Kategorier' : 'Categories'}>
+            {CATEGORIES.map((category) => (
+              <Link key={category.id} href={`/fields/${category.slug}`} className="bg-white p-5 transition-colors hover:bg-[#f7f7f4]">
+                <span className={`mb-4 block h-1.5 w-10 ${category.accent}`} aria-hidden="true" />
+                <strong className="text-base text-gray-950">{category.id}</strong>
+                <p className="mt-2 text-xs leading-relaxed text-gray-500">{category.areas.join(' · ')}</p>
+              </Link>
+            ))}
           </div>
 
           <div className="session-catalog">

@@ -1,4 +1,5 @@
 import { normalizePrice } from './platform'
+import { normalizeCategoryAreas } from './categories'
 
 export interface PublicProfessionalRow {
   id: string
@@ -44,7 +45,7 @@ export function mapPublicProfessionals(data: unknown): ProfessionalCard[] {
     name: profile.name?.trim() ?? '',
     title: profile.title?.trim() ?? '',
     company: profile.company?.trim() ?? '',
-    industries: profile.industries ?? [],
+    industries: normalizeCategoryAreas(profile.industries ?? []),
     focus_areas: profile.focus_areas ?? [],
     price: normalizePrice(profile.price_dkk),
     bio: profile.bio?.trim() ?? '',

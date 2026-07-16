@@ -6,23 +6,13 @@ import { AccessHero } from '@/components/AccessHero'
 import { RevenueSplit } from '@/components/RevenueSplit'
 import { useLanguage } from '@/context/LanguageContext'
 import { localized } from '@/lib/brand'
+import { CATEGORIES } from '@/lib/categories'
 import { PRICE_OPTIONS, SESSION_MINUTES, formatDkk } from '@/lib/platform'
 import { SESSION_TYPES } from '@/lib/sessionTypes'
 
 export function HomeContent() {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
-  const proofPoints = isDa
-    ? [
-        ['Erfaring før titel', 'Se præcis hvilke roller, virksomheder og processer fagpersonen kender indefra.'],
-        ['Et tydeligt resultat', 'Vælg sessionen efter det, du skal stå med bagefter—ikke efter en vag kategori.'],
-        ['Forberedt på forhånd', 'Del mål og relevant materiale, så de 60 minutter bruges på det, der flytter dig.'],
-      ]
-    : [
-        ['Experience before title', 'See exactly which roles, companies and processes the professional knows from the inside.'],
-        ['A clear outcome', 'Choose the session by what you need afterwards—not a vague category.'],
-        ['Prepared in advance', 'Share your goal and relevant material so the 60 minutes focus on what moves you forward.'],
-      ]
   const journey = isDa
     ? [
         ['Vælg session', 'Start med det konkrete resultat: et skarpere CV, en bedre samtale eller et klarere valg.'],
@@ -73,16 +63,20 @@ export function HomeContent() {
       <section className="home-section home-section--ink">
         <div className="home-shell">
           <div className="section-heading section-heading--light">
-            <p className="section-eyebrow">{isDa ? 'Fagpersoner med relevant erfaring' : 'Professionals with relevant experience'}</p>
-            <h2>{isDa ? 'Ikke bare nogen at tale med. Den rigtige at spørge.' : 'Not just someone to talk to. The right person to ask.'}</h2>
-            <p>{isDa ? 'Profilerne gør relevansen synlig, før du booker.' : 'Profiles make relevance visible before you book.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Tre fokuserede kategorier' : 'Three focused categories'}</p>
+            <h2>{isDa ? 'Consulting. Finance. Legal.' : 'Consulting. Finance. Legal.'}</h2>
+            <p>{isDa ? 'Vælg kategori først, og se derefter de konkrete fagområder på hver profil.' : 'Choose a category first, then see the specific areas on each profile.'}</p>
           </div>
           <div className="product-proof-grid">
-            {proofPoints.map(([title, body], index) => (
-              <article key={title}>
+            {CATEGORIES.map((category, index) => (
+              <article key={category.id}>
                 <span>0{index + 1}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
+                <h3>{category.id}</h3>
+                <p>{category.description[lang]}</p>
+                <p>{category.areas.join(' · ')}</p>
+                <Link href={`/fields/${category.slug}`} className="mt-5 inline-flex border-b border-white/35 pb-1 text-xs font-bold text-white hover:border-white">
+                  {isDa ? 'Se kategorien' : 'Explore category'} <span className="ml-2" aria-hidden="true">→</span>
+                </Link>
               </article>
             ))}
           </div>

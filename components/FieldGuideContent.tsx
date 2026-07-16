@@ -2,16 +2,17 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
+import { CATEGORIES } from '@/lib/categories';
 import { FIELD_GUIDES, profileHrefForField } from '@/lib/fieldGuides';
 import type { FieldSlug } from '@/lib/fieldGuides';
-import { CONTRIBUTION_PERCENT, INDUSTRIES, PLATFORM_SHARE_PERCENT, PRICE_MAX, PRICE_MIN, PROFESSIONAL_SHARE_PERCENT, SESSION_MINUTES, formatDkk } from '@/lib/platform';
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PRICE_MAX, PRICE_MIN, PROFESSIONAL_SHARE_PERCENT, SESSION_MINUTES, formatDkk } from '@/lib/platform';
 
 export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
   const { lang } = useLanguage();
   const isDa = lang === 'da';
   const field = FIELD_GUIDES[slug];
   const locale = isDa ? 'da' : 'en';
-  const surface = INDUSTRIES.find((industry) => industry.slug === slug)?.surface ?? 'bg-gray-100';
+  const surface = CATEGORIES.find((category) => category.slug === slug)?.surface ?? 'bg-gray-100';
 
   return (
     <main className="bg-white">
@@ -20,7 +21,7 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
           <div>
             <Link href="/" className="mb-8 inline-flex text-sm font-black text-gray-500 transition-colors hover:text-gray-950">&larr; Naetwork</Link>
             <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-            <p className="kicker mb-5">{isDa ? 'Feltguide' : 'Field guide'}</p>
+            <p className="kicker mb-5">{isDa ? 'Kategoriguide' : 'Category guide'}</p>
             <h1 className="max-w-5xl text-4xl font-medium leading-[0.96] text-gray-950 text-balance sm:text-6xl md:text-7xl">{field.title[locale]}</h1>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">{field.description[locale]}</p>
             <div className="mt-8 flex flex-wrap gap-3">

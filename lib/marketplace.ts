@@ -21,7 +21,7 @@ export const SESSION_NEEDS = [
     en: 'Direction and career change',
     descriptionDa: 'Afklar roller, brancheskifte, positionering eller næste karrieretræk.',
     descriptionEn: 'Clarify roles, career changes, positioning or your next move.',
-    focusAreas: ['career_direction', 'ai_career_strategy', 'industry_insight'],
+    focusAreas: ['career_direction', 'industry_insight', 'graduate_internship'],
   },
   {
     id: 'materials',
@@ -37,7 +37,7 @@ export const SESSION_NEEDS = [
     en: 'Interview',
     descriptionDa: 'Træn motivation, svar, technicals og personlige eksempler.',
     descriptionEn: 'Practice motivation, answers, technicals and personal examples.',
-    focusAreas: ['interview_prep', 'banking_technicals'],
+    focusAreas: ['interview_prep'],
   },
   {
     id: 'case',
@@ -45,7 +45,7 @@ export const SESSION_NEEDS = [
     en: 'Case and technical assessment',
     descriptionDa: 'Få modspil på struktur, antagelser, analyse og kommunikation.',
     descriptionEn: 'Pressure-test structure, assumptions, analysis and communication.',
-    focusAreas: ['case_prep', 'consulting_cases', 'pe_investment_case'],
+    focusAreas: ['case_prep'],
   },
 ] as const
 
@@ -108,7 +108,13 @@ export const TRANSACTIONAL_EMAIL_KEYS = [
 export type TransactionalEmailKey = typeof TRANSACTIONAL_EMAIL_KEYS[number]
 
 export function sessionNeedForFocus(focus: string): SessionNeed | null {
-  return SESSION_NEEDS.find((need) => (need.focusAreas as readonly string[]).includes(focus))?.id ?? null
+  const legacy: Record<string, SessionNeed> = {
+    ai_career_strategy: 'direction',
+    banking_technicals: 'interview',
+    consulting_cases: 'case',
+    pe_investment_case: 'case',
+  }
+  return SESSION_NEEDS.find((need) => (need.focusAreas as readonly string[]).includes(focus))?.id ?? legacy[focus] ?? null
 }
 
 export function bookingFocusOptions(locale: 'da' | 'en') {

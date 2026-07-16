@@ -7,13 +7,14 @@ import BookingDrawer from '@/components/BookingDrawer'
 import { RevenueSplit } from '@/components/RevenueSplit'
 import { useLanguage } from '@/context/LanguageContext'
 import { createClient } from '@/lib/supabase/client'
-import { formatDkk, industryAccent, SESSION_MINUTES } from '@/lib/platform'
+import { categoryAccent, categoryForAreas } from '@/lib/categories'
+import { formatDkk, SESSION_MINUTES } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
 import { professionalInitials, professionalSessionTypes } from '@/lib/professionalPresentation'
 import type { SessionTypeId } from '@/lib/sessionTypes'
 
 function accentFor(professional: ProfessionalCard) {
-  return industryAccent(professional.industries[0])
+  return categoryAccent(categoryForAreas(professional.industries)?.id)
 }
 
 interface ProfessionalDetailProps {
@@ -89,9 +90,10 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
           <div className="grid gap-12 lg:grid-cols-[1fr_350px] lg:items-end">
             <div>
               <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-              <div className="mb-5 flex flex-wrap items-center gap-4"><p className="kicker text-white/40">{professional.industries.join(' / ')}</p><span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-200"><CheckCircle2 size={13} aria-hidden="true" />{isDa ? 'Profil gennemgået' : 'Profile reviewed'}</span></div>
+              <div className="mb-5 flex flex-wrap items-center gap-4"><p className="kicker text-white/40">{categoryForAreas(professional.industries)?.id ?? (isDa ? 'Fagperson' : 'Professional')}</p><span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-200"><CheckCircle2 size={13} aria-hidden="true" />{isDa ? 'Profil gennemgået' : 'Profile reviewed'}</span></div>
               <h1 className="max-w-4xl text-5xl font-medium leading-[0.94] text-white text-balance sm:text-6xl md:text-8xl">{professional.name}</h1>
               <p className="mt-6 text-base font-semibold text-white/72 md:text-xl">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
+              <p className="mt-2 text-xs font-semibold leading-relaxed text-white/40">{professional.industries.join(' · ')}</p>
               <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/55 md:text-lg">{professional.bio}</p>
             </div>
             <aside className="border border-white/20 bg-white/[0.035] p-6">

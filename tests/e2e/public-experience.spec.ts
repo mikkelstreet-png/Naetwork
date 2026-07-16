@@ -13,10 +13,9 @@ const publicRoutes = [
   '/impact',
   '/mission',
   '/contact',
-  '/fields/ai',
-  '/fields/banking',
   '/fields/consulting',
-  '/fields/private-equity',
+  '/fields/finance',
+  '/fields/legal',
   '/professional/signup',
   '/login',
   '/signup',
@@ -67,9 +66,9 @@ test('profile filters remain usable on mobile and desktop', async ({ page, isMob
   } else {
     await expect(searchbox).toBeVisible()
     if (isMobile) {
-      await expect(page.getByRole('combobox', { name: /Vælg felt|Choose field/i })).toBeVisible()
+      await expect(page.getByRole('combobox', { name: /Vælg kategori|Choose category/i })).toBeVisible()
     } else {
-      await expect(page.getByRole('button', { name: 'Management Consulting' })).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Consulting' })).toBeVisible()
     }
   }
   await expectNoHorizontalOverflow(page)
@@ -110,6 +109,26 @@ test('core public actions remain clear', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /Det vigtigste, før du vælger|What matters before you choose/i })).toBeVisible()
   await page.goto('/start')
   await expect(page.getByRole('heading', { name: /Hvad skal være bedre om 60 minutter|What should be better in 60 minutes/i })).toBeVisible()
+})
+
+test('category structure is consistent across the public journey', async ({ page }) => {
+  await page.goto('/')
+  for (const category of ['Consulting', 'Finance', 'Legal']) {
+    await expect(page.getByRole('heading', { name: category, exact: true })).toBeVisible()
+  }
+  await expect(page.locator('body')).toContainText('Management Consulting')
+  await expect(page.locator('body')).toContainText('Investment Banking')
+  await expect(page.locator('body')).toContainText('Corporate Law')
+
+  await page.goto('/sessions')
+  for (const category of ['Consulting', 'Finance', 'Legal']) {
+    await expect(page.getByRole('link', { name: new RegExp(category) }).first()).toBeVisible()
+  }
+
+  for (const [legacy, current] of [['ai', 'consulting'], ['banking', 'finance'], ['private-equity', 'finance']] as const) {
+    await page.goto(`/fields/${legacy}`)
+    await expect(page).toHaveURL(new RegExp(`/fields/${current}$`))
+  }
 })
 
 test('minimal Access hero keeps one message and one primary action', async ({ page }) => {
@@ -166,10 +185,10 @@ test('legacy matching routes lead to the situation-first entry', async ({ page }
 test('situation-first entry produces a relevant directory route', async ({ page }) => {
   await page.goto('/start')
   await page.getByRole('button', { name: /Branche- og virksomhedsindsigt/i }).click()
-  await page.getByRole('button', { name: 'AI' }).click()
+  await page.getByRole('button', { name: /Consulting.*Management Consulting/i }).click()
   const next = page.getByRole('link', { name: /Se relevante fagpersoner/i })
   await expect(next).toBeVisible()
-  await expect(next).toHaveAttribute('href', /\/professionals\?field=AI&session=industry-company-insight/)
+  await expect(next).toHaveAttribute('href', /\/professionals\?field=Consulting&session=industry-company-insight/)
 })
 
 test('English positioning mirrors the Danish product contract', async ({ page }) => {
@@ -201,6 +220,8 @@ test('sitemap publishes the career-session information architecture', async ({ p
     expect(sitemap).toContain(route)
   }
   expect(sitemap).not.toContain('/match')
+  for (const route of ['/fields/consulting', '/fields/finance', '/fields/legal']) expect(sitemap).toContain(route)
+  for (const route of ['/fields/ai', '/fields/banking', '/fields/private-equity']) expect(sitemap).not.toContain(route)
 })
 
 test('account creation distinguishes terms acceptance from privacy notice', async ({ page }) => {
@@ -225,7 +246,8 @@ test('professional application keeps pricing and review expectations concrete', 
   await page.getByLabel('Adgangskode').fill('test-password-123')
   await page.getByLabel('Jobtitel').fill('Senior Manager')
   await page.getByLabel('Virksomhed').fill('Testvirksomhed')
-  await page.getByLabel('Industri').selectOption('Management Consulting')
+  await page.getByLabel('Kategori').selectOption('Consulting')
+  await page.getByRole('button', { name: 'Management Consulting', exact: true }).click()
   await page.getByLabel('LinkedIn').fill('https://linkedin.com/in/test-professionel')
   await page.getByRole('button', { name: 'Næste' }).click()
 

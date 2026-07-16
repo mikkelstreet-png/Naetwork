@@ -6,14 +6,15 @@ import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import BookingDrawer from '@/components/BookingDrawer'
 import { CheckCircle2, ChevronDown, RefreshCw, Search } from 'lucide-react'
-import { CONTRIBUTION_PERCENT, PROFESSIONAL_SHARE_PERCENT, contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
+import { CATEGORIES, categoryAccent, categoryForAreas, categoryIdForValue, type CategoryId } from '@/lib/categories'
+import { CONTRIBUTION_PERCENT, PROFESSIONAL_SHARE_PERCENT, contributionAmount, focusLabel } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
 import { professionalBestFor, professionalInitials, professionalPrimaryOutput } from '@/lib/professionalPresentation'
 import { SESSION_TYPES, isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
-type Industry = 'all' | PlatformIndustry
+type CategoryFilter = 'all' | CategoryId
 
-const FILTER_INDUSTRIES: Industry[] = ['all', ...PLATFORM_INDUSTRIES.map((industry) => industry.id)]
+const FILTER_CATEGORIES: CategoryFilter[] = ['all', ...CATEGORIES.map((category) => category.id)]
 const LEGACY_NEED_SESSION: Record<string, SessionTypeId> = {
   direction: 'career-clarity',
   materials: 'cv-review',
@@ -21,18 +22,17 @@ const LEGACY_NEED_SESSION: Record<string, SessionTypeId> = {
   case: 'case-interview-preparation',
 }
 
-function industryLabel(industry: Industry, isDa: boolean) {
-  if (industry === 'all') return isDa ? 'Alle' : 'All'
-  return industry
+function categoryLabel(category: CategoryFilter, isDa: boolean) {
+  if (category === 'all') return isDa ? 'Alle' : 'All'
+  return category
 }
 
 function accentFor(pro: ProfessionalCard) {
-  const primary = PLATFORM_INDUSTRIES.find((industry) => pro.industries.includes(industry.id))?.id
-  return industryAccent(primary ?? pro.industries[0])
+  return categoryAccent(categoryForAreas(pro.industries)?.id)
 }
 
-function isIndustry(value: string | null): value is Industry {
-  return !!value && FILTER_INDUSTRIES.includes(value as Industry) && value !== 'all'
+function categoryFromQuery(value: string | null): CategoryId | null {
+  return categoryIdForValue(value)
 }
 
 function relevanceFor(pro: ProfessionalCard, selectedSession: SessionTypeId | null) {
@@ -50,7 +50,7 @@ interface ProfessionalsDirectoryProps {
 export default function ProfessionalsDirectory({ initialProfessionals, initialLoadError = false }: ProfessionalsDirectoryProps) {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
-  const [industryFilter, setIndustryFilter] = useState<Industry>('all')
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all')
   const [recommendedSession, setRecommendedSession] = useState<SessionTypeId | null>(null)
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
   const [search, setSearch] = useState('')
@@ -64,7 +64,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     const field = params.get('field')
     const requestedSession = params.get('session')
     const legacyNeed = params.get('need')
-    if (isIndustry(field)) setIndustryFilter(field)
+    const requestedCategory = categoryFromQuery(field)
+    if (requestedCategory) setCategoryFilter(requestedCategory)
     if (isSessionTypeId(requestedSession)) setRecommendedSession(requestedSession)
     else if (legacyNeed && LEGACY_NEED_SESSION[legacyNeed]) setRecommendedSession(LEGACY_NEED_SESSION[legacyNeed])
   }, [])
@@ -91,16 +92,17 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   }, [])
 
   const filtered = dbProfessionals.filter((p) => {
-    const matchesIndustry = industryFilter === 'all' || p.industries.includes(industryFilter)
+    const primaryCategory = categoryForAreas(p.industries)?.id
+    const matchesCategory = categoryFilter === 'all' || primaryCategory === categoryFilter
     const searchLower = search.toLowerCase()
     const focusText = (p.focus_areas ?? []).map((area) => `${focusLabel(area, 'da')} ${focusLabel(area, 'en')}`).join(' ')
-    const matchesSearch = !search || [p.name, p.title, p.company, p.bio, p.industries.join(' '), focusText]
+    const matchesSearch = !search || [p.name, p.title, p.company, p.bio, primaryCategory, p.industries.join(' '), focusText]
       .join(' ')
       .toLowerCase()
       .includes(searchLower)
     const matchesNeed = !recommendedSession || relevanceFor(p, recommendedSession) > 0
     const matchesPrice = maxPrice === null || p.price <= maxPrice
-    return matchesIndustry && matchesSearch && matchesNeed && matchesPrice
+    return matchesCategory && matchesSearch && matchesNeed && matchesPrice
   }).sort((a, b) => relevanceFor(b, recommendedSession) - relevanceFor(a, recommendedSession))
 
   const t = {
@@ -111,7 +113,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     searchPlaceholder: isDa ? 'Søg rolle, virksomhed eller erfaring...' : 'Search role, company or experience...',
     bookCta: isDa ? 'Book session' : 'Book session',
     noResults: isDa ? 'Ingen match' : 'No match',
-    noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
+    noResultsBody: isDa ? 'Nulstil søgning eller vælg alle kategorier.' : 'Clear search or view all categories.',
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
     impact: isDa ? `${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% til fagpersonen` : `${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% to the professional`,
@@ -123,16 +125,16 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
 
   function resetFilters() {
     setSearch('')
-    setIndustryFilter('all')
+    setCategoryFilter('all')
     setRecommendedSession(null)
     setMaxPrice(null)
     window.history.replaceState(null, '', '/professionals')
   }
 
-  function selectIndustry(industry: Industry) {
-    setIndustryFilter(industry)
+  function selectCategory(category: CategoryFilter) {
+    setCategoryFilter(category)
     const params = new URLSearchParams()
-    if (industry !== 'all') params.set('field', industry)
+    if (category !== 'all') params.set('field', category)
     if (recommendedSession) params.set('session', recommendedSession)
     const query = params.toString()
     window.history.replaceState(null, '', query ? `/professionals?${query}` : '/professionals')
@@ -140,14 +142,14 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
 
   function clearRecommendation() {
     setRecommendedSession(null)
-    const query = industryFilter === 'all' ? '' : `?field=${encodeURIComponent(industryFilter)}`
+    const query = categoryFilter === 'all' ? '' : `?field=${encodeURIComponent(categoryFilter)}`
     window.history.replaceState(null, '', `/professionals${query}`)
   }
 
   function selectSessionFilter(id: SessionTypeId | null) {
     setRecommendedSession(id)
     const params = new URLSearchParams()
-    if (industryFilter !== 'all') params.set('field', industryFilter)
+    if (categoryFilter !== 'all') params.set('field', categoryFilter)
     if (id) params.set('session', id)
     const query = params.toString()
     window.history.replaceState(null, '', query ? `/professionals?${query}` : '/professionals')
@@ -191,29 +193,29 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               />
             </label>
             <div className="relative flex items-center border-t border-gray-200 px-4 text-gray-950 md:hidden">
-              <span className="pointer-events-none text-xs font-bold text-gray-400">{isDa ? 'Felt' : 'Field'}</span>
+              <span className="pointer-events-none text-xs font-bold text-gray-400">{isDa ? 'Kategori' : 'Category'}</span>
               <select
-                value={industryFilter}
-                onChange={(event) => selectIndustry(event.target.value as Industry)}
-                aria-label={isDa ? 'Vælg felt' : 'Choose field'}
+                value={categoryFilter}
+                onChange={(event) => selectCategory(event.target.value as CategoryFilter)}
+                aria-label={isDa ? 'Vælg kategori' : 'Choose category'}
                 className="w-full appearance-none bg-transparent py-3.5 pl-4 pr-8 text-right text-sm font-black text-gray-950 outline-none"
               >
-                {FILTER_INDUSTRIES.map((industry) => (
-                  <option key={industry} value={industry}>{industryLabel(industry, isDa)}</option>
+                {FILTER_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>{categoryLabel(category, isDa)}</option>
                 ))}
               </select>
               <ChevronDown size={17} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
             </div>
             <div className="hidden gap-2 px-3 py-3 md:flex">
-              {FILTER_INDUSTRIES.map((ind) => (
+              {FILTER_CATEGORIES.map((category) => (
                 <button
-                  key={ind}
-                  onClick={() => selectIndustry(ind)}
-                  aria-pressed={industryFilter === ind}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-[3px] border px-3 py-2 text-xs font-bold transition-all ${industryFilter === ind ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
+                  key={category}
+                  onClick={() => selectCategory(category)}
+                  aria-pressed={categoryFilter === category}
+                  className={`inline-flex items-center gap-2 whitespace-nowrap rounded-[3px] border px-3 py-2 text-xs font-bold transition-all ${categoryFilter === category ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
                 >
-                  <span className={`h-2 w-2 rounded-full ${ind === 'all' ? (industryFilter === ind ? 'bg-white/80' : 'bg-gray-300') : industryAccent(ind)}`} />
-                  {industryLabel(ind, isDa)}
+                  <span className={`h-2 w-2 rounded-full ${category === 'all' ? (categoryFilter === category ? 'bg-white/80' : 'bg-gray-300') : categoryAccent(category)}`} />
+                  {categoryLabel(category, isDa)}
                 </button>
               ))}
             </div>
@@ -285,16 +287,11 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
 
               <div className="border-t border-gray-300 bg-[#f1f1ec] p-6 sm:p-9 lg:border-t-0 lg:p-12">
                 <p className="editorial-label">{isDa ? 'Imens kan du udforske' : 'In the meantime, explore'}</p>
-                <p className="mt-4 max-w-lg font-['Space_Grotesk'] text-xl font-medium leading-snug text-gray-950">{isDa ? 'Læs feltguiden og afklar, hvilken erfaring der er mest relevant for dig.' : 'Read a field guide and clarify which experience is most relevant to you.'}</p>
-                <div className="mt-7 grid grid-cols-2 border-l border-t border-gray-300">
-                  {[
-                    ['/fields/ai', 'AI'],
-                    ['/fields/banking', 'Banking'],
-                    ['/fields/consulting', 'Management Consulting'],
-                    ['/fields/private-equity', 'Private Equity'],
-                  ].map(([href, label]) => (
-                    <Link key={href} href={href} className="flex min-h-20 items-end justify-between border-b border-r border-gray-300 p-3 text-xs font-bold text-gray-950 transition-colors hover:bg-white sm:p-4 sm:text-sm">
-                      <span>{label}</span><span aria-hidden="true">→</span>
+                <p className="mt-4 max-w-lg font-['Space_Grotesk'] text-xl font-medium leading-snug text-gray-950">{isDa ? 'Læs kategoriguiden og afklar, hvilken erfaring der er mest relevant for dig.' : 'Read a category guide and clarify which experience is most relevant to you.'}</p>
+                <div className="mt-7 grid grid-cols-1 border-l border-t border-gray-300 sm:grid-cols-3">
+                  {CATEGORIES.map((category) => (
+                    <Link key={category.id} href={`/fields/${category.slug}`} className="flex min-h-20 items-end justify-between border-b border-r border-gray-300 p-3 text-xs font-bold text-gray-950 transition-colors hover:bg-white sm:p-4 sm:text-sm">
+                      <span>{category.id}</span><span aria-hidden="true">→</span>
                     </Link>
                   ))}
                 </div>
@@ -325,7 +322,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 <div className="flex flex-wrap items-center gap-3">
                   <span className={`h-2 w-8 rounded-full lg:hidden ${accentFor(pro)}`} />
                   <p className="text-xs font-black uppercase text-gray-400">
-                    {pro.industries[0] ?? (isDa ? 'Professionel' : 'Professional')}
+                    {categoryForAreas(pro.industries)?.id ?? (isDa ? 'Professionel' : 'Professional')}
                   </p>
                   <span title={isDa ? 'Indsendt rolle, virksomhed og LinkedIn er gennemgået' : 'Submitted role, company and LinkedIn have been reviewed'} className="inline-flex items-center gap-1 text-[10px] font-bold uppercase text-emerald-800">
                     <CheckCircle2 size={12} aria-hidden="true" /> {isDa ? 'Gennemgået' : 'Reviewed'}
@@ -337,6 +334,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                   <div>
                     <h2 className="text-xl font-semibold leading-tight text-gray-950 md:text-2xl">{pro.name}</h2>
                     <p className="mt-1 text-sm font-semibold text-gray-600">{pro.title}{pro.company ? ` · ${pro.company}` : ''}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-gray-400">{pro.industries.join(' · ')}</p>
                   </div>
                 </div>
 

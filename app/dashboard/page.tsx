@@ -110,7 +110,7 @@ export default function DashboardPage() {
   const proChecklist = [
     { label: 'Profiltekst', done: Boolean(professional?.bio?.trim()) },
     { label: 'Fokusområder', done: Boolean(professional?.focus_areas?.length) },
-    { label: 'Industri', done: Boolean(professional?.industries?.length) },
+    { label: 'Kategori og fagområde', done: Boolean(professional?.industries?.length) },
     { label: 'Pris', done: Boolean(professional?.price_dkk) },
     { label: 'Sendt til gennemgang', done: professional?.visibility === 'published' },
   ];

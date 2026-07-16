@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
 import { RevenueSplit } from '@/components/RevenueSplit';
+import { CATEGORIES, isCategoryId } from '@/lib/categories';
 import {
   CONTRIBUTION_PERCENT,
-  INDUSTRIES,
   PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
   PROFESSIONAL_SHARE_PERCENT,
@@ -24,7 +24,7 @@ export default function ProfessionalSignupPage() {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', password: '',
-    title: '', company: '', industry: '',
+    title: '', company: '', category: '', areas: [] as string[],
     bio: '', linkedin: '',
     sessionTypes: [] as string[], priceDkk: 1200,
   });
@@ -40,11 +40,13 @@ export default function ProfessionalSignupPage() {
   const set = (key: string, value: unknown) => setForm(f => ({ ...f, [key]: value }));
   const toggleSessionType = (t: string) =>
     set('sessionTypes', form.sessionTypes.includes(t) ? form.sessionTypes.filter(x => x !== t) : [...form.sessionTypes, t]);
+  const toggleArea = (area: string) =>
+    set('areas', form.areas.includes(area) ? form.areas.filter((value) => value !== area) : [...form.areas, area]);
 
   function validateStep(nextStep = step): boolean {
     if (nextStep === 1) {
-      if (!form.name.trim() || !form.email.trim() || form.password.length < 8 || !form.title.trim() || !form.company.trim() || !form.industry || !form.linkedin.trim()) {
-        setError('Udfyld navn, e-mail, adgangskode, titel, virksomhed, industri og LinkedIn.');
+      if (!form.name.trim() || !form.email.trim() || form.password.length < 8 || !form.title.trim() || !form.company.trim() || !isCategoryId(form.category) || form.areas.length === 0 || !form.linkedin.trim()) {
+        setError('Udfyld navn, e-mail, adgangskode, titel, virksomhed, kategori, mindst ét fagområde og LinkedIn.');
         return false;
       }
     }
@@ -174,12 +176,23 @@ export default function ProfessionalSignupPage() {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="professional-industry" className="mb-1 block text-sm font-semibold text-gray-700">Industri</label>
-                  <select id="professional-industry" required aria-required="true" disabled={!isInteractive} value={form.industry} onChange={e => set('industry', e.target.value)} className="field-control text-sm">
-                    <option value="">Vælg industri</option>
-                    {INDUSTRIES.map((industry) => <option key={industry.id} value={industry.id}>{industry.id}</option>)}
+                  <label htmlFor="professional-category" className="mb-1 block text-sm font-semibold text-gray-700">Kategori</label>
+                  <select id="professional-category" required aria-required="true" disabled={!isInteractive} value={form.category} onChange={(event) => setForm((current) => ({ ...current, category: event.target.value, areas: [] }))} className="field-control text-sm">
+                    <option value="">Vælg kategori</option>
+                    {CATEGORIES.map((category) => <option key={category.id} value={category.id}>{category.id}</option>)}
                   </select>
                 </div>
+                {isCategoryId(form.category) && (
+                  <fieldset>
+                    <legend className="mb-2 text-sm font-semibold text-gray-700">Relaterede fagområder</legend>
+                    <p className="mb-3 text-xs leading-relaxed text-gray-400">Vælg mindst ét område, hvor din erfaring er konkret og aktuel.</p>
+                    <div className="flex flex-wrap gap-2">
+                      {CATEGORIES.find((category) => category.id === form.category)!.areas.map((area) => (
+                        <button key={area} type="button" aria-pressed={form.areas.includes(area)} onClick={() => toggleArea(area)} className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${form.areas.includes(area) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-600 hover:border-gray-950 hover:text-gray-950'}`}>{area}</button>
+                      ))}
+                    </div>
+                  </fieldset>
+                )}
                 <div>
                   <label htmlFor="professional-linkedin" className="mb-1 block text-sm font-semibold text-gray-700">LinkedIn</label>
                   <input id="professional-linkedin" type="url" required aria-required="true" disabled={!isInteractive} inputMode="url" value={form.linkedin} onChange={e => set('linkedin', e.target.value)} className="field-control text-sm" placeholder="https://linkedin.com/in/..." />
@@ -250,7 +263,8 @@ export default function ProfessionalSignupPage() {
                   {[
                     ['Navn', form.name],
                     ['Titel', form.title],
-                    ['Industri', form.industry],
+                    ['Kategori', form.category],
+                    ['Fagområder', form.areas.join(', ')],
                     ['Pris', `${formatDkk(form.priceDkk)} inkl. moms / 60 min`],
                     ['Naetwork', `${PLATFORM_SHARE_PERCENT}% / ${formatDkk(economics.platformShare)}`],
                     ['Kræftens Bekæmpelse', `${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)}`],

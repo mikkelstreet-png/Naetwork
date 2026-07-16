@@ -1,110 +1,91 @@
 export const FIELD_GUIDES = {
-  ai: {
-    label: 'AI',
-    query: 'AI',
-    accent: 'bg-cyan-300',
-    title: {
-      da: 'Karrieresessioner inden for AI',
-      en: 'AI career sessions',
-    },
-    description: {
-      da: 'For dig, der sigter mod produkt-, strategi-, drifts- eller kommercielle roller inden for AI og vil positionere din erfaring skarpere.',
-      en: 'For candidates targeting AI product, strategy, operations or commercial roles who need sharper positioning and a clearer path in.',
-    },
-    bestFor: {
-      da: ['Positionering mod AI-roller', 'Portefølje og dokumenterede resultater', 'Produkt- og strategiinterviews', 'Overførsel af erfaring fra andre områder'],
-      en: ['AI role positioning', 'Portfolio and proof points', 'Product or strategy interviews', 'Translating non-AI experience'],
-    },
-    outputs: {
-      da: ['En skarpere faglig profil', 'En prioriteret liste over roller', 'Klare porteføljeprioriteter', 'Konkrete interviewvinkler'],
-      en: ['Sharper AI narrative', 'Role shortlist', 'Portfolio priorities', 'Interview angles'],
-    },
-    sessionFocus: {
-      da: 'Brug timen på at afklare, hvilke AI-roller der passer til din baggrund, hvilke resultater der tæller, og hvordan du kommunikerer din særlige styrke præcist.',
-      en: 'Use the hour to understand which AI roles fit your background, which proof points matter, and how to communicate your edge without sounding generic.',
-    },
-  },
-  banking: {
-    label: 'Banking',
-    query: 'Banking',
-    accent: 'bg-emerald-300',
-    title: {
-      da: 'Karrieresessioner inden for Banking',
-      en: 'Banking career sessions',
-    },
-    description: {
-      da: 'For dig, der forbereder dig til processer inden for Investment Banking, M&A, Corporate Finance eller Capital Markets.',
-      en: 'For candidates preparing for investment banking, M&A, corporate finance or capital markets processes.',
-    },
-    bestFor: {
-      da: ['Tekniske interviewspørgsmål', 'Motivation og personlig fortælling', 'CV og transaktionsinteresse', 'Kalibrering mod interviewniveauet'],
-      en: ['Banking technicals', 'Fit story', 'CV and deal interest', 'Interview bar calibration'],
-    },
-    outputs: {
-      da: ['En målrettet træningsplan', 'Skarpere motivationssvar', 'Et stærkere CV-signal', 'Klarhed over næste forberedelsestrin'],
-      en: ['Technical drill plan', 'Sharper fit answers', 'Better CV signal', 'Interview readiness'],
-    },
-    sessionFocus: {
-      da: 'Brug timen på at forstå interviewniveauet, teste din tekniske viden, forbedre din fortælling og fjerne svage signaler fra dit materiale.',
-      en: 'Use the hour to understand the interview bar, pressure-test technicals, improve your story and remove weak signals from your material.',
-    },
-  },
   consulting: {
-    label: 'Management Consulting',
-    query: 'Management Consulting',
+    label: 'Consulting',
+    query: 'Consulting',
     accent: 'bg-blue-300',
     title: {
-      da: 'Karrieresessioner inden for Management Consulting',
+      da: 'Karrieresessioner inden for Consulting',
       en: 'Consulting career sessions',
     },
     description: {
-      da: 'For dig, der forbereder ansøgninger, cases, personlige interviews eller finalerunder til Management Consulting.',
-      en: 'For candidates preparing for strategy consulting applications, cases, fit interviews and final-round pressure.',
+      da: 'For dig, der søger roller inden for Management Consulting, Strategy, Transformation, Business Development, Operations eller PMO.',
+      en: 'For candidates targeting Management Consulting, Strategy, Transformation, Business Development, Operations or PMO roles.',
     },
     bestFor: {
-      da: ['Casestruktur', 'Hypotesedrevet problemløsning', 'Personlig kommunikation', 'Forberedelse til finalerunden'],
-      en: ['Case structure', 'Hypothesis thinking', 'Fit communication', 'Final-round preparation'],
+      da: ['Management Consulting og cases', 'Strategi og forretningsudvikling', 'Transformation og PMO', 'Operations og implementering'],
+      en: ['Management Consulting and cases', 'Strategy and business development', 'Transformation and PMO', 'Operations and implementation'],
     },
     outputs: {
-      da: ['En renere casestruktur', 'Stærkere hypoteser', 'En plan for personlige svar', 'Klare træningsprioriteter'],
-      en: ['Cleaner case structure', 'Better hypotheses', 'Fit answer map', 'Practice priorities'],
+      da: ['En skarpere problemløsning', 'Et tydeligere match til rollen', 'Stærkere case- og interviewsvar', 'Konkrete næste forberedelsestrin'],
+      en: ['Sharper problem solving', 'A clearer role fit', 'Stronger case and interview answers', 'Concrete preparation priorities'],
     },
     sessionFocus: {
-      da: 'Brug timen på at gøre din problemløsning klarere, din kommunikation mere præcis og dine personlige svar mere troværdige.',
-      en: 'Use the hour to make your problem solving clearer, your communication tighter and your fit answers more credible.',
+      da: 'Brug timen på at gøre din problemløsning, positionering og kommunikation mere præcis i forhold til den konkrete consultingrolle.',
+      en: 'Use the hour to make your problem solving, positioning and communication more precise for the specific consulting role.',
     },
   },
-  'private-equity': {
-    label: 'Private Equity',
-    query: 'Private Equity',
-    accent: 'bg-lime-300',
+  finance: {
+    label: 'Finance',
+    query: 'Finance',
+    accent: 'bg-emerald-300',
     title: {
-      da: 'Karrieresessioner inden for Private Equity',
-      en: 'Private Equity career sessions',
+      da: 'Karrieresessioner inden for Finance',
+      en: 'Finance career sessions',
     },
     description: {
-      da: 'For dig, der sigter mod investeringsroller, deal teams, investment cases eller et skifte fra Banking eller Consulting.',
-      en: 'For candidates targeting investment roles, deal teams, investment cases or transitions from banking and consulting.',
+      da: 'For dig, der søger roller inden for Investment Banking, Private Equity, Asset Management, Corporate Finance, Commercial Banking, Markets eller Investments.',
+      en: 'For candidates targeting Investment Banking, Private Equity, Asset Management, Corporate Finance, Commercial Banking, Markets or Investments.',
     },
     bestFor: {
-      da: ['Investment cases', 'Kommerciel deal-forståelse', 'Due diligence-logik', 'Forberedelse til PE-interviews'],
-      en: ['Investment cases', 'Deal thinking', 'Diligence logic', 'PE interview preparation'],
+      da: ['Investment Banking og Corporate Finance', 'Private Equity og investment cases', 'Markets og investeringer', 'Finance-interviews'],
+      en: ['Investment Banking and Corporate Finance', 'Private Equity and investment cases', 'Markets and investments', 'Finance interviews'],
     },
     outputs: {
-      da: ['En plan for din investment case', 'En skarpere deal-diskussion', 'Bedre due diligence-spørgsmål', 'Klare forberedelsesprioriteter'],
-      en: ['Investment case plan', 'Sharper deal discussion', 'Diligence questions', 'PE readiness'],
+      da: ['En målrettet træningsplan', 'Skarpere technicals og motivationssvar', 'Et stærkere CV-signal', 'Klarhed over næste procestrin'],
+      en: ['A targeted practice plan', 'Sharper technical and fit answers', 'A stronger CV signal', 'Clarity on the next process step'],
     },
     sessionFocus: {
-      da: 'Brug timen på at skærpe, hvordan du vurderer virksomheder, transaktioner, værdiskabelse og investeringskvalitet.',
-      en: 'Use the hour to sharpen how you think about companies, deals, value creation and investment judgment.',
+      da: 'Brug timen på at forstå kravene i den konkrete financerolle, teste din faglige forberedelse og skærpe din fortælling.',
+      en: 'Use the hour to understand the bar for the specific finance role, test your technical preparation and sharpen your story.',
     },
   },
-} as const;
+  legal: {
+    label: 'Legal',
+    query: 'Legal',
+    accent: 'bg-violet-300',
+    title: {
+      da: 'Karrieresessioner inden for Legal',
+      en: 'Legal career sessions',
+    },
+    description: {
+      da: 'For dig, der søger roller inden for Corporate Law, M&A, Commercial Law, Compliance, Regulatory eller Governance.',
+      en: 'For candidates targeting Corporate Law, M&A, Commercial Law, Compliance, Regulatory or Governance roles.',
+    },
+    bestFor: {
+      da: ['Corporate Law og M&A', 'Commercial Law', 'Compliance og Regulatory', 'Governance og interne legalroller'],
+      en: ['Corporate Law and M&A', 'Commercial Law', 'Compliance and Regulatory', 'Governance and in-house legal roles'],
+    },
+    outputs: {
+      da: ['Et tydeligere fagligt fokus', 'Skarpere ansøgningsargumenter', 'Bedre interviewforberedelse', 'En realistisk vej ind i rollen'],
+      en: ['A clearer legal focus', 'Sharper application arguments', 'Better interview preparation', 'A realistic route into the role'],
+    },
+    sessionFocus: {
+      da: 'Brug timen på at afklare den juridiske retning, forstå forventningerne i rollen og kommunikere din erfaring mere relevant.',
+      en: 'Use the hour to clarify your legal direction, understand role expectations and communicate your experience more relevantly.',
+    },
+  },
+} as const
 
-export type FieldSlug = keyof typeof FIELD_GUIDES;
+export type FieldSlug = keyof typeof FIELD_GUIDES
 
-export const FIELD_SLUGS = Object.keys(FIELD_GUIDES) as FieldSlug[];
+export const FIELD_SLUGS = Object.keys(FIELD_GUIDES) as FieldSlug[]
+
+export const LEGACY_FIELD_REDIRECTS: Record<string, FieldSlug> = {
+  ai: 'consulting',
+  banking: 'finance',
+  'private-equity': 'finance',
+}
 
 export function profileHrefForField(slug: FieldSlug) {
-  return `/professionals?field=${encodeURIComponent(FIELD_GUIDES[slug].query)}`;
+  return `/professionals?field=${encodeURIComponent(FIELD_GUIDES[slug].query)}`
 }
