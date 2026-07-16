@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { claimAuthEmailRequest, markAuthEmailSent } from '@/lib/server/authEmailRateLimit';
+import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { FOCUS_AREAS, INDUSTRIES, PRICE_OPTIONS, normalizeLinkedInUrl } from '@/lib/platform';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -13,13 +14,8 @@ function clean(value: unknown, max: number) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
 }
 
-function sameOrigin(request: Request) {
-  const origin = request.headers.get('origin');
-  return !origin || origin === new URL(request.url).origin;
-}
-
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
+  if (!isSameSiteRequest(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
 
   let createdUserId: string | null = null;
   try {

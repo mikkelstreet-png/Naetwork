@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
+import { isSameSiteRequest } from '@/lib/server/requestSecurity'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-
-function sameOrigin(request: Request) {
-  const origin = request.headers.get('origin')
-  return !origin || origin === new URL(request.url).origin
-}
 
 async function professionalForRequest() {
   const supabase = await createClient()
@@ -38,7 +34,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 })
+  if (!isSameSiteRequest(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 })
   try {
     const context = await professionalForRequest()
     if (!context) return NextResponse.json({ error: 'Ingen professionel profil fundet.' }, { status: 403 })
@@ -76,7 +72,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (!sameOrigin(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 })
+  if (!isSameSiteRequest(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 })
   try {
     const context = await professionalForRequest()
     if (!context) return NextResponse.json({ error: 'Ingen professionel profil fundet.' }, { status: 403 })

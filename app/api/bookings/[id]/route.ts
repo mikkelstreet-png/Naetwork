@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { formatSessionDate } from '@/lib/dateTime';
 import { appUrl, cancelScheduledBookingEmails, sendTransactionalEmail } from '@/lib/server/email';
+import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { focusLabel } from '@/lib/platform';
 import { isSessionTypeId, sessionType } from '@/lib/sessionTypes';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -8,13 +9,8 @@ import { createClient } from '@/lib/supabase/server';
 
 type BookingAction = 'confirm' | 'cancel' | 'complete';
 
-function sameOrigin(request: Request) {
-  const origin = request.headers.get('origin');
-  return !origin || origin === new URL(request.url).origin;
-}
-
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
-  if (!sameOrigin(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
+  if (!isSameSiteRequest(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
 
   try {
     const { id } = await context.params;

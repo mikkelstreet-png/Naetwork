@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendTransactionalEmail } from '@/lib/server/email';
+import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
@@ -55,8 +56,7 @@ export async function GET() {
 }
 
 export async function DELETE(request: Request) {
-  const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin) {
+  if (!isSameSiteRequest(request)) {
     return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
   }
 

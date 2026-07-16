@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
+import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
-  const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
+  if (!isSameSiteRequest(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server'
+import { isSameSiteRequest } from '@/lib/server/requestSecurity'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
-function sameOrigin(request: Request) {
-  const origin = request.headers.get('origin')
-  return !origin || origin === new URL(request.url).origin
-}
-
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 })
+  if (!isSameSiteRequest(request)) return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 })
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

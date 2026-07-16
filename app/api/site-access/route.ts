@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
+import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { createSiteAccessCookieValue, normaliseNextPath, SITE_ACCESS_COOKIE } from '@/lib/siteAccess';
 
 export const runtime = 'nodejs';
@@ -42,8 +43,7 @@ function redirectToAccess(request: NextRequest, nextPath: string, error: string)
 }
 
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin) {
+  if (!isSameSiteRequest(request)) {
     return new NextResponse('Ugyldig forespørgsel.', { status: 403 });
   }
 

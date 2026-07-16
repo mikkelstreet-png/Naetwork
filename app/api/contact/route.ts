@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendTransactionalEmail } from '@/lib/server/email';
+import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 const SUBJECTS: Record<string, string> = {
@@ -14,13 +15,8 @@ function cleanText(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().replace(/\r\n/g, '\n').slice(0, maxLength) : '';
 }
 
-function sameOrigin(request: Request) {
-  const origin = request.headers.get('origin');
-  return !origin || origin === new URL(request.url).origin;
-}
-
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) {
+  if (!isSameSiteRequest(request)) {
     return NextResponse.json({ error: 'Ugyldig forespørgsel.' }, { status: 403 });
   }
 
