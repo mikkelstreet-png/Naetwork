@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: '/fields/ai', destination: '/fields/consulting', permanent: true },
+      { source: '/fields/banking', destination: '/fields/finance', permanent: true },
+      { source: '/fields/private-equity', destination: '/fields/finance', permanent: true },
+    ];
+  },
   async headers() {
     const noIndexRoutes = ['/admin/:path*', '/dashboard/:path*', '/profil/:path*', '/login', '/signup', '/forgot-password', '/reset-password'];
     return [
