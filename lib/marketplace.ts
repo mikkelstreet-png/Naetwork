@@ -76,6 +76,7 @@ export type PaymentStatus = typeof PAYMENT_STATUSES[number]
 export const TRANSACTIONAL_EMAIL_KEYS = [
   'welcome',
   'verify_email',
+  'professional_application_received',
   'booking_requested_candidate',
   'booking_requested_professional',
   'booking_confirmed',
@@ -90,8 +91,11 @@ export const TRANSACTIONAL_EMAIL_KEYS = [
   'professional_approved',
   'professional_rejected',
   'password_reset',
+  'password_changed',
   'email_changed',
   'account_deleted',
+  'contact_received',
+  'contact_notification',
   'payout_confirmed',
   'payout_failed',
 ] as const

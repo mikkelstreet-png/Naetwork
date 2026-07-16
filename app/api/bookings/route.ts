@@ -246,6 +246,10 @@ export async function POST(request: Request) {
     const notifications = await Promise.allSettled([
       user.email ? sendTransactionalEmail({
         to: user.email,
+        templateKey: 'booking_requested_candidate',
+        bookingId: booking.id,
+        recipientProfileId: candidate.id,
+        dedupeKey: `booking-requested-candidate-${booking.id}`,
         subject: `Din bookinganmodning til ${professionalName} er modtaget`,
         title: 'Bookinganmodning modtaget',
         intro: `Hej ${candidateName}. Din anmodning er gemt, og ${professionalName} kan nu bekræfte eller afvise tidspunktet.`,
@@ -262,6 +266,10 @@ export async function POST(request: Request) {
       }) : Promise.resolve(),
       professionalUser.user?.email ? sendTransactionalEmail({
         to: professionalUser.user.email,
+        templateKey: 'booking_requested_professional',
+        bookingId: booking.id,
+        recipientProfileId: owner.id,
+        dedupeKey: `booking-requested-professional-${booking.id}`,
         subject: `Ny bookinganmodning fra ${candidateName}`,
         title: 'Ny bookinganmodning',
         intro: `${candidateName} ønsker en 60-minutters Career Access-session med dig. Log ind for at bekræfte eller afvise tidspunktet.`,

@@ -7,7 +7,7 @@ export default function EmailCatalogPage() {
     <>
       <AdminPageHeader title="Transaktionelle e-mails" description="Den komplette, versionsstyrede katalogoversigt over triggers, modtagere, timing og brugerens næste handling." />
       <section className="mb-6 grid gap-3 sm:grid-cols-3">
-        {[['Templates', entries.length], ['Afsendelse', process.env.RESEND_API_KEY && process.env.EMAIL_FROM ? 'Konfigureret' : 'Afventer'], ['Styring', 'Kode + review']].map(([label, value]) => <div key={label} className="border border-gray-200 bg-white p-5"><p className="editorial-label">{label}</p><p className="mt-3 text-2xl font-black text-gray-950">{value}</p></div>)}
+        {[['Templates', entries.length], ['Afsendelse', process.env.RESEND_API_KEY && process.env.RESEND_WEBHOOK_SECRET && process.env.CRON_SECRET && process.env.EMAIL_FROM ? 'Konfigureret' : 'Afventer'], ['Styring', 'Kode + review']].map(([label, value]) => <div key={label} className="border border-gray-200 bg-white p-5"><p className="editorial-label">{label}</p><p className="mt-3 text-2xl font-black text-gray-950">{value}</p></div>)}
       </section>
       <p className="mb-5 max-w-3xl text-sm leading-relaxed text-gray-600">Emne, preview, trigger og CTA er samlet i én typekontrolleret katalogfil. Ændringer kræver kode-review, så sikkerheds- og betalingsmails ikke kan omskrives uden versionshistorik.</p>
       <AdminTableFrame>

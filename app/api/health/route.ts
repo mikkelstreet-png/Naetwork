@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const emailConfigured = Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+  const emailConfigured = Boolean(process.env.RESEND_API_KEY && process.env.RESEND_WEBHOOK_SECRET && process.env.CRON_SECRET && process.env.EMAIL_FROM);
   const supportConfigured = isValidEmail(process.env.SUPPORT_EMAIL);
   const legalIdentityConfigured = hasValidLegalIdentity();
   let database = false;
@@ -24,10 +24,10 @@ export async function GET() {
     }
   }
 
-  const ready = database && supportConfigured && legalIdentityConfigured;
+  const ready = database && supportConfigured && legalIdentityConfigured && emailConfigured;
   return NextResponse.json({
     status: ready ? 'ready' : 'degraded',
-    checks: { database, supportInbox: supportConfigured, legalIdentity: legalIdentityConfigured },
+    checks: { database, supportInbox: supportConfigured, legalIdentity: legalIdentityConfigured, transactionalEmail: emailConfigured },
     integrations: {
       transactionalEmail: emailConfigured ? 'configured' : 'pending',
       payment: 'disabled',

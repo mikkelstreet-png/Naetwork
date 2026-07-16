@@ -19,6 +19,10 @@ export async function GET() {
       NEXT_PUBLIC_SUPABASE_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
       NEXT_PUBLIC_SUPABASE_ANON_KEY: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
       SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      RESEND_API_KEY: Boolean(process.env.RESEND_API_KEY),
+      RESEND_WEBHOOK_SECRET: Boolean(process.env.RESEND_WEBHOOK_SECRET),
+      CRON_SECRET: Boolean(process.env.CRON_SECRET),
+      EMAIL_FROM: Boolean(process.env.EMAIL_FROM),
       SUPPORT_EMAIL: isValidEmail(process.env.SUPPORT_EMAIL),
       NEXT_PUBLIC_APP_URL: Boolean(process.env.NEXT_PUBLIC_APP_URL || process.env.APP_BASE_URL),
       NEXT_PUBLIC_LEGAL_NAME: hasMeaningfulValue(process.env.NEXT_PUBLIC_LEGAL_NAME),
@@ -26,7 +30,7 @@ export async function GET() {
       NEXT_PUBLIC_LEGAL_REGISTRATION: hasValidLegalIdentity(),
     },
     integrations: {
-      transactionalEmail: process.env.RESEND_API_KEY && process.env.EMAIL_FROM ? 'configured' : 'pending',
+      transactionalEmail: process.env.RESEND_API_KEY && process.env.RESEND_WEBHOOK_SECRET && process.env.CRON_SECRET && process.env.EMAIL_FROM ? 'configured' : 'pending',
       payment: payments.enabled ? 'configured' : payments.configured ? 'disabled' : 'pending',
     },
   });

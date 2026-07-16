@@ -54,22 +54,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Du har sendt flere beskeder på kort tid. Prøv igen senere.' }, { status: 429 });
     }
 
-    const { error: insertError } = await admin.from('contact_messages').insert({
+    const { data: contactMessage, error: insertError } = await admin.from('contact_messages').insert({
       name,
       email,
       subject,
       message,
       status: 'new',
-    });
-    if (insertError) throw insertError;
+    }).select('id').single();
+    if (insertError || !contactMessage) throw insertError ?? new Error('Contact message insert failed.');
 
-    let notificationSent = false;
     const supportEmail = process.env.SUPPORT_EMAIL;
-    if (supportEmail) {
-      try {
-        await sendTransactionalEmail({
+    const notifications = await Promise.allSettled([
+      supportEmail ? sendTransactionalEmail({
           to: supportEmail,
           replyTo: email,
+          templateKey: 'contact_notification',
+          dedupeKey: `contact-support-${contactMessage.id}`,
           subject: `Ny henvendelse: ${subject}`,
           title: 'Ny kontaktbesked',
           intro: `${name} har sendt en besked via Naetwork. Besvar denne mail for at svare direkte.`,
@@ -79,12 +79,21 @@ export async function POST(request: Request) {
             { label: 'Emne', value: subject },
           ],
           note: message,
-        });
-        notificationSent = true;
-      } catch (error) {
-        console.error('[contact:notification]', error);
-      }
-    }
+        }) : Promise.resolve(),
+      sendTransactionalEmail({
+        to: email,
+        templateKey: 'contact_received',
+        dedupeKey: `contact-received-${contactMessage.id}`,
+        subject: 'Vi har modtaget din besked til Naetwork',
+        previewText: 'Din besked er modtaget, og vi vender tilbage hurtigst muligt.',
+        title: 'Tak for din besked',
+        intro: `Hej ${name}. Din henvendelse er gemt, og Naetwork vender tilbage på denne e-mailadresse.`,
+        rows: [{ label: 'Emne', value: subject }],
+        note: 'Undlad at sende følsomme personoplysninger i et almindeligt mailsvar.',
+      }),
+    ]);
+    const notificationSent = notifications.every((result) => result.status === 'fulfilled');
+    if (!notificationSent) console.error('[contact:notification] One or more contact emails failed.');
 
     return NextResponse.json({ ok: true, notificationSent }, { status: 201 });
   } catch (error) {

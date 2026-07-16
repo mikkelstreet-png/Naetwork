@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
 export default function ForgotPasswordPage() {
@@ -19,11 +18,14 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const { error: resetError } = await createClient().auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+    const response = await fetch('/api/auth/password-reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
     });
-    if (resetError) {
-      setError('Nulstillingsmailen kunne ikke sendes. Vent et øjeblik, og prøv igen.');
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.error || 'Nulstillingsmailen kunne ikke sendes. Vent et øjeblik, og prøv igen.');
       setLoading(false);
       return;
     }

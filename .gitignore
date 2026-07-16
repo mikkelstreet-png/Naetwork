@@ -10,3 +10,5 @@ npm-debug.log*
 next-env.d.ts
 /playwright-report
 /test-results
+/.cache
+/.pnpm-home

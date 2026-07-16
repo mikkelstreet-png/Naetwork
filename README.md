@@ -2,7 +2,7 @@
 
 Naetwork is a Career Access platform: the access layer between a concrete career decision and people with relevant experience from the other side. Users start with their situation, not a profile catalogue, and move through Explore, Prepare, Apply, or Perform before reaching relevant professionals.
 
-Every session lasts 60 minutes and is designed around a concrete outcome rather than time alone. A completed paid session is designed to allocate 40%, 60%, 80% or 90% of its price excluding VAT in support of Kræftens Bekæmpelse. Booking requests and profile review are implemented. Transactional email requires Resend production configuration, and payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
+Every session lasts 60 minutes and is designed around a concrete outcome rather than time alone. A completed paid session uses the fixed revenue split defined by the product. Booking requests, profile review, and Resend transactional email automation are implemented. Payment remains intentionally disabled until the commercial, collection-through-sale, accounting, and legal setup is approved.
 
 The canonical public entry points are `/start`, `/how-it-works`, `/sessions`, `/explore`, `/prepare`, `/apply`, and `/perform`. Legacy `/match` and `/onboarding` routes redirect to `/start`.
 
@@ -41,9 +41,11 @@ The following Vercel variables are required for Preview and Production:
 
 Set `NEXT_PUBLIC_SUPPORT_EMAIL` to the same address when the public contact address differs from `kontakt@naetwork.dk`.
 
-Transactional email can remain pending until Resend is activated:
+Transactional email is required for release:
 
 - `RESEND_API_KEY`
+- `RESEND_WEBHOOK_SECRET`
+- `CRON_SECRET`
 - `EMAIL_FROM`
 
 The Supabase URL must resolve publicly. When transactional email is activated, the Resend sender domain must also be verified. Configure the Supabase Auth site URL and redirect allow-list with:

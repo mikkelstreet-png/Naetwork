@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import { Mail } from 'lucide-react';
 import {
   CONTRIBUTION_PERCENT,
@@ -15,8 +14,6 @@ import {
   normalizeLinkedInUrl,
   sessionEconomics,
 } from '@/lib/platform';
-import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
-import { accountErrorMessage } from '@/lib/authErrors';
 
 const STEP_LABELS = ['Profil', 'Session', 'Fordeling', 'Bekræft'];
 
@@ -58,35 +55,6 @@ export default function ProfessionalSignupPage() {
     return true;
   }
 
-  async function createDraftProfessionalProfile(userId: string) {
-    const supabase = createClient();
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('auth_user_id', userId)
-      .maybeSingle();
-
-    if (!profile?.id) return;
-
-    await supabase
-      .from('profiles')
-      .update({ name: form.name })
-      .eq('id', profile.id);
-
-    await supabase.from('professional_profiles').upsert({
-      profile_id: profile.id,
-      title: form.title,
-      company: form.company || null,
-      bio: form.bio || null,
-      industries: form.industry ? [form.industry] : [],
-      focus_areas: form.sessionTypes,
-      price_dkk: form.priceDkk,
-      linkedin_url: normalizeLinkedInUrl(form.linkedin),
-      review_status: 'pending',
-      visibility: 'hidden',
-    }, { onConflict: 'profile_id' });
-  }
-
   const handleSubmit = async () => {
     if (!validateStep(1) || !validateStep(2)) return;
     if (!normalizeLinkedInUrl(form.linkedin)) {
@@ -101,39 +69,16 @@ export default function ProfessionalSignupPage() {
 
     setLoading(true);
     setError('');
-    const supabase = createClient();
-    const { data: authData, error: authErr } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          name: form.name,
-          role: 'professional',
-          title: form.title,
-          company: form.company,
-          industry: form.industry,
-          bio: form.bio,
-          linkedin: normalizeLinkedInUrl(form.linkedin),
-          sessionTypes: form.sessionTypes,
-          priceDkk: form.priceDkk,
-          donatesToCharity: true,
-          termsAcceptedAt: new Date().toISOString(),
-          termsVersion: TERMS_VERSION,
-          privacyNoticedAt: new Date().toISOString(),
-          privacyVersion: PRIVACY_VERSION,
-        },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/profil/professionel`,
-      },
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, role: 'professional', accepted }),
     });
-
-    if (authErr || !authData.user) {
-      setError(accountErrorMessage(authErr, 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.'));
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.error || 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.');
       setLoading(false);
       return;
-    }
-
-    if (authData.session) {
-      await createDraftProfessionalProfile(authData.user.id).catch(() => undefined);
     }
 
     setSubmitted(true);

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { formatSessionDate } from '@/lib/dateTime';
-import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
+import { appUrl, cancelScheduledBookingEmails, sendTransactionalEmail } from '@/lib/server/email';
+import { focusLabel } from '@/lib/platform';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
@@ -36,7 +37,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     const { data: booking } = await admin
       .from('bookings')
-      .select('id, candidate_profile_id, professional_profile_id, slot_id, starts_at, ends_at, status, price_dkk, payment_status, message_to_professional')
+      .select('id, candidate_profile_id, professional_profile_id, slot_id, starts_at, ends_at, status, price_dkk, payment_status, message_to_professional, meeting_url, focus_area')
       .eq('id', id)
       .single();
     if (!booking) return NextResponse.json({ error: 'Bookingen blev ikke fundet.' }, { status: 404 });
@@ -81,45 +82,128 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     const { data: candidate } = await admin
       .from('profiles')
-      .select('name, auth_user_id')
+      .select('id, name, auth_user_id, notification_booking_reminders')
       .eq('id', booking.candidate_profile_id)
       .single();
     const { data: owner } = professional ? await admin
       .from('profiles')
-      .select('name, auth_user_id')
+      .select('id, name, auth_user_id, notification_booking_reminders')
       .eq('id', professional.profile_id)
       .single() : { data: null };
 
     const candidateUser = candidate ? await admin.auth.admin.getUserById(candidate.auth_user_id) : null;
     const professionalUser = owner ? await admin.auth.admin.getUserById(owner.auth_user_id) : null;
-    const recipient = isProfessional ? candidateUser?.data.user?.email : professionalUser?.data.user?.email;
-    const recipientName = isProfessional ? candidate?.name : owner?.name;
     const actorName = actor.name || (isProfessional ? 'Den professionelle' : 'Kandidaten');
+    const candidateEmail = candidateUser?.data.user?.email;
+    const professionalEmail = professionalUser?.data.user?.email;
+    const sessionDate = formatSessionDate(booking.starts_at);
+    const rows = [
+      { label: 'Tidspunkt', value: sessionDate },
+      { label: 'Status', value: status === 'confirmed' ? 'Bekræftet' : status === 'completed' ? 'Gennemført' : 'Aflyst' },
+    ];
+    const notifications: Array<Promise<unknown>> = [];
 
-    if (recipient) {
-      const emailCopy = status === 'confirmed'
-        ? { subject: 'Din Naetwork-session er bekræftet', title: 'Tidspunktet er bekræftet', intro: `Hej ${recipientName || 'der'}. ${actorName} har bekræftet jeres 60-minutters session.`, cta: 'Se sessionen' }
-        : status === 'completed'
-          ? { subject: 'Hvordan var din Naetwork-session?', title: 'Sessionen er gennemført', intro: `Hej ${recipientName || 'der'}. Tak for din session. Din feedback hjælper Naetwork med at sikre kvaliteten.`, cta: 'Giv feedback' }
-          : { subject: 'Din Naetwork-session er aflyst', title: 'Sessionen er aflyst', intro: `Hej ${recipientName || 'der'}. ${actorName} har aflyst bookinganmodningen.`, cta: 'Se bookingen' };
-      await sendTransactionalEmail({
-        to: recipient,
-        templateKey: status === 'confirmed' ? 'booking_confirmed' : status === 'completed' ? 'feedback_request' : 'booking_cancelled',
-        subject: emailCopy.subject,
-        title: emailCopy.title,
-        intro: emailCopy.intro,
-        rows: [
-          { label: 'Tidspunkt', value: formatSessionDate(booking.starts_at) },
-          { label: 'Status', value: status === 'confirmed' ? 'Bekræftet' : status === 'completed' ? 'Gennemført' : 'Aflyst' },
-        ],
+    if (status === 'confirmed') {
+      if (candidateEmail) notifications.push(sendTransactionalEmail({
+        to: candidateEmail,
+        templateKey: 'booking_confirmed',
+        bookingId: id,
+        recipientProfileId: candidate?.id,
+        dedupeKey: `booking-confirmed-candidate-${id}`,
+        subject: 'Din Naetwork-session er bekræftet',
+        title: 'Tidspunktet er bekræftet',
+        intro: `Hej ${candidate?.name || 'der'}. ${actorName} har bekræftet jeres 60-minutters session.`,
+        rows,
         note: 'Betaling er ikke aktiveret endnu. Ingen beløb er trukket.',
-        cta: { label: emailCopy.cta, href: appUrl('/profil/bookings') },
-      }).catch(async () => {
-        await admin.from('booking_events').insert({
-          booking_id: id,
-          event_type: 'notification_failed',
-          notes: `Status email failed after ${status}.`,
-        });
+        cta: { label: 'Se sessionen', href: appUrl('/profil/bookings') },
+      }));
+      if (professionalEmail) notifications.push(sendTransactionalEmail({
+        to: professionalEmail,
+        templateKey: 'booking_confirmed',
+        bookingId: id,
+        recipientProfileId: owner?.id,
+        dedupeKey: `booking-confirmed-professional-${id}`,
+        subject: 'Du har bekræftet en Naetwork-session',
+        title: 'Sessionen er bekræftet',
+        intro: `Hej ${owner?.name || 'der'}. Bookingen med ${candidate?.name || 'kandidaten'} er nu bekræftet.`,
+        rows,
+        note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
+        cta: { label: 'Se sessionen', href: appUrl('/profil/bookings') },
+      }));
+
+      const reminderAt = new Date(new Date(booking.starts_at).getTime() - 24 * 60 * 60 * 1000);
+      const canScheduleNow = reminderAt.getTime() <= Date.now() + 29 * 24 * 60 * 60 * 1000;
+      const scheduledAt = reminderAt.getTime() > Date.now() + 10 * 60 * 1000 ? reminderAt.toISOString() : undefined;
+      if (canScheduleNow && candidateEmail && candidate?.notification_booking_reminders) notifications.push(sendTransactionalEmail({
+        to: candidateEmail,
+        templateKey: 'booking_reminder_candidate',
+        bookingId: id,
+        recipientProfileId: candidate.id,
+        dedupeKey: `booking-reminder-candidate-${id}`,
+        scheduledAt,
+        subject: 'Påmindelse om din Naetwork-session',
+        title: 'Din session nærmer sig',
+        intro: `Hej ${candidate.name || 'der'}. Her er tidspunkt og fokus for din kommende 60-minutters session.`,
+        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Fokus', value: focusLabel(booking.focus_area || '', 'da') }],
+        note: booking.meeting_url ? `Mødelink: ${booking.meeting_url}` : 'Mødelinket vises i din booking, når det er tilføjet.',
+        cta: { label: 'Forbered sessionen', href: appUrl('/profil/bookings') },
+      }));
+      if (canScheduleNow && professionalEmail && owner?.notification_booking_reminders) notifications.push(sendTransactionalEmail({
+        to: professionalEmail,
+        templateKey: 'booking_reminder_professional',
+        bookingId: id,
+        recipientProfileId: owner.id,
+        dedupeKey: `booking-reminder-professional-${id}`,
+        scheduledAt,
+        subject: 'Påmindelse om din kommende Naetwork-session',
+        title: 'Sessionen nærmer sig',
+        intro: `Hej ${owner.name || 'der'}. Du har en session med ${candidate?.name || 'en kandidat'} på det angivne tidspunkt.`,
+        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Fokus', value: focusLabel(booking.focus_area || '', 'da') }],
+        note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
+        cta: { label: 'Se kandidatens brief', href: appUrl('/profil/bookings') },
+      }));
+    } else if (status === 'completed' && candidateEmail) {
+      notifications.push(sendTransactionalEmail({
+        to: candidateEmail,
+        templateKey: 'feedback_request',
+        bookingId: id,
+        recipientProfileId: candidate?.id,
+        dedupeKey: `feedback-request-${id}`,
+        subject: 'Hvordan var din Naetwork-session?',
+        title: 'Sessionen er gennemført',
+        intro: `Hej ${candidate?.name || 'der'}. Tak for din session. Din feedback hjælper Naetwork med at sikre kvaliteten.`,
+        rows,
+        cta: { label: 'Giv feedback', href: appUrl('/profil/bookings') },
+      }));
+    } else if (status === 'cancelled') {
+      await cancelScheduledBookingEmails(id).catch(() => undefined);
+      for (const participant of [
+        { email: candidateEmail, profileId: candidate?.id, name: candidate?.name, role: 'candidate' },
+        { email: professionalEmail, profileId: owner?.id, name: owner?.name, role: 'professional' },
+      ]) {
+        if (!participant.email) continue;
+        notifications.push(sendTransactionalEmail({
+          to: participant.email,
+          templateKey: 'booking_cancelled',
+          bookingId: id,
+          recipientProfileId: participant.profileId,
+          dedupeKey: `booking-cancelled-${participant.role}-${id}`,
+          subject: 'Din Naetwork-session er aflyst',
+          title: 'Sessionen er aflyst',
+          intro: `Hej ${participant.name || 'der'}. ${actorName} har aflyst bookinganmodningen.`,
+          rows,
+          note: 'Betaling er ikke aktiveret endnu. Ingen beløb er trukket.',
+          cta: { label: 'Se bookingen', href: appUrl('/profil/bookings') },
+        }));
+      }
+    }
+
+    const results = await Promise.allSettled(notifications);
+    if (results.some((result) => result.status === 'rejected')) {
+      await admin.from('booking_events').insert({
+        booking_id: id,
+        event_type: 'notification_failed',
+        notes: `One or more status emails failed after ${status}.`,
       });
     }
 

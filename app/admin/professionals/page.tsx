@@ -82,14 +82,15 @@ export default function ProfessionalsPage() {
     }
     setActionLoading(`${id}:${reviewStatus}:${visibility}`)
     setError('')
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    const { error: updateError } = await supabase.from('professional_profiles').update({ review_status: reviewStatus, visibility, approved_at: reviewStatus === 'approved' ? new Date().toISOString() : null }).eq('id', id)
-    if (updateError) {
-      setError('Profilstatus kunne ikke opdateres. Ingen ændringer er gemt.')
-    } else if (user) {
-      const { data: adminProfile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).maybeSingle()
-      if (adminProfile) await supabase.from('admin_audit_log').insert({ admin_user_id: adminProfile.id, action: `professional_${reviewStatus}`, target_table: 'professional_profiles', target_id: id, notes: `Review status: ${reviewStatus}; visibility: ${visibility}` })
+    const response = await fetch(`/api/admin/professionals/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reviewStatus, visibility }),
+    })
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}))
+      setError(result.error || 'Profilstatus kunne ikke opdateres. Ingen ændringer er gemt.')
+    } else {
       await loadProfessionals()
     }
     setConfirmRejectId(null)

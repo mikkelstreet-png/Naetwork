@@ -9,6 +9,10 @@ const required = [
   'NEXT_PUBLIC_LEGAL_REGISTRATION',
   'NEXT_PUBLIC_SUPPORT_EMAIL',
   'SUPPORT_EMAIL',
+  'RESEND_API_KEY',
+  'RESEND_WEBHOOK_SECRET',
+  'CRON_SECRET',
+  'EMAIL_FROM',
 ]
 
 const missing = required.filter((name) => !process.env[name]?.trim())
@@ -62,6 +66,10 @@ if (process.env.NEXT_PUBLIC_SUPPORT_EMAIL && process.env.SUPPORT_EMAIL && proces
   errors.push('NEXT_PUBLIC_SUPPORT_EMAIL and SUPPORT_EMAIL must match')
 }
 
+if (process.env.EMAIL_FROM && !/noreply@naetwork\.dk/i.test(process.env.EMAIL_FROM)) {
+  errors.push('EMAIL_FROM must use noreply@naetwork.dk')
+}
+
 if (missing.length || errors.length) {
   console.error('Release preflight failed.')
   if (missing.length) console.error(`Missing: ${missing.join(', ')}`)
@@ -70,5 +78,5 @@ if (missing.length || errors.length) {
 }
 
 console.log('Core release configuration is valid.')
-console.log(`Transactional email: ${process.env.RESEND_API_KEY && process.env.EMAIL_FROM ? 'configured' : 'pending (allowed)'}`)
+console.log('Transactional email: configured')
 console.log('Payments: disabled (allowed)')

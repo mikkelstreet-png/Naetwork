@@ -92,8 +92,16 @@ export async function GET(request: NextRequest) {
           const isProfessional = metadata.role === 'professional';
           const sessionPrice = price(metadata.priceDkk);
           const economics = sessionEconomics(sessionPrice);
+          const { data: deliveryProfile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('auth_user_id', user.id)
+            .maybeSingle();
           await sendTransactionalEmail({
             to: user.email,
+            templateKey: isProfessional ? 'professional_application_received' : 'welcome',
+            recipientProfileId: deliveryProfile?.id,
+            dedupeKey: `welcome-${user.id}`,
             subject: isProfessional ? 'Din Naetwork-profil er modtaget' : 'Velkommen til Naetwork',
             title: isProfessional ? 'Din profil er klar til gennemgang' : 'Velkommen til Naetwork',
             intro: isProfessional

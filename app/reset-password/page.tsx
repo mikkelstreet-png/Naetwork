@@ -37,6 +37,7 @@ export default function ResetPasswordPage() {
       setError(accountErrorMessage(error, 'Adgangskoden kunne ikke opdateres. Bed om et nyt link, og prøv igen.'));
       setLoading(false);
     } else {
+      await fetch('/api/auth/password-changed', { method: 'POST' }).catch(() => undefined);
       setDone(true);
       setTimeout(() => router.push('/profil'), 2000);
     }

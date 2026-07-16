@@ -3,9 +3,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowRight, Mail } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { PRIVACY_VERSION, TERMS_VERSION } from '@/lib/legal';
-import { accountErrorMessage } from '@/lib/authErrors';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -27,24 +24,14 @@ export default function SignupPage() {
       return;
     }
 
-    const { error: authError } = await createClient().auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name: name.trim(),
-          role: 'candidate',
-          termsAcceptedAt: new Date().toISOString(),
-          termsVersion: TERMS_VERSION,
-          privacyNoticedAt: new Date().toISOString(),
-          privacyVersion: PRIVACY_VERSION,
-        },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/match`,
-      },
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role: 'candidate', accepted }),
     });
-
-    if (authError) {
-      setError(accountErrorMessage(authError, 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.'));
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.error || 'Kontoen kunne ikke oprettes. Kontrollér oplysningerne, og prøv igen.');
       setLoading(false);
       return;
     }

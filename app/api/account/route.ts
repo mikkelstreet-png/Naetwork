@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { sendTransactionalEmail } from '@/lib/server/email';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
@@ -65,10 +66,24 @@ export async function DELETE(request: Request) {
     if (!user) return NextResponse.json({ error: 'Ikke logget ind.' }, { status: 401 });
 
     const admin = createAdminClient();
+    const { data: profile } = await admin.from('profiles').select('name').eq('auth_user_id', user.id).maybeSingle();
     const { error } = await admin.auth.admin.deleteUser(user.id);
     if (error) throw error;
 
-    return NextResponse.json({ ok: true });
+    let notificationSent = false;
+    if (user.email) {
+      await sendTransactionalEmail({
+        to: user.email,
+        templateKey: 'account_deleted',
+        dedupeKey: `account-deleted-${user.id}`,
+        subject: 'Din Naetwork-konto er slettet',
+        title: 'Kontoen er slettet',
+        intro: `Hej ${profile?.name || 'der'}. Vi bekræfter, at din Naetwork-konto er blevet slettet.`,
+        note: 'Lovpligtige eller nødvendige registreringer kan fortsat opbevares i det omfang, det fremgår af privatlivspolitikken.',
+      }).then(() => { notificationSent = true; }).catch((mailError) => console.error('[account:delete-email]', mailError));
+    }
+
+    return NextResponse.json({ ok: true, notificationSent });
   } catch (error) {
     console.error('[account:delete]', error);
     return NextResponse.json({ error: 'Kontoen kunne ikke slettes. Kontakt kontakt@naetwork.dk.' }, { status: 500 });
