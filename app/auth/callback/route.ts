@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import type { EmailOtpType } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -28,9 +29,12 @@ function price(value: unknown): number {
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
+  const tokenHash = searchParams.get('token_hash');
+  const tokenType = searchParams.get('type');
+  const hasEmailToken = Boolean(tokenHash && (tokenType === 'signup' || tokenType === 'recovery'));
   const next = safeInternalPath(searchParams.get('next'));
 
-  if (code) {
+  if (code || hasEmailToken) {
     const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,7 +54,12 @@ export async function GET(request: NextRequest) {
         },
       }
     );
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error } = code
+      ? await supabase.auth.exchangeCodeForSession(code)
+      : await supabase.auth.verifyOtp({
+        token_hash: tokenHash!,
+        type: tokenType as EmailOtpType,
+      });
     if (!error) {
       if (next === '/reset-password') {
         return NextResponse.redirect(new URL(next, origin));

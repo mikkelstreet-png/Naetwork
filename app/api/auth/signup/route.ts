@@ -62,12 +62,12 @@ export async function POST(request: Request) {
     if (!requestId) return NextResponse.json({ error: 'Der er sendt flere anmodninger på kort tid. Vent et øjeblik, og prøv igen.' }, { status: 429 });
 
     const admin = createAdminClient();
-    const redirectTo = appUrl(`/auth/callback?next=${encodeURIComponent(role === 'professional' ? '/profil/professionel' : '/match')}`);
+    const nextPath = role === 'professional' ? '/profil/professionel' : '/match';
     const { data, error } = await admin.auth.admin.generateLink({
       type: 'signup',
       email,
       password,
-      options: { data: metadata, redirectTo },
+      options: { data: metadata },
     });
     if (error) {
       if (/already|registered|exists/i.test(error.message)) {
@@ -77,6 +77,9 @@ export async function POST(request: Request) {
     }
 
     createdUserId = data.user.id;
+    const verificationLink = appUrl(
+      `/auth/callback?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=signup&next=${encodeURIComponent(nextPath)}`
+    );
     const { data: profile } = await admin.from('profiles').select('id').eq('auth_user_id', data.user.id).maybeSingle();
     await sendTransactionalEmail({
       to: email,
@@ -88,7 +91,7 @@ export async function POST(request: Request) {
       title: 'Bekræft din e-mail',
       intro: `Hej ${name}. Bekræft din e-mailadresse for at aktivere din ${role === 'professional' ? 'professionelle profil' : 'konto'} på Naetwork.`,
       note: 'Linket kan kun bruges én gang. Hvis du ikke har oprettet kontoen, kan du ignorere denne mail.',
-      cta: { label: 'Bekræft e-mail', href: data.properties.action_link },
+      cta: { label: 'Bekræft e-mail', href: verificationLink },
     });
     await markAuthEmailSent(requestId);
     return NextResponse.json({ ok: true }, { status: 201 });

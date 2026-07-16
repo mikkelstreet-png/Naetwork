@@ -22,13 +22,15 @@ export async function POST(request: Request) {
     const { data, error } = await admin.auth.admin.generateLink({
       type: 'recovery',
       email,
-      options: { redirectTo: appUrl('/auth/callback?next=/reset-password') },
     });
     if (error) {
       if (/not found|invalid/i.test(error.message)) return NextResponse.json({ ok: true });
       throw error;
     }
 
+    const recoveryLink = appUrl(
+      `/auth/callback?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=recovery&next=${encodeURIComponent('/reset-password')}`
+    );
     const { data: profile } = await admin.from('profiles').select('id, name').eq('auth_user_id', data.user.id).maybeSingle();
     await sendTransactionalEmail({
       to: email,
@@ -40,7 +42,7 @@ export async function POST(request: Request) {
       title: 'Nulstil din adgangskode',
       intro: `Hej ${profile?.name || 'der'}. Vi har modtaget en anmodning om at nulstille adgangskoden til din Naetwork-konto.`,
       note: 'Linket kan kun bruges én gang. Hvis du ikke bad om det, kan du ignorere mailen og beholde din nuværende adgangskode.',
-      cta: { label: 'Vælg ny adgangskode', href: data.properties.action_link },
+      cta: { label: 'Vælg ny adgangskode', href: recoveryLink },
     });
     await markAuthEmailSent(requestId);
     return NextResponse.json({ ok: true });
