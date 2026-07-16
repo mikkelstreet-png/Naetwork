@@ -1,79 +1,70 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
+import { RevenueSplit } from '@/components/RevenueSplit'
 import { useLanguage } from '@/context/LanguageContext'
-import { ACCESS_PATHS, SESSION_CONCEPTS, localized } from '@/lib/brand'
-import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PRICE_OPTIONS, PROFESSIONAL_SHARE_PERCENT, SESSION_MINUTES, formatDkk } from '@/lib/platform'
+import { localized } from '@/lib/brand'
+import { PRICE_OPTIONS, SESSION_MINUTES, formatDkk } from '@/lib/platform'
+import { SESSION_TYPES } from '@/lib/sessionTypes'
 
 export function HomeContent() {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
-  const pathColors = ['access-path-card--1', 'access-path-card--2', 'access-path-card--3', 'access-path-card--4'] as const
-  const featuredSessionIds = ['inside-the-role', 'cv-reality-check', 'interview-ready', 'offer-review']
-  const featuredSessions = SESSION_CONCEPTS.filter((session) => featuredSessionIds.includes(session.id))
-
-  const accessExamples = isDa
+  const proofPoints = isDa
     ? [
-        ['Rollen', 'Har selv udført arbejdet', 'Kan forklare hverdagen, kravene og de kompromiser, jobopslaget ikke viser.'],
-        ['Rekrutteringen', 'Har vurderet lignende kandidater', 'Kan se, hvad der styrker dit match, og hvad der reelt vil skabe tvivl.'],
-        ['Karriereskiftet', 'Har gennemført en relevant overgang', 'Kan udfordre din plan med erfaring fra de barrierer og mellemtrin, skiftet kræver.'],
+        ['Erfaring før titel', 'Se præcis hvilke roller, virksomheder og processer fagpersonen kender indefra.'],
+        ['Et tydeligt resultat', 'Vælg sessionen efter det, du skal stå med bagefter—ikke efter en vag kategori.'],
+        ['Forberedt på forhånd', 'Del mål og relevant materiale, så de 60 minutter bruges på det, der flytter dig.'],
       ]
     : [
-        ['The role', 'Has done the work', 'Can explain the day-to-day reality, expectations and trade-offs the job description leaves out.'],
-        ['The hiring process', 'Has assessed similar candidates', 'Can see what strengthens your fit and what will genuinely create doubt.'],
-        ['The career change', 'Has made a relevant transition', 'Can challenge your plan with experience of the barriers and intermediate moves involved.'],
+        ['Experience before title', 'See exactly which roles, companies and processes the professional knows from the inside.'],
+        ['A clear outcome', 'Choose the session by what you need afterwards—not a vague category.'],
+        ['Prepared in advance', 'Share your goal and relevant material so the 60 minutes focus on what moves you forward.'],
       ]
-
-  const steps = isDa
+  const journey = isDa
     ? [
-        ['Beskriv beslutningen', 'Fortæl kort, hvad du overvejer, og hvad du har brug for at få afklaret.'],
-        ['Se hvorfor erfaringen er relevant', 'Vælg blandt professionelle, hvis erfaring matcher situationen - ikke blot branchen eller titlen.'],
-        ['Brug timen på det væsentlige', 'Del relevant kontekst på forhånd, og afslut med en vurdering og prioriterede næste skridt.'],
+        ['Vælg session', 'Start med det konkrete resultat: et skarpere CV, en bedre samtale eller et klarere valg.'],
+        ['Vælg fagperson', 'Sammenlign relevant erfaring, sessionstyper, pris og næste ledige tid.'],
+        ['Send dit brief', 'Vælg tidspunkt og fortæl, hvad du vil opnå. Fagpersonen bekræfter anmodningen.'],
       ]
     : [
-        ['Describe the decision', 'Tell us what you are considering and what you need to clarify.'],
-        ['See why the experience is relevant', 'Choose professionals whose experience fits the situation, not just the industry or title.'],
-        ['Use the hour on what matters', 'Share relevant context beforehand and finish with an assessment and prioritized next steps.'],
-      ]
-
-  const faqs = isDa
-    ? [
-        ['Hvad kan en session bruges til?', 'Til ét konkret karrierespørgsmål: eksempelvis om du bør søge en rolle, hvordan dit CV bør målrettes, hvad du skal forvente i et interview, eller hvordan et jobtilbud bør vurderes.'],
-        ['Hvem møder jeg?', 'En professionel med erfaring, der er relevant for din konkrete situation. Naetwork gennemgår rolle, virksomhedserfaring og LinkedIn før publicering. Det er kvalitetskontrol - ikke en garanti for et bestemt resultat.'],
-        ['Hvad får jeg efter 60 minutter?', 'Målet aftales i briefet. Du skal som minimum stå med et klarere svar, de vigtigste risici eller huller og prioriterede næste skridt.'],
-        ['Hvad koster det, og hvordan fordeles prisen?', `Prisen er DKK 600, 900, 1.200 eller 1.800 inklusive moms. Efter moms fordeles nettoprisen fast: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle. De præcise beløb vises før booking.`],
-      ]
-    : [
-        ['What can a session be used for?', 'One concrete career question: whether to apply, how to target your CV, what to expect in an interview or how to assess an offer.'],
-        ['Who will I meet?', 'A professional with experience relevant to your situation. Naetwork reviews role, company experience and LinkedIn before publication. This is quality control, not a guarantee of a particular result.'],
-        ['What should I have after 60 minutes?', 'The intended outcome is set in the brief. At minimum, you should leave with a clearer answer, the main risks or gaps and prioritized next steps.'],
-        ['What does it cost, and how is the price split?', `The price is DKK 600, 900, 1,200 or 1,800 including VAT. After VAT, the net price has a fixed split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional. Exact amounts are shown before booking.`],
+        ['Choose a session', 'Start with the concrete outcome: a sharper CV, a better interview or a clearer decision.'],
+        ['Choose a professional', 'Compare relevant experience, session types, price and next availability.'],
+        ['Send your brief', 'Choose a time and describe your goal. The professional confirms the request.'],
       ]
 
   return (
     <main>
       <AccessHero />
 
-      <section className="home-section home-section--paper">
+      <section className="home-section home-section--white" id="session-types">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Vælg din indgang' : 'Choose your starting point'}</p>
-            <h2>{isDa ? 'Start med det, du skal have afklaret.' : 'Start with what you need to clarify.'}</h2>
-            <p>{isDa ? 'Naetwork finder den relevante erfaring ud fra situationen.' : 'Naetwork finds relevant experience from the situation.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Syv konkrete sessioner' : 'Seven concrete sessions'}</p>
+            <h2>{isDa ? 'Vælg det, der skal være bedre om 60 minutter.' : 'Choose what should be better in 60 minutes.'}</h2>
+            <p>{isDa ? 'Hver session har et klart formål, en enkel forberedelse og et konkret output.' : 'Every session has a clear purpose, simple preparation and a concrete output.'}</p>
           </div>
-          <div className="access-path-grid">
-            {ACCESS_PATHS.map((path, index) => (
-              <Link key={path.id} href={path.href} className={`access-path-card ${pathColors[index]}`}>
-                <span className="access-path-card__index">0{index + 1}</span>
-                <div>
-                  <p>{localized(path.label, lang)}</p>
-                  <h3>{localized(path.title, lang)}</h3>
-                  <span>{localized(path.description, lang)}</span>
+
+          <div className="product-session-grid">
+            {SESSION_TYPES.map((session, index) => (
+              <article key={session.id}>
+                <div className="product-session-grid__topline">
+                  <span>0{index + 1}</span>
+                  <span>{SESSION_MINUTES} min</span>
                 </div>
-                <ArrowRight size={19} aria-hidden="true" />
-              </Link>
+                <h3>{localized(session.title, lang)}</h3>
+                <p>{localized(session.description, lang)}</p>
+                <div className="product-session-grid__outcome">
+                  <span>{isDa ? 'Du går derfra med' : 'You leave with'}</span>
+                  <strong>{localized(session.outcome, lang)}</strong>
+                </div>
+                <Link href={`/start?session=${session.id}`}>
+                  {isDa ? 'Vælg session' : 'Choose session'}
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+              </article>
             ))}
           </div>
         </div>
@@ -82,62 +73,35 @@ export function HomeContent() {
       <section className="home-section home-section--ink">
         <div className="home-shell">
           <div className="section-heading section-heading--light">
-            <p className="section-eyebrow">{isDa ? 'Relevans' : 'Relevance'}</p>
-            <h2>{isDa ? 'Relevant erfaring. Ikke bare senioritet.' : 'Relevant experience. Not seniority alone.'}</h2>
-            <p>{isDa ? 'Hvert match forklares med det, personen faktisk ved.' : 'Every match is explained by what the person actually knows.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Fagpersoner med relevant erfaring' : 'Professionals with relevant experience'}</p>
+            <h2>{isDa ? 'Ikke bare nogen at tale med. Den rigtige at spørge.' : 'Not just someone to talk to. The right person to ask.'}</h2>
+            <p>{isDa ? 'Profilerne gør relevansen synlig, før du booker.' : 'Profiles make relevance visible before you book.'}</p>
           </div>
-          <div className="experience-ledger">
-            {accessExamples.map(([context, evidence, value], index) => (
-              <article key={context}>
+          <div className="product-proof-grid">
+            {proofPoints.map(([title, body], index) => (
+              <article key={title}>
                 <span>0{index + 1}</span>
-                <p>{context}</p>
-                <h3>{evidence}</h3>
-                <div>{value}</div>
+                <h3>{title}</h3>
+                <p>{body}</p>
               </article>
             ))}
           </div>
-          <Link href="/start" className="button-inverse home-inline-action">
-            {isDa ? 'Start med din situation' : 'Start with your situation'}
+          <Link href="/professionals" className="button-inverse home-inline-action">
+            {isDa ? 'Se fagpersoner' : 'Browse professionals'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </section>
 
-      <section className="home-section home-section--white">
+      <section className="home-section home-section--mist" id="how-it-works">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Sessioner med et formål' : 'Sessions with a purpose'}</p>
-            <h2>{isDa ? 'En time med et tydeligt resultat.' : 'One hour with a clear outcome.'}</h2>
-            <p>{isDa ? 'Sessionstypen bestemmer forberedelsen og det, du skal stå tilbage med - ikke længden.' : 'The session type defines the preparation and outcome, not the duration.'}</p>
-          </div>
-          <div className="session-index">
-            {featuredSessions.map((session, index) => (
-              <Link key={session.id} href={`/sessions#${session.id}`}>
-                <span className="session-index__number">0{index + 1}</span>
-                <div>
-                  <h3>{localized(session.title, lang)}</h3>
-                  <p>{localized(session.outcome, lang)}</p>
-                </div>
-                <span className="session-index__duration">{SESSION_MINUTES} min</span>
-                <ArrowRight size={18} aria-hidden="true" />
-              </Link>
-            ))}
-          </div>
-          <Link href="/sessions" className="button-secondary home-inline-action">
-            {isDa ? 'Se alle sessioner' : 'See all sessions'}
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
-
-      <section id="how-it-works" className="home-section home-section--mist">
-        <div className="home-shell">
-          <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Fra tvivl til næste skridt' : 'From uncertainty to a next step'}</p>
-            <h2>{isDa ? 'Forberedt før. Fokuseret under. Konkret efter.' : 'Prepared before. Focused during. Concrete after.'}</h2>
+            <p className="section-eyebrow">{isDa ? 'Fra behov til booking' : 'From need to booking'}</p>
+            <h2>{isDa ? 'Tre valg. Ingen unødig kompleksitet.' : 'Three choices. No unnecessary complexity.'}</h2>
+            <p>{isDa ? 'Du opretter først en konto, når du vil sende en bookinganmodning.' : 'You only create an account when you want to send a booking request.'}</p>
           </div>
           <ol className="journey-steps">
-            {steps.map(([title, body], index) => (
+            {journey.map(([title, body], index) => (
               <li key={title}>
                 <span>0{index + 1}</span>
                 <h3>{title}</h3>
@@ -145,57 +109,46 @@ export function HomeContent() {
               </li>
             ))}
           </ol>
-          <p className="home-privacy-note">{isDa ? 'Du opretter først en konto, når du sender en bookinganmodning. Du vælger selv, hvad du deler.' : 'You only create an account when sending a booking request. You choose what to share.'}</p>
-        </div>
-      </section>
-
-      <section id="pricing" className="home-section home-section--ink">
-        <div className="home-shell">
-          <div className="section-heading section-heading--light">
-            <p className="section-eyebrow">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
-            <h2>{isDa ? 'Enkel pris. Synligt bidrag.' : 'Simple pricing. Visible contribution.'}</h2>
-            <p>{isDa ? 'Fire faste priser. Ingen skjulte gebyrer.' : 'Four fixed prices. No hidden fees.'}</p>
-          </div>
-          <div className="home-price-summary">
-            <div>
-              <span>{isDa ? 'Session' : 'Session'}</span>
-              <strong>{SESSION_MINUTES} min.</strong>
-            </div>
-            <div>
-              <span>{isDa ? 'Pris inkl. moms' : 'Price incl. VAT'}</span>
-              <div className="home-price-options" aria-label={isDa ? 'Faste sessionspriser' : 'Fixed session prices'}>
-                {PRICE_OPTIONS.map((price) => <strong key={price}>{formatDkk(price)}</strong>)}
-              </div>
-            </div>
-            <div className="home-price-summary__impact">
-              <span>{isDa ? 'Fast fordeling af nettopris' : 'Fixed split of net price'}</span>
-              <strong>{PLATFORM_SHARE_PERCENT} · {CONTRIBUTION_PERCENT} · {PROFESSIONAL_SHARE_PERCENT}%</strong>
-            </div>
-          </div>
-          <p className="pricing-disclosure">
-            {isDa ? 'Ved DKK 600 inkl. moms er fordelingsgrundlaget DKK 480 ekskl. moms: DKK 96 til Naetwork, DKK 144 til Kræftens Bekæmpelse og DKK 240 til den professionelle. Betaling er endnu ikke aktiveret.' : 'At DKK 600 incl. VAT, the distribution basis is DKK 480 excl. VAT: DKK 96 to Naetwork, DKK 144 to Kræftens Bekæmpelse and DKK 240 to the professional. Payments are not yet enabled.'}
-          </p>
-          <Link href="/impact" className="access-hero__text-link home-price-link">
-            {isDa ? 'Se hele regnestykket' : 'See the full calculation'}
-            <ArrowRight size={15} aria-hidden="true" />
+          <Link href="/start" className="button-primary home-inline-action">
+            {isDa ? 'Start med en session' : 'Start with a session'}
+            <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </section>
 
-      <section className="home-section home-section--paper">
+      <section className="home-section home-section--paper" id="pricing">
+        <div className="home-shell pricing-product-layout">
+          <div>
+            <p className="section-eyebrow">{isDa ? 'Transparent fra starten' : 'Transparent from the start'}</p>
+            <h2>{isDa ? 'Én pris. Én fast fordeling.' : 'One price. One fixed split.'}</h2>
+            <p>{isDa ? 'Du ser altid totalprisen inklusive moms og de præcise beløb, før du sender en booking.' : 'You always see the total price including VAT and the exact amounts before booking.'}</p>
+            <div className="pricing-product-layout__prices" aria-label={isDa ? 'Faste sessionspriser' : 'Fixed session prices'}>
+              {PRICE_OPTIONS.map((price) => <span key={price}>{formatDkk(price)}</span>)}
+            </div>
+            <ul>
+              <li><Check size={15} aria-hidden="true" />{SESSION_MINUTES} {isDa ? 'minutter pr. session' : 'minutes per session'}</li>
+              <li><Check size={15} aria-hidden="true" />{isDa ? 'Ingen skjulte platformstillæg' : 'No hidden platform surcharge'}</li>
+              <li><Check size={15} aria-hidden="true" />{isDa ? 'Fordelingen gemmes med bookingen' : 'The split is saved with the booking'}</li>
+            </ul>
+          </div>
+          <RevenueSplit price={PRICE_OPTIONS[0]} locale={lang} />
+        </div>
+      </section>
+
+      <section className="home-section home-section--white">
         <div className="home-shell faq-layout">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Før du booker' : 'Before you book'}</p>
-            <h2>{isDa ? 'Det vigtigste, før du beslutter dig.' : 'What matters before you decide.'}</h2>
+            <p className="section-eyebrow">{isDa ? 'Kort fortalt' : 'In short'}</p>
+            <h2>{isDa ? 'Det vigtigste, før du vælger.' : 'What matters before you choose.'}</h2>
           </div>
           <div className="faq-list">
-            {faqs.map(([question, answer], index) => (
+            {[
+              [isDa ? 'Hvem er Naetwork til?' : 'Who is Naetwork for?', isDa ? 'Studerende og jobsøgende, der står med et konkret karrierespørgsmål og vil have perspektiv fra en fagperson med relevant erfaring.' : 'Students and jobseekers with a concrete career question who want perspective from a professional with relevant experience.'],
+              [isDa ? 'Hvordan gennemgås fagpersonerne?' : 'How are professionals reviewed?', isDa ? 'Naetwork gennemgår indsendt rolle, virksomhedserfaring, LinkedIn og de sessionstyper, fagpersonen tilbyder, før en profil kan publiceres.' : 'Naetwork reviews submitted role, company experience, LinkedIn and offered session types before a profile can be published.'],
+              [isDa ? 'Hvad får jeg efter sessionen?' : 'What do I get after the session?', isDa ? 'Det afhænger af sessionstypen, men målet og det ønskede output aftales i dit brief før mødet.' : 'It depends on the session type, but the goal and intended output are agreed in your brief before the meeting.'],
+            ].map(([question, answer], index) => (
               <details key={question}>
-                <summary>
-                  <span>0{index + 1}</span>
-                  <strong>{question}</strong>
-                  <i aria-hidden="true" />
-                </summary>
+                <summary><span>0{index + 1}</span><strong>{question}</strong><i aria-hidden="true" /></summary>
                 <p>{answer}</p>
               </details>
             ))}
@@ -205,11 +158,11 @@ export function HomeContent() {
 
       <section className="home-final">
         <div className="home-shell">
-          <p className="section-eyebrow">{isDa ? 'Dit næste træk' : 'Your next move'}</p>
-          <h2>{isDa ? 'Start med beslutningen foran dig.' : 'Start with the decision in front of you.'}</h2>
-          <p>{isDa ? 'Beskriv situationen. Så viser Naetwork, hvilken erfaring der er relevant.' : 'Describe the situation. Naetwork will show which experience is relevant.'}</p>
+          <p className="section-eyebrow">{isDa ? 'Dit næste skridt' : 'Your next step'}</p>
+          <h2>{isDa ? 'Hvad skal være klarere om 60 minutter?' : 'What should be clearer in 60 minutes?'}</h2>
+          <p>{isDa ? 'Vælg en session. Find relevant erfaring. Send dit brief.' : 'Choose a session. Find relevant experience. Send your brief.'}</p>
           <Link href="/start" className="button-primary">
-            {isDa ? 'Start med din situation' : 'Start with your situation'}
+            {isDa ? 'Find din session' : 'Find your session'}
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>

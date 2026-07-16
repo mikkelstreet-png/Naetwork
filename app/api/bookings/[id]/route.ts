@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { formatSessionDate } from '@/lib/dateTime';
 import { appUrl, cancelScheduledBookingEmails, sendTransactionalEmail } from '@/lib/server/email';
 import { focusLabel } from '@/lib/platform';
+import { isSessionTypeId, sessionType } from '@/lib/sessionTypes';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
@@ -37,7 +38,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     const { data: booking } = await admin
       .from('bookings')
-      .select('id, candidate_profile_id, professional_profile_id, slot_id, starts_at, ends_at, status, price_dkk, payment_status, message_to_professional, meeting_url, focus_area')
+      .select('id, candidate_profile_id, professional_profile_id, slot_id, starts_at, ends_at, status, price_dkk, payment_status, message_to_professional, meeting_url, session_type, focus_area')
       .eq('id', id)
       .single();
     if (!booking) return NextResponse.json({ error: 'Bookingen blev ikke fundet.' }, { status: 404 });
@@ -97,8 +98,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const candidateEmail = candidateUser?.data.user?.email;
     const professionalEmail = professionalUser?.data.user?.email;
     const sessionDate = formatSessionDate(booking.starts_at);
+    const sessionLabel = isSessionTypeId(booking.session_type)
+      ? sessionType(booking.session_type).title.da
+      : focusLabel(booking.focus_area || '', 'da');
     const rows = [
       { label: 'Tidspunkt', value: sessionDate },
+      { label: 'Sessionstype', value: sessionLabel },
       { label: 'Status', value: status === 'confirmed' ? 'Bekræftet' : status === 'completed' ? 'Gennemført' : 'Aflyst' },
     ];
     const notifications: Array<Promise<unknown>> = [];
@@ -144,7 +149,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         subject: 'Påmindelse om din Naetwork-session',
         title: 'Din session nærmer sig',
         intro: `Hej ${candidate.name || 'der'}. Her er tidspunkt og fokus for din kommende 60-minutters session.`,
-        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Fokus', value: focusLabel(booking.focus_area || '', 'da') }],
+        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: sessionLabel }],
         note: booking.meeting_url ? `Mødelink: ${booking.meeting_url}` : 'Mødelinket vises i din booking, når det er tilføjet.',
         cta: { label: 'Forbered sessionen', href: appUrl('/profil/bookings') },
       }));
@@ -158,7 +163,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         subject: 'Påmindelse om din kommende Naetwork-session',
         title: 'Sessionen nærmer sig',
         intro: `Hej ${owner.name || 'der'}. Du har en session med ${candidate?.name || 'en kandidat'} på det angivne tidspunkt.`,
-        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Fokus', value: focusLabel(booking.focus_area || '', 'da') }],
+        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: sessionLabel }],
         note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
         cta: { label: 'Se kandidatens brief', href: appUrl('/profil/bookings') },
       }));

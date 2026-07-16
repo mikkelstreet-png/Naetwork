@@ -218,7 +218,7 @@ export default function DashboardPage() {
               <div className="border-t border-gray-300 bg-white">
                 {bookings.slice(0, 5).map((booking) => (
                   <div key={booking.id} className="grid gap-3 border-b border-gray-300 px-4 py-5 sm:grid-cols-[1fr_180px_auto] sm:items-center">
-                    <div><p className="font-black text-gray-950">{booking.counterpart_name}</p><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title || '60 min Career Access-session'}</p></div>
+                    <div><p className="font-black text-gray-950">{booking.counterpart_name}</p><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title || '60-minutters karrieresession'}</p></div>
                     <div><p className="text-sm font-bold text-gray-950">{new Date(booking.starts_at).toLocaleString('da-DK', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Copenhagen' })}</p><p className="mt-1 text-xs text-gray-400">DKK {(booking.price_dkk ?? 0).toLocaleString('da-DK')}</p></div>
                     <StatusBadge status={booking.status} />
                   </div>

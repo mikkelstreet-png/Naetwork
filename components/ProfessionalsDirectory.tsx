@@ -6,20 +6,19 @@ import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/context/LanguageContext'
 import BookingDrawer from '@/components/BookingDrawer'
 import { CheckCircle2, ChevronDown, RefreshCw, Search } from 'lucide-react'
-import { CONTRIBUTION_PERCENT, contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
+import { CONTRIBUTION_PERCENT, PROFESSIONAL_SHARE_PERCENT, contributionAmount, focusLabel, INDUSTRIES as PLATFORM_INDUSTRIES, industryAccent, type Industry as PlatformIndustry } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
 import { professionalBestFor, professionalInitials, professionalPrimaryOutput } from '@/lib/professionalPresentation'
+import { SESSION_TYPES, isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
 type Industry = 'all' | PlatformIndustry
-type Need = 'direction' | 'materials' | 'interview' | 'case'
 
 const FILTER_INDUSTRIES: Industry[] = ['all', ...PLATFORM_INDUSTRIES.map((industry) => industry.id)]
-
-const NEED_FOCUS: Record<Need, string[]> = {
-  direction: ['career_direction', 'career_strategy', 'career_advice', 'ai_career_strategy', 'industry_insight'],
-  materials: ['cv_linkedin', 'cv_review', 'application_review'],
-  interview: ['interview_prep', 'mock_interview', 'banking_technicals'],
-  case: ['case_prep', 'consulting_cases', 'banking_technicals', 'pe_investment_case'],
+const LEGACY_NEED_SESSION: Record<string, SessionTypeId> = {
+  direction: 'career-clarity',
+  materials: 'cv-review',
+  interview: 'interview-training',
+  case: 'case-interview-preparation',
 }
 
 function industryLabel(industry: Industry, isDa: boolean) {
@@ -36,13 +35,11 @@ function isIndustry(value: string | null): value is Industry {
   return !!value && FILTER_INDUSTRIES.includes(value as Industry) && value !== 'all'
 }
 
-function isNeed(value: string | null): value is Need {
-  return value === 'direction' || value === 'materials' || value === 'interview' || value === 'case'
-}
-
-function relevanceFor(pro: ProfessionalCard, need: Need | null) {
-  if (!need) return 0
-  return (pro.focus_areas ?? []).filter((area) => NEED_FOCUS[need].includes(area)).length
+function relevanceFor(pro: ProfessionalCard, selectedSession: SessionTypeId | null) {
+  if (!selectedSession) return 0
+  const exact = (pro.focus_areas ?? []).includes(sessionType(selectedSession).focusArea)
+  const supported = sessionTypesForFocusAreas(pro.focus_areas ?? []).some((session) => session.id === selectedSession)
+  return exact ? 2 : supported ? 1 : 0
 }
 
 interface ProfessionalsDirectoryProps {
@@ -54,7 +51,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   const { lang } = useLanguage()
   const isDa = lang === 'da'
   const [industryFilter, setIndustryFilter] = useState<Industry>('all')
-  const [recommendedNeed, setRecommendedNeed] = useState<Need | null>(null)
+  const [recommendedSession, setRecommendedSession] = useState<SessionTypeId | null>(null)
   const [maxPrice, setMaxPrice] = useState<number | null>(null)
   const [search, setSearch] = useState('')
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>(initialProfessionals)
@@ -65,9 +62,11 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const field = params.get('field')
-    const need = params.get('need')
+    const requestedSession = params.get('session')
+    const legacyNeed = params.get('need')
     if (isIndustry(field)) setIndustryFilter(field)
-    if (isNeed(need)) setRecommendedNeed(need)
+    if (isSessionTypeId(requestedSession)) setRecommendedSession(requestedSession)
+    else if (legacyNeed && LEGACY_NEED_SESSION[legacyNeed]) setRecommendedSession(LEGACY_NEED_SESSION[legacyNeed])
   }, [])
 
   const fetchProfessionals = useCallback(async () => {
@@ -99,40 +98,33 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       .join(' ')
       .toLowerCase()
       .includes(searchLower)
-    const matchesNeed = !recommendedNeed || relevanceFor(p, recommendedNeed) > 0
+    const matchesNeed = !recommendedSession || relevanceFor(p, recommendedSession) > 0
     const matchesPrice = maxPrice === null || p.price <= maxPrice
     return matchesIndustry && matchesSearch && matchesNeed && matchesPrice
-  }).sort((a, b) => relevanceFor(b, recommendedNeed) - relevanceFor(a, recommendedNeed))
+  }).sort((a, b) => relevanceFor(b, recommendedSession) - relevanceFor(a, recommendedSession))
 
   const t = {
-    heading: isDa ? 'Find den relevante erfaring.' : 'Find the relevant experience.',
+    heading: isDa ? 'Find den rigtige fagperson.' : 'Find the right professional.',
     subheading: isDa
-      ? 'Sammenlign gennemgået baggrund, konkret fokus, totalpris og bidrag, før du sender en anmodning.'
-      : 'Compare reviewed background, concrete focus, total price and contribution before sending a request.',
-    searchPlaceholder: isDa ? 'Søg rolle, firma, fokus eller felt...' : 'Search role, company, focus or field...',
-    bookCta: isDa ? 'Anmod om session' : 'Request session',
+      ? 'Sammenlign dokumenteret erfaring, konkrete sessionstyper, pris og næste ledige tid.'
+      : 'Compare documented experience, concrete session types, price and next availability.',
+    searchPlaceholder: isDa ? 'Søg rolle, virksomhed eller erfaring...' : 'Search role, company or experience...',
+    bookCta: isDa ? 'Book session' : 'Book session',
     noResults: isDa ? 'Ingen match' : 'No match',
     noResultsBody: isDa ? 'Nulstil søgning eller vælg alle felter.' : 'Clear search or view all fields.',
     clearFilters: isDa ? 'Nulstil' : 'Clear',
     viewProfile: isDa ? 'Profil' : 'Profile',
-    impact: isDa ? '30% af nettoprisen går til kræftsagen' : '30% of the net price supports the cancer cause',
+    impact: isDa ? `${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% til fagpersonen` : `${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% to the professional`,
     emptyTitle: isDa ? 'De første profiler er på vej' : 'The first profiles are on their way',
     emptyBody: isDa ? 'Vi publicerer kun profiler, når deres erfaring og fokus er gennemgået.' : 'We only publish profiles after reviewing their experience and focus.',
     errorTitle: isDa ? 'Vi kunne ikke hente profilerne' : 'We could not load the profiles',
     errorBody: isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen; hvis fejlen fortsætter, hjælper vi dig videre.' : 'The profile service is not responding right now. Try again; if the issue continues, we can help.',
   }
 
-  const needLabels: Record<Need, string> = {
-    direction: isDa ? 'karriereretning' : 'career direction',
-    materials: isDa ? 'CV, LinkedIn og ansøgning' : 'CV, LinkedIn and applications',
-    interview: isDa ? 'interviewforberedelse' : 'interview preparation',
-    case: isDa ? 'cases og technicals' : 'cases and technicals',
-  }
-
   function resetFilters() {
     setSearch('')
     setIndustryFilter('all')
-    setRecommendedNeed(null)
+    setRecommendedSession(null)
     setMaxPrice(null)
     window.history.replaceState(null, '', '/professionals')
   }
@@ -141,15 +133,24 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     setIndustryFilter(industry)
     const params = new URLSearchParams()
     if (industry !== 'all') params.set('field', industry)
-    if (recommendedNeed) params.set('need', recommendedNeed)
+    if (recommendedSession) params.set('session', recommendedSession)
     const query = params.toString()
     window.history.replaceState(null, '', query ? `/professionals?${query}` : '/professionals')
   }
 
   function clearRecommendation() {
-    setRecommendedNeed(null)
+    setRecommendedSession(null)
     const query = industryFilter === 'all' ? '' : `?field=${encodeURIComponent(industryFilter)}`
     window.history.replaceState(null, '', `/professionals${query}`)
+  }
+
+  function selectSessionFilter(id: SessionTypeId | null) {
+    setRecommendedSession(id)
+    const params = new URLSearchParams()
+    if (industryFilter !== 'all') params.set('field', industryFilter)
+    if (id) params.set('session', id)
+    const query = params.toString()
+    window.history.replaceState(null, '', query ? `/professionals?${query}` : '/professionals')
   }
 
   return (
@@ -166,8 +167,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             <dl className="mt-7 grid grid-cols-3 border-y border-white/15 md:mt-0 md:block md:min-w-[230px] md:border-y-0">
               {[
                 ['60 min', isDa ? 'Format' : 'Format'],
-                ['4', isDa ? 'Prisvalg' : 'Price points'],
-                ['20 · 30 · 50%', isDa ? 'Fast fordeling' : 'Fixed split'],
+                ['7', isDa ? 'Sessionstyper' : 'Session types'],
+                ['10 · 20 · 70%', isDa ? 'Fast fordeling' : 'Fixed split'],
               ].map(([value, label]) => (
                 <div key={label} className="border-r border-white/15 py-3 last:border-r-0 md:flex md:items-center md:justify-between md:border-b md:border-r-0 md:py-2.5">
                   <dd className="font-['Space_Grotesk'] text-sm font-semibold text-white md:text-base">{value}</dd>
@@ -220,10 +221,10 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
           {!loadError && (
             <div className="grid grid-cols-2 border-x border-b border-white/25 bg-white text-gray-950 sm:grid-cols-[1fr_1fr_auto]">
               <label className="relative flex items-center gap-3 border-r border-gray-200 px-4">
-                <span className="hidden text-xs font-bold text-gray-400 sm:block">{isDa ? 'Behov' : 'Need'}</span>
-                <select value={recommendedNeed ?? ''} onChange={(event) => setRecommendedNeed((event.target.value || null) as Need | null)} className="min-w-0 flex-1 appearance-none bg-transparent py-3.5 pr-7 text-sm font-bold outline-none" aria-label={isDa ? 'Filtrer efter behov' : 'Filter by need'}>
-                  <option value="">{isDa ? 'Alle behov' : 'All needs'}</option>
-                  {Object.entries(needLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                <span className="hidden text-xs font-bold text-gray-400 sm:block">{isDa ? 'Session' : 'Session'}</span>
+                <select value={recommendedSession ?? ''} onChange={(event) => selectSessionFilter(isSessionTypeId(event.target.value) ? event.target.value : null)} className="min-w-0 flex-1 appearance-none bg-transparent py-3.5 pr-7 text-sm font-bold outline-none" aria-label={isDa ? 'Filtrer efter sessionstype' : 'Filter by session type'}>
+                  <option value="">{isDa ? 'Alle sessioner' : 'All sessions'}</option>
+                  {SESSION_TYPES.map((item) => <option key={item.id} value={item.id}>{item.title[lang]}</option>)}
                 </select>
                 <ChevronDown size={15} className="pointer-events-none absolute right-4 text-gray-400" aria-hidden="true" />
               </label>
@@ -238,11 +239,11 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               <button type="button" onClick={resetFilters} className="col-span-2 border-t border-gray-200 px-4 py-3 text-xs font-bold text-gray-500 hover:text-gray-950 sm:col-span-1 sm:border-t-0">{t.clearFilters}</button>
             </div>
           )}
-          {!loadError && recommendedNeed && (
+          {!loadError && recommendedSession && (
             <div className="flex flex-col gap-2.5 border-b border-white/20 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:py-4">
               <p className="text-[13px] leading-relaxed text-white/55 sm:text-sm">
                 <span className="font-bold text-white">{isDa ? 'Prioriteret efter dit match:' : 'Prioritized from your match:'}</span>{' '}
-                {needLabels[recommendedNeed]}.
+                {sessionType(recommendedSession).title[lang]}.
               </p>
               <button type="button" onClick={clearRecommendation} className="w-fit text-xs font-bold uppercase text-white/40 hover:text-white">
                 {isDa ? 'Fjern prioritering' : 'Remove priority'}
@@ -256,7 +257,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         {!loadError && <div className="mb-4 flex items-center justify-between gap-3 md:mb-7">
           <p className="text-sm font-black text-gray-950">{loading ? (isDa ? 'Indlæser' : 'Loading') : loadError ? (isDa ? 'Midlertidigt utilgængelig' : 'Temporarily unavailable') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'profil' : 'profiler') : (filtered.length === 1 ? 'profile' : 'profiles')}`}</p>
           <p className="shrink-0 text-right text-xs font-bold text-gray-400">
-            <span className="sm:hidden">{isDa ? '30% til kræftsagen' : '30% to the cancer cause'}</span>
+            <span className="sm:hidden">{isDa ? `${CONTRIBUTION_PERCENT}% bidrag · ${PROFESSIONAL_SHARE_PERCENT}% fagperson` : `${CONTRIBUTION_PERCENT}% impact · ${PROFESSIONAL_SHARE_PERCENT}% professional`}</span>
             <span className="hidden sm:inline">{t.impact}</span>
           </p>
         </div>}
@@ -306,7 +307,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               <p className="text-xl font-black text-gray-950">{t.emptyTitle}</p>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-gray-600">{t.emptyBody}</p>
             </div>
-            <Link href="/professional/signup" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">{isDa ? 'Bliv professionel' : 'Become a professional'}</Link>
+            <Link href="/professional/signup" className="inline-flex w-fit items-center justify-center rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">{isDa ? 'Bliv fagperson' : 'Become a professional'}</Link>
           </div>
         ) : filtered.length === 0 ? (
           <div className="border-y border-gray-200 py-16 text-center">
@@ -347,7 +348,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 <div className="flex items-end justify-between gap-4 border-t border-gray-100 pt-4 md:block md:border-0 md:pt-0">
                   <p className="text-lg font-black text-gray-950">DKK {pro.price.toLocaleString('da-DK')}</p>
                   <p className="mt-0.5 text-[10px] font-semibold uppercase text-gray-400">{isDa ? 'Inkl. moms · 60 min' : 'Incl. VAT · 60 min'}</p>
-                  <p className="mt-1 text-xs font-medium text-gray-400">{isDa ? `${CONTRIBUTION_PERCENT}% / DKK ${contributionAmount(pro.price).toLocaleString('da-DK')} til kræftsagen` : `${CONTRIBUTION_PERCENT}% / DKK ${contributionAmount(pro.price).toLocaleString('da-DK')} to the cancer cause`}</p>
+                  <p className="mt-1 text-xs font-medium text-gray-400">{isDa ? `${CONTRIBUTION_PERCENT}% / DKK ${contributionAmount(pro.price).toLocaleString('da-DK')} til Kræftens Bekæmpelse` : `${CONTRIBUTION_PERCENT}% / DKK ${contributionAmount(pro.price).toLocaleString('da-DK')} to Kræftens Bekæmpelse`}</p>
                   <p className="mt-2 text-xs font-bold text-gray-600">{pro.nextAvailableAt ? (isDa ? `Næste tid ${new Date(pro.nextAvailableAt).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', timeZone: 'Europe/Copenhagen' })}` : `Next time ${new Date(pro.nextAvailableAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Copenhagen' })}`) : (isDa ? 'Ingen åbne tider' : 'No open times')}</p>
                 </div>
 
@@ -370,7 +371,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       </section>
 
       {bookTarget && (
-        <BookingDrawer professional={bookTarget} open={!!bookTarget} onClose={() => setBookTarget(null)} locale={lang} />
+        <BookingDrawer professional={bookTarget} open={!!bookTarget} onClose={() => setBookTarget(null)} locale={lang} initialSessionType={recommendedSession ?? undefined} />
       )}
     </main>
   )

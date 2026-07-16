@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { BRAND_COPY } from '@/lib/brand'
-import { CONTRIBUTION_PERCENT } from '@/lib/platform'
+import { PRICE_MIN, SESSION_MINUTES } from '@/lib/platform'
 
 export function AccessHero() {
   const { lang } = useLanguage()
@@ -32,18 +32,18 @@ export function AccessHero() {
 
           <div className="access-hero__actions">
             <Link href="/start" className="button-inverse">
-              {isDa ? 'Start med din situation' : 'Start with your situation'}
+              {isDa ? 'Find din session' : 'Find your session'}
               <ArrowRight size={16} aria-hidden="true" />
             </Link>
-            <Link href="/how-it-works" className="access-hero__text-link">
-              {isDa ? 'Sådan fungerer det' : 'How it works'}
+            <Link href="/professionals" className="access-hero__text-link">
+              {isDa ? 'Mød fagpersonerne' : 'Meet the professionals'}
             </Link>
           </div>
 
           <ul className="access-hero__facts" aria-label={isDa ? 'Praktisk information' : 'Practical information'}>
-            <li>{isDa ? '60 minutter' : '60 minutes'}</li>
-            <li>{isDa ? 'Fra DKK 600 inkl. moms' : 'From DKK 600 incl. VAT'}</li>
-            <li>{isDa ? `${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse` : `${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse`}</li>
+            <li>{isDa ? '7 konkrete sessionstyper' : '7 concrete session types'}</li>
+            <li>{SESSION_MINUTES} {isDa ? 'minutter online' : 'minutes online'}</li>
+            <li>{isDa ? `Fra DKK ${PRICE_MIN} inkl. moms` : `From DKK ${PRICE_MIN} incl. VAT`}</li>
           </ul>
         </div>
       </div>

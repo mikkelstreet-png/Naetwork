@@ -1,22 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, Clock3 } from 'lucide-react'
+import { ArrowRight, Check, Clock3 } from 'lucide-react'
 import { PublicPageHero } from '@/components/PublicPageHero'
+import { RevenueSplit } from '@/components/RevenueSplit'
 import { useLanguage } from '@/context/LanguageContext'
-import { SESSION_CONCEPTS, accessPath, localized } from '@/lib/brand'
-import { SESSION_MINUTES } from '@/lib/platform'
-
-const USE_CASES = {
-  'should-i-apply': { da: 'Du overvejer en konkret stilling og vil vide, om din profil er stærk nok.', en: 'You are considering a specific role and want to know whether your profile is strong enough.' },
-  'inside-the-role': { da: 'Du vil forstå hverdagen, kravene og karrierevejen i en bestemt rolle.', en: 'You want to understand the day-to-day work, expectations and path in a specific role.' },
-  'inside-the-company': { da: 'Du overvejer en virksomhed og mangler relevant kontekst før din beslutning.', en: 'You are considering a company and need relevant context before deciding.' },
-  'cv-reality-check': { da: 'Du målretter dit CV mod en bestemt type rolle og ønsker direkte feedback.', en: 'You are targeting a specific type of role and want direct feedback on your CV.' },
-  'interview-ready': { da: 'Du har en konkret jobsamtale og vil træne det sandsynlige format.', en: 'You have a specific interview and want to rehearse the likely format.' },
-  'career-direction': { da: 'Du sammenligner flere realistiske retninger og har brug for at prioritere.', en: 'You are comparing realistic directions and need to prioritize.' },
-  'career-pivot': { da: 'Du vil skifte branche eller funktion og har brug for en troværdig overgangsplan.', en: 'You want to change industry or function and need a credible transition plan.' },
-  'offer-review': { da: 'Du har modtaget et tilbud og vil vurdere rolle, mandat, vilkår og risici.', en: 'You have received an offer and want to assess the role, mandate, terms and risks.' },
-} as const
+import { localized } from '@/lib/brand'
+import { PRICE_OPTIONS, SESSION_MINUTES } from '@/lib/platform'
+import { SESSION_TYPES } from '@/lib/sessionTypes'
 
 export function SessionsContent() {
   const { lang } = useLanguage()
@@ -25,63 +16,73 @@ export function SessionsContent() {
   return (
     <main className="page-shell">
       <PublicPageHero
-        eyebrow={isDa ? 'Sessioner' : 'Sessions'}
-        title={isDa ? 'Vælg det, der skal være klarere bagefter.' : 'Choose what should be clearer afterwards.'}
+        eyebrow={isDa ? 'Karrieresessioner' : 'Career sessions'}
+        title={isDa ? 'Et konkret resultat. Én fokuseret time.' : 'A concrete outcome. One focused hour.'}
         body={isDa
-          ? `Alle sessioner varer ${SESSION_MINUTES} minutter. Situationen bestemmer forberedelsen, den relevante erfaring og det konkrete resultat.`
-          : `Every session lasts ${SESSION_MINUTES} minutes. The situation defines the preparation, relevant experience and concrete outcome.`}
-        action={{ href: '/start', label: isDa ? 'Find den relevante session' : 'Find the relevant session' }}
+          ? 'Vælg mellem syv sessionstyper udviklet til de beslutninger, materialer og processer, studerende og jobsøgende står med.'
+          : 'Choose from seven session types designed around the decisions, materials and processes students and jobseekers face.'}
+        action={{ href: '/start', label: isDa ? 'Find din session' : 'Find your session' }}
         sequence={isDa
-          ? ['Konkret situation', 'Relevant professionel', 'Aftalt resultat']
-          : ['Concrete situation', 'Relevant professional', 'Agreed outcome']}
+          ? ['Vælg resultat', 'Find relevant erfaring', 'Book 60 minutter']
+          : ['Choose outcome', 'Find relevant experience', 'Book 60 minutes']}
       />
 
-      <section className="public-section">
+      <section className="public-section bg-white">
         <div className="home-shell">
           <div className="section-heading">
-            <p className="section-eyebrow">{isDa ? 'Otte konkrete formål' : 'Eight concrete purposes'}</p>
-            <h2>{isDa ? 'Ikke generel karrieresnak.' : 'Not a generic career conversation.'}</h2>
-            <p>{isDa ? 'Hver session starter med en genkendelig situation og slutter med et defineret resultat.' : 'Every session starts with a recognizable situation and ends with a defined outcome.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Sessionkatalog' : 'Session catalogue'}</p>
+            <h2>{isDa ? 'Start med det, du vil have hjælp til.' : 'Start with what you need help with.'}</h2>
+            <p>{isDa ? 'Alle sessioner varer 60 minutter. Forskellen er forberedelsen og det output, du går derfra med.' : 'Every session lasts 60 minutes. The difference is the preparation and the output you leave with.'}</p>
           </div>
 
           <div className="session-catalog">
-            {SESSION_CONCEPTS.map((session, index) => {
-              const path = accessPath(session.path)
-              return (
-                <article key={session.id} id={session.id}>
-                  <div className="session-catalog__meta">
-                    <span>0{index + 1}</span>
-                    <p>{localized(path.label, lang)}</p>
-                  </div>
-                  <div className="session-catalog__main">
-                    <h2>{localized(session.title, lang)}</h2>
-                    <p>{USE_CASES[session.id][lang]}</p>
-                  </div>
-                  <div className="session-catalog__outcome">
-                    <p>{isDa ? 'Du går derfra med' : 'You leave with'}</p>
-                    <strong>{localized(session.outcome, lang)}</strong>
-                  </div>
-                  <div className="session-catalog__action">
-                    <span><Clock3 size={14} aria-hidden="true" /> {SESSION_MINUTES} min</span>
-                    <Link href={`/start?path=${session.path}`} aria-label={`${isDa ? 'Start' : 'Start'}: ${localized(session.title, lang)}`}>
-                      {isDa ? 'Start' : 'Start'}
-                      <ArrowRight size={15} aria-hidden="true" />
-                    </Link>
-                  </div>
-                </article>
-              )
-            })}
+            {SESSION_TYPES.map((session, index) => (
+              <article key={session.id} id={session.id}>
+                <div className="session-catalog__meta">
+                  <span>0{index + 1}</span>
+                  <p>{SESSION_MINUTES} min</p>
+                </div>
+                <div className="session-catalog__main">
+                  <h2>{localized(session.title, lang)}</h2>
+                  <p>{localized(session.description, lang)}</p>
+                  <p className="mt-3 flex items-start gap-2 text-gray-500"><Check size={14} className="mt-1 shrink-0" aria-hidden="true" />{localized(session.preparation, lang)}</p>
+                </div>
+                <div className="session-catalog__outcome">
+                  <p>{isDa ? 'Du går derfra med' : 'You leave with'}</p>
+                  <strong>{localized(session.outcome, lang)}</strong>
+                  <ul className="mt-4 space-y-1.5">
+                    {session.deliverables[lang].map((item) => <li key={item} className="text-xs font-semibold text-gray-500">— {item}</li>)}
+                  </ul>
+                </div>
+                <div className="session-catalog__action">
+                  <span><Clock3 size={14} aria-hidden="true" />{SESSION_MINUTES} min</span>
+                  <Link href={`/start?session=${session.id}`} aria-label={`${isDa ? 'Vælg' : 'Choose'} ${localized(session.title, lang)}`}>
+                    {isDa ? 'Vælg' : 'Choose'}<ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                </div>
+              </article>
+            ))}
           </div>
+        </div>
+      </section>
+
+      <section className="home-section home-section--ink">
+        <div className="home-shell pricing-product-layout">
+          <div>
+            <p className="section-eyebrow text-white/50">{isDa ? 'Samme transparente model' : 'The same transparent model'}</p>
+            <h2 className="text-white">{isDa ? 'Prisen ændrer ikke fordelingen.' : 'The price does not change the split.'}</h2>
+            <p className="!text-white/55">{isDa ? `Fagpersonen vælger én af fire priser: ${PRICE_OPTIONS.map((price) => `DKK ${price.toLocaleString('da-DK')}`).join(', ')}. Momsen skilles ud, og resten fordeles fast.` : `The professional selects one of four prices: ${PRICE_OPTIONS.map((price) => `DKK ${price.toLocaleString('en-GB')}`).join(', ')}. VAT is separated and the rest follows the fixed split.`}</p>
+          </div>
+          <RevenueSplit price={PRICE_OPTIONS[0]} locale={lang} tone="dark" />
         </div>
       </section>
 
       <section className="public-cta">
         <div className="home-shell">
           <h2>{isDa ? 'Ikke sikker på, hvilken session der passer?' : 'Not sure which session fits?'}</h2>
-          <p>{isDa ? 'Beskriv situationen med dine egne ord. Du behøver ikke vælge produktet på forhånd.' : 'Describe the situation in your own words. You do not need to choose the product in advance.'}</p>
+          <p>{isDa ? 'Start med det ønskede resultat. Du kan justere sessionstypen igen i bookingflowet.' : 'Start with the intended outcome. You can adjust the session type again during booking.'}</p>
           <Link href="/start" className="button-primary">
-            {isDa ? 'Start med din situation' : 'Start with your situation'}
-            <ArrowRight size={16} aria-hidden="true" />
+            {isDa ? 'Find din session' : 'Find your session'}<ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </section>

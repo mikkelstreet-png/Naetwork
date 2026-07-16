@@ -7,6 +7,7 @@ import { MemberNav } from '@/components/MemberNav';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useLanguage } from '@/context/LanguageContext';
 import { CONTRIBUTION_PERCENT, focusLabel } from '@/lib/platform';
+import { isSessionTypeId, sessionType } from '@/lib/sessionTypes';
 
 interface Booking {
   id: string;
@@ -19,6 +20,7 @@ interface Booking {
   payment_status: string;
   refund_status: string;
   focus_area: string | null;
+  session_type: string | null;
   goal: string | null;
   material_url: string | null;
   meeting_mode: string;
@@ -191,7 +193,7 @@ export default function BookingsPage() {
             {visibleBookings.map((booking) => (
               <article key={booking.id} className="border-b border-gray-300 px-4 py-5">
                 <div className="grid gap-5 lg:grid-cols-[1fr_240px_140px_auto] lg:items-center">
-                <div><h2 className="text-lg font-black text-gray-950">{booking.counterpart_name}</h2><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title}</p>{booking.focus_area && <p className="mt-2 text-xs font-bold text-gray-700">{focusLabel(booking.focus_area, isDa ? 'da' : 'en')}</p>}</div>
+                <div><h2 className="text-lg font-black text-gray-950">{booking.counterpart_name}</h2><p className="mt-1 text-xs text-gray-500">{booking.counterpart_title}</p>{(booking.session_type || booking.focus_area) && <p className="mt-2 text-xs font-bold text-gray-700">{booking.session_type && isSessionTypeId(booking.session_type) ? sessionType(booking.session_type).title[isDa ? 'da' : 'en'] : focusLabel(booking.focus_area || '', isDa ? 'da' : 'en')}</p>}</div>
                 <div><p className="text-sm font-black text-gray-950">{formatDateTime(booking.starts_at)}</p><p className="mt-1 text-xs text-gray-400">60 min · Europe/Copenhagen</p></div>
                 <div>
                   <p className="text-sm font-black text-gray-950">DKK {(booking.price_dkk ?? 0).toLocaleString('da-DK')}</p>

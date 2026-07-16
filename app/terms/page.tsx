@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { LegalDocument, type LegalSection } from '@/components/LegalDocument'
 import { LEGAL_OPERATOR, LEGAL_UPDATED_DA, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal'
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT } from '@/lib/platform'
 
 export const metadata: Metadata = {
   title: 'Vilkår for brug - Naetwork',
-  description: 'Vilkår for konti, professionelle profiler og booking af 60-minutters Career Access-sessioner på Naetwork.',
+  description: 'Vilkår for konti, fagpersonprofiler og booking af 60-minutters karrieresessioner på Naetwork.',
   alternates: { canonical: '/terms' },
 }
 
@@ -16,7 +17,7 @@ const facts: Array<[string, string]> = [
   ['Kontakt', supportEmail],
   ['Format', '60 minutter'],
   ['Prisvalg inkl. moms', 'DKK 600 · 900 · 1.200 · 1.800'],
-  ['Fast fordeling', '20% Naetwork · 30% Kræftens Bekæmpelse · 50% professionel'],
+  ['Fast fordeling', `${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PLATFORM_SHARE_PERCENT}% Naetwork · ${PROFESSIONAL_SHARE_PERCENT}% fagperson`],
 ]
 
 const sections: LegalSection[] = [
@@ -24,7 +25,7 @@ const sections: LegalSection[] = [
     id: 'om-naetwork',
     title: '1. Om Naetwork og vilkårenes omfang',
     body: [
-      `Naetwork drives af ${operator} og forbinder kandidater med professionelle fra AI, Banking, Management Consulting og Private Equity.`,
+      `Naetwork drives af ${operator} og forbinder studerende og jobsøgende med erfarne fagpersoner til konkrete 60-minutters karrieresessioner.`,
       'Vilkårene gælder, når du besøger platformen, opretter en konto, publicerer en professionel profil eller sender og behandler bookinganmodninger.',
       'Du skal være fyldt 18 år for at oprette konto eller tilbyde sessioner. Ved at oprette konto accepterer du den version af vilkårene, der gælder på det tidspunkt.',
     ],
@@ -35,7 +36,7 @@ const sections: LegalSection[] = [
     body: [
       'Naetwork stiller situationsbaseret navigation, profiler, bookinganmodninger og relateret kommunikation til rådighed. Den professionelle leverer selve sessionen og er ansvarlig for at møde forberedt og levere den med rimelig omhu og professionalisme.',
       'Så længe betaling ikke er aktiveret, er en bookinganmodning ikke et køb gennem Naetwork. Før checkout åbnes, vil det fremgå klart, hvem der er aftalepart og sælger, hvem der fakturerer, og hvordan Naetwork handler på parternes vegne.',
-      'Career Access-sessioner er vejledende og er ikke en garanti for ansættelse, interview, optagelse, afkast eller andre bestemte resultater. Sessioner er ikke juridisk, skattemæssig, investeringsmæssig eller lægefaglig rådgivning.',
+      'Karrieresessioner er vejledende og er ikke en garanti for ansættelse, interview, optagelse, afkast eller andre bestemte resultater. Sessioner er ikke juridisk, skattemæssig, investeringsmæssig eller lægefaglig rådgivning.',
     ],
   },
   {
@@ -61,7 +62,7 @@ const sections: LegalSection[] = [
     body: [
       'Den professionelle vælger én af fire sessionspriser: DKK 600, DKK 900, DKK 1.200 eller DKK 1.800 inklusive moms for 60 minutter. DKK 1.800 kræver særskilt godkendelse som del af profilgennemgangen. Kandidatens samlede pris, momsgrundlaget og de konkrete fordelingsbeløb vises, før en betalingspligtig bestilling gennemføres.',
       'Betaling er ikke aktiveret endnu. En bookinganmodning eller bekræftelse medfører derfor ikke betaling og dokumenterer ikke et gennemført bidrag.',
-      'Når betaling aktiveres, skilles momsen først ud af kandidatens totalpris. Sessionsprisen eksklusive moms fordeles derefter fast: 20% til Naetwork, 30% afsættes til støtte for Kræftens Bekæmpelse, og 50% udgør den professionelles forventede udbetaling før egne skatter og afgifter.',
+      `Når betaling aktiveres, skilles momsen først ud af kandidatens totalpris. Sessionsprisen eksklusive moms fordeles derefter fast: ${CONTRIBUTION_PERCENT}% afsættes til støtte for Kræftens Bekæmpelse, ${PLATFORM_SHARE_PERCENT}% går til Naetwork som platformsgebyr, og ${PROFESSIONAL_SHARE_PERCENT}% udgør fagpersonens forventede udbetaling før egne skatter og afgifter.`,
       'Fordelingen medfører ikke et ekstra gebyr oven i kandidatens viste totalpris. Eventuelle betalingsomkostninger afholdes inden for Naetworks andel, medmindre andet fremgår klart før bestillingen.',
       'Før betaling aktiveres, opdaterer Naetwork checkout, afbestillingsvilkår, kvitteringer og disse vilkår, så alle økonomiske konsekvenser fremgår før en bindende bestilling.',
       'Ved et fremtidigt køb vil den samlede pris, moms, bidrag og eventuelle øvrige omkostninger fremgå umiddelbart før den betalingspligtige bestilling. Bestillingsknappen vil tydeligt angive, at handlingen medfører betalingspligt.',
@@ -81,12 +82,12 @@ const sections: LegalSection[] = [
     id: 'professionelle',
     title: '7. Professionelle profiler',
     body: [
-      'Professionelle skal beskrive rolle, erfaring, virksomhed, fokusområder og pris sandfærdigt. Den faste 20/30/50-fordeling kan ikke ændres af den professionelle. LinkedIn-oplysninger bruges til gennemgang og vises ikke offentligt, medmindre det oplyses særskilt.',
+      `Fagpersoner skal beskrive rolle, erfaring, virksomhed, sessionstyper og pris sandfærdigt. Den faste ${CONTRIBUTION_PERCENT}/${PLATFORM_SHARE_PERCENT}/${PROFESSIONAL_SHARE_PERCENT}-fordeling kan ikke ændres af fagpersonen. LinkedIn-oplysninger bruges til gennemgang og vises ikke offentligt, medmindre det oplyses særskilt.`,
       'Naetwork gennemgår de indsendte profiloplysninger og kan sammenholde dem med det LinkedIn-link, den professionelle har angivet. Gennemgangen er en rimelig kvalitetskontrol, men er ikke en baggrundsundersøgelse, autorisation eller garanti for den professionelles udsagn eller resultater.',
       'Naetwork kan afvise, skjule eller kræve ændringer til en profil, hvis erfaring ikke kan sandsynliggøres, teksten er vildledende, eller profilen ikke lever op til platformens kvalitets- og adfærdsstandarder.',
       'Professionelle må ikke love intern adgang, dele arbejdsgiveres fortrolige oplysninger eller give indtryk af at repræsentere en virksomhed uden bemyndigelse.',
       'En professionel deltager i eget navn. En arbejdsgiver, tidligere arbejdsgiver eller nævnt virksomhed er ikke part i sessionen og har ikke godkendt profilen, medmindre det fremgår udtrykkeligt.',
-      'Den forventede udbetaling vises før publicering og udgør 50% af sessionsprisen eksklusive moms. Den professionelle er selv ansvarlig for egne skattemæssige forhold, medmindre ufravigelig lovgivning eller den endelige betalingsstruktur medfører andet.',
+      `Den forventede udbetaling vises før publicering og udgør ${PROFESSIONAL_SHARE_PERCENT}% af sessionsprisen eksklusive moms. Fagpersonen er selv ansvarlig for egne skattemæssige forhold, medmindre ufravigelig lovgivning eller den endelige betalingsstruktur medfører andet.`,
     ],
   },
   {
@@ -102,7 +103,7 @@ const sections: LegalSection[] = [
     id: 'bidrag',
     title: '9. Bidrag til Kræftens Bekæmpelse',
     body: [
-      'For hver gennemført og betalt session afsættes 30% af sessionsprisen eksklusive moms til støtte for Kræftens Bekæmpelse. Det konkrete beløb i kroner vises på den professionelle profil og før en betalingspligtig bestilling.',
+      `For hver gennemført og betalt session afsættes ${CONTRIBUTION_PERCENT}% af sessionsprisen eksklusive moms til støtte for Kræftens Bekæmpelse. Det konkrete beløb i kroner vises på fagpersonens profil og før en betalingspligtig bestilling.`,
       'Kun gennemførte og betalte sessioner tæller. Anmodede, aflyste, tilbageførte eller refunderede sessioner tæller ikke som gennemførte bidrag.',
       'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet eller godkendt af Kræftens Bekæmpelse, medmindre det fremgår udtrykkeligt. Bidragsoplysninger er ikke personlig skatte- eller fradragsrådgivning.',
       'Før betaling aktiveres, skal Naetwork have afklaret de nødvendige aftaler, tilladelser, regnskabsprocesser og dokumentationskrav for støtte knyttet til salg. Den aktive checkout og de gældende vilkår vil beskrive den endelige model.',

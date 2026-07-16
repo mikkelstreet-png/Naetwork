@@ -12,12 +12,12 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const { professional } = await loadPublicProfessional(id)
-  if (!professional) return { title: 'Professionel profil - Naetwork', robots: { index: false, follow: true } }
+  if (!professional) return { title: 'Fagpersonprofil - Naetwork', robots: { index: false, follow: true } }
 
   const role = [professional.title, professional.company].filter(Boolean).join(' hos ')
   return {
     title: `${professional.name} - Naetwork`,
-    description: `${role || 'Professionel profil'}. Se fokusområder, pris og bidrag for en 60-minutters karrieresession.`,
+    description: `${role || 'Erfaren fagperson'}. Se sessionstyper, pris og den transparente 10/20/70-fordeling for en 60-minutters karrieresession.`,
     alternates: { canonical: `/professionals/${professional.id}` },
   }
 }

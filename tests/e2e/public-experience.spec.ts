@@ -99,25 +99,25 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Talent er bredt fordelt\. Adgang er det ikke\.|Talent is widely distributed\. Access is not\./i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Erfaring, du kan handle på\.|Experience you can act on\./i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Find din session|Find your session/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
   await expect(page.locator('#pricing')).toContainText('DKK 96')
-  await expect(page.locator('#pricing')).toContainText('DKK 144')
-  await expect(page.locator('#pricing')).toContainText('DKK 240')
+  await expect(page.locator('#pricing')).toContainText('DKK 48')
+  await expect(page.locator('#pricing')).toContainText('DKK 336')
   await expect(page.locator('#pricing')).toContainText(/ekskl\. moms|excl\. VAT/i)
-  await expect(page.getByRole('heading', { name: /Det vigtigste, før du beslutter dig|What matters before you decide/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Det vigtigste, før du vælger|What matters before you choose/i })).toBeVisible()
   await page.goto('/start')
-  await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Hvad skal være bedre om 60 minutter|What should be better in 60 minutes/i })).toBeVisible()
 })
 
 test('minimal Access hero keeps one message and one primary action', async ({ page }) => {
   await page.goto('/')
   const hero = page.locator('#home')
-  await expect(hero.getByRole('heading', { name: 'Talent er bredt fordelt. Adgang er det ikke.' })).toBeVisible()
-  await expect(hero.getByRole('link', { name: 'Start med din situation' })).toHaveAttribute('href', '/start')
-  await expect(hero.getByRole('link', { name: 'Sådan fungerer det' })).toHaveAttribute('href', '/how-it-works')
+  await expect(hero.getByRole('heading', { name: 'Erfaring, du kan handle på.' })).toBeVisible()
+  await expect(hero.getByRole('link', { name: 'Find din session' })).toHaveAttribute('href', '/start')
+  await expect(hero.getByRole('link', { name: 'Mød fagpersonerne' })).toHaveAttribute('href', '/professionals')
   await expect(hero.locator('button')).toHaveCount(0)
   await expect(hero.locator('.access-hero__colorline span')).toHaveCount(4)
   await expect(hero.locator('img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
@@ -127,7 +127,7 @@ test('minimal Access hero keeps one message and one primary action', async ({ pa
 test('Access motion respects reduced-motion preferences', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
-  const duration = await page.locator('#home').getByRole('link', { name: 'Sådan fungerer det' }).evaluate((element) => getComputedStyle(element).transitionDuration)
+  const duration = await page.locator('#home').getByRole('link', { name: 'Mød fagpersonerne' }).evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
 })
 
@@ -144,9 +144,9 @@ test('compact mobile hero leaves the next section in view', async ({ page }) => 
 test('critical public routes expose specific metadata', async ({ page }) => {
   for (const [route, title] of [
     ['/start', 'Start med din karrieresituation'],
-    ['/how-it-works', 'Sådan fungerer Career Access'],
-    ['/sessions', 'Career Access-sessioner'],
-    ['/professionals', 'Find relevant erfaring'],
+    ['/how-it-works', 'Sådan fungerer Naetwork'],
+    ['/sessions', '7 konkrete karrieresessioner'],
+    ['/professionals', 'Find en erfaren fagperson'],
     ['/contact', 'Kontakt'],
     ['/professional/signup', 'Bliv professionel'],
   ] as const) {
@@ -159,25 +159,25 @@ test('legacy matching routes lead to the situation-first entry', async ({ page }
   for (const route of ['/match', '/onboarding']) {
     await page.goto(route)
     await expect(page).toHaveURL(/\/start$/)
-    await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Hvad skal være bedre om 60 minutter|What should be better in 60 minutes/i })).toBeVisible()
   }
 })
 
 test('situation-first entry produces a relevant directory route', async ({ page }) => {
   await page.goto('/start')
-  await page.getByRole('button', { name: /Jeg overvejer en bestemt rolle/i }).click()
+  await page.getByRole('button', { name: /Branche- og virksomhedsindsigt/i }).click()
   await page.getByRole('button', { name: 'AI' }).click()
-  const next = page.getByRole('link', { name: /Se relevante profiler/i })
+  const next = page.getByRole('link', { name: /Se relevante fagpersoner/i })
   await expect(next).toBeVisible()
-  await expect(next).toHaveAttribute('href', /\/professionals\?field=AI&need=direction/)
+  await expect(next).toHaveAttribute('href', /\/professionals\?field=AI&session=industry-company-insight/)
 })
 
 test('English positioning mirrors the Danish product contract', async ({ page }) => {
   await page.goto('/')
   await page.evaluate(() => localStorage.setItem('naetwork_lang', 'en'))
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Talent is widely distributed. Access is not.' })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: 'Start with your situation' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Experience you can act on.' })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: 'Find your session' })).toBeVisible()
   await page.goto('/how-it-works')
   await expect(page.getByRole('heading', { name: 'From a question to an answer you can use.' })).toBeVisible()
 })
@@ -193,7 +193,7 @@ test('homepage publishes complete brand and offer metadata', async ({ page }) =>
   expect(service.hasOfferCatalog.itemListElement.map((offer: { price: number }) => offer.price)).toEqual([600, 900, 1200, 1800])
 })
 
-test('sitemap publishes the Career Access information architecture', async ({ page }) => {
+test('sitemap publishes the career-session information architecture', async ({ page }) => {
   const response = await page.goto('/sitemap.xml')
   expect(response?.status()).toBe(200)
   const sitemap = await page.locator('body').innerText()
@@ -229,8 +229,8 @@ test('professional application keeps pricing and review expectations concrete', 
   await page.getByLabel('LinkedIn').fill('https://linkedin.com/in/test-professionel')
   await page.getByRole('button', { name: 'Næste' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Fokusområder og pris' })).toBeVisible()
-  await page.getByRole('button', { name: 'CV og LinkedIn' }).click()
+  await expect(page.getByRole('heading', { name: 'Sessionstyper og pris' })).toBeVisible()
+  await page.getByRole('button', { name: /CV-gennemgang/i }).click()
   for (const amount of ['DKK 600', 'DKK 900', 'DKK 1.200', 'DKK 1.800']) {
     await expect(page.getByRole('button', { name: amount })).toBeVisible()
   }
@@ -239,8 +239,8 @@ test('professional application keeps pricing and review expectations concrete', 
   await expect(page.getByRole('heading', { name: 'Fast fordeling pr. session' })).toBeVisible()
   await expect(page.getByText(/De tre andele nedenfor summerer altid til hele nettoprisen/i)).toBeVisible()
   await expect(page.getByText('DKK 96', { exact: true })).toBeVisible()
-  await expect(page.getByText('DKK 144', { exact: true })).toBeVisible()
-  await expect(page.getByText('DKK 240', { exact: true })).toBeVisible()
+  await expect(page.getByText('DKK 48', { exact: true })).toBeVisible()
+  await expect(page.getByText('DKK 336', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: /40%|60%|80%|90%/ })).toHaveCount(0)
   await page.getByRole('button', { name: 'Næste' }).click()
   await expect(page.getByText(/accepterer Naetworks vilkår og bekræfter/i)).toBeVisible()

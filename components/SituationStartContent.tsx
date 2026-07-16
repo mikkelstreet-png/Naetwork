@@ -3,14 +3,11 @@
 import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useLanguage } from '@/context/LanguageContext'
-import { ACCESS_PATHS, ACCESS_SITUATIONS, accessPath, localized, situation, type AccessPathId, type SituationId } from '@/lib/brand'
-import { INDUSTRIES } from '@/lib/platform'
 import { PublicPageHero } from '@/components/PublicPageHero'
-
-function isSituationId(value: string | null): value is SituationId {
-  return ACCESS_SITUATIONS.some((item) => item.id === value)
-}
+import { useLanguage } from '@/context/LanguageContext'
+import { ACCESS_PATHS, ACCESS_SITUATIONS, localized, type AccessPathId } from '@/lib/brand'
+import { INDUSTRIES, SESSION_MINUTES } from '@/lib/platform'
+import { SESSION_TYPES, isSessionTypeId, sessionType, type SessionTypeId } from '@/lib/sessionTypes'
 
 function isAccessPathId(value: string | null): value is AccessPathId {
   return ACCESS_PATHS.some((item) => item.id === value)
@@ -18,40 +15,40 @@ function isAccessPathId(value: string | null): value is AccessPathId {
 
 export function SituationStartContent() {
   const { lang } = useLanguage()
-  const [selectedSituation, setSelectedSituation] = useState<SituationId | null>(null)
+  const isDa = lang === 'da'
+  const [selectedSession, setSelectedSession] = useState<SessionTypeId | null>(null)
   const [selectedField, setSelectedField] = useState('')
   const [pathFilter, setPathFilter] = useState<AccessPathId | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    const requestedSituation = params.get('situation')
+    const requestedSession = params.get('session')
     const requestedPath = params.get('path')
-    if (isSituationId(requestedSituation)) setSelectedSituation(requestedSituation)
+    const legacySituation = ACCESS_SITUATIONS.find((item) => item.id === params.get('situation'))
+    if (isSessionTypeId(requestedSession)) setSelectedSession(requestedSession)
+    else if (legacySituation) setSelectedSession(legacySituation.sessionType)
     if (isAccessPathId(requestedPath)) setPathFilter(requestedPath)
   }, [])
 
-  const availableSituations = useMemo(
-    () => pathFilter ? ACCESS_SITUATIONS.filter((item) => item.path === pathFilter) : ACCESS_SITUATIONS,
+  const availableSessions = useMemo(
+    () => pathFilter ? SESSION_TYPES.filter((item) => item.path === pathFilter) : SESSION_TYPES,
     [pathFilter],
   )
-  const selected = selectedSituation ? situation(selectedSituation) : null
-  const path = selected ? accessPath(selected.path) : pathFilter ? accessPath(pathFilter) : null
+  const selected = selectedSession ? sessionType(selectedSession) : null
   const completed = Number(Boolean(selected)) + Number(Boolean(selectedField))
   const profileHref = selected && selectedField
-    ? `/professionals?field=${encodeURIComponent(selectedField)}&need=${selected.need}`
+    ? `/professionals?field=${encodeURIComponent(selectedField)}&session=${selected.id}`
     : '/professionals'
 
-  function chooseSituation(id: SituationId) {
-    const item = situation(id)
-    setSelectedSituation(id)
-    setPathFilter(item.path)
-    setSelectedField('')
-    window.history.replaceState(null, '', `/start?situation=${id}`)
+  function chooseSession(id: SessionTypeId) {
+    setSelectedSession(id)
+    setPathFilter(null)
+    window.history.replaceState(null, '', `/start?session=${id}`)
   }
 
   function resetPath() {
     setPathFilter(null)
-    setSelectedSituation(null)
+    setSelectedSession(null)
     setSelectedField('')
     window.history.replaceState(null, '', '/start')
   }
@@ -59,20 +56,20 @@ export function SituationStartContent() {
   return (
     <main className="min-h-screen bg-[#f4f4f0]">
       <PublicPageHero
-        eyebrow="Career Access"
-        title={lang === 'da' ? 'Hvad står du overfor?' : 'What are you facing?'}
-        body={lang === 'da'
-          ? 'Vælg den situation, der ligger tættest på din. Så afgrænser Naetwork den erfaring, der er relevant for dit næste skridt.'
-          : 'Choose the situation closest to yours. Naetwork will narrow the experience relevant to your next step.'}
-        sequence={lang === 'da'
-          ? ['Vælg situation', 'Vælg felt', 'Se relevant erfaring']
-          : ['Choose situation', 'Choose field', 'See relevant experience']}
+        eyebrow={isDa ? 'Find din session' : 'Find your session'}
+        title={isDa ? 'Hvad skal være bedre om 60 minutter?' : 'What should be better in 60 minutes?'}
+        body={isDa
+          ? 'Vælg det ønskede resultat og det relevante felt. Så viser Naetwork fagpersoner med erfaring, der passer til opgaven.'
+          : 'Choose the intended outcome and relevant field. Naetwork will show professionals with experience that fits the task.'}
+        sequence={isDa
+          ? ['Vælg session', 'Vælg felt', 'Sammenlign fagpersoner']
+          : ['Choose session', 'Choose field', 'Compare professionals']}
       />
 
       <section className="px-5 py-10 sm:px-8 md:py-16 lg:px-12">
         <div className="mx-auto grid max-w-[82rem] gap-8 lg:grid-cols-[1fr_400px]">
           <div>
-            <div className="mb-8 flex items-center gap-4" aria-label={lang === 'da' ? `${completed} af 2 valg foretaget` : `${completed} of 2 choices made`}>
+            <div className="mb-8 flex items-center gap-4" aria-label={isDa ? `${completed} af 2 valg foretaget` : `${completed} of 2 choices made`}>
               <div className="h-1 flex-1 overflow-hidden bg-gray-200"><div className="h-full bg-gray-950 transition-[width] duration-300" style={{ width: `${completed * 50}%` }} /></div>
               <span className="editorial-label shrink-0">{completed}/2</span>
             </div>
@@ -81,22 +78,22 @@ export function SituationStartContent() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="editorial-label text-gray-400">01</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-gray-950">{lang === 'da' ? 'Vælg din situation' : 'Choose your situation'}</h2>
-                  {path && <p className="mt-2 text-sm text-gray-500">{localized(path.description, lang)}</p>}
+                  <h2 className="mt-2 text-2xl font-semibold text-gray-950">{isDa ? 'Vælg sessionstype' : 'Choose a session type'}</h2>
+                  <p className="mt-2 text-sm text-gray-500">{isDa ? 'Vælg efter det konkrete output, du har brug for.' : 'Choose based on the concrete output you need.'}</p>
                 </div>
-                {selected && <Check size={20} aria-label={lang === 'da' ? 'Valgt' : 'Selected'} />}
+                {selected && <Check size={20} aria-label={isDa ? 'Valgt' : 'Selected'} />}
               </div>
               <div className="mt-6 grid gap-2 sm:grid-cols-2">
-                {availableSituations.map((item) => (
-                  <button key={item.id} type="button" onClick={() => chooseSituation(item.id)} aria-pressed={selectedSituation === item.id} className="choice-control min-h-24 flex-col items-start justify-center">
-                    <span className="block text-sm font-semibold">{localized(item.label, lang)}</span>
-                    <span className={`mt-1 block text-xs leading-relaxed ${selectedSituation === item.id ? 'text-white/65' : 'text-gray-500'}`}>{localized(item.result, lang)}</span>
+                {availableSessions.map((item) => (
+                  <button key={item.id} type="button" onClick={() => chooseSession(item.id)} aria-pressed={selectedSession === item.id} className="choice-control min-h-28 flex-col items-start justify-center">
+                    <span className="flex w-full items-center justify-between gap-4 text-sm font-semibold"><span>{localized(item.title, lang)}</span><small className="shrink-0 text-[10px] opacity-60">{SESSION_MINUTES} min</small></span>
+                    <span className={`mt-1 block text-xs leading-relaxed ${selectedSession === item.id ? 'text-white/65' : 'text-gray-500'}`}>{localized(item.description, lang)}</span>
                   </button>
                 ))}
               </div>
               {pathFilter && (
                 <button type="button" onClick={resetPath} className="mt-4 text-sm font-semibold text-gray-500 underline decoration-gray-300 underline-offset-4 hover:text-gray-950">
-                  {lang === 'da' ? 'Se alle situationer' : 'See all situations'}
+                  {isDa ? 'Se alle sessioner' : 'See all sessions'}
                 </button>
               )}
             </section>
@@ -105,16 +102,15 @@ export function SituationStartContent() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="editorial-label text-gray-400">02</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-gray-950">{lang === 'da' ? 'Hvilket felt gælder det?' : 'Which field is involved?'}</h2>
-                  <p className="mt-2 text-sm text-gray-500">{lang === 'da' ? 'Feltet hjælper med at afgrænse den relevante arbejdserfaring.' : 'The field helps narrow the relevant work experience.'}</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-gray-950">{isDa ? 'Hvilket felt gælder det?' : 'Which field is involved?'}</h2>
+                  <p className="mt-2 text-sm text-gray-500">{isDa ? 'Feltet hjælper os med at prioritere relevant arbejdserfaring.' : 'The field helps prioritize relevant work experience.'}</p>
                 </div>
-                {selectedField && <Check size={20} aria-label={lang === 'da' ? 'Valgt' : 'Selected'} />}
+                {selectedField && <Check size={20} aria-label={isDa ? 'Valgt' : 'Selected'} />}
               </div>
               <div className="mt-6 grid gap-2 sm:grid-cols-2">
                 {INDUSTRIES.map((industry) => (
                   <button key={industry.id} type="button" onClick={() => setSelectedField(industry.id)} aria-pressed={selectedField === industry.id} className="choice-control">
-                    <span>{industry.id}</span>
-                    <span className={`h-2 w-9 ${industry.accent}`} aria-hidden="true" />
+                    <span>{industry.id}</span><span className={`h-2 w-9 ${industry.accent}`} aria-hidden="true" />
                   </button>
                 ))}
               </div>
@@ -123,36 +119,33 @@ export function SituationStartContent() {
 
           <aside aria-live="polite" className="access-selection-panel h-fit overflow-hidden p-6 text-white lg:sticky lg:top-24 lg:p-7">
             <div className="signal-rail absolute inset-x-0 top-0" aria-hidden="true"><span /><span /><span /><span /></div>
-            <p className="editorial-label text-white/60">{lang === 'da' ? 'Dit valg' : 'Your choice'}</p>
-            <h2 className="mt-4 text-3xl font-semibold leading-tight">{selected ? localized(selected.label, lang) : lang === 'da' ? 'Vælg en situation' : 'Choose a situation'}</h2>
-            <p className="mt-4 text-sm leading-relaxed text-white/65">
-              {selected ? localized(selected.result, lang) : lang === 'da' ? 'Dit valg gør det muligt at prioritere relevant erfaring frem for titel eller popularitet.' : 'Your choice lets us prioritize relevant experience over title or popularity.'}
-            </p>
+            <p className="editorial-label text-white/60">{isDa ? 'Din session' : 'Your session'}</p>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight">{selected ? localized(selected.title, lang) : isDa ? 'Vælg et resultat' : 'Choose an outcome'}</h2>
+            <p className="mt-4 text-sm leading-relaxed text-white/65">{selected ? localized(selected.outcome, lang) : isDa ? 'Sessionstypen afgør, hvilken erfaring der er mest relevant, og hvad fagpersonen skal forberede.' : 'The session type determines which experience is most relevant and what the professional should prepare.'}</p>
 
             {selected && (
               <dl className="mt-6 border-t border-white/15">
                 <div className="border-b border-white/15 py-4">
-                  <dt className="editorial-label text-white/50">{lang === 'da' ? 'Indgang' : 'Path'}</dt>
-                  <dd className="mt-2 text-sm font-semibold text-white">{localized(accessPath(selected.path).label, lang)}</dd>
+                  <dt className="editorial-label text-white/50">{isDa ? 'Forberedelse' : 'Preparation'}</dt>
+                  <dd className="mt-2 text-sm font-semibold leading-relaxed text-white">{localized(selected.preparation, lang)}</dd>
                 </div>
                 <div className="border-b border-white/15 py-4">
-                  <dt className="editorial-label text-white/50">{lang === 'da' ? 'Felt' : 'Field'}</dt>
-                  <dd className="mt-2 text-sm font-semibold text-white">{selectedField || (lang === 'da' ? 'Vælg felt' : 'Choose a field')}</dd>
+                  <dt className="editorial-label text-white/50">{isDa ? 'Felt' : 'Field'}</dt>
+                  <dd className="mt-2 text-sm font-semibold text-white">{selectedField || (isDa ? 'Vælg felt' : 'Choose a field')}</dd>
                 </div>
               </dl>
             )}
 
             {completed === 2 ? (
               <Link href={profileHref} className="button-inverse mt-6 w-full">
-                {lang === 'da' ? 'Se relevante profiler' : 'See relevant profiles'}
-                <ArrowRight size={16} aria-hidden="true" />
+                {isDa ? 'Se relevante fagpersoner' : 'See relevant professionals'}<ArrowRight size={16} aria-hidden="true" />
               </Link>
             ) : (
               <button type="button" disabled className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-[4px] border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/55">
-                {lang === 'da' ? 'Vælg situation og felt' : 'Choose situation and field'}
+                {isDa ? 'Vælg session og felt' : 'Choose session and field'}
               </button>
             )}
-            <p className="mt-4 text-xs leading-relaxed text-white/50">{lang === 'da' ? 'Du opretter først en konto, når du vil sende en bookinganmodning.' : 'You only create an account when you want to send a booking request.'}</p>
+            <p className="mt-4 text-xs leading-relaxed text-white/50">{isDa ? 'Du opretter først en konto, når du vil sende en bookinganmodning.' : 'You only create an account when you want to send a booking request.'}</p>
           </aside>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import { focusLabel, type FocusArea } from './platform'
+import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT, focusLabel, type FocusArea } from './platform'
 
 export const MARKETPLACE_MODEL = {
   format: 'single_60_minute_session',
@@ -7,6 +7,11 @@ export const MARKETPLACE_MODEL = {
   paymentProvider: 'stripe_connect',
   chargeModel: 'destination_charge',
   paymentActivation: 'disabled_until_legal_and_operational_approval',
+  revenueSplit: {
+    contributionPercent: CONTRIBUTION_PERCENT,
+    platformPercent: PLATFORM_SHARE_PERCENT,
+    professionalPercent: PROFESSIONAL_SHARE_PERCENT,
+  },
 } as const
 
 export const SESSION_NEEDS = [

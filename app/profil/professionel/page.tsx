@@ -6,7 +6,6 @@ import { MemberNav } from '@/components/MemberNav';
 import { AvailabilityManager } from '@/components/AvailabilityManager';
 import {
   CONTRIBUTION_PERCENT,
-  FOCUS_AREAS,
   INDUSTRIES,
   PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
@@ -16,6 +15,7 @@ import {
   normalizePrice,
   sessionEconomics,
 } from '@/lib/platform';
+import { SESSION_TYPES } from '@/lib/sessionTypes';
 
 export default function ProfessionalProfilePage() {
   const [data, setData] = useState({
@@ -170,7 +170,7 @@ export default function ProfessionalProfilePage() {
             {[
               ['Prisvalg', '600 · 900 · 1.200 · 1.800'],
               ['Format', '60 min'],
-              ['Fast fordeling', '20 · 30 · 50%'],
+              ['Fast fordeling', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`],
               ['Gennemgang', data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'],
             ].map(([label, value]) => (
               <div key={label} className="border-b border-white/15 py-4">
@@ -221,10 +221,10 @@ export default function ProfessionalProfilePage() {
             </div>
 
             <div>
-              <label className="mb-3 block text-sm font-semibold text-gray-700">Fokusområder</label>
+              <label className="mb-3 block text-sm font-semibold text-gray-700">Sessionstyper</label>
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                {FOCUS_AREAS.map((focus) => (
-                  <button key={focus.id} type="button" aria-pressed={data.focus_areas.includes(focus.id)} onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, focus.id) }))} className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${data.focus_areas.includes(focus.id) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>{focus.da}</button>
+                {SESSION_TYPES.map((session) => (
+                  <button key={session.id} type="button" aria-pressed={data.focus_areas.includes(session.focusArea)} onClick={() => setData(d => ({ ...d, focus_areas: toggleArr(d.focus_areas, session.focusArea) }))} className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${data.focus_areas.includes(session.focusArea) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>{session.title.da}</button>
                 ))}
               </div>
             </div>

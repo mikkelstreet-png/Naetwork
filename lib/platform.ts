@@ -7,8 +7,8 @@ export const PRICE_MAX = 1800
 export const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
 export const VAT_RATE_PERCENT = 25
 export const PLATFORM_SHARE_PERCENT = 20
-export const CONTRIBUTION_PERCENT = 30
-export const PROFESSIONAL_SHARE_PERCENT = 50
+export const CONTRIBUTION_PERCENT = 10
+export const PROFESSIONAL_SHARE_PERCENT = 70
 
 export const INDUSTRIES = [
   { id: 'AI', slug: 'ai', accent: 'bg-cyan-300', surface: 'bg-[#d8f7fb]' },
@@ -49,6 +49,7 @@ export const FOCUS_AREAS = [
   { id: 'consulting_cases', da: 'Consulting-cases', en: 'Consulting cases' },
   { id: 'pe_investment_case', da: 'PE-investment case', en: 'PE investment case' },
   { id: 'career_direction', da: 'Karriereretning', en: 'Career direction' },
+  { id: 'graduate_internship', da: 'Graduate- og internship-rådgivning', en: 'Graduate and internship guidance' },
   { id: 'ai_career_strategy', da: 'AI-karrierestrategi', en: 'AI career strategy' },
   { id: 'industry_insight', da: 'Brancheindsigt', en: 'Industry insight' },
 ] as const
@@ -57,9 +58,12 @@ export type FocusArea = typeof FOCUS_AREAS[number]['id']
 
 export const BOOKING_FOCUS_AREAS = [
   'cv_linkedin',
+  'application_review',
   'interview_prep',
   'case_prep',
   'career_direction',
+  'graduate_internship',
+  'industry_insight',
 ] as const satisfies readonly FocusArea[]
 
 const LEGACY_FOCUS_LABELS: Record<string, { da: string; en: string }> = {

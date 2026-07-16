@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { CalendarX2, Check, LockKeyhole, RefreshCw, X } from 'lucide-react'
-import { BOOKING_FOCUS_AREAS, CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT, focusLabel, formatDkk, sessionEconomics } from '@/lib/platform'
+import { formatDkk } from '@/lib/platform'
 import { SESSION_TIME_ZONE } from '@/lib/dateTime'
+import { RevenueSplit } from '@/components/RevenueSplit'
+import { isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
 interface Professional {
   id: string
@@ -13,6 +15,7 @@ interface Professional {
   title: string
   company: string
   price: number
+  focus_areas: string[]
 }
 
 interface BookingDrawerProps {
@@ -20,13 +23,8 @@ interface BookingDrawerProps {
   open: boolean
   onClose: () => void
   locale?: 'da' | 'en'
+  initialSessionType?: SessionTypeId
 }
-
-const FOCUS_OPTIONS = BOOKING_FOCUS_AREAS.map((id) => ({
-  id,
-  da: focusLabel(id, 'da'),
-  en: focusLabel(id, 'en'),
-}))
 
 interface AvailabilitySlot {
   id: string
@@ -36,12 +34,12 @@ interface AvailabilitySlot {
   meeting_mode: string
 }
 
-export default function BookingDrawer({ professional, open, onClose, locale = 'da' }: BookingDrawerProps) {
+export default function BookingDrawer({ professional, open, onClose, locale = 'da', initialSessionType }: BookingDrawerProps) {
   const [step, setStep] = useState(1)
   const [slots, setSlots] = useState<AvailabilitySlot[]>([])
   const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(null)
   const [availabilityState, setAvailabilityState] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [sessionFocus, setSessionFocus] = useState('')
+  const [sessionTypeId, setSessionTypeId] = useState<SessionTypeId | ''>(initialSessionType ?? '')
   const [sessionGoal, setSessionGoal] = useState('')
   const [materialLink, setMaterialLink] = useState('')
   const [loading, setLoading] = useState(false)
@@ -50,7 +48,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const [notificationSent, setNotificationSent] = useState(true)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  const economics = sessionEconomics(professional.price)
+  const availableSessionTypes = sessionTypesForFocusAreas(professional.focus_areas ?? [])
+  const selectedSession = sessionTypeId ? sessionType(sessionTypeId) : null
   const dateLocale = locale === 'da' ? 'da-DK' : 'en-GB'
   const slotsByDay = slots.reduce<Record<string, AvailabilitySlot[]>>((groups, slot) => {
     const key = new Intl.DateTimeFormat('sv-SE', { timeZone: SESSION_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(slot.starts_at))
@@ -64,13 +63,17 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     setSelectedSlot(null)
     setSlots([])
     setAvailabilityState('loading')
-    setSessionFocus('')
+    setSessionTypeId(initialSessionType ?? '')
     setSessionGoal('')
     setMaterialLink('')
     setError(null)
     setAuthState('checking')
     setNotificationSent(true)
-  }, [open])
+  }, [initialSessionType, open])
+
+  useEffect(() => {
+    if (open && initialSessionType && isSessionTypeId(initialSessionType)) setSessionTypeId(initialSessionType)
+  }, [initialSessionType, open])
 
   useEffect(() => {
     if (!open) return
@@ -131,19 +134,15 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     step2Title: locale === 'da' ? 'Brief til sessionen' : 'Session brief',
     duration: '60 min',
     price: `${formatDkk(professional.price)} ${locale === 'da' ? 'inkl. moms' : 'incl. VAT'} / 60 min`,
-    impactLabel: locale === 'da' ? 'Fast fordeling' : 'Fixed split',
-    impactValue: locale === 'da'
-      ? `${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)} Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% professionel`
-      : `${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)} Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% professional`,
-    focusLabel: locale === 'da' ? 'Hvad skal sessionen handle om?' : 'What should the session focus on?',
+    focusLabel: locale === 'da' ? 'Vælg sessionstype' : 'Choose a session type',
     goalLabel: locale === 'da' ? 'Hvad vil du gerne opnå?' : 'What would you like to achieve?',
     goalPlaceholder: locale === 'da'
-      ? 'F.eks. skarpere CV, træne case, forberede banking technicals eller afklare næste karriereskridt.'
-      : 'E.g. sharpen my CV, practice cases, prepare banking technicals or clarify my next career move.',
+      ? 'Beskriv det konkrete resultat, du vil stå med efter de 60 minutter.'
+      : 'Describe the concrete outcome you want after the 60 minutes.',
     goalError: locale === 'da' ? 'Beskriv dit ønskede resultat med mindst 20 tegn.' : 'Describe your desired outcome in at least 20 characters.',
     materialLabel: locale === 'da' ? 'Materiale eller link' : 'Material or link',
     materialPlaceholder: locale === 'da' ? 'Valgfrit: LinkedIn, CV-link, jobopslag eller case-materiale' : 'Optional: LinkedIn, CV link, job post or case material',
-    focusError: locale === 'da' ? 'Vælg fokus for sessionen.' : 'Choose a session focus.',
+    focusError: locale === 'da' ? 'Vælg en sessionstype.' : 'Choose a session type.',
     confirm: locale === 'da' ? 'Send bookinganmodning' : 'Send booking request',
     successTitle: locale === 'da' ? 'Anmodning sendt' : 'Request sent',
     successMsg: locale === 'da'
@@ -165,7 +164,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
   async function handleConfirm() {
     if (!selectedSlot) return
-    if (!sessionFocus) {
+    if (!sessionTypeId) {
       setError(t.focusError)
       return
     }
@@ -184,7 +183,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
         body: JSON.stringify({
           professionalId: professional.id,
           slotId: selectedSlot.id,
-          focus: sessionFocus,
+          sessionType: sessionTypeId,
+          focus: selectedSession?.focusArea,
           goal: sessionGoal,
           material: materialLink,
         }),
@@ -204,7 +204,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   function handleClose() {
     setStep(1)
     setSelectedSlot(null)
-    setSessionFocus('')
+    setSessionTypeId(initialSessionType ?? '')
     setSessionGoal('')
     setMaterialLink('')
     setError(null)
@@ -338,28 +338,27 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                   <span className="text-gray-500">{t.priceLabel}</span>
                   <span className="text-right font-black text-gray-950">{t.price}</span>
                 </div>
-                <div className="mt-2 flex justify-between gap-4 border-t border-gray-200 pt-4 text-sm">
-                  <span className="text-gray-500">{t.impactLabel}</span>
-                  <span className="max-w-[13rem] text-right font-black text-gray-950">{t.impactValue}</span>
-                </div>
                 <p className="mt-4 border-t border-gray-200 pt-4 text-xs leading-relaxed text-gray-500">{locale === 'da' ? 'Betaling er ikke aktiveret endnu. Der trækkes ikke noget beløb ved bookinganmodningen.' : 'Payments are not enabled yet. No amount is charged when you send the request.'}</p>
               </div>
 
+              <div className="mb-5"><RevenueSplit price={professional.price} locale={locale} compact /></div>
+
               <fieldset className="mb-5">
                 <legend className="mb-3 block text-sm font-black text-gray-950">{t.focusLabel}</legend>
-                <div className="grid grid-cols-2 gap-2">
-                  {FOCUS_OPTIONS.map((option) => {
-                    const label = option[locale]
-                    const selected = sessionFocus === option.id
+                <div className="grid gap-2">
+                  {availableSessionTypes.map((option) => {
+                    const label = option.title[locale]
+                    const selected = sessionTypeId === option.id
                     return (
                       <button
                         key={option.id}
                         type="button"
                         aria-pressed={selected}
-                        onClick={() => { setSessionFocus(option.id); setError(null) }}
-                        className={`rounded-md border px-3 py-2.5 text-left text-xs font-bold transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
+                        onClick={() => { setSessionTypeId(option.id); setError(null) }}
+                        className={`rounded-md border px-3 py-3 text-left transition-colors ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-[#f4f4f0] text-gray-700 hover:border-gray-950 hover:bg-white hover:text-gray-950'}`}
                       >
-                        {label}
+                        <span className="block text-xs font-bold">{label}</span>
+                        <span className={`mt-1 block text-[11px] font-medium leading-relaxed ${selected ? 'text-white/60' : 'text-gray-500'}`}>{option.outcome[locale]}</span>
                       </button>
                     )
                   })}

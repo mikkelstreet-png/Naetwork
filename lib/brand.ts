@@ -1,34 +1,36 @@
+import { SESSION_TYPES, type SessionTypeId } from './sessionTypes'
+
 export type BrandLocale = 'da' | 'en'
 export type AccessPathId = 'explore' | 'prepare' | 'apply' | 'perform'
-export type SituationId = 'role' | 'company' | 'job' | 'cv' | 'interview' | 'pivot' | 'direction' | 'offer'
+export type SituationId = 'role' | 'company' | 'job' | 'cv' | 'interview' | 'case' | 'pivot' | 'direction' | 'graduate' | 'offer'
 export type DirectoryNeed = 'direction' | 'materials' | 'interview' | 'case'
 
 type LocalizedText = Record<BrandLocale, string>
 
 export const BRAND_COPY = {
   da: {
-    category: 'Career Access',
-    primaryLine: 'Talent er bredt fordelt. Adgang er det ikke.',
-    productLine: 'Tal med en, der kender jobbet, før du søger.',
-    positioning: 'Relevant erfaring til konkrete karrierevalg.',
-    oneSentence: 'Naetwork giver dig adgang til mennesker med direkte erfaring fra den rolle, virksomhed eller rekrutteringsproces, du overvejer.',
-    problem: 'Jobopslaget beskriver rollen. Ikke hvordan arbejdet faktisk er.',
+    category: '60-minutters karrieresessioner',
+    primaryLine: 'Erfaring, du kan handle på.',
+    productLine: 'Tal med en, der kender vejen, før du tager næste skridt.',
+    positioning: 'Konkrete karrieresessioner med erfarne fagpersoner.',
+    oneSentence: 'Naetwork forbinder studerende og jobsøgende med erfarne fagpersoner til konkrete 60-minutters karrieresessioner.',
+    problem: 'Du mangler sjældent mere information. Du mangler adgang til den rigtige erfaring.',
   },
   en: {
-    category: 'Career Access',
-    primaryLine: 'Talent is widely distributed. Access is not.',
-    productLine: 'Meet someone who knows the job before you apply.',
-    positioning: 'Relevant experience for real career decisions.',
-    oneSentence: 'Naetwork gives you access to people with direct experience of the role, company or hiring process you are considering.',
-    problem: 'A job description explains the role. Not what the work is really like.',
+    category: '60-minute career sessions',
+    primaryLine: 'Experience you can act on.',
+    productLine: 'Talk to someone who knows the path before you take your next step.',
+    positioning: 'Concrete career sessions with experienced professionals.',
+    oneSentence: 'Naetwork connects students and jobseekers with experienced professionals for concrete 60-minute career sessions.',
+    problem: 'You rarely need more information. You need access to the right experience.',
   },
 } as const
 
 export const PRIMARY_NAV_ITEMS = [
-  { href: '/how-it-works', label: { da: 'Sådan fungerer det', en: 'How it works' } },
   { href: '/sessions', label: { da: 'Sessioner', en: 'Sessions' } },
-  { href: '/professional/signup', label: { da: 'For professionelle', en: 'For professionals' } },
-  { href: '/impact', label: { da: 'Bidrag', en: 'Impact' } },
+  { href: '/professionals', label: { da: 'Fagpersoner', en: 'Professionals' } },
+  { href: '/how-it-works', label: { da: 'Sådan fungerer det', en: 'How it works' } },
+  { href: '/professional/signup', label: { da: 'Bliv fagperson', en: 'Become a professional' } },
 ] as const satisfies ReadonlyArray<{ href: string; label: LocalizedText }>
 
 export const ACCESS_PATHS = [
@@ -85,6 +87,7 @@ export const ACCESS_SITUATIONS = [
     id: 'role',
     path: 'explore',
     need: 'direction',
+    sessionType: 'industry-company-insight',
     label: { da: 'Jeg overvejer en bestemt rolle', en: 'I am considering a role' },
     result: { da: 'Forstå hverdagen, forventningerne og de reelle kompromiser.', en: 'Understand the work, expectations and real trade-offs.' },
   },
@@ -92,6 +95,7 @@ export const ACCESS_SITUATIONS = [
     id: 'company',
     path: 'explore',
     need: 'direction',
+    sessionType: 'industry-company-insight',
     label: { da: 'Jeg vil forstå en virksomhed', en: 'I want to understand a company' },
     result: { da: 'Få relevant kontekst om arbejdsform, kultur og rekruttering.', en: 'Get relevant context on ways of working, culture and hiring.' },
   },
@@ -99,6 +103,7 @@ export const ACCESS_SITUATIONS = [
     id: 'job',
     path: 'apply',
     need: 'materials',
+    sessionType: 'application-feedback',
     label: { da: 'Jeg vil søge et konkret job', en: 'I want to apply for a specific job' },
     result: { da: 'Vurdér dit match og prioritér de vigtigste ændringer før ansøgning.', en: 'Assess your fit and prioritize the changes that matter before applying.' },
   },
@@ -106,6 +111,7 @@ export const ACCESS_SITUATIONS = [
     id: 'cv',
     path: 'prepare',
     need: 'materials',
+    sessionType: 'cv-review',
     label: { da: 'Jeg vil have vurderet mit CV', en: 'I want an honest review of my CV' },
     result: { da: 'Se hvad der står stærkt, hvad der er uklart, og hvad der bør ændres.', en: 'See what is strong, what is unclear and what should change.' },
   },
@@ -113,13 +119,23 @@ export const ACCESS_SITUATIONS = [
     id: 'interview',
     path: 'perform',
     need: 'interview',
+    sessionType: 'interview-training',
     label: { da: 'Jeg har en jobsamtale', en: 'I have an interview' },
     result: { da: 'Træn den konkrete samtale mod relevante forventninger.', en: 'Prepare for the specific interview against relevant expectations.' },
+  },
+  {
+    id: 'case',
+    path: 'perform',
+    need: 'case',
+    sessionType: 'case-interview-preparation',
+    label: { da: 'Jeg skal forberede en case eller technicals', en: 'I need to prepare a case or technicals' },
+    result: { da: 'Træn struktur, analyse og kommunikation mod det konkrete format.', en: 'Practice structure, analysis and communication for the specific format.' },
   },
   {
     id: 'pivot',
     path: 'prepare',
     need: 'direction',
+    sessionType: 'career-clarity',
     label: { da: 'Jeg vil skifte branche eller funktion', en: 'I am changing industry or function' },
     result: { da: 'Afklar overførbare styrker, reelle barrierer og realistiske mellemtrin.', en: 'Clarify transferable strengths, real barriers and credible intermediate moves.' },
   },
@@ -127,13 +143,23 @@ export const ACCESS_SITUATIONS = [
     id: 'direction',
     path: 'explore',
     need: 'direction',
+    sessionType: 'career-clarity',
     label: { da: 'Jeg er usikker på mit næste skridt', en: 'I am unsure about my next move' },
     result: { da: 'Sammenlign realistiske retninger og beslut, hvad du bør undersøge nu.', en: 'Compare realistic directions and decide what to investigate next.' },
+  },
+  {
+    id: 'graduate',
+    path: 'prepare',
+    need: 'direction',
+    sessionType: 'graduate-internship',
+    label: { da: 'Jeg søger graduate-program eller internship', en: 'I am targeting a graduate program or internship' },
+    result: { da: 'Prioritér programmer, timing og en troværdig vej ind.', en: 'Prioritize programs, timing and a credible route in.' },
   },
   {
     id: 'offer',
     path: 'perform',
     need: 'interview',
+    sessionType: 'career-clarity',
     label: { da: 'Jeg har modtaget et jobtilbud', en: 'I have received a job offer' },
     result: { da: 'Vurdér rolle, mandat, vilkår, risici og langsigtet karriereværdi.', en: 'Assess the role, mandate, terms, risks and long-term career value.' },
   },
@@ -141,25 +167,12 @@ export const ACCESS_SITUATIONS = [
   id: SituationId
   path: AccessPathId
   need: DirectoryNeed
+  sessionType: SessionTypeId
   label: LocalizedText
   result: LocalizedText
 }>
 
-export const SESSION_CONCEPTS = [
-  { id: 'should-i-apply', path: 'apply', title: { da: 'Skal jeg søge?', en: 'Should I Apply?' }, outcome: { da: 'Et realistisk syn på dit match og de vigtigste ændringer før ansøgning.', en: 'A realistic view of your fit and the changes that matter before applying.' } },
-  { id: 'inside-the-role', path: 'explore', title: { da: 'Indblik i rollen', en: 'Inside the Role' }, outcome: { da: 'Arbejdet, forventningerne, karrierevejene og det jobopslaget ikke fortæller.', en: 'The work, expectations, career paths and what the job description leaves out.' } },
-  { id: 'inside-the-company', path: 'explore', title: { da: 'Indblik i virksomheden', en: 'Inside the Company' }, outcome: { da: 'Relevant kontekst om arbejdsform, kultur, rekruttering og udviklingsmuligheder.', en: 'Relevant context on ways of working, culture, hiring and development.' } },
-  { id: 'cv-reality-check', path: 'prepare', title: { da: 'Kritisk CV-gennemgang', en: 'CV Reality Check' }, outcome: { da: 'De tre vigtigste ændringer til et CV målrettet den rolle, du søger.', en: 'The three most important changes to a CV aimed at the role you want.' } },
-  { id: 'interview-ready', path: 'perform', title: { da: 'Klar til samtalen', en: 'Interview Ready' }, outcome: { da: 'Realistisk træning, konkret feedback og en plan for den specifikke samtale.', en: 'Realistic practice, concrete feedback and a plan for the specific interview.' } },
-  { id: 'career-direction', path: 'explore', title: { da: 'Karriereretning', en: 'Career Direction' }, outcome: { da: 'Realistiske karrierespor, centrale fravalg og et konkret næste skridt.', en: 'Realistic career paths, meaningful trade-offs and a concrete next step.' } },
-  { id: 'career-pivot', path: 'prepare', title: { da: 'Plan for karriereskift', en: 'Career Pivot' }, outcome: { da: 'Overførbare styrker, reelle barrierer og en troværdig overgangsplan.', en: 'Transferable strengths, real barriers and a credible transition plan.' } },
-  { id: 'offer-review', path: 'perform', title: { da: 'Gennemgang af jobtilbud', en: 'Offer Review' }, outcome: { da: 'Et klart syn på rolle, mandat, vilkår, risici og langsigtet værdi.', en: 'A clear view of the role, mandate, terms, risks and long-term value.' } },
-] as const satisfies ReadonlyArray<{
-  id: string
-  path: AccessPathId
-  title: LocalizedText
-  outcome: LocalizedText
-}>
+export const SESSION_CONCEPTS = SESSION_TYPES
 
 export function localized(text: LocalizedText, locale: BrandLocale) {
   return text[locale]

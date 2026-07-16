@@ -3,9 +3,8 @@ import { formatSessionDate } from '@/lib/dateTime';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
-import { BOOKING_FOCUS_AREAS, focusLabel, sessionEconomics } from '@/lib/platform';
-
-const BOOKING_FOCUS_IDS = new Set<string>(BOOKING_FOCUS_AREAS);
+import { sessionEconomics } from '@/lib/platform';
+import { isSessionTypeId, sessionType, sessionTypesForFocusAreas } from '@/lib/sessionTypes';
 
 function cleanText(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().replace(/\r\n/g, '\n').slice(0, maxLength) : '';
@@ -37,7 +36,7 @@ export async function GET() {
 
     const { data: bookings, error } = await admin
       .from('bookings')
-      .select('id, candidate_profile_id, professional_profile_id, starts_at, ends_at, status, payment_status, refund_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, contribution_dkk, platform_fee_dkk, professional_payout_dkk, focus_area, goal, material_url, time_zone, meeting_mode, meeting_url, message_to_professional, created_at')
+      .select('id, candidate_profile_id, professional_profile_id, starts_at, ends_at, status, payment_status, refund_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, contribution_dkk, platform_share_percent, platform_fee_dkk, professional_share_percent, professional_payout_dkk, session_type, focus_area, goal, material_url, time_zone, meeting_mode, meeting_url, message_to_professional, created_at')
       .or(filters.join(','))
       .order('starts_at', { ascending: false });
     if (error) throw error;
@@ -100,12 +99,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const professionalId = cleanText(body.professionalId, 64);
     const slotId = cleanText(body.slotId, 64);
-    const focus = cleanText(body.focus, 48);
+    const requestedSessionType = cleanText(body.sessionType, 64);
     const goal = cleanText(body.goal, 260);
     const material = cleanText(body.material, 180);
 
-    if (!professionalId || !slotId || !BOOKING_FOCUS_IDS.has(focus)) {
-      return NextResponse.json({ error: 'Vælg en ledig tid, en professionel og et gyldigt fokus.' }, { status: 400 });
+    if (!professionalId || !slotId || !isSessionTypeId(requestedSessionType)) {
+      return NextResponse.json({ error: 'Vælg en ledig tid, en fagperson og en gyldig sessionstype.' }, { status: 400 });
     }
     if (goal.length < 20) {
       return NextResponse.json({ error: 'Beskriv dit ønskede resultat med mindst 20 tegn.' }, { status: 400 });
@@ -133,13 +132,16 @@ export async function POST(request: Request) {
 
     const { data: professional, error: professionalError } = await admin
       .from('professional_profiles')
-      .select('id, profile_id, title, company, price_dkk, visibility, review_status')
+      .select('id, profile_id, title, company, price_dkk, focus_areas, visibility, review_status')
       .eq('id', professionalId)
       .eq('visibility', 'published')
       .eq('review_status', 'approved')
       .single();
     if (professionalError || !professional) {
       return NextResponse.json({ error: 'Profilen er ikke tilgængelig for booking.' }, { status: 404 });
+    }
+    if (!sessionTypesForFocusAreas(professional.focus_areas ?? []).some((session) => session.id === requestedSessionType)) {
+      return NextResponse.json({ error: 'Fagpersonen tilbyder ikke den valgte sessionstype.' }, { status: 400 });
     }
 
     const { data: slot, error: slotError } = await admin
@@ -189,9 +191,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Den professionelle konto kunne ikke findes.' }, { status: 409 });
     }
 
-    const selectedFocusLabel = focusLabel(focus, 'da');
+    const selectedSession = sessionType(requestedSessionType);
+    const selectedSessionLabel = selectedSession.title.da;
+    const focus = selectedSession.focusArea;
     const brief = [
-      `Fokus: ${selectedFocusLabel}`,
+      `Sessionstype: ${selectedSessionLabel}`,
       goal ? `Mål: ${goal}` : null,
       material ? `Materiale/link: ${material}` : null,
     ].filter(Boolean).join('\n');
@@ -212,6 +216,10 @@ export async function POST(request: Request) {
         contribution_dkk: economics.contribution,
         platform_fee_dkk: economics.platformShare,
         professional_payout_dkk: economics.professionalPayout,
+        contribution_percent: economics.contributionPercent,
+        platform_share_percent: economics.platformSharePercent,
+        professional_share_percent: economics.professionalSharePercent,
+        session_type: selectedSession.id,
         focus_area: focus,
         goal,
         material_url: material || null,
@@ -255,7 +263,7 @@ export async function POST(request: Request) {
         intro: `Hej ${candidateName}. Din anmodning er gemt, og ${professionalName} kan nu bekræfte eller afvise tidspunktet.`,
         rows: [
           { label: 'Ønsket tidspunkt', value: formattedDate },
-          { label: 'Fokus', value: selectedFocusLabel },
+          { label: 'Sessionstype', value: selectedSessionLabel },
           { label: 'Pris inkl. moms', value: `DKK ${economics.candidatePrice.toLocaleString('da-DK')}` },
           { label: 'Naetwork', value: `DKK ${economics.platformShare.toLocaleString('da-DK')} (${economics.platformSharePercent}% af nettoprisen)` },
           { label: 'Kræftens Bekæmpelse', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}% af nettoprisen)` },
@@ -272,10 +280,10 @@ export async function POST(request: Request) {
         dedupeKey: `booking-requested-professional-${booking.id}`,
         subject: `Ny bookinganmodning fra ${candidateName}`,
         title: 'Ny bookinganmodning',
-        intro: `${candidateName} ønsker en 60-minutters Career Access-session med dig. Log ind for at bekræfte eller afvise tidspunktet.`,
+        intro: `${candidateName} ønsker en 60-minutters karrieresession med dig. Log ind for at bekræfte eller afvise tidspunktet.`,
         rows: [
           { label: 'Ønsket tidspunkt', value: formattedDate },
-          { label: 'Fokus', value: selectedFocusLabel },
+          { label: 'Sessionstype', value: selectedSessionLabel },
           { label: 'Sessionpris inkl. moms', value: `DKK ${economics.candidatePrice.toLocaleString('da-DK')}` },
           { label: 'Kræftens Bekæmpelse', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}%)` },
           { label: 'Forventet udbetaling', value: `DKK ${economics.professionalPayout.toLocaleString('da-DK')} før skat` },

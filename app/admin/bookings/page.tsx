@@ -5,6 +5,7 @@ import { AdminEmptyState, AdminPageHeader, AdminTableFrame } from '@/components/
 import { StatusBadge } from '@/components/StatusBadge'
 import { formatSessionDate } from '@/lib/dateTime'
 import { formatDkk } from '@/lib/platform'
+import { isSessionTypeId, sessionType } from '@/lib/sessionTypes'
 import { createClient } from '@/lib/supabase/client'
 
 type BookingStatus = 'requested' | 'pending' | 'confirmed' | 'rescheduled' | 'cancelled' | 'completed' | 'no_show' | 'refunded' | 'disputed'
@@ -13,6 +14,7 @@ interface Booking {
   id: string
   starts_at: string
   status: BookingStatus
+  session_type: string | null
   price_dkk: number | null
   contribution_dkk: number | null
   platform_fee_dkk: number | null
@@ -38,7 +40,7 @@ export default function BookingsPage() {
     const supabase = createClient()
     async function load() {
       setLoading(true)
-      const { data, error: bookingError } = await supabase.from('bookings').select('id, starts_at, status, price_dkk, contribution_dkk, platform_fee_dkk, professional_payout_dkk, candidate_profile_id, professional_profile_id').order('starts_at', { ascending: false })
+      const { data, error: bookingError } = await supabase.from('bookings').select('id, starts_at, status, session_type, price_dkk, contribution_dkk, platform_fee_dkk, professional_payout_dkk, candidate_profile_id, professional_profile_id').order('starts_at', { ascending: false })
       if (!active) return
       if (bookingError) {
         setError('Bookingerne kunne ikke indlæses. Kontrollér systemstatus og prøv igen.')
@@ -82,8 +84,8 @@ export default function BookingsPage() {
       <AdminTableFrame>
         {loading ? <AdminEmptyState title="Indlæser bookinger..." /> : filtered.length === 0 ? <AdminEmptyState title="Ingen bookinger i denne visning" body="Bookinger vises her, når kandidater sender anmodninger." /> : (
           <table className="min-w-[1140px] w-full border-collapse">
-            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Kandidat</th><th className="px-4 py-3">Professionel</th><th className="px-4 py-3">Tidspunkt</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Pris inkl. moms</th><th className="px-4 py-3 text-right">Naetwork · 20%</th><th className="px-4 py-3 text-right">Kræftsagen · 30%</th><th className="px-4 py-3 text-right">Professionel · 50%</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">{filtered.map((booking) => <tr key={booking.id} className="hover:bg-gray-50/70"><td className="px-4 py-4 text-sm font-black text-gray-950">{booking.candidateName}</td><td className="px-4 py-4 text-sm font-semibold text-gray-700">{booking.professionalName}</td><td className="px-4 py-4 text-sm tabular-nums text-gray-600">{formatSessionDate(booking.starts_at)}</td><td className="px-4 py-4"><StatusBadge status={booking.status} /></td><td className="px-4 py-4 text-right text-sm font-black tabular-nums text-gray-950">{booking.price_dkk == null ? '—' : formatDkk(booking.price_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.platform_fee_dkk == null ? '—' : formatDkk(booking.platform_fee_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.contribution_dkk == null ? '—' : formatDkk(booking.contribution_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.professional_payout_dkk == null ? '—' : formatDkk(booking.professional_payout_dkk)}</td></tr>)}</tbody>
+            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Kandidat</th><th className="px-4 py-3">Professionel</th><th className="px-4 py-3">Session</th><th className="px-4 py-3">Tidspunkt</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Pris inkl. moms</th><th className="px-4 py-3 text-right">Kræftsagen · 10%</th><th className="px-4 py-3 text-right">Naetwork · 20%</th><th className="px-4 py-3 text-right">Professionel · 70%</th></tr></thead>
+            <tbody className="divide-y divide-gray-100">{filtered.map((booking) => <tr key={booking.id} className="hover:bg-gray-50/70"><td className="px-4 py-4 text-sm font-black text-gray-950">{booking.candidateName}</td><td className="px-4 py-4 text-sm font-semibold text-gray-700">{booking.professionalName}</td><td className="px-4 py-4 text-xs font-semibold text-gray-600">{booking.session_type && isSessionTypeId(booking.session_type) ? sessionType(booking.session_type).title.da : '—'}</td><td className="px-4 py-4 text-sm tabular-nums text-gray-600">{formatSessionDate(booking.starts_at)}</td><td className="px-4 py-4"><StatusBadge status={booking.status} /></td><td className="px-4 py-4 text-right text-sm font-black tabular-nums text-gray-950">{booking.price_dkk == null ? '—' : formatDkk(booking.price_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.contribution_dkk == null ? '—' : formatDkk(booking.contribution_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.platform_fee_dkk == null ? '—' : formatDkk(booking.platform_fee_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.professional_payout_dkk == null ? '—' : formatDkk(booking.professional_payout_dkk)}</td></tr>)}</tbody>
           </table>
         )}
       </AdminTableFrame>

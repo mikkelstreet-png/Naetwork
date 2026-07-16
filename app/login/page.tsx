@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { safeInternalPath } from '@/lib/navigation';
+import { CONTRIBUTION_PERCENT } from '@/lib/platform';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -55,7 +56,7 @@ export default function LoginPage() {
             {[
               ['60 min', 'Fast format'],
               ['DKK 600+', 'Tydelige priser'],
-              ['30%', 'Til kræftsagen'],
+              [`${CONTRIBUTION_PERCENT}%`, 'Til Kræftens Bekæmpelse'],
             ].map(([value, label]) => (
               <div key={label} className="border-r border-white/20 py-4 pr-3 last:border-r-0 last:pl-3 sm:px-4 sm:first:pl-0">
                 <p className="text-lg font-bold text-white">{value}</p>

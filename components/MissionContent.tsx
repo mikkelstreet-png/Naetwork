@@ -17,7 +17,7 @@ export function MissionContent() {
     [isDa ? 'Værdien skal række videre' : 'The value should travel further', isDa ? `${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse efter en gennemført og betalt session. Fordelingen er fast og transparent.` : `${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse after a completed and paid session. The split is fixed and transparent.`],
   ] as const;
 
-  const product = ['Career Access', isDa ? 'Situation først' : 'Situation first', isDa ? 'Relevant erfaring' : 'Relevant experience', '60 min', `${PLATFORM_SHARE_PERCENT} · ${CONTRIBUTION_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`] as const;
+  const product = [isDa ? 'Karrieresessioner' : 'Career sessions', isDa ? 'Sessionstype først' : 'Session type first', isDa ? 'Erfarne fagpersoner' : 'Experienced professionals', '60 min', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`] as const;
 
   return (
     <main className="page-shell">

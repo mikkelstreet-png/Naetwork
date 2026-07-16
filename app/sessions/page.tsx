@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { SessionsContent } from '@/components/SessionsContent'
 
 export const metadata: Metadata = {
-  title: 'Career Access-sessioner | Naetwork',
-  description: 'Se situationsbaserede sessioner til roller, virksomheder, CV, ansøgninger, interviews, karriereskift og jobtilbud.',
+  title: '7 konkrete karrieresessioner | Naetwork',
+  description: 'Vælg CV-gennemgang, ansøgningsfeedback, jobsamtaletræning, caseforberedelse, karriereafklaring, graduate-rådgivning eller brancheindsigt.',
   alternates: { canonical: '/sessions' },
 }
 

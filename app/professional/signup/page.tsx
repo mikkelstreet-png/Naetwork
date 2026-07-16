@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
+import { RevenueSplit } from '@/components/RevenueSplit';
 import {
   CONTRIBUTION_PERCENT,
-  FOCUS_AREAS,
   INDUSTRIES,
   PLATFORM_SHARE_PERCENT,
   PRICE_OPTIONS,
@@ -14,6 +14,7 @@ import {
   normalizeLinkedInUrl,
   sessionEconomics,
 } from '@/lib/platform';
+import { SESSION_TYPES } from '@/lib/sessionTypes';
 
 const STEP_LABELS = ['Profil', 'Session', 'Fordeling', 'Bekræft'];
 
@@ -122,7 +123,7 @@ export default function ProfessionalSignupPage() {
               <p className="mt-1 text-[11px] text-gray-500">DKK</p>
             </div>
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-lg font-black">30%</p>
+              <p className="text-lg font-black">{CONTRIBUTION_PERCENT}%</p>
               <p className="mt-1 text-[11px] text-gray-500">bidrag</p>
             </div>
           </div>
@@ -191,16 +192,17 @@ export default function ProfessionalSignupPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-xs font-semibold uppercase text-gray-400">Trin 02</p>
-                  <h2 className="mt-2 text-2xl font-black text-gray-950">Fokusområder og pris</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Alle sessioner er 60 minutter. Kandidaten vælger fokus før booking.</p>
+                  <h2 className="mt-2 text-2xl font-black text-gray-950">Sessionstyper og pris</h2>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">Vælg de konkrete 60-minutters sessioner, hvor din erfaring giver størst værdi.</p>
                 </div>
                 <div>
-                  <p className="mb-3 text-sm font-semibold text-gray-700">Hvad kan kandidater bruge din session på?</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {FOCUS_AREAS.map((focus) => (
-                      <button key={focus.id} type="button" aria-pressed={form.sessionTypes.includes(focus.id)} onClick={() => toggleSessionType(focus.id)}
-                        className={`rounded-lg border px-3 py-3 text-left text-sm font-semibold transition-colors ${form.sessionTypes.includes(focus.id) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>
-                        {focus.da}
+                  <p className="mb-3 text-sm font-semibold text-gray-700">Hvilke sessioner tilbyder du?</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {SESSION_TYPES.map((session) => (
+                      <button key={session.id} type="button" aria-pressed={form.sessionTypes.includes(session.focusArea)} onClick={() => toggleSessionType(session.focusArea)}
+                        className={`rounded-lg border px-4 py-3 text-left transition-colors ${form.sessionTypes.includes(session.focusArea) ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-700 hover:border-gray-950'}`}>
+                        <span className="block text-sm font-semibold">{session.title.da}</span>
+                        <span className={`mt-1 block text-xs leading-relaxed ${form.sessionTypes.includes(session.focusArea) ? 'text-white/55' : 'text-gray-400'}`}>{session.outcome.da}</span>
                       </button>
                     ))}
                   </div>
@@ -234,23 +236,7 @@ export default function ProfessionalSignupPage() {
                   <p className="text-sm font-semibold text-gray-700">Fordelingsgrundlag: {formatDkk(economics.netPrice)} ekskl. moms</p>
                   <p className="mt-2 text-xs leading-relaxed text-gray-500">Kandidatens pris er {formatDkk(economics.candidatePrice)} inkl. moms. De tre andele nedenfor summerer altid til hele nettoprisen.</p>
                 </div>
-                <div className="grid gap-px overflow-hidden rounded-lg border border-gray-200 bg-gray-200 sm:grid-cols-3">
-                  <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Naetwork · {PLATFORM_SHARE_PERCENT}%</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.platformShare)}</p>
-                    <p className="mt-1 text-sm text-gray-500">Platformens andel</p>
-                  </div>
-                  <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Kræftens Bekæmpelse · {CONTRIBUTION_PERCENT}%</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.contribution)}</p>
-                    <p className="mt-1 text-sm text-gray-500">Afsættes efter gennemførelse</p>
-                  </div>
-                  <div className="bg-white p-5">
-                    <p className="text-xs font-black uppercase text-gray-400">Din andel · {PROFESSIONAL_SHARE_PERCENT}%</p>
-                    <p className="mt-4 text-3xl font-black text-gray-950">{formatDkk(economics.professionalPayout)}</p>
-                    <p className="mt-1 text-sm text-gray-500">Forventet udbetaling før skat</p>
-                  </div>
-                </div>
+                <RevenueSplit price={form.priceDkk} />
               </div>
             )}
 
@@ -269,7 +255,7 @@ export default function ProfessionalSignupPage() {
                     ['Naetwork', `${PLATFORM_SHARE_PERCENT}% / ${formatDkk(economics.platformShare)}`],
                     ['Kræftens Bekæmpelse', `${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)}`],
                     ['Din andel', `${PROFESSIONAL_SHARE_PERCENT}% / ${formatDkk(economics.professionalPayout)} før skat`],
-                    ['Fokusområder', `${form.sessionTypes.length} valgt`],
+                    ['Sessionstyper', `${form.sessionTypes.length} valgt`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">
                       <span className="text-gray-500">{label}</span>

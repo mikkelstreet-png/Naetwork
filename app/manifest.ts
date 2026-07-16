@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Naetwork - Career Access',
+    name: 'Naetwork - 60-minutters karrieresessioner',
     short_name: 'Naetwork',
     description: 'Adgang til relevant erfaring bag bedre karrierevalg.',
     start_url: '/',

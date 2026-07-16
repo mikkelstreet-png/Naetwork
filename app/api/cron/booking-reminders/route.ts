@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { formatSessionDate } from '@/lib/dateTime';
 import { focusLabel } from '@/lib/platform';
+import { isSessionTypeId, sessionType } from '@/lib/sessionTypes';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
     const to = new Date(now + 44 * 60 * 60 * 1000).toISOString();
     const admin = createAdminClient();
     const { data: bookings, error } = await admin.from('bookings')
-      .select('id, candidate_profile_id, professional_profile_id, starts_at, focus_area, message_to_professional, meeting_url')
+      .select('id, candidate_profile_id, professional_profile_id, starts_at, session_type, focus_area, message_to_professional, meeting_url')
       .in('status', ['confirmed', 'rescheduled'])
       .eq('reminder_requested', true)
       .gte('starts_at', from)
@@ -38,7 +39,9 @@ export async function GET(request: Request) {
         owner ? admin.auth.admin.getUserById(owner.auth_user_id) : Promise.resolve(null),
       ]);
       const sessionDate = formatSessionDate(booking.starts_at);
-      const focus = focusLabel(booking.focus_area || '', 'da');
+      const focus = isSessionTypeId(booking.session_type)
+        ? sessionType(booking.session_type).title.da
+        : focusLabel(booking.focus_area || '', 'da');
       const deliveries: Array<Promise<{ duplicate: boolean }>> = [];
 
       const candidateEmail = candidateUser?.data.user?.email;
@@ -51,7 +54,7 @@ export async function GET(request: Request) {
         subject: 'Påmindelse om din Naetwork-session',
         title: 'Din session nærmer sig',
         intro: `Hej ${candidate.name || 'der'}. Her er tidspunkt og fokus for din kommende 60-minutters session.`,
-        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Fokus', value: focus }],
+        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: focus }],
         note: booking.meeting_url ? `Mødelink: ${booking.meeting_url}` : 'Mødelinket vises i din booking, når det er tilføjet.',
         cta: { label: 'Forbered sessionen', href: appUrl('/profil/bookings') },
       }));
@@ -66,7 +69,7 @@ export async function GET(request: Request) {
         subject: 'Påmindelse om din kommende Naetwork-session',
         title: 'Sessionen nærmer sig',
         intro: `Hej ${owner.name || 'der'}. Du har en session med ${candidate?.name || 'en kandidat'} på det angivne tidspunkt.`,
-        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Fokus', value: focus }],
+        rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: focus }],
         note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
         cta: { label: 'Se kandidatens brief', href: appUrl('/profil/bookings') },
       }));
