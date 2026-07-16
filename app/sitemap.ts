@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (process.env.SITE_ACCESS_CODE && process.env.SITE_ACCESS_TOKEN) return [];
+
   const base = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? 'https://naetwork.dk';
   const siteUrl = (base.startsWith('http') ? base : `https://${base}`).replace(/\/$/, '');
   const routes = [

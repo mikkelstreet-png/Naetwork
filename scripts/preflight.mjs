@@ -7,6 +7,8 @@ const required = [
   'NEXT_PUBLIC_LEGAL_NAME',
   'NEXT_PUBLIC_LEGAL_ADDRESS',
   'NEXT_PUBLIC_LEGAL_REGISTRATION',
+  'SITE_ACCESS_CODE',
+  'SITE_ACCESS_TOKEN',
   'NEXT_PUBLIC_SUPPORT_EMAIL',
   'SUPPORT_EMAIL',
   'RESEND_API_KEY',
@@ -68,6 +70,10 @@ if (process.env.NEXT_PUBLIC_SUPPORT_EMAIL && process.env.SUPPORT_EMAIL && proces
 
 if (process.env.EMAIL_FROM && !/noreply@naetwork\.dk/i.test(process.env.EMAIL_FROM)) {
   errors.push('EMAIL_FROM must use noreply@naetwork.dk')
+}
+
+if (process.env.SITE_ACCESS_TOKEN && process.env.SITE_ACCESS_TOKEN.length < 32) {
+  errors.push('SITE_ACCESS_TOKEN must be at least 32 characters')
 }
 
 if (missing.length || errors.length) {
