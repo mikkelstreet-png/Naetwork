@@ -24,7 +24,7 @@ export function SessionsContent() {
           : 'Choose from seven session types designed around the decisions, materials and processes students and jobseekers face.'}
         action={{ href: '/start', label: isDa ? 'Find din session' : 'Find your session' }}
         sequence={isDa
-          ? ['Vælg resultat', 'Find relevant erfaring', 'Book 60 minutter']
+          ? ['Vælg resultat', 'Find den rette fagperson', 'Book 60 minutter']
           : ['Choose outcome', 'Find relevant experience', 'Book 60 minutes']}
       />
 

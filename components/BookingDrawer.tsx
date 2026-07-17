@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { CalendarX2, Check, LockKeyhole, RefreshCw, X } from 'lucide-react'
 import { formatDkk } from '@/lib/platform'
 import { SESSION_TIME_ZONE } from '@/lib/dateTime'
-import { RevenueSplit } from '@/components/RevenueSplit'
+import { ImpactMarker } from '@/components/ImpactMarker'
 import { isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
 interface Professional {
@@ -128,17 +128,17 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const t = {
     title: locale === 'da' ? 'Bookinganmodning' : 'Booking request',
     subtitle: locale === 'da'
-      ? 'Vælg en reel ledig tid og fortæl kort, hvad sessionen skal handle om. Den professionelle bekræfter anmodningen.'
-      : 'Choose an available time and briefly describe the session. The professional confirms the request.',
+      ? 'Vælg en ledig tid og fortæl, hvad du vil stå stærkere i. Anmodningen er først bekræftet, når fagpersonen har accepteret tidspunktet.'
+      : 'Choose an available time and tell us what you want to strengthen. The request is only confirmed when the professional accepts the time.',
     step1Title: locale === 'da' ? 'Vælg en ledig tid' : 'Choose an available time',
     step2Title: locale === 'da' ? 'Brief til sessionen' : 'Session brief',
     duration: '60 min',
     price: `${formatDkk(professional.price)} ${locale === 'da' ? 'inkl. moms' : 'incl. VAT'} / 60 min`,
-    focusLabel: locale === 'da' ? 'Vælg sessionstype' : 'Choose a session type',
-    goalLabel: locale === 'da' ? 'Hvad vil du gerne opnå?' : 'What would you like to achieve?',
+    focusLabel: locale === 'da' ? 'Hvad vil du gerne stå stærkere i?' : 'What would you like to strengthen?',
+    goalLabel: locale === 'da' ? 'Hvilken situation forbereder du dig på — og hvad vil du gerne gå derfra med?' : 'What situation are you preparing for — and what would you like to leave with?',
     goalPlaceholder: locale === 'da'
-      ? 'Beskriv det konkrete resultat, du vil stå med efter de 60 minutter.'
-      : 'Describe the concrete outcome you want after the 60 minutes.',
+      ? 'Beskriv kort processen, dit udgangspunkt og det konkrete resultat, du har brug for.'
+      : 'Briefly describe the process, your starting point and the concrete outcome you need.',
     goalError: locale === 'da' ? 'Beskriv dit ønskede resultat med mindst 20 tegn.' : 'Describe your desired outcome in at least 20 characters.',
     materialLabel: locale === 'da' ? 'Materiale eller link' : 'Material or link',
     materialPlaceholder: locale === 'da' ? 'Valgfrit: LinkedIn, CV-link, jobopslag eller case-materiale' : 'Optional: LinkedIn, CV link, job post or case material',
@@ -146,8 +146,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     confirm: locale === 'da' ? 'Send bookinganmodning' : 'Send booking request',
     successTitle: locale === 'da' ? 'Anmodning sendt' : 'Request sent',
     successMsg: locale === 'da'
-      ? 'Din anmodning og dit sessionbrief er modtaget. Den professionelle vender tilbage med bekræftelse. Der trækkes ingen betaling nu.'
-      : 'Your request and session brief have been received. The professional will confirm the time. No payment is collected now.',
+      ? 'Din anmodning og dit brief er modtaget. Tidspunktet er først bekræftet, når fagpersonen accepterer. Der trækkes ingen betaling nu.'
+      : 'Your request and brief have been received. The time is only confirmed when the professional accepts. No payment is collected now.',
     close: locale === 'da' ? 'Luk' : 'Close',
     back: locale === 'da' ? 'Tilbage' : 'Back',
     continue: locale === 'da' ? 'Fortsæt med tidspunktet' : 'Continue with this time',
@@ -217,9 +217,9 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-gray-950/55 backdrop-blur-sm" onClick={handleClose} aria-hidden="true" />
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="booking-title" aria-describedby="booking-description" className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[30rem] flex-col bg-white shadow-[0_0_80px_rgba(9,9,11,0.22)]">
-        <div className="signal-rail"><span /><span /><span /><span /></div>
+      <div className="booking-overlay" onClick={handleClose} aria-hidden="true" />
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="booking-title" aria-describedby="booking-description" className="booking-drawer">
+        <div className="booking-drawer__signature" aria-hidden="true"><span /><i /></div>
         <div className="border-b border-gray-200 bg-[#f4f4f0] px-5 py-5 sm:px-7 sm:py-6">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -341,7 +341,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 <p className="mt-4 border-t border-gray-200 pt-4 text-xs leading-relaxed text-gray-500">{locale === 'da' ? 'Betaling er ikke aktiveret endnu. Der trækkes ikke noget beløb ved bookinganmodningen.' : 'Payments are not enabled yet. No amount is charged when you send the request.'}</p>
               </div>
 
-              <div className="mb-5"><RevenueSplit price={professional.price} locale={locale} compact /></div>
+              <div className="mb-5"><ImpactMarker price={professional.price} locale={locale} compact /></div>
 
               <fieldset className="mb-5">
                 <legend className="mb-3 block text-sm font-black text-gray-950">{t.focusLabel}</legend>

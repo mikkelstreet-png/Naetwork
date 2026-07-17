@@ -16,6 +16,7 @@ export function Navbar() {
   const [userEmail, setUserEmail] = useState<string>('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
@@ -24,6 +25,15 @@ export function Navbar() {
   const previousPathnameRef = useRef(pathname);
   const bilingual = isBilingualPublicRoute(pathname);
   const displayDa = isDa || !bilingual;
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 18);
+    }
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -112,7 +122,7 @@ export function Navbar() {
   if (pathname.startsWith('/admin')) return null;
 
   return (
-    <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className="nav-shell">
+    <nav aria-label={displayDa ? 'Primær navigation' : 'Primary navigation'} className={`nav-shell ${scrolled ? 'nav-shell--scrolled' : ''}`}>
       <div className="nav-inner">
         <Link href="/" className="group flex shrink-0 items-center gap-3" aria-label={displayDa ? 'Naetwork forside' : 'Naetwork home'}>
           <span className="brand-mark transition-transform duration-200 group-hover:-translate-y-0.5">N</span>
@@ -157,7 +167,7 @@ export function Navbar() {
                     <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Overblik' : 'Overview'}</Link>
-                  <Link href="/start" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Start med din situation' : 'Start with your situation'}</Link>
+                  <Link href="/professionals" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Find en fagperson' : 'Find a professional'}</Link>
                   <button type="button" onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{displayDa ? 'Log ud' : 'Log out'}</button>
                 </div>
               )}
@@ -169,10 +179,11 @@ export function Navbar() {
           )}
 
           <Link
-            href="/start"
-            className="button-primary hidden min-h-10 px-4 py-2.5 lg:inline-flex"
+            href="/professionals"
+            className="button-primary button-with-arrow hidden min-h-10 px-4 py-2.5 lg:inline-flex"
           >
-            {displayDa ? 'Start med din situation' : 'Start with your situation'}
+            {displayDa ? 'Find en fagperson' : 'Find a professional'}
+            <span aria-hidden="true">→</span>
           </Link>
 
           <button
@@ -193,8 +204,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div ref={mobilePanelRef} id="mobile-navigation" className="mobile-safe-bottom max-h-[calc(100svh-4.5rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 pb-6 pt-2 lg:hidden">
-          <div className="signal-rail mb-6"><span /><span /><span /><span /></div>
+        <div ref={mobilePanelRef} id="mobile-navigation" className="nav-mobile-panel mobile-safe-bottom max-h-[calc(100svh-4.5rem)] overflow-y-auto border-t border-gray-100 bg-white px-5 pb-6 pt-2 lg:hidden">
           <div className="border-t border-gray-200">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="flex items-center justify-between border-b border-gray-200 py-4 font-['Space_Grotesk'] text-lg font-semibold text-gray-950" onClick={() => setMobileOpen(false)}>
@@ -204,8 +214,9 @@ export function Navbar() {
             ))}
           </div>
           <div className="mt-4 grid gap-2">
-            <Link href="/start" className="button-primary" onClick={() => setMobileOpen(false)}>
-              {displayDa ? 'Start med din situation' : 'Start with your situation'}
+            <Link href="/professionals" className="button-primary button-with-arrow" onClick={() => setMobileOpen(false)}>
+              {displayDa ? 'Find en fagperson' : 'Find a professional'}
+              <span aria-hidden="true">→</span>
             </Link>
             {session ? (
               <div className="grid grid-cols-2 gap-2">

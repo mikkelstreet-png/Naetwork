@@ -35,11 +35,11 @@ export function HowItWorksContent() {
         eyebrow={isDa ? 'Sådan fungerer Naetwork' : 'How Naetwork works'}
         title={isDa ? 'Fra spørgsmål til et brugbart svar.' : 'From a question to an answer you can use.'}
         body={isDa
-          ? 'Du starter med situationen. Naetwork hjælper dig med at finde relevant erfaring, forberede samtalen og gøre resultatet konkret.'
+          ? 'Du starter med situationen. Naetwork hjælper dig med at finde en fagperson, der kender forventningerne indefra, og gøre resultatet konkret.'
           : 'You start with the situation. Naetwork helps you find relevant experience, prepare the conversation and make the outcome concrete.'}
         action={{ href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa
-          ? ['Situation', 'Relevant erfaring', 'Næste skridt']
+          ? ['Din situation', 'Indsigt indefra', 'En konkret plan']
           : ['Situation', 'Relevant experience', 'Next step']}
       />
 

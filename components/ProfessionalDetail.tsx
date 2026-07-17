@@ -2,19 +2,30 @@
 
 import { useCallback, useState } from 'react'
 import Link from 'next/link'
-import { CheckCircle2, RefreshCw } from 'lucide-react'
+import { ArrowRight, Check, CheckCircle2, RefreshCw } from 'lucide-react'
 import BookingDrawer from '@/components/BookingDrawer'
-import { RevenueSplit } from '@/components/RevenueSplit'
+import { ImpactMarker } from '@/components/ImpactMarker'
 import { useLanguage } from '@/context/LanguageContext'
 import { createClient } from '@/lib/supabase/client'
 import { categoryAccent, categoryForAreas } from '@/lib/categories'
 import { formatDkk, SESSION_MINUTES } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
 import { professionalInitials, professionalSessionTypes } from '@/lib/professionalPresentation'
+import { sessionImpactAmount } from '@/lib/publicExperience'
 import type { SessionTypeId } from '@/lib/sessionTypes'
 
 function accentFor(professional: ProfessionalCard) {
   return categoryAccent(categoryForAreas(professional.industries)?.id)
+}
+
+const RELEVANCE_COPY: Record<SessionTypeId, { da: string; en: string }> = {
+  'cv-review': { da: 'Se din profil, som branchen ser den', en: 'See your profile as the industry sees it' },
+  'application-feedback': { da: 'Målrette en ansøgning til en bestemt rolle', en: 'Target an application to a specific role' },
+  'interview-training': { da: 'Forberede et vigtigt interview', en: 'Prepare for an important interview' },
+  'case-interview-preparation': { da: 'Teste en case eller technicals', en: 'Test a case or technicals' },
+  'career-clarity': { da: 'Vurdere et konkret karriereskift', en: 'Assess a specific career move' },
+  'graduate-internship': { da: 'Søge graduate-program eller internship', en: 'Target a graduate program or internship' },
+  'industry-company-insight': { da: 'Forstå en rolle, virksomhed eller branche indefra', en: 'Understand a role, company or industry from within' },
 }
 
 interface ProfessionalDetailProps {
@@ -57,88 +68,147 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
   }
 
   if (loading) return (
-    <main aria-busy="true" className="flex min-h-[calc(100vh-4.75rem)] items-center justify-center bg-[#09090b] px-5 text-white">
-      <div className="w-full max-w-sm"><div className="signal-rail mb-6"><span /><span /><span /><span /></div><p className="editorial-label text-white/35">Profile record</p><p className="mt-3 text-2xl font-medium">{isDa ? 'Henter profil…' : 'Loading profile…'}</p></div>
+    <main aria-busy="true" className="profile-loading-state">
+      <div><span /><p>{isDa ? 'Henter fagpersonens profil…' : 'Loading the professional profile…'}</p></div>
     </main>
   )
 
   if (loadError) return (
-    <main className="grid min-h-[calc(100vh-4.75rem)] bg-white lg:grid-cols-[1fr_0.72fr]">
-      <div className="flex items-center bg-[#09090b] px-5 py-14 text-white sm:px-8 lg:px-12">
-        <div className="mx-auto w-full max-w-2xl"><div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div><p className="kicker text-white/35">Profile service / status</p><h1 className="mt-5 max-w-xl text-4xl font-medium leading-tight text-white sm:text-5xl">{isDa ? 'Profilen kunne ikke indlæses' : 'The profile could not be loaded'}</h1><p className="mt-5 max-w-lg text-sm leading-relaxed text-white/55">{isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen om et øjeblik.' : 'The profile service is not responding right now. Please try again shortly.'}</p></div>
-      </div>
-      <div className="flex items-center bg-[#f1f1ec] px-5 py-12 sm:px-8 lg:px-12">
-        <div className="w-full max-w-md"><p className="editorial-label">{isDa ? 'Næste handling' : 'Next action'}</p><h2 className="mt-4 text-2xl font-medium leading-tight text-gray-950">{isDa ? 'Prøv igen, eller gå tilbage til fagpersonerne.' : 'Retry or return to the professionals.'}</h2><div className="mt-7 flex flex-wrap gap-3"><button type="button" onClick={() => void fetchProfessional()} className="button-primary"><RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}</button><Link href="/professionals" className="button-secondary">{isDa ? 'Alle fagpersoner' : 'All professionals'}</Link></div></div>
+    <main className="directory-state profile-error-state">
+      <div>
+        <p className="section-eyebrow">{isDa ? 'Profilservice' : 'Profile service'}</p>
+        <h1>{isDa ? 'Profilen kunne ikke indlæses' : 'The profile could not be loaded'}</h1>
+        <p>{isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen om et øjeblik.' : 'The profile service is not responding right now. Please try again shortly.'}</p>
+        <div className="directory-state__actions">
+          <button type="button" onClick={() => void fetchProfessional()} className="button-primary"><RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}</button>
+          <Link href="/professionals" className="button-secondary">{isDa ? 'Alle fagpersoner' : 'All professionals'}</Link>
+        </div>
       </div>
     </main>
   )
 
   if (!professional) return (
-    <main className="flex min-h-screen items-center justify-center bg-white px-6"><div className="text-center"><h1 className="mb-4 text-2xl font-black text-gray-950">{isDa ? 'Profilen findes ikke' : 'Profile not found'}</h1><Link href="/professionals" className="text-sm font-semibold underline underline-offset-4">{isDa ? 'Tilbage til fagpersoner' : 'Back to professionals'}</Link></div></main>
+    <main className="directory-state profile-error-state">
+      <div><h1>{isDa ? 'Profilen findes ikke' : 'Profile not found'}</h1><Link href="/professionals" className="button-primary">{isDa ? 'Tilbage til fagpersoner' : 'Back to professionals'}</Link></div>
+    </main>
   )
 
   const supportedSessions = professionalSessionTypes(professional)
   const nextAvailable = professional.nextAvailableAt
     ? new Date(professional.nextAvailableAt).toLocaleString(isDa ? 'da-DK' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' })
     : isDa ? 'Ingen åbne tider' : 'No open times'
+  const relevance = supportedSessions.slice(0, 5).map((session) => RELEVANCE_COPY[session.id][lang])
+  const outcomes = Array.from(new Set(supportedSessions.flatMap((session) => session.deliverables[lang]))).slice(0, 5)
+  const category = categoryForAreas(professional.industries)?.id
 
   return (
-    <main className="min-h-screen bg-white pb-24 md:pb-0">
-      <section className="border-b border-white/15 bg-[#09090b] px-5 text-white sm:px-8 lg:px-12">
-        <div className="mx-auto max-w-[82rem] py-9 md:py-20">
-          <Link href="/professionals" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-white/45 hover:text-white md:mb-12"><span aria-hidden="true">←</span>{isDa ? 'Alle fagpersoner' : 'All professionals'}</Link>
-          <div className="grid gap-12 lg:grid-cols-[1fr_350px] lg:items-end">
-            <div>
-              <div className="signal-rail mb-7 max-w-24"><span /><span /><span /><span /></div>
-              <div className="mb-5 flex flex-wrap items-center gap-4"><p className="kicker text-white/40">{categoryForAreas(professional.industries)?.id ?? (isDa ? 'Fagperson' : 'Professional')}</p><span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase text-emerald-200"><CheckCircle2 size={13} aria-hidden="true" />{isDa ? 'Profil gennemgået' : 'Profile reviewed'}</span></div>
-              <h1 className="max-w-4xl text-5xl font-medium leading-[0.94] text-white text-balance sm:text-6xl md:text-8xl">{professional.name}</h1>
-              <p className="mt-6 text-base font-semibold text-white/72 md:text-xl">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
-              <p className="mt-2 text-xs font-semibold leading-relaxed text-white/40">{professional.industries.join(' · ')}</p>
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/55 md:text-lg">{professional.bio}</p>
+    <main className="professional-page">
+      <section className="professional-hero">
+        <div className="home-shell">
+          <Link href="/professionals" className="professional-back"><span aria-hidden="true">←</span>{isDa ? 'Alle fagpersoner' : 'All professionals'}</Link>
+          <div className="professional-hero__grid">
+            <div className="professional-hero__identity">
+              <div className="professional-hero__meta">
+                <span className={`professional-hero__category-dot ${accentFor(professional)}`} aria-hidden="true" />
+                <span>{category ?? (isDa ? 'Fagperson' : 'Professional')}</span>
+                <span><CheckCircle2 size={13} aria-hidden="true" />{isDa ? 'Profil gennemgået' : 'Profile reviewed'}</span>
+              </div>
+              <div className={`professional-hero__initials ${accentFor(professional)}`}>{professionalInitials(professional.name)}</div>
+              <h1>{professional.name}</h1>
+              <p className="professional-hero__role">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
+              <p className="professional-hero__areas">{professional.industries.join(' · ')}</p>
+              <p className="professional-hero__promise">
+                {isDa ? 'Få feedback på din konkrete situation fra en person, der kender forventningerne fra denne del af branchen.' : 'Get feedback on your situation from someone who knows the expectations in this part of the industry.'}
+              </p>
             </div>
-            <aside className="border border-white/20 bg-white/[0.035] p-6">
-              <div className={`flex h-12 w-12 items-center justify-center rounded-md text-sm font-bold text-gray-950 ${accentFor(professional)}`}>{professionalInitials(professional.name)}</div>
-              <p className="mt-7 editorial-label text-white/40">{SESSION_MINUTES} min 1:1</p>
-              <p className="mt-2 text-3xl font-semibold">{formatDkk(professional.price)}</p>
-              <p className="mt-1 text-xs font-semibold text-white/40">{isDa ? 'Inkl. moms' : 'Incl. VAT'}</p>
-              <dl className="mt-5 border-t border-white/15 text-sm"><div className="flex justify-between gap-4 border-b border-white/15 py-3"><dt className="text-white/45">{isDa ? 'Sessionstyper' : 'Session types'}</dt><dd className="font-bold">{supportedSessions.length}</dd></div><div className="flex justify-between gap-4 border-b border-white/15 py-3"><dt className="text-white/45">{isDa ? 'Næste tid' : 'Next time'}</dt><dd className="text-right font-bold">{nextAvailable}</dd></div></dl>
-              <button type="button" onClick={() => openBooking()} className="button-inverse mt-5 w-full">{isDa ? 'Book session' : 'Book session'}</button>
+
+            <aside className="professional-booking-card">
+              <p className="section-eyebrow">{isDa ? 'Session med' : 'Session with'} {professional.name.split(' ')[0]}</p>
+              <div className="professional-booking-card__price">
+                <strong>{formatDkk(professional.price)}</strong>
+                <span>{SESSION_MINUTES} {isDa ? 'minutter · inkl. moms' : 'minutes · incl. VAT'}</span>
+              </div>
+              <ImpactMarker price={professional.price} locale={lang} tone="dark" compact />
+              <dl>
+                <div><dt>{isDa ? 'Næste ledige tid' : 'Next available time'}</dt><dd>{nextAvailable}</dd></div>
+                <div><dt>{isDa ? 'Bekræftelse' : 'Confirmation'}</dt><dd>{isDa ? 'Når fagpersonen accepterer' : 'When the professional accepts'}</dd></div>
+              </dl>
+              <button type="button" onClick={() => openBooking()} className="button-inverse button-with-arrow">
+                {isDa ? 'Book sessionen' : 'Book the session'}<ArrowRight size={16} aria-hidden="true" />
+              </button>
+              <p>{isDa ? 'Betaling er ikke aktiveret. Der trækkes ikke noget ved bookinganmodningen.' : 'Payments are not enabled. Nothing is charged when you send the booking request.'}</p>
             </aside>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[82rem] px-5 py-12 sm:px-8 md:py-24 lg:px-12">
-        <div className="section-heading">
-          <p className="section-eyebrow">{isDa ? 'Sessioner med denne fagperson' : 'Sessions with this professional'}</p>
-          <h2>{isDa ? 'Vælg den konkrete opgave.' : 'Choose the concrete task.'}</h2>
-          <p>{isDa ? 'Fagpersonens gennemgåede fokusområder afgør, hvilke sessioner profilen matcher.' : 'The professional’s reviewed focus areas determine which sessions the profile matches.'}</p>
-        </div>
-        <div className="product-session-grid">
-          {supportedSessions.map((session, index) => (
-            <article key={session.id}>
-              <div className="product-session-grid__topline"><span>0{index + 1}</span><span>{SESSION_MINUTES} min</span></div>
-              <h3>{session.title[lang]}</h3>
-              <p>{session.description[lang]}</p>
-              <div className="product-session-grid__outcome"><span>{isDa ? 'Muligt output' : 'Possible output'}</span><strong>{session.outcome[lang]}</strong></div>
-              <button type="button" onClick={() => openBooking(session.id)} className="mt-6 inline-flex w-fit items-center gap-2 border-b border-gray-400 pb-1 text-sm font-bold text-gray-950">{isDa ? 'Vælg session' : 'Choose session'}<span aria-hidden="true">→</span></button>
-            </article>
-          ))}
+      <section className="home-section home-section--white">
+        <div className="home-shell profile-relevance-grid">
+          <div>
+            <p className="section-eyebrow">{isDa ? 'Relevant når du skal' : 'Relevant when you need to'}</p>
+            <h2>{isDa ? 'Test din forberedelse mod erfaring indefra.' : 'Test your preparation against inside experience.'}</h2>
+            <ul>
+              {relevance.map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}
+            </ul>
+          </div>
+          <div>
+            <p className="section-eyebrow">{isDa ? 'Du kan gå derfra med' : 'You can leave with'}</p>
+            <h2>{isDa ? 'Klarhed over det, der gør størst forskel.' : 'Clarity on what makes the biggest difference.'}</h2>
+            <ul>
+              {outcomes.map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}
+            </ul>
+          </div>
         </div>
       </section>
 
       <section className="home-section home-section--paper">
-        <div className="home-shell pricing-product-layout">
+        <div className="home-shell profile-experience">
           <div>
-            <p className="section-eyebrow">{isDa ? 'Pris før booking' : 'Price before booking'}</p>
-            <h2>{isDa ? 'Du ser hele fordelingen.' : 'You see the full split.'}</h2>
-            <p>{isDa ? 'Totalprisen og de tre andele vises igen i bookingflowet og gemmes med anmodningen.' : 'The total price and all three shares are shown again during booking and saved with the request.'}</p>
+            <p className="section-eyebrow">{isDa ? 'Erfaringen bag feedbacken' : 'The experience behind the feedback'}</p>
+            <h2>{isDa ? 'Indsigt fra den verden, du forsøger at komme ind i eller videre i.' : 'Insight from the world you are trying to enter or progress in.'}</h2>
           </div>
-          <RevenueSplit price={professional.price} locale={lang} />
+          <div>
+            <p className="profile-experience__role">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
+            <p className="profile-experience__bio">{professional.bio}</p>
+            <div className="profile-experience__areas">
+              {professional.industries.map((area) => <span key={area}>{area}</span>)}
+            </div>
+          </div>
         </div>
       </section>
 
-      {!drawerOpen && <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 py-3 shadow-[0_-12px_40px_rgba(9,9,11,0.10)] backdrop-blur-xl md:hidden"><div className="mx-auto flex max-w-6xl items-center justify-between gap-3"><div><p className="text-sm font-black text-gray-950">{formatDkk(professional.price)} · {SESSION_MINUTES} min</p><p className="text-[11px] font-semibold text-gray-500">{supportedSessions.length} {isDa ? 'sessionstyper' : 'session types'}</p></div><button type="button" onClick={() => openBooking()} className="button-primary min-h-11 shrink-0 px-5 py-2.5">{isDa ? 'Book session' : 'Book session'}</button></div></div>}
+      <section className="home-section home-section--white">
+        <div className="home-shell">
+          <div className="section-heading section-heading--focused">
+            <p className="section-eyebrow">{isDa ? 'Det kan du få hjælp til' : 'What you can get help with'}</p>
+            <h2>{isDa ? 'Vælg det, du vil stå stærkere i.' : 'Choose what you want to strengthen.'}</h2>
+            <p>{isDa ? 'Hver session tager udgangspunkt i din konkrete situation, dit materiale og dit ønskede resultat.' : 'Every session starts with your situation, material and intended outcome.'}</p>
+          </div>
+          <div className="profile-session-grid">
+            {supportedSessions.map((session, index) => (
+              <article key={session.id}>
+                <div className="profile-session-grid__top"><span>0{index + 1}</span><span>{SESSION_MINUTES} min</span></div>
+                <h3>{session.title[lang]}</h3>
+                <p>{session.description[lang]}</p>
+                <div><span>{isDa ? 'Forventet resultat' : 'Expected result'}</span><strong>{session.outcome[lang]}</strong></div>
+                <button type="button" onClick={() => openBooking(session.id)}>
+                  {isDa ? 'Vælg denne session' : 'Choose this session'}<ArrowRight size={15} aria-hidden="true" />
+                </button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {!drawerOpen && (
+        <div className="professional-mobile-booking">
+          <div>
+            <strong>{formatDkk(professional.price)} · {SESSION_MINUTES} min</strong>
+            <span>{formatDkk(sessionImpactAmount(professional.price))} {isDa ? 'til Kræftens Bekæmpelse' : 'to Kræftens Bekæmpelse'}</span>
+          </div>
+          <button type="button" onClick={() => openBooking()} className="button-primary">{isDa ? 'Book sessionen' : 'Book session'}</button>
+        </div>
+      )}
 
       <BookingDrawer professional={professional} open={drawerOpen} onClose={() => setDrawerOpen(false)} locale={lang} initialSessionType={selectedSessionType} />
     </main>

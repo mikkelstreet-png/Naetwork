@@ -6,11 +6,11 @@ import { BRAND_COPY } from '@/lib/brand'
 const brand = BRAND_COPY.da
 
 export const metadata: Metadata = {
-  title: 'Naetwork - 60 minutters karrieresparring med erfarne fagpersoner',
+  title: 'Naetwork - Forstå, hvad der kræves, før det gælder',
   description: brand.oneSentence,
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Naetwork - Erfaring, du kan handle på',
+    title: 'Naetwork - Indsigt indefra. Mening udadtil.',
     description: brand.oneSentence,
     siteName: 'Naetwork',
     type: 'website',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Naetwork - Erfaring, du kan handle på',
+    title: 'Naetwork - Indsigt indefra. Mening udadtil.',
     description: brand.oneSentence,
   },
 }
@@ -29,11 +29,11 @@ export default function Home() {
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: 'Naetwork karrieresessioner',
+    name: 'Naetwork sessions med indsigt fra branchen',
     url: siteUrl,
     description: brand.oneSentence,
     areaServed: 'DK',
-    serviceType: `Karrieresession med en erfaren fagperson på ${SESSION_MINUTES} minutter`,
+    serviceType: `${SESSION_MINUTES} minutters konkret feedback fra en fagperson med relevant brancheerfaring`,
     provider: {
       '@type': 'Organization',
       name: 'Naetwork',

@@ -8,7 +8,7 @@ export default function NotFound() {
         <div>
           <p className="editorial-label mb-5">404</p>
           <h1 className="max-w-3xl text-4xl font-medium leading-none text-gray-950 text-balance sm:text-5xl md:text-7xl">Siden findes ikke.</h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Linket kan være forældet, eller siden kan være flyttet. Du kan fortsætte direkte til profiluniverset.</p>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-600 md:text-lg">Linket kan være forældet, eller siden kan være flyttet. Du kan fortsætte direkte til oversigten over fagpersoner.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/professionals" className="button-primary">
               <Search size={16} aria-hidden="true" /> Se profiler

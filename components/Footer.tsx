@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { isBilingualPublicRoute, isFocusedAppRoute } from '@/lib/navigation';
 import { LEGAL_OPERATOR, PUBLIC_SUPPORT_EMAIL } from '@/lib/legal';
 import { ACCESS_PATHS, BRAND_COPY, localized } from '@/lib/brand';
-import { CONTRIBUTION_PERCENT, PLATFORM_SHARE_PERCENT, PROFESSIONAL_SHARE_PERCENT } from '@/lib/platform';
+import { CONTRIBUTION_PERCENT } from '@/lib/platform';
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -18,7 +18,7 @@ export function Footer() {
     {
       title: 'Platform',
       links: [
-        { href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' },
+        { href: '/professionals', label: isDa ? 'Find en fagperson' : 'Find a professional' },
         { href: '/how-it-works', label: isDa ? 'Sådan fungerer det' : 'How it works' },
         { href: '/sessions', label: isDa ? 'Sessioner' : 'Sessions' },
         { href: '/contact', label: isDa ? 'Kontakt' : 'Contact' },
@@ -68,11 +68,11 @@ export function Footer() {
               {brand.oneSentence}
             </p>
             <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/60">
-              {isDa ? `Fast fordeling af nettoprisen: ${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% den professionelle.` : `Fixed split of the net price: ${PLATFORM_SHARE_PERCENT}% Naetwork · ${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PROFESSIONAL_SHARE_PERCENT}% the professional.`}
+              {isDa ? `${CONTRIBUTION_PERCENT}% af hver gennemført og betalt session går til Kræftens Bekæmpelse.` : `${CONTRIBUTION_PERCENT}% of every completed and paid session goes to Kræftens Bekæmpelse.`}
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link href="/start" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
-                {isDa ? 'Start med din situation' : 'Start with your situation'} <span aria-hidden="true">→</span>
+              <Link href="/professionals" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">
+                {isDa ? 'Find en fagperson' : 'Find a professional'} <span aria-hidden="true">→</span>
               </Link>
               <a href={`mailto:${PUBLIC_SUPPORT_EMAIL}`} className="inline-flex text-sm font-medium text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white hover:decoration-white">{PUBLIC_SUPPORT_EMAIL}</a>
             </div>

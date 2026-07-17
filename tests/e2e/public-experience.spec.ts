@@ -49,8 +49,8 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('button', { name: /luk menu|close menu/i })).toHaveAttribute('aria-expanded', 'true')
-  await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Sessioner|Sessions/)
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Start med din situation|Start with your situation/i })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Fagpersoner|Professionals/)
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Find en fagperson|Find a professional/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
@@ -65,12 +65,18 @@ test('profile filters remain usable on mobile and desktop', async ({ page, isMob
     await expect(retryButton).toBeVisible()
   } else {
     await expect(searchbox).toBeVisible()
-    if (isMobile) {
-      await expect(page.getByRole('combobox', { name: /Vælg kategori|Choose category/i })).toBeVisible()
-    } else {
-      await expect(page.getByRole('button', { name: 'Consulting' })).toBeVisible()
-    }
+    await expect(page.getByRole('combobox', { name: /Fagområde|Professional area/i })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: /Hvad vil du have hjælp til|What do you need help with/i })).toBeVisible()
+    if (isMobile) await expect(page.getByRole('button', { name: /Nulstil filtre|Clear filters/i })).toBeVisible()
   }
+  await expectNoHorizontalOverflow(page)
+})
+
+test('homepage shows no profiles and directory does not book directly', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.profile-card')).toHaveCount(0)
+  await page.goto('/professionals')
+  await expect(page.getByRole('button', { name: /Book session|Book sessionen/i })).toHaveCount(0)
   await expectNoHorizontalOverflow(page)
 })
 
@@ -98,15 +104,16 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Erfaring, du kan handle på\.|Experience you can act on\./i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Find din session|Find your session/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Forstå, hvad der kræves — før det gælder\.|Understand what it takes — before it counts\./i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Find den rette fagperson|Find the right professional/i })).toBeVisible()
   await expect(page.locator('#pricing')).toContainText('DKK 600')
   await expect(page.locator('#pricing')).toContainText('DKK 1.800')
-  await expect(page.locator('#pricing')).toContainText('DKK 96')
-  await expect(page.locator('#pricing')).toContainText('DKK 48')
-  await expect(page.locator('#pricing')).toContainText('DKK 336')
-  await expect(page.locator('#pricing')).toContainText(/ekskl\. moms|excl\. VAT/i)
-  await expect(page.getByRole('heading', { name: /Det vigtigste, før du vælger|What matters before you choose/i })).toBeVisible()
+  await expect(page.locator('#pricing')).toContainText('DKK 60')
+  await expect(page.locator('#pricing')).toContainText('DKK 90')
+  await expect(page.locator('#pricing')).toContainText('DKK 120')
+  await expect(page.locator('#pricing')).toContainText('DKK 180')
+  await expect(page.locator('#pricing')).toContainText(/Betaling er fortsat deaktiveret|Payments remain disabled/i)
+  await expect(page.getByRole('heading', { name: /Hvad vil du stå stærkere i|What do you want to strengthen/i })).toBeVisible()
   await page.goto('/start')
   await expect(page.getByRole('heading', { name: /Hvad skal være bedre om 60 minutter|What should be better in 60 minutes/i })).toBeVisible()
 })
@@ -131,33 +138,32 @@ test('category structure is consistent across the public journey', async ({ page
   }
 })
 
-test('minimal Access hero keeps one message and one primary action', async ({ page }) => {
+test('focused hero communicates insight and impact before format', async ({ page }) => {
   await page.goto('/')
   const hero = page.locator('#home')
-  await expect(hero.getByRole('heading', { name: 'Erfaring, du kan handle på.' })).toBeVisible()
-  await expect(hero.getByRole('link', { name: 'Find din session' })).toHaveAttribute('href', '/start')
-  await expect(hero.getByRole('link', { name: 'Mød fagpersonerne' })).toHaveAttribute('href', '/professionals')
+  await expect(hero).toContainText('Indsigt indefra. Mening udadtil.')
+  await expect(hero.getByRole('heading', { name: 'Forstå, hvad der kræves — før det gælder.' })).toBeVisible()
+  await expect(hero.getByRole('link', { name: 'Find den rette fagperson' })).toHaveAttribute('href', '/professionals')
+  await expect(hero.getByRole('link', { name: 'Se, hvad du kan få hjælp til' })).toHaveAttribute('href', '/#needs')
+  await expect(hero).toContainText('10% af hver gennemført og betalt session går til Kræftens Bekæmpelse.')
   await expect(hero.locator('button')).toHaveCount(0)
-  await expect(hero.locator('.access-hero__colorline span')).toHaveCount(4)
-  await expect(hero.locator('img')).toHaveAttribute('src', /naetwork-spectrum\.webp/)
+  await expect(hero.locator('.insight-signature__marker')).toHaveCount(1)
+  await expect(hero.locator('img')).toHaveCount(0)
   await expectNoHorizontalOverflow(page)
 })
 
 test('Access motion respects reduced-motion preferences', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
-  const duration = await page.locator('#home').getByRole('link', { name: 'Mød fagpersonerne' }).evaluate((element) => getComputedStyle(element).transitionDuration)
+  const duration = await page.locator('#home').getByRole('link', { name: 'Se, hvad du kan få hjælp til' }).evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
 })
 
-test('compact mobile hero leaves the next section in view', async ({ page }) => {
+test('compact mobile hero keeps the primary action visible', async ({ page }) => {
   test.skip((page.viewportSize()?.height ?? 1000) > 720, 'Small-height mobile contract')
   await page.goto('/')
-  const position = await page.locator('.access-hero + .home-section').evaluate((element) => ({
-    top: element.getBoundingClientRect().top,
-    viewport: window.innerHeight,
-  }))
-  expect(position.top).toBeLessThan(position.viewport)
+  await expect(page.locator('#home').getByRole('link', { name: 'Find den rette fagperson' })).toBeVisible()
+  await expectNoHorizontalOverflow(page)
 })
 
 test('critical public routes expose specific metadata', async ({ page }) => {
@@ -165,7 +171,7 @@ test('critical public routes expose specific metadata', async ({ page }) => {
     ['/start', 'Start med din karrieresituation'],
     ['/how-it-works', 'Sådan fungerer Naetwork'],
     ['/sessions', '7 konkrete karrieresessioner'],
-    ['/professionals', 'Find en erfaren fagperson'],
+    ['/professionals', 'Find den erfaring, du har brug for'],
     ['/contact', 'Kontakt'],
     ['/professional/signup', 'Bliv professionel'],
   ] as const) {
@@ -195,8 +201,8 @@ test('English positioning mirrors the Danish product contract', async ({ page })
   await page.goto('/')
   await page.evaluate(() => localStorage.setItem('naetwork_lang', 'en'))
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Experience you can act on.' })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: 'Find your session' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Understand what it takes — before it counts.' })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: 'Find the right professional' })).toBeVisible()
   await page.goto('/how-it-works')
   await expect(page.getByRole('heading', { name: 'From a question to an answer you can use.' })).toBeVisible()
 })

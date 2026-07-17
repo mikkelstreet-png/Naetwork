@@ -9,27 +9,27 @@ type LocalizedText = Record<BrandLocale, string>
 
 export const BRAND_COPY = {
   da: {
-    category: '60-minutters karrieresessioner',
-    primaryLine: 'Erfaring, du kan handle på.',
-    productLine: 'Tal med en, der kender vejen, før du tager næste skridt.',
-    positioning: 'Konkrete karrieresessioner med erfarne fagpersoner.',
-    oneSentence: 'Naetwork forbinder studerende og jobsøgende med erfarne fagpersoner til konkrete 60-minutters karrieresessioner.',
-    problem: 'Du mangler sjældent mere information. Du mangler adgang til den rigtige erfaring.',
+    category: 'Indsigt fra branchen indefra',
+    primaryLine: 'Forstå, hvad der kræves — før det gælder.',
+    productLine: 'Test din forberedelse med nogen, der kender forventningerne indefra.',
+    positioning: 'Konkret feedback fra fagpersoner med erfaring fra den rolle, branche eller proces, du skal navigere i.',
+    oneSentence: 'Naetwork hjælper studerende og jobsøgende med at forstå, hvad der faktisk bliver vurderet, gennem konkret feedback fra fagpersoner, der kender branchen indefra.',
+    problem: 'Du skal ikke gætte på, hvad der forventes, når din profil eller forberedelse bliver vurderet.',
   },
   en: {
-    category: '60-minute career sessions',
-    primaryLine: 'Experience you can act on.',
-    productLine: 'Talk to someone who knows the path before you take your next step.',
-    positioning: 'Concrete career sessions with experienced professionals.',
-    oneSentence: 'Naetwork connects students and jobseekers with experienced professionals for concrete 60-minute career sessions.',
-    problem: 'You rarely need more information. You need access to the right experience.',
+    category: 'Inside industry insight',
+    primaryLine: 'Understand what it takes — before it counts.',
+    productLine: 'Test your preparation with someone who knows the expectations from within.',
+    positioning: 'Concrete feedback from professionals with experience from the role, industry or process you need to navigate.',
+    oneSentence: 'Naetwork helps students and jobseekers understand what is actually assessed through concrete feedback from professionals who know the industry from within.',
+    problem: 'You should not have to guess what is expected when your profile or preparation is assessed.',
   },
 } as const
 
 export const PRIMARY_NAV_ITEMS = [
-  { href: '/sessions', label: { da: 'Sessioner', en: 'Sessions' } },
+  { href: '/#needs', label: { da: 'Hvad kan du få hjælp til?', en: 'What can you get help with?' } },
   { href: '/professionals', label: { da: 'Fagpersoner', en: 'Professionals' } },
-  { href: '/how-it-works', label: { da: 'Sådan fungerer det', en: 'How it works' } },
+  { href: '/#how-it-works', label: { da: 'Sådan fungerer det', en: 'How it works' } },
   { href: '/professional/signup', label: { da: 'Bliv fagperson', en: 'Become a professional' } },
 ] as const satisfies ReadonlyArray<{ href: string; label: LocalizedText }>
 

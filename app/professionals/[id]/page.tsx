@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const role = [professional.title, professional.company].filter(Boolean).join(' hos ')
   return {
     title: `${professional.name} - Naetwork`,
-    description: `${role || 'Erfaren fagperson'}. Se sessionstyper, pris og den transparente 10/20/70-fordeling for en 60-minutters karrieresession.`,
+    description: `${role || 'Erfaren fagperson'}. Se hvornår fagpersonen er relevant, hvad du kan få hjælp til, pris og bidraget til Kræftens Bekæmpelse.`,
     alternates: { canonical: `/professionals/${professional.id}` },
   }
 }

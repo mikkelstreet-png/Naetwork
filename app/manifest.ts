@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Naetwork - 60-minutters karrieresessioner',
     short_name: 'Naetwork',
-    description: 'Adgang til relevant erfaring bag bedre karrierevalg.',
+    description: 'Konkret feedback fra fagpersoner, der kender branchen indefra.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

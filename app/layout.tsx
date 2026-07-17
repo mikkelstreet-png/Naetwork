@@ -20,7 +20,7 @@ const accessGateEnabled = Boolean(process.env.SITE_ACCESS_CODE && process.env.SI
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
-  title: 'Naetwork - Adgang til erfaringen bag bedre karrierevalg',
+  title: 'Naetwork - Forstå, hvad der kræves, før det gælder',
   description: BRAND_COPY.da.oneSentence,
   robots: accessGateEnabled
     ? { index: false, follow: false, noarchive: true }
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     apple: '/naetwork-logo.svg',
   },
   applicationName: 'Naetwork',
-  category: 'career development',
+  category: 'professional insight',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,

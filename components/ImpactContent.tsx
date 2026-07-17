@@ -13,7 +13,7 @@ export function ImpactContent() {
 
   const values = isDa
     ? [
-        ['Kandidaten', 'Får relevant erfaring og et bedre grundlag for den konkrete karrierebeslutning.'],
+        ['Kandidaten', 'Får konkret feedback fra branchen og et bedre grundlag for den konkrete beslutning.'],
         ['Den professionelle', 'Gør sin erfaring tilgængelig i et afgrænset format med tydelige forventninger.'],
         ['Kræftens Bekæmpelse', 'Modtager det beløb, der er afsat fra gennemførte og betalte sessioner, når betalingsmodellen aktiveres.'],
       ]
