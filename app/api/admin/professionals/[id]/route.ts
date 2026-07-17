@@ -13,8 +13,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Ikke logget ind.' }, { status: 401 });
-    const { data: actor } = await supabase.from('profiles').select('id, role').eq('auth_user_id', user.id).maybeSingle();
-    if (actor?.role !== 'admin') return NextResponse.json({ error: 'Ingen adgang.' }, { status: 403 });
+    const { data: actor } = await supabase.from('profiles').select('id, role, is_admin').eq('auth_user_id', user.id).maybeSingle();
+    if (!actor || (actor.role !== 'admin' && !actor.is_admin)) return NextResponse.json({ error: 'Ingen adgang.' }, { status: 403 });
 
     const { id } = await context.params;
     const body = await request.json();

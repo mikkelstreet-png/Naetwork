@@ -295,3 +295,16 @@ test('protected member pages redirect to login', async ({ page }) => {
     await expect(page.getByText('Naetwork kan ikke oprette forbindelse lige nu. Prøv igen lidt senere.', { exact: true })).toBeVisible()
   }
 })
+
+test('admin pages and APIs do not expose data to unauthenticated visitors', async ({ page, request }) => {
+  await page.goto('/admin')
+  await expect(page).toHaveURL(/\/login/)
+
+  const response = await request.get('/api/admin/system')
+  // Local release checks can intentionally run without Supabase credentials;
+  // both outcomes fail closed and expose no administration data.
+  expect([401, 500]).toContain(response.status())
+  const body = await response.text()
+  expect(body).not.toContain('SUPABASE_SERVICE_ROLE_KEY')
+  expect(body).not.toContain('"integrations"')
+})

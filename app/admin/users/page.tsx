@@ -12,6 +12,7 @@ interface UserProfile {
   id: string
   name: string | null
   role: UserRole
+  is_admin: boolean
   status: UserStatus
   created_at: string
 }
@@ -35,7 +36,7 @@ export default function UsersPage() {
   const loadUsers = useCallback(async () => {
     setLoading(true)
     setError('')
-    const { data, error: loadError } = await createClient().from('profiles').select('id, name, role, status, created_at').order('created_at', { ascending: false })
+    const { data, error: loadError } = await createClient().from('profiles').select('id, name, role, is_admin, status, created_at').order('created_at', { ascending: false })
     if (loadError) setError('Brugerne kunne ikke indlæses. Kontrollér forbindelsen og prøv igen.')
     setUsers((data as UserProfile[] | null) ?? [])
     setLoading(false)
@@ -58,7 +59,7 @@ export default function UsersPage() {
   }
 
   const query = search.trim().toLowerCase()
-  const filtered = users.filter((user) => !query || user.name?.toLowerCase().includes(query) || ROLE_LABELS[user.role].toLowerCase().includes(query))
+  const filtered = users.filter((user) => !query || user.name?.toLowerCase().includes(query) || ROLE_LABELS[user.role].toLowerCase().includes(query) || (user.is_admin && 'admin'.includes(query)))
 
   return (
     <>
@@ -83,11 +84,11 @@ export default function UsersPage() {
               {filtered.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50/70">
                   <td className="px-4 py-4 text-sm font-black text-gray-950">{user.name || 'Navn mangler'}</td>
-                  <td className="px-4 py-4"><Badge tone={user.role === 'admin' ? 'dark' : 'neutral'}>{ROLE_LABELS[user.role]}</Badge></td>
+                  <td className="px-4 py-4"><div className="flex flex-wrap gap-1.5"><Badge tone={user.role === 'admin' ? 'dark' : 'neutral'}>{ROLE_LABELS[user.role]}</Badge>{user.is_admin && user.role !== 'admin' && <Badge tone="dark">Admin</Badge>}</div></td>
                   <td className="px-4 py-4"><Badge tone={user.status === 'active' ? 'neutral' : user.status === 'deleted' ? 'danger' : 'warning'}>{STATUS_LABELS[user.status]}</Badge></td>
                   <td className="px-4 py-4 text-xs tabular-nums text-gray-500">{new Date(user.created_at).toLocaleDateString('da-DK')}</td>
                   <td className="px-4 py-4 text-right">
-                    {user.status === 'active' && user.role !== 'admin' && (
+                    {user.status === 'active' && user.role !== 'admin' && !user.is_admin && (
                       <button onClick={() => void requestDeletion(user.id)} onBlur={() => confirmId === user.id && setConfirmId(null)} disabled={actionLoading === user.id} className={`rounded-lg px-3 py-2 text-xs font-black transition-colors disabled:opacity-50 ${confirmId === user.id ? 'bg-red-600 text-white hover:bg-red-700' : 'border border-gray-200 text-gray-600 hover:border-red-300 hover:text-red-700'}`}>
                         {actionLoading === user.id ? 'Gemmer...' : confirmId === user.id ? 'Bekræft markering' : 'Marker til sletning'}
                       </button>

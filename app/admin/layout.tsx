@@ -10,11 +10,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, is_admin')
     .eq('auth_user_id', user.id)
     .single();
 
-  if (!profile || profile.role !== 'admin') redirect('/');
+  if (!profile || (profile.role !== 'admin' && !profile.is_admin)) redirect('/');
 
   return <AdminShell userEmail={user.email ?? ''}>{children}</AdminShell>;
 }

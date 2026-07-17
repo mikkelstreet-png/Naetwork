@@ -57,11 +57,11 @@ The legal name, complete street address, and 8-digit CVR registration value must
 
 ## Admin bootstrap
 
-Create the admin account through normal signup, then promote it once in the Supabase SQL editor:
+Create the admin account through normal signup, then grant admin access once in the Supabase SQL editor. The user's primary candidate or professional role is preserved:
 
 ```sql
 update public.profiles
-set role = 'admin'
+set is_admin = true
 where auth_user_id = (
   select id from auth.users where email = 'ADMIN_EMAIL_HERE'
 );
