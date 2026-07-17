@@ -29,29 +29,67 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     const admin = createAdminClient();
     const { data: professional, error: loadError } = await admin.from('professional_profiles')
-      .select('id, profile_id, review_status, visibility, updated_at')
+      .select('id, profile_id, review_status, visibility, approved_at, updated_at')
       .eq('id', id).single();
     if (loadError || !professional) return NextResponse.json({ error: 'Profilen blev ikke fundet.' }, { status: 404 });
 
-    const { error: updateError } = await admin.from('professional_profiles').update({
+    const { data: owner, error: ownerError } = await admin.from('profiles')
+      .select('id, name, auth_user_id, status')
+      .eq('id', professional.profile_id)
+      .maybeSingle();
+    if (ownerError || !owner) return NextResponse.json({ error: 'Profilejeren blev ikke fundet.' }, { status: 404 });
+    if (visibility === 'published' && owner.status !== 'active') {
+      return NextResponse.json({ error: 'Profilen kan ikke publiceres, fordi brugeren ikke er aktiv.' }, { status: 409 });
+    }
+
+    const approvedAt = reviewStatus === 'approved'
+      ? professional.review_status === 'approved' && professional.approved_at
+        ? professional.approved_at
+        : new Date().toISOString()
+      : null;
+
+    // Run the status change with the authenticated admin client. The database
+    // review trigger relies on the current user's JWT to distinguish an admin
+    // decision from a professional editing their own profile.
+    const { data: updatedProfessional, error: updateError } = await supabase.from('professional_profiles').update({
       review_status: reviewStatus,
       visibility,
-      approved_at: reviewStatus === 'approved' ? new Date().toISOString() : null,
-    }).eq('id', id);
+      approved_at: approvedAt,
+    }).eq('id', id)
+      .select('id, review_status, visibility, approved_at')
+      .single();
     if (updateError) throw updateError;
 
-    await admin.from('admin_audit_log').insert({
+    if (
+      !updatedProfessional
+      || updatedProfessional.review_status !== reviewStatus
+      || updatedProfessional.visibility !== visibility
+      || (reviewStatus === 'approved' && !updatedProfessional.approved_at)
+    ) {
+      console.error('[admin:professional-review-mismatch]', {
+        id,
+        requested: { reviewStatus, visibility },
+        persisted: updatedProfessional,
+      });
+      return NextResponse.json({
+        error: 'Status blev ikke gemt korrekt. Genindlæs siden og prøv igen.',
+      }, { status: 409 });
+    }
+
+    const { error: auditError } = await admin.from('admin_audit_log').insert({
       admin_user_id: actor.id,
       action: `professional_${reviewStatus}`,
       target_table: 'professional_profiles',
       target_id: id,
       notes: `Review status: ${reviewStatus}; visibility: ${visibility}`,
     });
+    const auditLogged = !auditError;
+    if (auditError) console.error('[admin:professional-audit]', auditError);
 
-    let notificationSent = true;
+    let notificationSent: boolean | null = null;
     if (professional.review_status !== reviewStatus && ['approved', 'rejected'].includes(reviewStatus)) {
-      const { data: owner } = await admin.from('profiles').select('id, name, auth_user_id').eq('id', professional.profile_id).maybeSingle();
-      const ownerUser = owner ? await admin.auth.admin.getUserById(owner.auth_user_id) : null;
+      notificationSent = false;
+      const ownerUser = await admin.auth.admin.getUserById(owner.auth_user_id);
       if (ownerUser?.data.user?.email) {
         const approved = reviewStatus === 'approved';
         await sendTransactionalEmail({
@@ -68,14 +106,21 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
             ? 'Tilføj og vedligehold dine ledige tider, så kandidater kan sende bookinganmodninger.'
             : 'Log ind, gennemgå profilens oplysninger og kontakt Naetwork, hvis du har brug for den konkrete begrundelse.',
           cta: { label: approved ? 'Åbn ledige tider' : 'Rediger profil', href: appUrl('/profil/professionel') },
+        }).then(() => {
+          notificationSent = true;
         }).catch((error) => {
-          notificationSent = false;
           console.error('[admin:professional-email]', error);
         });
       }
     }
 
-    return NextResponse.json({ ok: true, notificationSent });
+    return NextResponse.json({
+      ok: true,
+      auditLogged,
+      notificationSent,
+      publiclyVisible: reviewStatus === 'approved' && visibility === 'published' && owner.status === 'active',
+      professional: updatedProfessional,
+    });
   } catch (error) {
     console.error('[admin:professional-review]', error);
     return NextResponse.json({ error: 'Profilstatus kunne ikke opdateres.' }, { status: 500 });
