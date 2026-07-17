@@ -109,17 +109,17 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   }, [categoryFilter, dbProfessionals, maxPrice, recommendedSession, search])
 
   const t = {
-    heading: isDa ? 'Find den erfaring, du har brug for.' : 'Find the experience you need.',
+    heading: isDa ? 'Find den erfaring, du mangler.' : 'Find the experience you are missing.',
     subheading: isDa
-      ? 'Vælg ud fra det, du vil forbedre, og den branche eller proces, du skal navigere i.'
-      : 'Choose based on what you want to improve and the industry or process you need to navigate.',
+      ? 'Start med situationen. Vælg derefter en professionel, der kender rollen, branchen eller processen indefra.'
+      : 'Start with the situation. Then choose a professional who knows the role, industry or process from within.',
     searchPlaceholder: isDa ? 'Søg rolle, virksomhed eller erfaring' : 'Search role, company or experience',
     noResults: isDa ? 'Ingen profiler matcher dine valg' : 'No profiles match your choices',
     noResultsBody: isDa ? 'Prøv et andet behov, fagområde eller prisniveau.' : 'Try another need, professional area or price level.',
     clearFilters: isDa ? 'Nulstil filtre' : 'Clear filters',
-    viewProfile: isDa ? 'Se profil' : 'View profile',
-    emptyTitle: isDa ? 'De første fagpersoner er på vej' : 'The first professionals are on their way',
-    emptyBody: isDa ? 'Vi publicerer kun profiler, når rolle, erfaring og fokus er gennemgået.' : 'We only publish profiles after role, experience and focus have been reviewed.',
+    viewProfile: isDa ? 'Se erfaringen' : 'View the experience',
+    emptyTitle: isDa ? 'De første professionelle er på vej' : 'The first professionals are on their way',
+    emptyBody: isDa ? 'Erfaring bliver først gjort tilgængelig, når rolle, baggrund og sessionsfokus er gennemgået.' : 'Experience is only made available after the role, background and session focus have been reviewed.',
     errorTitle: isDa ? 'Vi kunne ikke hente fagpersonerne' : 'We could not load the professionals',
     errorBody: isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen om et øjeblik.' : 'The profile service is not responding right now. Please try again shortly.',
   }
@@ -154,7 +154,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     <main className="directory-page">
       <section className="directory-hero">
         <div className="home-shell">
-          <p className="kicker">{isDa ? 'Fagpersoner med erfaring indefra' : 'Professionals with inside experience'}</p>
+          <p className="kicker">{isDa ? 'Adgang til professionel erfaring' : 'Access to professional experience'}</p>
           <h1>{t.heading}</h1>
           <p>{t.subheading}</p>
         </div>
@@ -216,7 +216,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         {!loadError && (
           <div className="directory-results__header">
             <p>{loading ? (isDa ? 'Indlæser…' : 'Loading…') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'fagperson' : 'fagpersoner') : (filtered.length === 1 ? 'professional' : 'professionals')}`}</p>
-            <span>{isDa ? 'Booking sker fra den enkelte profil' : 'Booking starts from the individual profile'}</span>
+            <span>{isDa ? 'Forstå relevansen, før du sender en bookinganmodning' : 'Understand the relevance before sending a booking request'}</span>
           </div>
         )}
 
@@ -264,7 +264,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                   <span className={`profile-card__accent ${accentFor(professional)}`} aria-hidden="true" />
                   <div className="profile-card__identity">
                     <div className="profile-card__meta">
-                      <span>{category ?? (isDa ? 'Fagperson' : 'Professional')}</span>
+                      <span>{category ?? (isDa ? 'Professionel' : 'Professional')}</span>
                       <span><CheckCircle2 size={12} aria-hidden="true" />{isDa ? 'Gennemgået' : 'Reviewed'}</span>
                     </div>
                     <div className="profile-card__person">
@@ -278,7 +278,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                   </div>
 
                   <div className="profile-card__relevance">
-                    <span>{isDa ? 'Relevant når du skal…' : 'Relevant when you need to…'}</span>
+                    <span>{isDa ? 'Brug erfaringen når du skal…' : 'Use the experience when you need to…'}</span>
                     <h3>{professionalBestFor(professional, isDa)}</h3>
                     <div className="profile-card__tags">
                       {(focusAreas.length > 0 ? focusAreas.map((area) => focusLabel(area, lang)) : sessionTypes.map((session) => session.title[lang])).map((label) => <span key={label}>{label}</span>)}
@@ -286,7 +286,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                   </div>
 
                   <div className="profile-card__outcome">
-                    <span>{isDa ? 'Du kan gå derfra med' : 'You can leave with'}</span>
+                    <span>{isDa ? 'Gå videre med' : 'Move forward with'}</span>
                     <p>{professionalPrimaryOutput(professional, isDa)}</p>
                   </div>
 

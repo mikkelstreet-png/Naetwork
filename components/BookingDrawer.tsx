@@ -128,17 +128,17 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const t = {
     title: locale === 'da' ? 'Bookinganmodning' : 'Booking request',
     subtitle: locale === 'da'
-      ? 'Vælg en ledig tid og fortæl, hvad du vil stå stærkere i. Anmodningen er først bekræftet, når fagpersonen har accepteret tidspunktet.'
-      : 'Choose an available time and tell us what you want to strengthen. The request is only confirmed when the professional accepts the time.',
+      ? 'Vælg et tidspunkt og definér ét konkret mål for de 60 minutter. Anmodningen er først bekræftet, når den professionelle har accepteret.'
+      : 'Choose a time and define one concrete goal for the 60 minutes. The request is only confirmed when the professional accepts.',
     step1Title: locale === 'da' ? 'Vælg en ledig tid' : 'Choose an available time',
     step2Title: locale === 'da' ? 'Brief til sessionen' : 'Session brief',
     duration: '60 min',
     price: `${formatDkk(professional.price)} ${locale === 'da' ? 'inkl. moms' : 'incl. VAT'} / 60 min`,
-    focusLabel: locale === 'da' ? 'Hvad vil du gerne stå stærkere i?' : 'What would you like to strengthen?',
-    goalLabel: locale === 'da' ? 'Hvilken situation forbereder du dig på — og hvad vil du gerne gå derfra med?' : 'What situation are you preparing for — and what would you like to leave with?',
+    focusLabel: locale === 'da' ? 'Hvad vil du bruge erfaringen til?' : 'What will you use the experience for?',
+    goalLabel: locale === 'da' ? 'Hvad skal være anderledes efter de 60 minutter?' : 'What should be different after the 60 minutes?',
     goalPlaceholder: locale === 'da'
-      ? 'Beskriv kort processen, dit udgangspunkt og det konkrete resultat, du har brug for.'
-      : 'Briefly describe the process, your starting point and the concrete outcome you need.',
+      ? 'Beskriv kort situationen, dit udgangspunkt og det konkrete resultat, du vil gå videre med.'
+      : 'Briefly describe the situation, your starting point and the concrete outcome you want to move forward with.',
     goalError: locale === 'da' ? 'Beskriv dit ønskede resultat med mindst 20 tegn.' : 'Describe your desired outcome in at least 20 characters.',
     materialLabel: locale === 'da' ? 'Materiale eller link' : 'Material or link',
     materialPlaceholder: locale === 'da' ? 'Valgfrit: LinkedIn, CV-link, jobopslag eller case-materiale' : 'Optional: LinkedIn, CV link, job post or case material',
@@ -146,8 +146,8 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     confirm: locale === 'da' ? 'Send bookinganmodning' : 'Send booking request',
     successTitle: locale === 'da' ? 'Anmodning sendt' : 'Request sent',
     successMsg: locale === 'da'
-      ? 'Din anmodning og dit brief er modtaget. Tidspunktet er først bekræftet, når fagpersonen accepterer. Der trækkes ingen betaling nu.'
-      : 'Your request and brief have been received. The time is only confirmed when the professional accepts. No payment is collected now.',
+      ? 'Din anmodning og dit konkrete mål er modtaget. Tidspunktet er først bekræftet, når den professionelle accepterer. Der trækkes ingen betaling nu.'
+      : 'Your request and concrete goal have been received. The time is only confirmed when the professional accepts. No payment is collected now.',
     close: locale === 'da' ? 'Luk' : 'Close',
     back: locale === 'da' ? 'Tilbage' : 'Back',
     continue: locale === 'da' ? 'Fortsæt med tidspunktet' : 'Continue with this time',

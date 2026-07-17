@@ -17,14 +17,14 @@ export function SessionsContent() {
   return (
     <main className="page-shell">
       <PublicPageHero
-        eyebrow={isDa ? 'Karrieresessioner' : 'Career sessions'}
-        title={isDa ? 'Et konkret resultat. Én fokuseret time.' : 'A concrete outcome. One focused hour.'}
+        eyebrow={isDa ? '60-minutters sessioner' : '60-minute sessions'}
+        title={isDa ? 'Relevant erfaring. Brugt på ét konkret mål.' : 'Relevant experience. Applied to one concrete goal.'}
         body={isDa
           ? 'Vælg mellem syv sessionstyper udviklet til de beslutninger, materialer og processer, studerende og jobsøgende står med.'
           : 'Choose from seven session types designed around the decisions, materials and processes students and jobseekers face.'}
         action={{ href: '/start', label: isDa ? 'Find din session' : 'Find your session' }}
         sequence={isDa
-          ? ['Vælg resultat', 'Find den rette fagperson', 'Book 60 minutter']
+          ? ['Vælg resultat', 'Find relevant erfaring', 'Book 60 minutter']
           : ['Choose outcome', 'Find relevant experience', 'Book 60 minutes']}
       />
 
@@ -33,7 +33,7 @@ export function SessionsContent() {
           <div className="section-heading">
             <p className="section-eyebrow">{isDa ? 'Sessionkatalog' : 'Session catalogue'}</p>
             <h2>{isDa ? 'Start med det, du vil have hjælp til.' : 'Start with what you need help with.'}</h2>
-            <p>{isDa ? 'Alle sessioner varer 60 minutter. Forskellen er forberedelsen og det output, du går derfra med.' : 'Every session lasts 60 minutes. The difference is the preparation and the output you leave with.'}</p>
+            <p>{isDa ? 'Alle sessioner varer 60 minutter. Forskellen er, hvilken erfaring situationen kræver, og hvilket resultat du vil gå videre med.' : 'Every session lasts 60 minutes. The difference is which experience the situation requires and the outcome you want to move forward with.'}</p>
           </div>
 
           <div className="mb-10 grid gap-px border border-gray-200 bg-gray-200 md:grid-cols-3" aria-label={isDa ? 'Kategorier' : 'Categories'}>

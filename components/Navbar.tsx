@@ -167,7 +167,7 @@ export function Navbar() {
                     <p className="mt-1 truncate text-sm font-bold text-gray-950">{userEmail}</p>
                   </div>
                   <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Overblik' : 'Overview'}</Link>
-                  <Link href="/professionals" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Find en fagperson' : 'Find a professional'}</Link>
+                  <Link href="/professionals" className="block px-4 py-3 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>{displayDa ? 'Find erfaring' : 'Find experience'}</Link>
                   <button type="button" onClick={handleLogout} className="block w-full border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">{displayDa ? 'Log ud' : 'Log out'}</button>
                 </div>
               )}
@@ -182,7 +182,7 @@ export function Navbar() {
             href="/professionals"
             className="button-primary button-with-arrow hidden min-h-10 px-4 py-2.5 lg:inline-flex"
           >
-            {displayDa ? 'Find en fagperson' : 'Find a professional'}
+            {displayDa ? 'Find erfaring' : 'Find experience'}
             <span aria-hidden="true">→</span>
           </Link>
 
@@ -215,7 +215,7 @@ export function Navbar() {
           </div>
           <div className="mt-4 grid gap-2">
             <Link href="/professionals" className="button-primary button-with-arrow" onClick={() => setMobileOpen(false)}>
-              {displayDa ? 'Find en fagperson' : 'Find a professional'}
+              {displayDa ? 'Find den erfaring, du mangler' : 'Find the experience you need'}
               <span aria-hidden="true">→</span>
             </Link>
             {session ? (

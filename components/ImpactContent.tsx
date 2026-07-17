@@ -41,7 +41,7 @@ export function ImpactContent() {
     <main className="page-shell">
       <PublicPageHero
         eyebrow={isDa ? 'Pris og bidrag' : 'Price and contribution'}
-        title={isDa ? 'Karrieresparring, der også skaber et konkret bidrag.' : 'Career insight that also creates a concrete contribution.'}
+        title={isDa ? 'Dit næste skridt kan også gøre en forskel.' : 'Your next step can also make a difference.'}
         body={isDa
           ? `Hver nettopris fordeles på samme måde: ${PLATFORM_SHARE_PERCENT}% til Naetwork, ${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle.`
           : `Every net price has the same split: ${PLATFORM_SHARE_PERCENT}% to Naetwork, ${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse and ${PROFESSIONAL_SHARE_PERCENT}% to the professional.`}
@@ -65,7 +65,7 @@ export function ImpactContent() {
           <div className="section-heading">
             <p className="section-eyebrow">{isDa ? 'Tre former for værdi' : 'Three forms of value'}</p>
             <h2>{isDa ? 'Produktet skal stå stærkt i sig selv.' : 'The product must stand on its own.'}</h2>
-            <p>{isDa ? 'Bidraget giver sessionen ekstra mening. Den primære værdi er fortsat relevant karriereindsigt.' : 'The contribution adds meaning. The primary value remains relevant career insight.'}</p>
+            <p>{isDa ? 'Bidraget giver sessionen ekstra mening. Den primære værdi er fortsat adgang til relevant professionel erfaring.' : 'The contribution adds meaning. The primary value remains access to relevant professional experience.'}</p>
           </div>
           <div className="editorial-journey">
             {values.map(([title, body], index) => (

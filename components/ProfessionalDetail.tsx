@@ -69,7 +69,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
 
   if (loading) return (
     <main aria-busy="true" className="profile-loading-state">
-      <div><span /><p>{isDa ? 'Henter fagpersonens profil…' : 'Loading the professional profile…'}</p></div>
+      <div><span /><p>{isDa ? 'Henter den professionelle erfaring…' : 'Loading the professional experience…'}</p></div>
     </main>
   )
 
@@ -81,7 +81,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         <p>{isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen om et øjeblik.' : 'The profile service is not responding right now. Please try again shortly.'}</p>
         <div className="directory-state__actions">
           <button type="button" onClick={() => void fetchProfessional()} className="button-primary"><RefreshCw size={16} aria-hidden="true" />{isDa ? 'Prøv igen' : 'Try again'}</button>
-          <Link href="/professionals" className="button-secondary">{isDa ? 'Alle fagpersoner' : 'All professionals'}</Link>
+          <Link href="/professionals" className="button-secondary">{isDa ? 'Find anden erfaring' : 'Find other experience'}</Link>
         </div>
       </div>
     </main>
@@ -89,7 +89,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
 
   if (!professional) return (
     <main className="directory-state profile-error-state">
-      <div><h1>{isDa ? 'Profilen findes ikke' : 'Profile not found'}</h1><Link href="/professionals" className="button-primary">{isDa ? 'Tilbage til fagpersoner' : 'Back to professionals'}</Link></div>
+      <div><h1>{isDa ? 'Erfaringen findes ikke' : 'Experience not found'}</h1><Link href="/professionals" className="button-primary">{isDa ? 'Find anden erfaring' : 'Find other experience'}</Link></div>
     </main>
   )
 
@@ -105,12 +105,12 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
     <main className="professional-page">
       <section className="professional-hero">
         <div className="home-shell">
-          <Link href="/professionals" className="professional-back"><span aria-hidden="true">←</span>{isDa ? 'Alle fagpersoner' : 'All professionals'}</Link>
+          <Link href="/professionals" className="professional-back"><span aria-hidden="true">←</span>{isDa ? 'Find anden erfaring' : 'Find other experience'}</Link>
           <div className="professional-hero__grid">
             <div className="professional-hero__identity">
               <div className="professional-hero__meta">
                 <span className={`professional-hero__category-dot ${accentFor(professional)}`} aria-hidden="true" />
-                <span>{category ?? (isDa ? 'Fagperson' : 'Professional')}</span>
+                <span>{category ?? (isDa ? 'Professionel' : 'Professional')}</span>
                 <span><CheckCircle2 size={13} aria-hidden="true" />{isDa ? 'Profil gennemgået' : 'Profile reviewed'}</span>
               </div>
               <div className={`professional-hero__initials ${accentFor(professional)}`}>{professionalInitials(professional.name)}</div>
@@ -118,7 +118,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
               <p className="professional-hero__role">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
               <p className="professional-hero__areas">{professional.industries.join(' · ')}</p>
               <p className="professional-hero__promise">
-                {isDa ? 'Få feedback på din konkrete situation fra en person, der kender forventningerne fra denne del af branchen.' : 'Get feedback on your situation from someone who knows the expectations in this part of the industry.'}
+                {isDa ? 'Få adgang til direkte relevant erfaring fra en person, der kender denne del af branchen indefra.' : 'Access directly relevant experience from someone who knows this part of the industry from within.'}
               </p>
             </div>
 
@@ -146,14 +146,14 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         <div className="home-shell profile-relevance-grid">
           <div>
             <p className="section-eyebrow">{isDa ? 'Relevant når du skal' : 'Relevant when you need to'}</p>
-            <h2>{isDa ? 'Test din forberedelse mod erfaring indefra.' : 'Test your preparation against inside experience.'}</h2>
+            <h2>{isDa ? 'Brug erfaringen, når den matcher situationen.' : 'Use the experience when it matches the situation.'}</h2>
             <ul>
               {relevance.map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}
             </ul>
           </div>
           <div>
             <p className="section-eyebrow">{isDa ? 'Du kan gå derfra med' : 'You can leave with'}</p>
-            <h2>{isDa ? 'Klarhed over det, der gør størst forskel.' : 'Clarity on what makes the biggest difference.'}</h2>
+            <h2>{isDa ? 'Omsæt adgangen til et konkret næste skridt.' : 'Turn access into a concrete next step.'}</h2>
             <ul>
               {outcomes.map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}
             </ul>
@@ -165,7 +165,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         <div className="home-shell profile-experience">
           <div>
             <p className="section-eyebrow">{isDa ? 'Erfaringen bag feedbacken' : 'The experience behind the feedback'}</p>
-            <h2>{isDa ? 'Indsigt fra den verden, du forsøger at komme ind i eller videre i.' : 'Insight from the world you are trying to enter or progress in.'}</h2>
+            <h2>{isDa ? 'Erfaring fra den verden, du forsøger at komme ind i eller videre i.' : 'Experience from the world you are trying to enter or progress in.'}</h2>
           </div>
           <div>
             <p className="profile-experience__role">{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
@@ -181,7 +181,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         <div className="home-shell">
           <div className="section-heading section-heading--focused">
             <p className="section-eyebrow">{isDa ? 'Det kan du få hjælp til' : 'What you can get help with'}</p>
-            <h2>{isDa ? 'Vælg det, du vil stå stærkere i.' : 'Choose what you want to strengthen.'}</h2>
+            <h2>{isDa ? 'Vælg, hvad erfaringen skal bruges til.' : 'Choose what the experience should be used for.'}</h2>
             <p>{isDa ? 'Hver session tager udgangspunkt i din konkrete situation, dit materiale og dit ønskede resultat.' : 'Every session starts with your situation, material and intended outcome.'}</p>
           </div>
           <div className="profile-session-grid">

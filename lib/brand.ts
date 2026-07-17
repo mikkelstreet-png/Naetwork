@@ -9,28 +9,28 @@ type LocalizedText = Record<BrandLocale, string>
 
 export const BRAND_COPY = {
   da: {
-    category: 'Indsigt fra branchen indefra',
-    primaryLine: 'Forstå, hvad der kræves — før det gælder.',
-    productLine: 'Test din forberedelse med nogen, der kender forventningerne indefra.',
-    positioning: 'Konkret feedback fra fagpersoner med erfaring fra den rolle, branche eller proces, du skal navigere i.',
-    oneSentence: 'Naetwork hjælper studerende og jobsøgende med at forstå, hvad der faktisk bliver vurderet, gennem konkret feedback fra fagpersoner, der kender branchen indefra.',
-    problem: 'Du skal ikke gætte på, hvad der forventes, når din profil eller forberedelse bliver vurderet.',
+    category: 'Den professionelle adgangsplatform',
+    primaryLine: 'Få adgang til det, andre får gennem deres netværk.',
+    productLine: 'Relevant erfaring, når den betyder mest.',
+    positioning: 'Naetwork gør professionel erfaring og dømmekraft tilgængelig, når du står over for et vigtigt karriereskridt.',
+    oneSentence: 'Book 60 minutter med en professionel, der kender rollen, branchen eller processen indefra, og brug erfaringen til at træffe og gennemføre et stærkere næste skridt.',
+    problem: 'Potentiale findes overalt. Adgang til relevant professionel erfaring gør ikke.',
   },
   en: {
-    category: 'Inside industry insight',
-    primaryLine: 'Understand what it takes — before it counts.',
-    productLine: 'Test your preparation with someone who knows the expectations from within.',
-    positioning: 'Concrete feedback from professionals with experience from the role, industry or process you need to navigate.',
-    oneSentence: 'Naetwork helps students and jobseekers understand what is actually assessed through concrete feedback from professionals who know the industry from within.',
-    problem: 'You should not have to guess what is expected when your profile or preparation is assessed.',
+    category: 'The professional access platform',
+    primaryLine: 'Access what others get through their network.',
+    productLine: 'Relevant experience when it matters most.',
+    positioning: 'Naetwork makes professional experience and judgment available when you face an important career move.',
+    oneSentence: 'Book 60 minutes with a professional who knows the role, industry or process from within and use that experience to make and execute a stronger next move.',
+    problem: 'Potential is everywhere. Access to relevant professional experience is not.',
   },
 } as const
 
 export const PRIMARY_NAV_ITEMS = [
-  { href: '/#needs', label: { da: 'Hvad kan du få hjælp til?', en: 'What can you get help with?' } },
-  { href: '/professionals', label: { da: 'Fagpersoner', en: 'Professionals' } },
-  { href: '/#how-it-works', label: { da: 'Sådan fungerer det', en: 'How it works' } },
-  { href: '/professional/signup', label: { da: 'Bliv fagperson', en: 'Become a professional' } },
+  { href: '/#why-access', label: { da: 'Hvorfor adgang?', en: 'Why access?' } },
+  { href: '/#needs', label: { da: 'Hvad står du overfor?', en: 'What are you facing?' } },
+  { href: '/#how-it-works', label: { da: '60-minutters sessionen', en: 'The 60-minute session' } },
+  { href: '/professionals', label: { da: 'Find erfaring', en: 'Find experience' } },
 ] as const satisfies ReadonlyArray<{ href: string; label: LocalizedText }>
 
 export const ACCESS_PATHS = [

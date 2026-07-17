@@ -3,7 +3,7 @@ import { MissionContent } from '@/components/MissionContent';
 
 export const metadata: Metadata = {
   title: 'Mission - Naetwork',
-  description: 'Hvorfor Naetwork gør relevant karriereviden mindre afhængig af personlige netværk.',
+  description: 'Hvorfor Naetwork åbner relevant professionel erfaring, der tidligere var afhængig af personlige netværk.',
   alternates: { canonical: '/mission' },
 };
 

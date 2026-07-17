@@ -20,7 +20,7 @@ const accessGateEnabled = Boolean(process.env.SITE_ACCESS_CODE && process.env.SI
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`),
-  title: 'Naetwork - Forstå, hvad der kræves, før det gælder',
+  title: 'Naetwork - Den professionelle adgangsplatform',
   description: BRAND_COPY.da.oneSentence,
   robots: accessGateEnabled
     ? { index: false, follow: false, noarchive: true }

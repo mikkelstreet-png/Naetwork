@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'Naetwork - Vid mere, før dit næste træk';
+export const alt = 'Naetwork - Den professionelle adgangsplatform';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -12,8 +12,8 @@ export default function OpenGraphImage() {
         Naetwork
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{ maxWidth: 970, fontSize: 78, lineHeight: 0.98, fontWeight: 800, letterSpacing: 0 }}>Erfaring, du kan handle på.</div>
-        <div style={{ fontSize: 25, color: '#52525b' }}>Syv konkrete karrieresessioner. 60 minutter. Fast 10 / 20 / 70-fordeling af nettoprisen.</div>
+        <div style={{ maxWidth: 970, fontSize: 72, lineHeight: 0.98, fontWeight: 800, letterSpacing: 0 }}>Få adgang til det, andre får gennem deres netværk.</div>
+        <div style={{ fontSize: 25, color: '#52525b' }}>Relevant professionel erfaring. 60 minutter. Ét konkret mål.</div>
       </div>
       <div style={{ display: 'flex', width: '100%', height: 14, overflow: 'hidden', borderRadius: 7 }}>
         <div style={{ flex: 1, background: '#67e8f9' }} />

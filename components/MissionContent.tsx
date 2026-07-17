@@ -11,13 +11,13 @@ export function MissionContent() {
   const brand = BRAND_COPY[lang];
 
   const principles = [
-    [isDa ? 'Adgang bør være mindre tilfældig' : 'Access should be less random', isDa ? 'Stærke kandidater bør ikke være afhængige af en personlig introduktion for at forstå krævende karriereveje.' : 'Strong candidates should not need a warm introduction to understand demanding career paths.'],
+    [isDa ? 'Adgang bør være mindre tilfældig' : 'Access should be less random', isDa ? 'Professionelle valg bør ikke afhænge af, om du tilfældigvis kan få en personlig introduktion.' : 'Professional choices should not depend on whether you happen to get a personal introduction.'],
     [isDa ? 'Relevans skal kunne forklares' : 'Relevance must be explainable', isDa ? 'Den rette erfaring afhænger af situationen, ikke af den højeste titel eller den mest kendte virksomhed.' : 'The right experience depends on the situation, not the highest title or best-known company.'],
     [isDa ? 'Resultatet skal være konkret' : 'The outcome must be concrete', isDa ? 'En session skal afklare noget, ændre noget eller gøre det næste skridt tydeligere.' : 'A session should clarify something, change something or make the next step clearer.'],
     [isDa ? 'Værdien skal række videre' : 'The value should travel further', isDa ? `${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse efter en gennemført og betalt session. Fordelingen er fast og transparent.` : `${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse after a completed and paid session. The split is fixed and transparent.`],
   ] as const;
 
-  const product = [isDa ? 'Karrieresessioner' : 'Career sessions', isDa ? 'Sessionstype først' : 'Session type first', isDa ? 'Erfarne fagpersoner' : 'Experienced professionals', '60 min', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`] as const;
+  const product = [isDa ? 'Professionel adgang' : 'Professional access', isDa ? 'Ét konkret mål' : 'One concrete goal', isDa ? 'Direkte relevant erfaring' : 'Directly relevant experience', '60 min', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`] as const;
 
   return (
     <main className="page-shell">
@@ -26,7 +26,7 @@ export function MissionContent() {
           <div>
             <p className="kicker mb-5 text-white/40">Mission</p>
             <h1 className="display-xl max-w-5xl text-white">
-              {isDa ? 'Talent er bredt fordelt. Adgang er det ikke.' : 'Talent is widely distributed. Access is not.'}
+              {isDa ? 'Potentiale er overalt. Adgang er det ikke.' : 'Potential is everywhere. Access is not.'}
             </h1>
             <p className="body-lg mt-7 max-w-2xl text-white/55">
               {brand.oneSentence}
@@ -51,7 +51,7 @@ export function MissionContent() {
           <div>
             <p className="kicker mb-5">{isDa ? 'Principper' : 'Principles'}</p>
             <h2 className="display-lg">
-              {isDa ? 'Gør vigtig karriereviden mindre tilfældig.' : 'Make important career knowledge less random.'}
+              {isDa ? 'Åbn den erfaring, der tidligere lå i private netværk.' : 'Open the experience that used to remain inside private networks.'}
             </h2>
           </div>
           <div className="border-t border-gray-200">

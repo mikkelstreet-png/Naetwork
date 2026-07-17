@@ -60,10 +60,10 @@ export function SituationStartContent() {
         eyebrow={isDa ? 'Find din session' : 'Find your session'}
         title={isDa ? 'Hvad skal være bedre om 60 minutter?' : 'What should be better in 60 minutes?'}
         body={isDa
-          ? 'Vælg det ønskede resultat og den relevante kategori. Så viser Naetwork fagpersoner med erfaring, der passer til opgaven.'
+          ? 'Vælg det ønskede resultat og den relevante kategori. Så viser Naetwork den professionelle erfaring, der passer til opgaven.'
           : 'Choose the intended outcome and relevant category. Naetwork will show professionals with experience that fits the task.'}
         sequence={isDa
-          ? ['Vælg session', 'Vælg kategori', 'Sammenlign fagpersoner']
+          ? ['Vælg mål', 'Vælg kontekst', 'Find erfaring']
           : ['Choose session', 'Choose category', 'Compare professionals']}
       />
 
@@ -140,7 +140,7 @@ export function SituationStartContent() {
 
             {completed === 2 ? (
               <Link href={profileHref} className="button-inverse mt-6 w-full">
-                {isDa ? 'Se relevante fagpersoner' : 'See relevant professionals'}<ArrowRight size={16} aria-hidden="true" />
+                {isDa ? 'Find relevant erfaring' : 'Find relevant experience'}<ArrowRight size={16} aria-hidden="true" />
               </Link>
             ) : (
               <button type="button" disabled className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-[4px] border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/55">

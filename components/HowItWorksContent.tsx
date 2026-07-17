@@ -13,7 +13,7 @@ export function HowItWorksContent() {
     ? [
         ['Før sessionen', 'Beskriv situationen', 'Vælg ét spørgsmål, del den nødvendige kontekst, og se hvorfor den professionelles erfaring er relevant.'],
         ['I sessionen', 'Arbejd på det konkrete', 'Brug 60 minutter på vurdering, modspil eller træning - ikke på at forklare hele din baggrund fra bunden.'],
-        ['Efter sessionen', 'Gå videre med et svar', 'Saml konklusionen, de væsentligste risici og de næste handlinger, mens samtalen stadig er frisk.'],
+        ['Efter sessionen', 'Gå videre med et svar', 'Saml konklusionen, de væsentligste risici og de næste handlinger, mens sessionen stadig er frisk.'],
       ]
     : [
         ['Before the session', 'Describe the situation', 'Choose one question, share the necessary context and see why the professional experience is relevant.'],
@@ -22,7 +22,7 @@ export function HowItWorksContent() {
       ]
 
   const included = isDa
-    ? ['En professionel med relevant, gennemgået erfaring', 'Et brief med ét tydeligt fokus', '60 minutters konkret sparring', 'En klar vurdering og prioriterede næste skridt']
+    ? ['En professionel med relevant, gennemgået erfaring', 'Et brief med ét tydeligt fokus', '60 minutters målrettet arbejde', 'En klar vurdering og prioriterede næste skridt']
     : ['A professional with relevant, reviewed experience', 'A brief with one clear focus', '60 minutes of concrete discussion', 'A clear assessment and prioritized next steps']
 
   const notIncluded = isDa
@@ -33,13 +33,13 @@ export function HowItWorksContent() {
     <main className="page-shell">
       <PublicPageHero
         eyebrow={isDa ? 'Sådan fungerer Naetwork' : 'How Naetwork works'}
-        title={isDa ? 'Fra spørgsmål til et brugbart svar.' : 'From a question to an answer you can use.'}
+        title={isDa ? '60 minutter. Ét konkret mål. Et stærkere næste skridt.' : '60 minutes. One concrete goal. A stronger next step.'}
         body={isDa
-          ? 'Du starter med situationen. Naetwork hjælper dig med at finde en fagperson, der kender forventningerne indefra, og gøre resultatet konkret.'
+          ? 'Du starter med situationen. Naetwork hjælper dig med at finde direkte relevant professionel erfaring og gøre resultatet konkret.'
           : 'You start with the situation. Naetwork helps you find relevant experience, prepare the conversation and make the outcome concrete.'}
         action={{ href: '/start', label: isDa ? 'Start med din situation' : 'Start with your situation' }}
         sequence={isDa
-          ? ['Din situation', 'Indsigt indefra', 'En konkret plan']
+          ? ['Dit mål', 'Relevant erfaring', 'Næste handling']
           : ['Situation', 'Relevant experience', 'Next step']}
       />
 

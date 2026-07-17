@@ -3,7 +3,7 @@ import { AccessPathContent } from '@/components/AccessPathContent'
 
 export const metadata: Metadata = {
   title: 'Udforsk roller og virksomheder | Naetwork',
-  description: 'Forstå en rolle, virksomhed eller branche gennem fagpersoner, der kender forventningerne indefra.',
+  description: 'Få adgang til professionel erfaring fra mennesker, der kender rollen, virksomheden eller branchen indefra.',
   alternates: { canonical: '/explore' },
 }
 

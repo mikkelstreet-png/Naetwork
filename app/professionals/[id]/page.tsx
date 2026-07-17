@@ -12,12 +12,12 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const { professional } = await loadPublicProfessional(id)
-  if (!professional) return { title: 'Fagpersonprofil - Naetwork', robots: { index: false, follow: true } }
+  if (!professional) return { title: 'Professionel erfaring - Naetwork', robots: { index: false, follow: true } }
 
   const role = [professional.title, professional.company].filter(Boolean).join(' hos ')
   return {
     title: `${professional.name} - Naetwork`,
-    description: `${role || 'Erfaren fagperson'}. Se hvornår fagpersonen er relevant, hvad du kan få hjælp til, pris og bidraget til Kræftens Bekæmpelse.`,
+    description: `${role || 'Erfaren professionel'}. Se hvornår erfaringen er relevant, hvad den kan bruges til, pris og bidraget til Kræftens Bekæmpelse.`,
     alternates: { canonical: `/professionals/${professional.id}` },
   }
 }

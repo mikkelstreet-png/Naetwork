@@ -49,8 +49,8 @@ test('responsive navigation exposes the primary journeys', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: /åbn menu|open menu/i }).click()
   await expect(page.getByRole('button', { name: /luk menu|close menu/i })).toHaveAttribute('aria-expanded', 'true')
-  await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Fagpersoner|Professionals/)
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Find en fagperson|Find a professional/i })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: /primær navigation|primary navigation/i })).toContainText(/Find erfaring|Find experience/)
+  await expect(page.locator('#mobile-navigation').getByRole('link', { name: /Find den erfaring, du mangler|Find the experience you need/i })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
@@ -72,9 +72,10 @@ test('profile filters remain usable on mobile and desktop', async ({ page, isMob
   await expectNoHorizontalOverflow(page)
 })
 
-test('homepage shows no profiles and directory does not book directly', async ({ page }) => {
+test('homepage only shows selected professionals and directory does not book directly', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('.profile-card')).toHaveCount(0)
+  expect(await page.locator('.access-professional-card').count()).toBeLessThanOrEqual(3)
+  await expect(page.locator('.access-professional-card').getByRole('button', { name: /Book/i })).toHaveCount(0)
   await page.goto('/professionals')
   await expect(page.getByRole('button', { name: /Book session|Book sessionen/i })).toHaveCount(0)
   await expectNoHorizontalOverflow(page)
@@ -104,16 +105,12 @@ test('legal documents expose the launch disclosures', async ({ page }) => {
 
 test('core public actions remain clear', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: /Forstå, hvad der kræves — før det gælder\.|Understand what it takes — before it counts\./i })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: /Find den rette fagperson|Find the right professional/i })).toBeVisible()
-  await expect(page.locator('#pricing')).toContainText('DKK 600')
-  await expect(page.locator('#pricing')).toContainText('DKK 1.800')
-  await expect(page.locator('#pricing')).toContainText('DKK 60')
-  await expect(page.locator('#pricing')).toContainText('DKK 90')
-  await expect(page.locator('#pricing')).toContainText('DKK 120')
-  await expect(page.locator('#pricing')).toContainText('DKK 180')
-  await expect(page.locator('#pricing')).toContainText(/Betaling er fortsat deaktiveret|Payments remain disabled/i)
-  await expect(page.getByRole('heading', { name: /Hvad vil du stå stærkere i|What do you want to strengthen/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Få adgang til det, andre får gennem deres netværk\.|Access what others get through their network\./i })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: /Find den erfaring, du mangler|Find the experience you need/i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /De vigtigste karrieresvar står ikke i jobopslaget|The most important career answers are not in the job post/i })).toBeVisible()
+  await expect(page.getByText(/Potentiale er overalt\. Adgang er det ikke\.|Potential is everywhere\. Access is not\./i)).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Hvad står du overfor|What are you facing/i })).toBeVisible()
+  for (const amount of ['DKK 600', 'DKK 1.800', 'DKK 60', 'DKK 180']) await expect(page.getByText(amount, { exact: true }).first()).toBeVisible()
   await page.goto('/start')
   await expect(page.getByRole('heading', { name: /Hvad skal være bedre om 60 minutter|What should be better in 60 minutes/i })).toBeVisible()
 })
@@ -121,12 +118,8 @@ test('core public actions remain clear', async ({ page }) => {
 test('category structure is consistent across the public journey', async ({ page }) => {
   await page.goto('/')
   for (const category of ['Consulting', 'Finance', 'Legal']) {
-    await expect(page.getByRole('heading', { name: category, exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: new RegExp(category) }).first()).toBeVisible()
   }
-  await expect(page.locator('body')).toContainText('Management Consulting')
-  await expect(page.locator('body')).toContainText('Investment Banking')
-  await expect(page.locator('body')).toContainText('Corporate Law')
-
   await page.goto('/sessions')
   for (const category of ['Consulting', 'Finance', 'Legal']) {
     await expect(page.getByRole('link', { name: new RegExp(category) }).first()).toBeVisible()
@@ -141,11 +134,12 @@ test('category structure is consistent across the public journey', async ({ page
 test('focused hero communicates insight and impact before format', async ({ page }) => {
   await page.goto('/')
   const hero = page.locator('#home')
-  await expect(hero).toContainText('Indsigt indefra. Mening udadtil.')
-  await expect(hero.getByRole('heading', { name: 'Forstå, hvad der kræves — før det gælder.' })).toBeVisible()
-  await expect(hero.getByRole('link', { name: 'Find den rette fagperson' })).toHaveAttribute('href', '/professionals')
-  await expect(hero.getByRole('link', { name: 'Se, hvad du kan få hjælp til' })).toHaveAttribute('href', '/#needs')
-  await expect(hero).toContainText('10% af hver gennemført og betalt session går til Kræftens Bekæmpelse.')
+  await expect(hero).toContainText('Professionel adgang. For alle.')
+  await expect(hero.getByRole('heading', { name: 'Få adgang til det, andre får gennem deres netværk.' })).toBeVisible()
+  await expect(hero.getByRole('link', { name: 'Find den erfaring, du mangler' })).toHaveAttribute('href', '/professionals')
+  await expect(hero.getByRole('link', { name: 'Se, hvordan Naetwork virker' })).toHaveAttribute('href', '/#how-it-works')
+  await expect(hero).toContainText('Ingen introduktion nødvendig. Ét konkret mål. Erfaring, du kan handle på.')
+  await expect(hero).toContainText('10 % af hver gennemført og betalt session går til Kræftens Bekæmpelse.')
   await expect(hero.locator('button')).toHaveCount(0)
   await expect(hero.locator('.insight-signature__marker')).toHaveCount(1)
   await expect(hero.locator('img')).toHaveCount(0)
@@ -155,14 +149,14 @@ test('focused hero communicates insight and impact before format', async ({ page
 test('Access motion respects reduced-motion preferences', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
-  const duration = await page.locator('#home').getByRole('link', { name: 'Se, hvad du kan få hjælp til' }).evaluate((element) => getComputedStyle(element).transitionDuration)
+  const duration = await page.locator('#home').getByRole('link', { name: 'Se, hvordan Naetwork virker' }).evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.00001)
 })
 
 test('compact mobile hero keeps the primary action visible', async ({ page }) => {
   test.skip((page.viewportSize()?.height ?? 1000) > 720, 'Small-height mobile contract')
   await page.goto('/')
-  await expect(page.locator('#home').getByRole('link', { name: 'Find den rette fagperson' })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: 'Find den erfaring, du mangler' })).toBeVisible()
   await expectNoHorizontalOverflow(page)
 })
 
@@ -171,7 +165,7 @@ test('critical public routes expose specific metadata', async ({ page }) => {
     ['/start', 'Start med din karrieresituation'],
     ['/how-it-works', 'Sådan fungerer Naetwork'],
     ['/sessions', '7 konkrete karrieresessioner'],
-    ['/professionals', 'Find den erfaring, du har brug for'],
+    ['/professionals', 'Find den erfaring, du mangler'],
     ['/contact', 'Kontakt'],
     ['/professional/signup', 'Bliv professionel'],
   ] as const) {
@@ -192,7 +186,7 @@ test('situation-first entry produces a relevant directory route', async ({ page 
   await page.goto('/start')
   await page.getByRole('button', { name: /Branche- og virksomhedsindsigt/i }).click()
   await page.getByRole('button', { name: /Consulting.*Management Consulting/i }).click()
-  const next = page.getByRole('link', { name: /Se relevante fagpersoner/i })
+  const next = page.locator('#main-content').getByRole('link', { name: /Find relevant erfaring/i })
   await expect(next).toBeVisible()
   await expect(next).toHaveAttribute('href', /\/professionals\?field=Consulting&session=industry-company-insight/)
 })
@@ -201,10 +195,10 @@ test('English positioning mirrors the Danish product contract', async ({ page })
   await page.goto('/')
   await page.evaluate(() => localStorage.setItem('naetwork_lang', 'en'))
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'Understand what it takes — before it counts.' })).toBeVisible()
-  await expect(page.locator('#home').getByRole('link', { name: 'Find the right professional' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Access what others get through their network.' })).toBeVisible()
+  await expect(page.locator('#home').getByRole('link', { name: 'Find the experience you need' })).toBeVisible()
   await page.goto('/how-it-works')
-  await expect(page.getByRole('heading', { name: 'From a question to an answer you can use.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '60 minutes. One concrete goal. A stronger next step.' })).toBeVisible()
 })
 
 test('homepage publishes complete brand and offer metadata', async ({ page }) => {

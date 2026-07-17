@@ -2,15 +2,18 @@ import type { Metadata } from 'next'
 import { HomeContent } from '@/components/HomeContent'
 import { PRICE_OPTIONS, SESSION_MINUTES } from '@/lib/platform'
 import { BRAND_COPY } from '@/lib/brand'
+import { loadPublicProfessionals } from '@/lib/server/publicProfessionals'
 
 const brand = BRAND_COPY.da
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
-  title: 'Naetwork - Forstå, hvad der kræves, før det gælder',
+  title: 'Naetwork - Den professionelle adgangsplatform',
   description: brand.oneSentence,
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Naetwork - Indsigt indefra. Mening udadtil.',
+    title: 'Naetwork - Få adgang til det, andre får gennem deres netværk',
     description: brand.oneSentence,
     siteName: 'Naetwork',
     type: 'website',
@@ -19,21 +22,22 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Naetwork - Indsigt indefra. Mening udadtil.',
+    title: 'Naetwork - Den professionelle adgangsplatform',
     description: brand.oneSentence,
   },
 }
 
-export default function Home() {
+export default async function Home() {
   const siteUrl = (process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_BASE_URL ?? 'https://naetwork.dk').replace(/\/$/, '')
+  const { professionals } = await loadPublicProfessionals()
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: 'Naetwork sessions med indsigt fra branchen',
+    name: 'Naetwork - den professionelle adgangsplatform',
     url: siteUrl,
     description: brand.oneSentence,
     areaServed: 'DK',
-    serviceType: `${SESSION_MINUTES} minutters konkret feedback fra en fagperson med relevant brancheerfaring`,
+    serviceType: `${SESSION_MINUTES} minutters adgang til direkte relevant professionel erfaring`,
     provider: {
       '@type': 'Organization',
       name: 'Naetwork',
@@ -58,7 +62,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }}
       />
-      <HomeContent />
+      <HomeContent featuredProfessionals={professionals.slice(0, 3)} />
     </>
   )
 }

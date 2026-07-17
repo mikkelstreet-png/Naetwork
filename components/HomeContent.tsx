@@ -5,130 +5,168 @@ import { ArrowRight, Check } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
 import { Reveal } from '@/components/Reveal'
 import { useLanguage } from '@/context/LanguageContext'
-import { CATEGORIES } from '@/lib/categories'
+import { CATEGORIES, categoryAccent, categoryForAreas } from '@/lib/categories'
 import { CONTRIBUTION_PERCENT, PRICE_OPTIONS, SESSION_MINUTES, formatDkk } from '@/lib/platform'
+import { professionalBestFor, professionalInitials, professionalSessionTypes } from '@/lib/professionalPresentation'
+import type { ProfessionalCard } from '@/lib/professionals'
 import { sessionImpactAmount } from '@/lib/publicExperience'
 
 const NEEDS = [
   {
-    session: 'cv-review',
-    title: { da: 'Styrk din profil på papir', en: 'Strengthen your profile on paper' },
-    label: { da: 'CV, LinkedIn og ansøgning', en: 'CV, LinkedIn and application' },
-    description: {
-      da: 'Find det, der styrker eller svækker din positionering, og prioritér de ændringer, der kan gøre din profil mere relevant.',
-      en: 'Identify what strengthens or weakens your positioning and prioritize the changes that can make your profile more relevant.',
-    },
-  },
-  {
-    session: 'interview-training',
-    title: { da: 'Mød bedre forberedt', en: 'Show up better prepared' },
-    label: { da: 'Interview', en: 'Interview' },
-    description: {
-      da: 'Test dine svar, din motivation og dine eksempler med en fagperson, der kender branchens forventninger.',
-      en: 'Test your answers, motivation and examples with a professional who knows the industry’s expectations.',
-    },
-  },
-  {
-    session: 'case-interview-preparation',
-    title: { da: 'Test dit faglige niveau', en: 'Test your professional level' },
-    label: { da: 'Cases og technicals', en: 'Cases and technicals' },
-    description: {
-      da: 'Få modspil på din struktur, analyse og kommunikation, før det bliver vurderet i en rigtig proces.',
-      en: 'Pressure-test your structure, analysis and communication before they are assessed in a real process.',
-    },
+    session: 'industry-company-insight',
+    title: { da: 'Jeg vil forstå en branche eller rolle', en: 'I want to understand an industry or role' },
+    description: { da: 'Se arbejdet, forventningerne og hverdagen fra den anden side af jobopslaget.', en: 'See the work, expectations and reality from the other side of the job post.' },
   },
   {
     session: 'career-clarity',
-    title: { da: 'Træf et bedre karrierevalg', en: 'Make a better career decision' },
-    label: { da: 'Karrierevalg og positionering', en: 'Career decisions and positioning' },
-    description: {
-      da: 'Få et ærligt perspektiv på dit match, dine muligheder og den mest troværdige vej videre.',
-      en: 'Get an honest perspective on your fit, options and the most credible way forward.',
-    },
+    title: { da: 'Jeg overvejer et karriereskifte', en: 'I am considering a career change' },
+    description: { da: 'Test dit match og din plan med erfaring fra den retning, du overvejer.', en: 'Test your fit and plan against experience from the direction you are considering.' },
+  },
+  {
+    session: 'cv-review',
+    title: { da: 'Jeg vil styrke mit CV eller min ansøgning', en: 'I want to strengthen my CV or application' },
+    description: { da: 'Forstå, hvad der bliver lagt mærke til, og hvilke ændringer der bør komme først.', en: 'Understand what gets noticed and which changes should come first.' },
+  },
+  {
+    session: 'interview-training',
+    title: { da: 'Jeg skal forberede en jobsamtale', en: 'I need to prepare for an interview' },
+    description: { da: 'Træn svar, motivation og eksempler med en person, der kender processen.', en: 'Practice answers, motivation and examples with someone who knows the process.' },
+  },
+  {
+    session: 'case-interview-preparation',
+    title: { da: 'Jeg skal træne en case', en: 'I need to practice a case' },
+    description: { da: 'Få direkte modspil på struktur, analyse, technicals og kommunikation.', en: 'Get direct challenge on structure, analysis, technicals and communication.' },
+  },
+  {
+    session: 'graduate-internship',
+    title: { da: 'Jeg vil forstå, hvad der faktisk kræves for at komme ind', en: 'I want to understand what it actually takes to get in' },
+    description: { da: 'Få kontekst om timing, positionering og en realistisk vej ind.', en: 'Get context on timing, positioning and a realistic way in.' },
+  },
+  {
+    session: 'career-clarity',
+    title: { da: 'Jeg har brug for et kvalificeret perspektiv på mit næste skridt', en: 'I need an informed perspective on my next move' },
+    description: { da: 'Prøv dine antagelser af, før du binder tid og energi til beslutningen.', en: 'Test your assumptions before committing time and energy to the decision.' },
   },
 ] as const
 
-export function HomeContent() {
+const PROGRESSION = [
+  {
+    title: { da: 'Forstå det indefra', en: 'Understand it from within' },
+    body: { da: 'Få det perspektiv, du ikke finder i jobopslag, virksomhedspræsentationer eller generiske karriereguides.', en: 'Get the perspective you will not find in job posts, company presentations or generic career guides.' },
+  },
+  {
+    title: { da: 'Forbered dig skarpere', en: 'Prepare with more precision' },
+    body: { da: 'Brug direkte relevant erfaring til at styrke dit CV, din ansøgning, din case eller din jobsamtale.', en: 'Use directly relevant experience to strengthen your CV, application, case or interview.' },
+  },
+  {
+    title: { da: 'Tag næste skridt', en: 'Take the next step' },
+    body: { da: 'Omsæt sessionen til en stærkere beslutning, konkrete forbedringer og tydelige næste handlinger.', en: 'Turn the session into a stronger decision, concrete improvements and clear next actions.' },
+  },
+] as const
+
+const SESSION_FLOW = [
+  {
+    label: { da: 'Før sessionen', en: 'Before the session' },
+    title: { da: 'Definér resultatet', en: 'Define the outcome' },
+    body: { da: 'Beskriv, hvad du vil opnå, og del den nødvendige kontekst eller relevante materialer.', en: 'Describe what you want to achieve and share the necessary context or relevant material.' },
+  },
+  {
+    label: { da: 'Under sessionen', en: 'During the session' },
+    title: { da: 'Arbejd på det konkrete', en: 'Work on the concrete issue' },
+    body: { da: 'Brug tiden målrettet med en professionel, der har direkte erfaring fra situationen, du står overfor.', en: 'Use the time with a professional who has direct experience from the situation you are facing.' },
+  },
+  {
+    label: { da: 'Efter sessionen', en: 'After the session' },
+    title: { da: 'Gå videre med retning', en: 'Move forward with direction' },
+    body: { da: 'Stå med skarpere svar, konkrete forbedringer og et tydeligt næste skridt.', en: 'Leave with sharper answers, concrete improvements and a clear next step.' },
+  },
+] as const
+
+interface HomeContentProps {
+  featuredProfessionals?: ProfessionalCard[]
+}
+
+function professionalAccent(professional: ProfessionalCard) {
+  return categoryAccent(categoryForAreas(professional.industries)?.id)
+}
+
+export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
 
-  const values = isDa
+  const trustQuestions = isDa
     ? [
-        ['Indsigt fra den rette erfaring', 'Vælg en fagperson med erfaring fra den rolle, branche eller proces, du står overfor.'],
-        ['Feedback på din situation', 'Sessionen tager udgangspunkt i dit materiale, dit mål og din konkrete udfordring — ikke generelle karriereråd.'],
-        ['Klarhed over næste skridt', 'Gå derfra med de vigtigste forbedringer i den rækkefølge, de bør løses.'],
+        ['Er Naetwork coaching eller mentoring?', 'Nej. Naetwork giver adgang til direkte relevant professionel erfaring omkring ét konkret mål. Den professionelle skal ikke være din coach eller langsigtede mentor.'],
+        ['Hvordan vælger jeg den rette erfaring?', 'Start med den situation, du står overfor. Vælg derefter en professionel ud fra rolle-, branche- og proceserfaring – ikke prestige alene.'],
+        ['Hvad skal jeg forvente efter 60 minutter?', 'Et skarpere beslutningsgrundlag, konkrete forbedringer og tydelige næste handlinger. Naetwork lover ikke et job eller et bestemt resultat.'],
+        ['Hvornår er bookingen bekræftet?', 'Din bookinganmodning er først bekræftet, når den professionelle har accepteret tidspunktet. Betaling er fortsat deaktiveret.'],
       ]
     : [
-        ['Insight from the right experience', 'Choose a professional with experience from the role, industry or process you are facing.'],
-        ['Feedback on your situation', 'The session starts with your material, goal and concrete challenge — not generic career advice.'],
-        ['Clarity on what comes next', 'Leave with the most important improvements in the order they should be addressed.'],
-      ]
-
-  const steps = isDa
-    ? [
-        ['Vælg det, du vil stå stærkere i', 'CV, interview, case, positionering eller karrierevalg.'],
-        ['Find den rette fagperson', 'Vælg ud fra relevant rolle-, branche- og proceserfaring.'],
-        ['Få feedback, du kan handle på', 'Brug 60 minutter på blinde vinkler, forbedringer og en konkret plan.'],
-      ]
-    : [
-        ['Choose what you want to strengthen', 'CV, interview, case, positioning or career decision.'],
-        ['Find the right professional', 'Choose based on relevant role, industry and process experience.'],
-        ['Get feedback you can act on', 'Use 60 minutes on blind spots, improvements and a concrete plan.'],
+        ['Is Naetwork coaching or mentoring?', 'No. Naetwork gives access to directly relevant professional experience around one concrete goal. The professional is not positioned as your coach or long-term mentor.'],
+        ['How do I choose the right experience?', 'Start with the situation you are facing. Then choose a professional based on role, industry and process experience, not prestige alone.'],
+        ['What should I expect after 60 minutes?', 'A sharper basis for decisions, concrete improvements and clear next actions. Naetwork does not promise a job or a specific result.'],
+        ['When is the booking confirmed?', 'Your booking request is only confirmed when the professional accepts the time. Payments remain disabled.'],
       ]
 
   return (
     <main>
       <AccessHero />
 
-      <section className="home-section home-section--white" id="needs">
-        <div className="home-shell">
+      <section className="home-section home-section--white" id="why-access">
+        <div className="home-shell access-problem-grid">
           <Reveal>
-            <div className="section-heading section-heading--focused">
-              <p className="section-eyebrow">{isDa ? 'Start med dit behov' : 'Start with your need'}</p>
-              <h2>{isDa ? 'Hvad vil du stå stærkere i?' : 'What do you want to strengthen?'}</h2>
-              <p>{isDa ? 'Vælg den situation, du vil teste. Derefter finder du den erfaring, der passer til den.' : 'Choose the situation you want to test. Then find the experience that fits it.'}</p>
+            <div>
+              <p className="section-eyebrow">{isDa ? 'Det skjulte adgangsgab' : 'The hidden access gap'}</p>
+              <h2>{isDa ? 'De vigtigste karrieresvar står ikke i jobopslaget.' : 'The most important career answers are not in the job post.'}</h2>
             </div>
           </Reveal>
-
-          <div className="need-grid">
-            {NEEDS.map((need, index) => (
-              <Reveal key={need.session} delay={index * 70}>
-                <Link href={`/professionals?session=${need.session}`} className="need-card">
-                  <span className="need-card__line" aria-hidden="true"><i /></span>
-                  <span className="need-card__index">0{index + 1}</span>
-                  <div>
-                    <p>{need.title[lang]}</p>
-                    <h3>{need.label[lang]}</h3>
-                    <span>{need.description[lang]}</span>
-                  </div>
-                  <span className="need-card__action">
-                    {isDa ? 'Find en fagperson med indsigt indefra' : 'Find a professional with inside insight'}
-                    <ArrowRight size={16} aria-hidden="true" />
-                  </span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal delay={90}>
+            <div className="access-problem__body">
+              <p>{isDa ? 'Et jobopslag fortæller dig, hvad virksomheden søger. Det fortæller dig sjældent, hvordan arbejdet reelt er, hvad der faktisk bliver lagt mærke til, hvilke fejl du skal undgå, eller hvad det kræver at lykkes.' : 'A job post tells you what a company is looking for. It rarely tells you what the work is really like, what gets noticed, which mistakes to avoid or what it takes to succeed.'}</p>
+              <p>{isDa ? 'De svar findes hos mennesker, der allerede har stået der. Naetwork gør det muligt at spørge dem.' : 'Those answers live with people who have already been there. Naetwork makes it possible to ask them.'}</p>
+            </div>
+          </Reveal>
+          <Reveal delay={140} className="access-contrast">
+            <p>{isDa ? 'Information er overalt.' : 'Information is everywhere.'}</p>
+            <strong>{isDa ? 'Relevant erfaring er stadig svær at få adgang til.' : 'Relevant experience is still hard to access.'}</strong>
+          </Reveal>
         </div>
       </section>
 
-      <section className="home-section home-section--ink">
+      <section className="home-section home-section--ink access-category">
         <div className="home-shell">
           <Reveal>
-            <div className="section-heading section-heading--light section-heading--focused">
-              <p className="section-eyebrow">{isDa ? 'Hvorfor Naetwork' : 'Why Naetwork'}</p>
-              <h2>{isDa ? 'Forstå branchen, før branchen vurderer dig.' : 'Understand the industry before it evaluates you.'}</h2>
-              <p>{isDa ? 'De fleste får først reel feedback, når processen allerede er slut. Naetwork giver dig mulighed for at teste din forberedelse med nogen, der kender forventningerne indefra.' : 'Most people only get real feedback once the process is over. Naetwork lets you test your preparation with someone who knows the expectations from within.'}</p>
+            <div className="access-category__intro">
+              <p className="section-eyebrow">{isDa ? 'Den professionelle adgangsplatform' : 'The professional access platform'}</p>
+              <h2>{isDa ? 'Relevant professionel erfaring. Gjort tilgængelig.' : 'Relevant professional experience. Made accessible.'}</h2>
+              <p>{isDa ? 'Naetwork demokratiserer ikke mere information. Platformen åbner den dømmekraft, kontekst og levede erfaring, som normalt kræver en personlig introduktion.' : 'Naetwork does not democratize more information. It opens the judgment, context and lived experience that normally requires a personal introduction.'}</p>
             </div>
           </Reveal>
 
-          <div className="value-grid">
-            {values.map(([title, body], index) => (
-              <Reveal key={title} delay={index * 80}>
-                <article>
+          <Reveal delay={100} className="access-manifest">
+            <span aria-hidden="true" />
+            <p>{isDa ? 'Potentiale er overalt. Adgang er det ikke.' : 'Potential is everywhere. Access is not.'}</p>
+            <div>{isDa ? 'Karrieremuligheder bør ikke afhænge af, om du tilfældigvis kender den rigtige person. Naetwork åbner den professionelle erfaring, der tidligere lå gemt i private netværk.' : 'Career opportunity should not depend on whether you happen to know the right person. Naetwork opens professional experience that used to remain inside private networks.'}</div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="home-section home-section--paper access-progression">
+        <div className="home-shell">
+          <Reveal>
+            <div className="section-heading section-heading--focused">
+              <p className="section-eyebrow">{isDa ? 'Forstå. Forbered. Ryk.' : 'Understand. Prepare. Move.'}</p>
+              <h2>{isDa ? 'Fra adgang til handling.' : 'From access to action.'}</h2>
+              <p>{isDa ? 'Værdien er ikke samtalen i sig selv. Værdien er det, erfaringen gør dig i stand til at se og gøre bagefter.' : 'The value is not the conversation itself. It is what the experience enables you to see and do afterwards.'}</p>
+            </div>
+          </Reveal>
+          <div className="progress-grid" role="list">
+            {PROGRESSION.map((step, index) => (
+              <Reveal key={step.title.da} delay={index * 80}>
+                <article role="listitem">
                   <span>0{index + 1}</span>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
+                  <h3>{step.title[lang]}</h3>
+                  <p>{step.body[lang]}</p>
                 </article>
               </Reveal>
             ))}
@@ -136,99 +174,153 @@ export function HomeContent() {
         </div>
       </section>
 
-      <section className="home-section home-section--paper" id="how-it-works">
+      <section className="home-section home-section--white" id="needs">
         <div className="home-shell">
           <Reveal>
             <div className="section-heading section-heading--focused">
-              <p className="section-eyebrow">{isDa ? 'Sådan fungerer det' : 'How it works'}</p>
-              <h2>{isDa ? 'Fra usikkerhed til en plan, du kan handle på.' : 'From uncertainty to a plan you can act on.'}</h2>
-              <p>{isDa ? 'Tre enkle valg. Du opretter først en konto, når du vil sende en bookinganmodning.' : 'Three simple choices. You only create an account when you are ready to send a booking request.'}</p>
+              <p className="section-eyebrow">{isDa ? 'Start med situationen' : 'Start with the situation'}</p>
+              <h2>{isDa ? 'Hvad står du overfor?' : 'What are you facing?'}</h2>
+              <p>{isDa ? 'Vælg det problem, du vil løse. Derefter finder du den professionelle erfaring, der matcher situationen.' : 'Choose the problem you want to solve. Then find the professional experience that matches the situation.'}</p>
             </div>
           </Reveal>
-          <ol className="journey-steps journey-steps--connected">
-            {steps.map(([title, body], index) => (
-              <li key={title}>
-                <span>0{index + 1}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </li>
-            ))}
-          </ol>
-          <p className="booking-disclosure">
-            <Check size={15} aria-hidden="true" />
-            {isDa ? 'Bookinganmodningen er først bekræftet, når fagpersonen har accepteret tidspunktet.' : 'The booking request is only confirmed when the professional has accepted the time.'}
-          </p>
-        </div>
-      </section>
 
-      <section className="home-section home-section--white" id="fields">
-        <div className="home-shell">
-          <Reveal>
-            <div className="section-heading section-heading--focused">
-              <p className="section-eyebrow">{isDa ? 'Fagområder' : 'Professional areas'}</p>
-              <h2>{isDa ? 'Find erfaring fra den verden, du skal navigere i.' : 'Find experience from the world you need to navigate.'}</h2>
-              <p>{isDa ? 'Fagområdet hjælper dig med at vælge den rette baggrund. Dit konkrete behov kommer først.' : 'The professional area helps you choose the right background. Your specific need comes first.'}</p>
-            </div>
-          </Reveal>
-          <div className="category-ledger">
-            {CATEGORIES.map((category) => (
-              <Link key={category.id} href={`/professionals?field=${category.id}`}>
-                <span className={`category-ledger__accent ${category.accent}`} aria-hidden="true" />
-                <h3>{category.id}</h3>
-                <p>{category.description[lang]}</p>
-                <small>{category.areas.join(' · ')}</small>
-                <ArrowRight size={17} aria-hidden="true" />
-              </Link>
+          <div className="access-need-list">
+            {NEEDS.map((need, index) => (
+              <Reveal key={`${need.session}-${index}`} delay={(index % 4) * 55}>
+                <Link href={`/professionals?session=${need.session}`}>
+                  <span>0{index + 1}</span>
+                  <div><h3>{need.title[lang]}</h3><p>{need.description[lang]}</p></div>
+                  <ArrowRight size={18} aria-hidden="true" />
+                </Link>
+              </Reveal>
             ))}
           </div>
+
+          <Reveal className="access-fields">
+            <div><p className="section-eyebrow">{isDa ? 'Find den rette kontekst' : 'Find the right context'}</p><strong>{isDa ? 'Fagområdet hjælper dig med at finde erfaring fra den verden, du skal navigere i.' : 'The professional area helps you find experience from the world you need to navigate.'}</strong></div>
+            <nav aria-label={isDa ? 'Fagområder' : 'Professional areas'}>
+              {CATEGORIES.map((category) => (
+                <Link key={category.id} href={`/professionals?field=${category.id}`}>
+                  <i className={category.accent} aria-hidden="true" />{category.id}<ArrowRight size={14} aria-hidden="true" />
+                </Link>
+              ))}
+            </nav>
+          </Reveal>
         </div>
       </section>
 
-      <section className="home-section home-section--ink" id="pricing">
-        <div className="home-shell impact-section">
+      <section className="home-section home-section--ink" id="how-it-works">
+        <div className="home-shell">
           <Reveal>
             <div className="section-heading section-heading--light section-heading--focused">
-              <p className="section-eyebrow">{isDa ? 'Pris og bidrag' : 'Price and contribution'}</p>
-              <h2>{isDa ? 'Én time. En tydelig pris. Et konkret bidrag.' : 'One hour. A clear price. A concrete contribution.'}</h2>
-              <p>{isDa ? 'Alle sessioner varer 60 minutter. Prisen står på den enkelte profil, og 10% af hver gennemført og betalt session går til Kræftens Bekæmpelse.' : 'Every session lasts 60 minutes. The price is shown on each profile, and 10% of every completed and paid session goes to Kræftens Bekæmpelse.'}</p>
+              <p className="section-eyebrow">{isDa ? 'Et struktureret produkt' : 'A structured product'}</p>
+              <h2>{isDa ? '60 minutter. Ét konkret mål. Et stærkere næste skridt.' : '60 minutes. One concrete goal. A stronger next step.'}</h2>
+              <p>{isDa ? 'Sessionen er ikke en løs samtale eller et kaffemøde. Den er et fokuseret forløb før, under og efter de 60 minutter.' : 'The session is not an open-ended conversation or coffee chat. It is a focused journey before, during and after the 60 minutes.'}</p>
             </div>
           </Reveal>
-
-          <div className="impact-examples" aria-label={isDa ? 'Eksempler på sessionsbidrag' : 'Session contribution examples'}>
-            {PRICE_OPTIONS.map((price, index) => (
-              <div key={price}>
-                <span>0{index + 1}</span>
-                <strong>{formatDkk(price)}</strong>
-                <i aria-hidden="true" />
-                <p>{formatDkk(sessionImpactAmount(price))}</p>
-              </div>
+          <div className="session-product" role="list">
+            {SESSION_FLOW.map((step, index) => (
+              <Reveal key={step.label.da} delay={index * 80}>
+                <article role="listitem">
+                  <div><span>0{index + 1}</span><small>{step.label[lang]}</small></div>
+                  <h3>{step.title[lang]}</h3>
+                  <p>{step.body[lang]}</p>
+                </article>
+              </Reveal>
             ))}
           </div>
-          <p className="impact-examples__caption">
-            {isDa ? `${CONTRIBUTION_PERCENT}% til Kræftens Bekæmpelse ved en gennemført og betalt session.` : `${CONTRIBUTION_PERCENT}% to Kræftens Bekæmpelse when a session is completed and paid.`}
-          </p>
-          <ul className="price-facts">
-            <li><Check size={15} aria-hidden="true" />{SESSION_MINUTES} {isDa ? 'minutter pr. session' : 'minutes per session'}</li>
-            <li><Check size={15} aria-hidden="true" />{isDa ? 'Prisen fremgår på profilen' : 'Price shown on each profile'}</li>
-            <li><Check size={15} aria-hidden="true" />{isDa ? 'Betaling er fortsat deaktiveret' : 'Payments remain disabled'}</li>
-          </ul>
+          <p className="booking-disclosure booking-disclosure--dark"><Check size={15} aria-hidden="true" />{isDa ? 'Bookinganmodningen er først bekræftet, når den professionelle har accepteret tidspunktet.' : 'The booking request is only confirmed when the professional has accepted the time.'}</p>
         </div>
       </section>
 
-      <section className="home-final home-final--premium">
+      <section className="home-section home-section--white access-professionals">
+        <div className="home-shell">
+          <Reveal>
+            <div className="section-heading section-heading--focused">
+              <p className="section-eyebrow">{isDa ? 'De professionelle' : 'The professionals'}</p>
+              <h2>{isDa ? 'Ikke generiske råd. Erfaring fra nogen, der har stået der selv.' : 'Not generic advice. Experience from someone who has been there.'}</h2>
+              <p>{isDa ? 'Den rette professionelle er ikke nødvendigvis den mest kendte. Det er den person, hvis erfaring matcher din rolle, branche eller proces mest præcist.' : 'The right professional is not necessarily the most famous. It is the person whose experience most precisely matches your role, industry or process.'}</p>
+            </div>
+          </Reveal>
+
+          <div className="professional-proof-points">
+            {[isDa ? 'Direkte relevant erfaring' : 'Directly relevant experience', isDa ? 'Indsigt i virkeligheden bag rollen' : 'Insight into the reality behind the role', isDa ? 'Konkrete og ærlige perspektiver' : 'Concrete and honest perspectives'].map((item) => <p key={item}><Check size={15} aria-hidden="true" />{item}</p>)}
+          </div>
+
+          {featuredProfessionals.length > 0 && (
+            <div className="featured-professionals">
+              {featuredProfessionals.slice(0, 3).map((professional) => {
+                const sessions = professionalSessionTypes(professional).slice(0, 2)
+                return (
+                  <article key={professional.id} className="access-professional-card">
+                    <span className={`access-professional-card__accent ${professionalAccent(professional)}`} aria-hidden="true" />
+                    <div className="access-professional-card__identity">
+                      <span className={`profile-card__initials ${professionalAccent(professional)}`}>{professionalInitials(professional.name)}</span>
+                      <div><h3>{professional.name}</h3><p>{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p></div>
+                    </div>
+                    <div className="access-professional-card__fit"><span>{isDa ? 'Relevant erfaring til' : 'Relevant experience for'}</span><strong>{professionalBestFor(professional, isDa)}</strong></div>
+                    <div className="access-professional-card__tags">{sessions.map((session) => <span key={session.id}>{session.title[lang]}</span>)}</div>
+                    <div className="access-professional-card__footer">
+                      <p><strong>{formatDkk(professional.price)}</strong> · {SESSION_MINUTES} min<br /><span>{formatDkk(sessionImpactAmount(professional.price))} {isDa ? 'til Kræftens Bekæmpelse' : 'to Kræftens Bekæmpelse'}</span></p>
+                      <Link href={`/professionals/${professional.id}`}>{isDa ? 'Se erfaring' : 'View experience'}<ArrowRight size={15} aria-hidden="true" /></Link>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          )}
+
+          <Link href="/professionals" className="button-secondary button-with-arrow access-professionals__cta">{isDa ? 'Find den erfaring, du mangler' : 'Find the experience you need'}<ArrowRight size={16} aria-hidden="true" /></Link>
+        </div>
+      </section>
+
+      <section className="home-section home-section--paper">
+        <div className="home-shell access-impact">
+          <Reveal>
+            <div>
+              <p className="section-eyebrow">{isDa ? 'Fremskridt, der rækker videre' : 'Progress that reaches further'}</p>
+              <h2>{isDa ? 'Dit næste skridt kan også gøre en forskel.' : 'Your next step can also make a difference.'}</h2>
+              <p>{isDa ? `${CONTRIBUTION_PERCENT} % af hver gennemført og betalt session går til Kræftens Bekæmpelse. Den sociale dimension er en del af modellen – uden at overskygge den professionelle værdi.` : `${CONTRIBUTION_PERCENT}% of every completed and paid session goes to Kræftens Bekæmpelse. The social dimension is part of the model without overshadowing the professional value.`}</p>
+            </div>
+          </Reveal>
+          <Reveal delay={90} className="access-impact__examples">
+            {PRICE_OPTIONS.map((price) => <p key={price}><span>{formatDkk(price)}</span><i aria-hidden="true" /><strong>{formatDkk(sessionImpactAmount(price))}</strong></p>)}
+            <small>{isDa ? 'Sessionspris → bidrag til Kræftens Bekæmpelse' : 'Session price → contribution to Kræftens Bekæmpelse'}</small>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="home-section home-section--white access-trust">
+        <div className="home-shell trust-layout">
+          <Reveal>
+            <div>
+              <p className="section-eyebrow">{isDa ? 'Tillid før booking' : 'Trust before booking'}</p>
+              <h2>{isDa ? 'Relevant erfaring. Klare forventninger.' : 'Relevant experience. Clear expectations.'}</h2>
+              <p>{isDa ? 'Du kan se hele profilen, prisen, sessionstyperne og det konkrete bidrag, før du sender en bookinganmodning.' : 'You can see the full profile, price, session types and exact contribution before sending a booking request.'}</p>
+            </div>
+          </Reveal>
+          <div className="access-faq">
+            {trustQuestions.map(([question, answer], index) => (
+              <Reveal key={question} delay={index * 45}>
+                <details>
+                  <summary><span>0{index + 1}</span>{question}<i aria-hidden="true">+</i></summary>
+                  <p>{answer}</p>
+                </details>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="home-final home-final--premium access-final">
         <div className="home-shell">
           <p className="section-eyebrow">{isDa ? 'Næste skridt' : 'Next step'}</p>
-          <h2>{isDa ? 'Få indsigt fra nogen, der kender vejen indefra.' : 'Get insight from someone who knows the path from within.'}</h2>
+          <h2>{isDa ? 'Dit næste skridt behøver ikke begynde med et gæt.' : 'Your next move does not have to start with a guess.'}</h2>
           <div>
-            <p>{isDa ? 'Find en fagperson med erfaring fra den rolle, branche eller proces, du står overfor.' : 'Find a professional with experience from the role, industry or process you are facing.'}</p>
+            <p>{isDa ? 'Find en professionel med den erfaring, du mangler, og brug 60 minutter på at stå stærkere bagefter.' : 'Find a professional with the experience you need and use 60 minutes to move forward stronger.'}</p>
             <div className="home-final__actions">
-              <Link href="/professionals" className="button-primary button-with-arrow">
-                {isDa ? 'Find den rette fagperson' : 'Find the right professional'}
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-              <Link href="/professional/signup" className="button-secondary">
-                {isDa ? 'Del din erfaring på Naetwork' : 'Share your experience on Naetwork'}
-              </Link>
+              <Link href="/professionals" className="button-primary button-with-arrow">{isDa ? 'Find den rette erfaring' : 'Find the right experience'}<ArrowRight size={16} aria-hidden="true" /></Link>
+              <Link href="/professional/signup" className="button-secondary">{isDa ? 'Gør din erfaring tilgængelig' : 'Make your experience available'}</Link>
             </div>
           </div>
         </div>
