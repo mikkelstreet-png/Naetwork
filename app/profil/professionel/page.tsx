@@ -16,6 +16,13 @@ import {
   sessionEconomics,
 } from '@/lib/platform';
 import { SESSION_TYPES } from '@/lib/sessionTypes';
+import {
+  DEFAULT_PAYOUT_PREFERENCE,
+  charityAmount,
+  charitySharePercent,
+  normalizePayoutPreference,
+  type PayoutPreference,
+} from '@/lib/payoutPreference';
 
 export default function ProfessionalProfilePage() {
   const [category, setCategory] = useState<CategoryId>('Consulting');
@@ -30,6 +37,7 @@ export default function ProfessionalProfilePage() {
     years_experience: 5,
     price_dkk: 1200,
     linkedin_url: '',
+    payout_preference: DEFAULT_PAYOUT_PREFERENCE as PayoutPreference,
     visibility: 'hidden',
     review_status: 'pending',
   });
@@ -91,6 +99,7 @@ export default function ProfessionalProfilePage() {
           years_experience: prof.years_experience || 5,
           price_dkk: normalizePrice(prof.price_dkk),
           linkedin_url: prof.linkedin_url || '',
+          payout_preference: normalizePayoutPreference(prof.payout_preference),
           visibility: prof.visibility || 'hidden',
           review_status: prof.review_status || 'pending',
         });
@@ -125,19 +134,23 @@ export default function ProfessionalProfilePage() {
       .select('id')
       .eq('auth_user_id', u?.id)
       .single();
-    const { error: saveError } = await supabase.from('professional_profiles').upsert({
+    const { data: savedProfile, error: saveError } = await supabase.from('professional_profiles').upsert({
       profile_id: profile?.id,
       ...data,
       linkedin_url: linkedinUrl,
       price_dkk: normalizePrice(data.price_dkk),
       updated_at: new Date().toISOString(),
-    }, { onConflict: 'profile_id' });
+    }, { onConflict: 'profile_id' }).select('review_status, visibility').single();
     setSaving(false);
     if (saveError) {
       setError('Profilen kunne ikke gemmes. Prøv igen.');
       return;
     }
-    setData((current) => ({ ...current, review_status: 'pending' }));
+    setData((current) => ({
+      ...current,
+      review_status: savedProfile?.review_status || current.review_status,
+      visibility: savedProfile?.visibility || current.visibility,
+    }));
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }
@@ -175,6 +188,7 @@ export default function ProfessionalProfilePage() {
               ['Format', '60 min'],
               ['Kategori', category],
               ['Fast fordeling', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`],
+              ['Din 70%-andel', data.payout_preference === 'donate' ? 'Doneres også' : 'Udbetales til dig'],
               ['Gennemgang', data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'],
             ].map(([label, value]) => (
               <div key={label} className="border-b border-white/15 py-4">
@@ -284,6 +298,54 @@ export default function ProfessionalProfilePage() {
                 ].map(([label, value]) => <div key={label} className="bg-white p-4"><dt className="text-[10px] font-black uppercase text-gray-400">{label}</dt><dd className="mt-2 text-sm font-black text-gray-950">{value}</dd></div>)}
               </dl>
             </section>
+
+            <fieldset className="border-b border-gray-200 pb-7">
+              <legend className="text-sm font-semibold text-gray-800">Hvad skal der ske med din 70%-andel?</legend>
+              <p className="mt-2 max-w-2xl text-xs leading-relaxed text-gray-500">
+                Naetworks 20% og det faste bidrag på 10% ændres ikke. Du kan modtage din egen andel eller vælge, at den også går til Kræftens Bekæmpelse.
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {([
+                  {
+                    value: 'receive' as const,
+                    title: 'Modtag min andel',
+                    amount: `${formatDkk(economics.professionalPayout)} før skat`,
+                    body: `${CONTRIBUTION_PERCENT}% (${formatDkk(economics.contribution)}) går til Kræftens Bekæmpelse.`,
+                  },
+                  {
+                    value: 'donate' as const,
+                    title: 'Donér også min andel',
+                    amount: `${charitySharePercent('donate')}% til Kræftens Bekæmpelse`,
+                    body: `Din 70%-andel lægges til de faste 10%: i alt ${formatDkk(charityAmount(data.price_dkk, 'donate'))} af nettoprisen.`,
+                  },
+                ]).map((option) => {
+                  const selected = data.payout_preference === option.value;
+                  return (
+                    <label key={option.value} className={`relative cursor-pointer rounded-lg border p-4 transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-gray-950 focus-within:ring-offset-2 ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
+                      <input
+                        type="radio"
+                        name="payout-preference"
+                        value={option.value}
+                        checked={selected}
+                        onChange={() => setData((current) => ({ ...current, payout_preference: option.value }))}
+                        className="sr-only"
+                      />
+                      <span className="flex items-start justify-between gap-3">
+                        <span className="text-sm font-black">{option.title}</span>
+                        <span aria-hidden="true" className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selected ? 'border-white' : 'border-gray-400'}`}>
+                          {selected && <span className="h-2 w-2 rounded-full bg-white" />}
+                        </span>
+                      </span>
+                      <strong className={`mt-4 block text-lg ${selected ? 'text-white' : 'text-gray-950'}`}>{option.amount}</strong>
+                      <span className={`mt-2 block text-xs leading-relaxed ${selected ? 'text-white/60' : 'text-gray-500'}`}>{option.body}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-4 rounded-md bg-[#f7f7f4] px-4 py-3 text-xs leading-relaxed text-gray-600">
+                Valget gælder nye bookinger og kan ændres her senere. Betaling og udbetaling er fortsat deaktiveret; der flyttes ingen penge endnu.
+              </p>
+            </fieldset>
 
             <div>
               <label className="mb-3 block text-sm font-semibold text-gray-700">Publiceringsvalg</label>

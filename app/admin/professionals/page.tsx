@@ -17,7 +17,8 @@ import {
 } from 'lucide-react'
 import { AdminEmptyState, AdminPageHeader } from '@/components/AdminShell'
 import { categoryForAreas } from '@/lib/categories'
-import { focusLabel } from '@/lib/platform'
+import { focusLabel, sessionEconomics } from '@/lib/platform'
+import { charityAmount, charitySharePercent, normalizePayoutPreference, type PayoutPreference } from '@/lib/payoutPreference'
 import { createClient } from '@/lib/supabase/client'
 
 type Visibility = 'hidden' | 'published'
@@ -36,6 +37,7 @@ interface Professional {
   focus_areas: string[] | null
   price_dkk: number
   linkedin_url: string | null
+  payout_preference: PayoutPreference
   visibility: Visibility
   review_status: ReviewStatus
   created_at: string
@@ -133,7 +135,7 @@ export default function ProfessionalsPage() {
     const supabase = createClient()
     const { data, error: loadError } = await supabase
       .from('professional_profiles')
-      .select('id, profile_id, title, company, bio, industries, focus_areas, price_dkk, linkedin_url, visibility, review_status, created_at')
+      .select('id, profile_id, title, company, bio, industries, focus_areas, price_dkk, linkedin_url, payout_preference, visibility, review_status, created_at')
       .order('created_at', { ascending: false })
 
     if (loadError) {
@@ -349,7 +351,9 @@ export default function ProfessionalsPage() {
           const isApproving = actionLoading === `${profile.id}:approved:published`
           const isRejecting = actionLoading === `${profile.id}:rejected:hidden`
           const isHiding = actionLoading === `${profile.id}:approved:hidden`
-          const contribution = profile.price_dkk * 0.1
+          const payoutPreference = normalizePayoutPreference(profile.payout_preference)
+          const economics = sessionEconomics(profile.price_dkk)
+          const contribution = charityAmount(profile.price_dkk, payoutPreference)
           const confirmation = confirmAction?.id === profile.id ? confirmAction.type : null
 
           return (
@@ -409,7 +413,8 @@ export default function ProfessionalsPage() {
                   <p className="mt-1 text-xs font-semibold text-gray-500">60 minutter</p>
                   <div className="mt-4 rounded-lg bg-[#f7f7f4] px-3 py-3">
                     <p className="text-xs font-black text-gray-950">{formatDkk(contribution)} til Kræftens Bekæmpelse</p>
-                    <p className="mt-1 text-[11px] leading-relaxed text-gray-500">10 % ved en gennemført og betalt session.</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{charitySharePercent(payoutPreference)} % af nettoprisen ved en gennemført og betalt session.</p>
+                    <p className="mt-2 text-[11px] font-black leading-relaxed text-gray-700">{payoutPreference === 'donate' ? `70%-andelen doneres også · udbetaling ${formatDkk(0)}` : `70%-andelen udbetales · ${formatDkk(economics.professionalPayout)}`}</p>
                   </div>
                   <div className="mt-3 border-t border-gray-100 pt-3">
                     <p className="text-[10px] font-black uppercase tracking-[0.08em] text-gray-400">Bookingstatus</p>

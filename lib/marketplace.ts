@@ -95,6 +95,7 @@ export const TRANSACTIONAL_EMAIL_KEYS = [
   'feedback_request',
   'professional_approved',
   'professional_rejected',
+  'availability_opened',
   'password_reset',
   'password_changed',
   'email_changed',

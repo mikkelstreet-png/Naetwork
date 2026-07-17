@@ -1,5 +1,6 @@
 import { normalizePrice } from './platform'
 import { normalizeCategoryAreas } from './categories'
+import { normalizePayoutPreference, type PayoutPreference } from './payoutPreference'
 
 export interface PublicProfessionalRow {
   id: string
@@ -17,6 +18,7 @@ export interface PublicProfessionalRow {
   next_available_at?: string | null
   review_count?: number | null
   average_rating?: number | string | null
+  payout_preference?: string | null
 }
 
 export interface ProfessionalCard {
@@ -31,10 +33,11 @@ export interface ProfessionalCard {
   languages: string[]
   seniority: string | null
   yearsExperience: number | null
-  responseTimeHours: number
+  responseTimeHours: number | null
   nextAvailableAt: string | null
   reviewCount: number
   averageRating: number | null
+  payoutPreference: PayoutPreference
 }
 
 export function mapPublicProfessionals(data: unknown): ProfessionalCard[] {
@@ -49,12 +52,15 @@ export function mapPublicProfessionals(data: unknown): ProfessionalCard[] {
     focus_areas: profile.focus_areas ?? [],
     price: normalizePrice(profile.price_dkk),
     bio: profile.bio?.trim() ?? '',
-    languages: profile.languages ?? ['da', 'en'],
+    languages: Array.isArray(profile.languages) ? profile.languages.filter(Boolean) : [],
     seniority: profile.seniority?.trim() || null,
     yearsExperience: typeof profile.years_experience === 'number' ? profile.years_experience : null,
-    responseTimeHours: typeof profile.response_time_hours === 'number' ? profile.response_time_hours : 48,
+    responseTimeHours: typeof profile.response_time_hours === 'number' ? profile.response_time_hours : null,
     nextAvailableAt: profile.next_available_at ?? null,
     reviewCount: typeof profile.review_count === 'number' ? profile.review_count : Number(profile.review_count ?? 0),
-    averageRating: profile.average_rating == null ? null : Number(profile.average_rating),
+    averageRating: profile.average_rating == null || Number.isNaN(Number(profile.average_rating))
+      ? null
+      : Number(profile.average_rating),
+    payoutPreference: normalizePayoutPreference(profile.payout_preference),
   })).filter((profile) => profile.id && profile.name)
 }

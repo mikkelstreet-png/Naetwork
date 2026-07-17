@@ -68,7 +68,7 @@ export function Footer() {
               {brand.oneSentence}
             </p>
             <p className="mt-4 max-w-md text-xs font-semibold leading-relaxed text-white/60">
-              {isDa ? `${CONTRIBUTION_PERCENT}% af hver gennemført og betalt session går til Kræftens Bekæmpelse.` : `${CONTRIBUTION_PERCENT}% of every completed and paid session goes to Kræftens Bekæmpelse.`}
+              {isDa ? `${CONTRIBUTION_PERCENT}% af nettoprisen for hver gennemført og betalt session går til Kræftens Bekæmpelse.` : `${CONTRIBUTION_PERCENT}% of the net price for every completed and paid session goes to Kræftens Bekæmpelse.`}
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href="/professionals" className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-white/65">

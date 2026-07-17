@@ -2,19 +2,30 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, ChevronDown, RefreshCw, Search } from 'lucide-react'
+import { ArrowRight, CheckCircle2, ChevronDown, Clock3, RefreshCw, Search, Star } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { ProfileWorkspaceActions } from '@/components/ProfileWorkspaceActions'
 import { useLanguage } from '@/context/LanguageContext'
 import { CATEGORIES, categoryAccent, categoryForAreas, categoryIdForValue, type CategoryId } from '@/lib/categories'
-import { CONTRIBUTION_PERCENT, focusLabel } from '@/lib/platform'
+import { CONTRIBUTION_PERCENT, focusLabel, formatDkk } from '@/lib/platform'
 import { mapPublicProfessionals, type ProfessionalCard } from '@/lib/professionals'
-import { professionalBestFor, professionalInitials, professionalPrimaryOutput, professionalSessionTypes } from '@/lib/professionalPresentation'
+import {
+  professionalBestFor,
+  professionalExperienceFacts,
+  professionalInitials,
+  professionalLanguageLabels,
+  professionalPrimaryOutput,
+  professionalResponseLabel,
+  professionalSessionTypes,
+} from '@/lib/professionalPresentation'
 import { sessionImpactAmount } from '@/lib/publicExperience'
+import { charityAmount, charitySharePercent } from '@/lib/payoutPreference'
 import { SESSION_TYPES, isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
 type CategoryFilter = 'all' | CategoryId
 
 const FILTER_CATEGORIES: CategoryFilter[] = ['all', ...CATEGORIES.map((category) => category.id)]
+const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
 const LEGACY_NEED_SESSION: Record<string, SessionTypeId> = {
   direction: 'career-clarity',
   materials: 'cv-review',
@@ -38,6 +49,43 @@ function relevanceFor(professional: ProfessionalCard, selectedSession: SessionTy
   return exact ? 2 : supported ? 1 : 0
 }
 
+function formatNextAvailability(value: string | null, isDa: boolean) {
+  if (!value) return isDa ? 'Ingen åbne tider' : 'No open times'
+  return new Date(value).toLocaleString(isDa ? 'da-DK' : 'en-GB', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Copenhagen',
+  })
+}
+
+interface DirectoryFilterState {
+  category: CategoryFilter
+  session: SessionTypeId | null
+  price: number | null
+  query: string
+}
+
+function readFilterState() {
+  const params = new URLSearchParams(window.location.search)
+  const requestedCategory = categoryIdForValue(params.get('field'))
+  const requestedSession = params.get('session')
+  const legacyNeed = params.get('need')
+  const requestedPrice = Number(params.get('price'))
+
+  return {
+    category: requestedCategory ?? 'all',
+    session: isSessionTypeId(requestedSession)
+      ? requestedSession
+      : legacyNeed && LEGACY_NEED_SESSION[legacyNeed]
+        ? LEGACY_NEED_SESSION[legacyNeed]
+        : null,
+    price: PRICE_OPTIONS.includes(requestedPrice as typeof PRICE_OPTIONS[number]) ? requestedPrice : null,
+    query: params.get('q') ?? '',
+  } satisfies DirectoryFilterState
+}
+
 interface ProfessionalsDirectoryProps {
   initialProfessionals: ProfessionalCard[]
   initialLoadError?: boolean
@@ -55,13 +103,17 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   const [loadError, setLoadError] = useState(initialLoadError)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const requestedCategory = categoryIdForValue(params.get('field'))
-    const requestedSession = params.get('session')
-    const legacyNeed = params.get('need')
-    if (requestedCategory) setCategoryFilter(requestedCategory)
-    if (isSessionTypeId(requestedSession)) setRecommendedSession(requestedSession)
-    else if (legacyNeed && LEGACY_NEED_SESSION[legacyNeed]) setRecommendedSession(LEGACY_NEED_SESSION[legacyNeed])
+    function applyUrlState() {
+      const filters = readFilterState()
+      setCategoryFilter(filters.category)
+      setRecommendedSession(filters.session)
+      setMaxPrice(filters.price)
+      setSearch(filters.query)
+    }
+
+    applyUrlState()
+    window.addEventListener('popstate', applyUrlState)
+    return () => window.removeEventListener('popstate', applyUrlState)
   }, [])
 
   const fetchProfessionals = useCallback(async () => {
@@ -105,8 +157,15 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
           && (!recommendedSession || relevanceFor(professional, recommendedSession) > 0)
           && (maxPrice === null || professional.price <= maxPrice)
       })
-      .sort((a, b) => relevanceFor(b, recommendedSession) - relevanceFor(a, recommendedSession))
-  }, [categoryFilter, dbProfessionals, maxPrice, recommendedSession, search])
+      .sort((a, b) => {
+        const relevanceDifference = relevanceFor(b, recommendedSession) - relevanceFor(a, recommendedSession)
+        if (relevanceDifference !== 0) return relevanceDifference
+        if (Boolean(a.nextAvailableAt) !== Boolean(b.nextAvailableAt)) return a.nextAvailableAt ? -1 : 1
+        if (a.nextAvailableAt && b.nextAvailableAt) return new Date(a.nextAvailableAt).getTime() - new Date(b.nextAvailableAt).getTime()
+        if (a.reviewCount !== b.reviewCount) return b.reviewCount - a.reviewCount
+        return a.name.localeCompare(b.name, isDa ? 'da' : 'en')
+      })
+  }, [categoryFilter, dbProfessionals, isDa, maxPrice, recommendedSession, search])
 
   const t = {
     heading: isDa ? 'Find den erfaring, du mangler.' : 'Find the experience you are missing.',
@@ -117,19 +176,28 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     noResults: isDa ? 'Ingen profiler matcher dine valg' : 'No profiles match your choices',
     noResultsBody: isDa ? 'Prøv et andet behov, fagområde eller prisniveau.' : 'Try another need, professional area or price level.',
     clearFilters: isDa ? 'Nulstil filtre' : 'Clear filters',
-    viewProfile: isDa ? 'Se erfaringen' : 'View the experience',
+    viewProfile: isDa ? 'Se profil og tider' : 'View profile and times',
     emptyTitle: isDa ? 'De første professionelle er på vej' : 'The first professionals are on their way',
     emptyBody: isDa ? 'Erfaring bliver først gjort tilgængelig, når rolle, baggrund og sessionsfokus er gennemgået.' : 'Experience is only made available after the role, background and session focus have been reviewed.',
     errorTitle: isDa ? 'Vi kunne ikke hente fagpersonerne' : 'We could not load the professionals',
     errorBody: isDa ? 'Profilservicen svarer ikke lige nu. Prøv igen om et øjeblik.' : 'The profile service is not responding right now. Please try again shortly.',
   }
 
-  function updateUrl(category: CategoryFilter, selectedSession: SessionTypeId | null) {
+  function updateUrl(overrides: Partial<DirectoryFilterState>) {
+    const next = {
+      category: categoryFilter,
+      session: recommendedSession,
+      price: maxPrice,
+      query: search,
+      ...overrides,
+    }
     const params = new URLSearchParams()
-    if (selectedSession) params.set('session', selectedSession)
-    if (category !== 'all') params.set('field', category)
+    if (next.session) params.set('session', next.session)
+    if (next.category !== 'all') params.set('field', next.category)
+    if (next.price !== null) params.set('price', String(next.price))
+    if (next.query.trim()) params.set('q', next.query.trim())
     const query = params.toString()
-    window.history.replaceState(null, '', query ? `/professionals?${query}` : '/professionals')
+    window.history.replaceState({ ...window.history.state }, '', query ? `/professionals?${query}` : '/professionals')
   }
 
   function resetFilters() {
@@ -137,17 +205,27 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     setCategoryFilter('all')
     setRecommendedSession(null)
     setMaxPrice(null)
-    window.history.replaceState(null, '', '/professionals')
+    window.history.replaceState({ ...window.history.state }, '', '/professionals')
   }
 
   function selectCategory(category: CategoryFilter) {
     setCategoryFilter(category)
-    updateUrl(category, recommendedSession)
+    updateUrl({ category })
   }
 
   function selectSession(id: SessionTypeId | null) {
     setRecommendedSession(id)
-    updateUrl(categoryFilter, id)
+    updateUrl({ session: id })
+  }
+
+  function selectPrice(price: number | null) {
+    setMaxPrice(price)
+    updateUrl({ price })
+  }
+
+  function updateSearch(query: string) {
+    setSearch(query)
+    updateUrl({ query })
   }
 
   return (
@@ -164,19 +242,21 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       {!loadError && (
         <section className="directory-filter-shell" aria-label={isDa ? 'Filtrér fagpersoner' : 'Filter professionals'}>
           <div className="home-shell">
-            <div className="directory-filters">
+            <div className="directory-need-filter">
+              <div>
+                <span>{isDa ? 'Start med dit behov' : 'Start with your need'}</span>
+                <p>{isDa ? 'Hvad vil du stå stærkere i?' : 'What do you want to be stronger in?'}</p>
+              </div>
+              <div role="group" aria-label={isDa ? 'Vælg dit behov' : 'Choose your need'}>
+                <button type="button" aria-pressed={recommendedSession === null} onClick={() => selectSession(null)}>{isDa ? 'Alle behov' : 'All needs'}</button>
+                {SESSION_TYPES.map((item) => (
+                  <button key={item.id} type="button" aria-pressed={recommendedSession === item.id} onClick={() => selectSession(item.id)}>{item.title[lang]}</button>
+                ))}
+              </div>
+            </div>
+            <div className="directory-filters directory-filters--compact">
               <label>
-                <span>1. {isDa ? 'Hvad vil du have hjælp til?' : 'What do you need help with?'}</span>
-                <span className="directory-select">
-                  <select value={recommendedSession ?? ''} onChange={(event) => selectSession(isSessionTypeId(event.target.value) ? event.target.value : null)}>
-                    <option value="">{isDa ? 'Alle behov' : 'All needs'}</option>
-                    {SESSION_TYPES.map((item) => <option key={item.id} value={item.id}>{item.title[lang]}</option>)}
-                  </select>
-                  <ChevronDown size={16} aria-hidden="true" />
-                </span>
-              </label>
-              <label>
-                <span>2. {isDa ? 'Fagområde' : 'Professional area'}</span>
+                <span>{isDa ? 'Fagområde' : 'Professional area'}</span>
                 <span className="directory-select">
                   <select value={categoryFilter} onChange={(event) => selectCategory(event.target.value as CategoryFilter)}>
                     {FILTER_CATEGORIES.map((category) => <option key={category} value={category}>{categoryLabel(category, isDa)}</option>)}
@@ -185,29 +265,24 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 </span>
               </label>
               <label>
-                <span>3. {isDa ? 'Pris' : 'Price'}</span>
+                <span>{isDa ? 'Maksimal pris' : 'Maximum price'}</span>
                 <span className="directory-select">
-                  <select value={maxPrice ?? ''} onChange={(event) => setMaxPrice(event.target.value ? Number(event.target.value) : null)}>
+                  <select value={maxPrice ?? ''} onChange={(event) => selectPrice(event.target.value ? Number(event.target.value) : null)}>
                     <option value="">{isDa ? 'Alle priser' : 'All prices'}</option>
-                    {[600, 900, 1200, 1800].map((price) => <option key={price} value={price}>{isDa ? 'Maks.' : 'Max'} DKK {price.toLocaleString('da-DK')}</option>)}
+                    {PRICE_OPTIONS.map((price) => <option key={price} value={price}>{isDa ? 'Maks.' : 'Max'} DKK {price.toLocaleString('da-DK')}</option>)}
                   </select>
                   <ChevronDown size={16} aria-hidden="true" />
                 </span>
               </label>
               <label>
-                <span>4. {isDa ? 'Søgning' : 'Search'}</span>
+                <span>{isDa ? 'Søgning' : 'Search'}</span>
                 <span className="directory-search">
                   <Search size={16} aria-hidden="true" />
-                  <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
+                  <input type="search" value={search} onChange={(event) => updateSearch(event.target.value)} placeholder={t.searchPlaceholder} />
                 </span>
               </label>
               <button type="button" onClick={resetFilters}>{t.clearFilters}</button>
             </div>
-            {recommendedSession && (
-              <p className="directory-recommendation">
-                <span>{isDa ? 'Viser først:' : 'Showing first:'}</span> {sessionType(recommendedSession).title[lang]}
-              </p>
-            )}
           </div>
         </section>
       )}
@@ -215,8 +290,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       <section id="profile-directory" className="home-shell directory-results" aria-busy={loading}>
         {!loadError && (
           <div className="directory-results__header">
-            <p>{loading ? (isDa ? 'Indlæser…' : 'Loading…') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'fagperson' : 'fagpersoner') : (filtered.length === 1 ? 'professional' : 'professionals')}`}</p>
-            <span>{isDa ? 'Forstå relevansen, før du sender en bookinganmodning' : 'Understand the relevance before sending a booking request'}</span>
+            <p aria-live="polite">{loading ? (isDa ? 'Indlæser…' : 'Loading…') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'fagperson' : 'fagpersoner') : (filtered.length === 1 ? 'professional' : 'professionals')}`}</p>
+            <span>{recommendedSession ? `${isDa ? 'Matcher' : 'Matches'}: ${sessionType(recommendedSession).title[lang]}` : (isDa ? 'Vælg ud fra erfaring, relevans og tilgængelighed' : 'Choose by experience, relevance and availability')}</span>
           </div>
         )}
 
@@ -259,6 +334,10 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               const category = categoryForAreas(professional.industries)?.id
               const focusAreas = (professional.focus_areas ?? []).slice(0, 3)
               const sessionTypes = professionalSessionTypes(professional).slice(0, 3)
+              const experienceFacts = professionalExperienceFacts(professional, isDa)
+              const languageLabels = professionalLanguageLabels(professional.languages, isDa)
+              const responseLabel = professionalResponseLabel(professional.responseTimeHours, isDa)
+              const nextAvailable = formatNextAvailability(professional.nextAvailableAt, isDa)
               return (
                 <article key={professional.id} className="profile-card">
                   <span className={`profile-card__accent ${accentFor(professional)}`} aria-hidden="true" />
@@ -273,6 +352,9 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                         <h2>{professional.name}</h2>
                         <p>{professional.title}{professional.company ? ` · ${professional.company}` : ''}</p>
                         <small>{professional.industries.join(' · ')}</small>
+                        {(experienceFacts.length > 0 || languageLabels.length > 0) && (
+                          <small className="profile-card__credentials">{[...experienceFacts, ...languageLabels].join(' · ')}</small>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -283,23 +365,31 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                     <div className="profile-card__tags">
                       {(focusAreas.length > 0 ? focusAreas.map((area) => focusLabel(area, lang)) : sessionTypes.map((session) => session.title[lang])).map((label) => <span key={label}>{label}</span>)}
                     </div>
+                    <p className="profile-card__result"><span>{isDa ? 'Du går videre med' : 'You move forward with'}</span>{professionalPrimaryOutput(professional, isDa)}</p>
                   </div>
 
-                  <div className="profile-card__outcome">
-                    <span>{isDa ? 'Gå videre med' : 'Move forward with'}</span>
-                    <p>{professionalPrimaryOutput(professional, isDa)}</p>
+                  <div className="profile-card__trust">
+                    <span className={professional.nextAvailableAt ? 'is-available' : 'is-unavailable'}><Clock3 size={14} aria-hidden="true" />{professional.nextAvailableAt ? `${isDa ? 'Næste tid' : 'Next time'}: ${nextAvailable}` : nextAvailable}</span>
+                    {professional.reviewCount > 0 && professional.averageRating !== null && (
+                      <span><Star size={14} aria-hidden="true" />{professional.averageRating.toLocaleString(isDa ? 'da-DK' : 'en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} · {professional.reviewCount} {isDa ? (professional.reviewCount === 1 ? 'anmeldelse fra gennemført session' : 'anmeldelser fra gennemførte sessioner') : (professional.reviewCount === 1 ? 'review from a completed session' : 'reviews from completed sessions')}</span>
+                    )}
+                    {responseLabel && <span>{responseLabel}</span>}
                   </div>
 
                   <div className="profile-card__price">
                     <strong>DKK {professional.price.toLocaleString('da-DK')}</strong>
                     <span>{SESSION_TYPES.length ? '60 min · ' : ''}{isDa ? 'inkl. moms' : 'incl. VAT'}</span>
-                    <p>{isDa ? `DKK ${sessionImpactAmount(professional.price).toLocaleString('da-DK')} går til Kræftens Bekæmpelse` : `DKK ${sessionImpactAmount(professional.price).toLocaleString('da-DK')} goes to Kræftens Bekæmpelse`}</p>
-                    <small>{CONTRIBUTION_PERCENT}% {isDa ? 'ved gennemført og betalt session' : 'when completed and paid'}</small>
+                    <p>{isDa ? `${formatDkk(professional.payoutPreference === 'donate' ? charityAmount(professional.price, 'donate') : sessionImpactAmount(professional.price))} går til Kræftens Bekæmpelse` : `${formatDkk(professional.payoutPreference === 'donate' ? charityAmount(professional.price, 'donate') : sessionImpactAmount(professional.price))} goes to Kræftens Bekæmpelse`}</p>
+                    <small>{professional.payoutPreference === 'donate' ? charitySharePercent('donate') : CONTRIBUTION_PERCENT}% {isDa ? 'af nettoprisen ved gennemført og betalt session' : 'of the net price when completed and paid'}</small>
+                    {professional.payoutPreference === 'donate' && <small className="profile-card__donation-choice">{isDa ? 'Donerer også sin egen 70%-andel' : 'Also donates their own 70% share'}</small>}
                   </div>
 
-                  <Link href={`/professionals/${professional.id}`} className="profile-card__cta">
-                    {t.viewProfile}<ArrowRight size={16} aria-hidden="true" />
-                  </Link>
+                  <div className="profile-card__actions">
+                    <Link href={`/professionals/${professional.id}`} className="profile-card__cta">
+                      {t.viewProfile}<ArrowRight size={16} aria-hidden="true" />
+                    </Link>
+                    <ProfileWorkspaceActions professionalId={professional.id} hasAvailability={Boolean(professional.nextAvailableAt)} locale={lang} compact />
+                  </div>
                 </article>
               )
             })}

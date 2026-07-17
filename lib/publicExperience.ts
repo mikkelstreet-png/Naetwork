@@ -1,6 +1,5 @@
-import { CONTRIBUTION_PERCENT } from './platform'
+import { sessionEconomics } from './platform'
 
 export function sessionImpactAmount(price: number) {
-  return Math.round(price * CONTRIBUTION_PERCENT / 100)
+  return sessionEconomics(price).contribution
 }
-

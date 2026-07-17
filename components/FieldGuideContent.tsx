@@ -85,8 +85,8 @@ export function FieldGuideContent({ slug }: { slug: FieldSlug }) {
               <p className="mb-4 text-xs font-black uppercase text-gray-400">{isDa ? 'Bidrag' : 'Impact'}</p>
               <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
                 {isDa
-                  ? `${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse efter en gennemført, betalt session. De øvrige ${PLATFORM_SHARE_PERCENT}% går til Naetwork og ${PROFESSIONAL_SHARE_PERCENT}% til den professionelle. De konkrete beløb vises før anmodningen.`
-                  : `${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse after a completed, paid session. The remaining ${PLATFORM_SHARE_PERCENT}% goes to Naetwork and ${PROFESSIONAL_SHARE_PERCENT}% to the professional. Exact amounts are shown before the request.`}
+                  ? `Mindst ${CONTRIBUTION_PERCENT}% af nettoprisen går til Kræftens Bekæmpelse efter en gennemført, betalt session. ${PLATFORM_SHARE_PERCENT}% går til Naetwork, og den professionelle kan modtage sin ${PROFESSIONAL_SHARE_PERCENT}%-andel eller også donere den. Det konkrete valg og beløb vises før anmodningen.`
+                  : `At least ${CONTRIBUTION_PERCENT}% of the net price goes to Kræftens Bekæmpelse after a completed, paid session. ${PLATFORM_SHARE_PERCENT}% goes to Naetwork, and the professional can receive or also donate their ${PROFESSIONAL_SHARE_PERCENT}% share. The exact choice and amount are shown before the request.`}
               </p>
             </section>
           </div>

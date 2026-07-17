@@ -17,7 +17,7 @@ const facts: Array<[string, string]> = [
   ['Kontakt', supportEmail],
   ['Format', '60 minutter'],
   ['Prisvalg inkl. moms', 'DKK 600 · 900 · 1.200 · 1.800'],
-  ['Fast fordeling', `${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PLATFORM_SHARE_PERCENT}% Naetwork · ${PROFESSIONAL_SHARE_PERCENT}% fagperson`],
+  ['Grundfordeling', `${CONTRIBUTION_PERCENT}% Kræftens Bekæmpelse · ${PLATFORM_SHARE_PERCENT}% Naetwork · ${PROFESSIONAL_SHARE_PERCENT}% fagperson eller ekstra bidrag`],
 ]
 
 const sections: LegalSection[] = [
@@ -63,6 +63,7 @@ const sections: LegalSection[] = [
       'Den professionelle vælger én af fire sessionspriser: DKK 600, DKK 900, DKK 1.200 eller DKK 1.800 inklusive moms for 60 minutter. DKK 1.800 kræver særskilt godkendelse som del af profilgennemgangen. Kandidatens samlede pris, momsgrundlaget og de konkrete fordelingsbeløb vises, før en betalingspligtig bestilling gennemføres.',
       'Betaling er ikke aktiveret endnu. En bookinganmodning eller bekræftelse medfører derfor ikke betaling og dokumenterer ikke et gennemført bidrag.',
       `Når betaling aktiveres, skilles momsen først ud af kandidatens totalpris. Sessionsprisen eksklusive moms fordeles derefter fast: ${CONTRIBUTION_PERCENT}% afsættes til støtte for Kræftens Bekæmpelse, ${PLATFORM_SHARE_PERCENT}% går til Naetwork som platformsgebyr, og ${PROFESSIONAL_SHARE_PERCENT}% udgør fagpersonens forventede udbetaling før egne skatter og afgifter.`,
+      `Den professionelle kan for nye bookinger vælge, at egen andel på ${PROFESSIONAL_SHARE_PERCENT}% også afsættes til Kræftens Bekæmpelse. I så fald går samlet ${CONTRIBUTION_PERCENT + PROFESSIONAL_SHARE_PERCENT}% af nettoprisen til formålet, mens Naetworks andel fortsat er ${PLATFORM_SHARE_PERCENT}%. Valget ændrer ikke kandidatens pris.`,
       'Fordelingen medfører ikke et ekstra gebyr oven i kandidatens viste totalpris. Eventuelle betalingsomkostninger afholdes inden for Naetworks andel, medmindre andet fremgår klart før bestillingen.',
       'Før betaling aktiveres, opdaterer Naetwork checkout, afbestillingsvilkår, kvitteringer og disse vilkår, så alle økonomiske konsekvenser fremgår før en bindende bestilling.',
       'Ved et fremtidigt køb vil den samlede pris, moms, bidrag og eventuelle øvrige omkostninger fremgå umiddelbart før den betalingspligtige bestilling. Bestillingsknappen vil tydeligt angive, at handlingen medfører betalingspligt.',
@@ -82,12 +83,12 @@ const sections: LegalSection[] = [
     id: 'professionelle',
     title: '7. Professionelle profiler',
     body: [
-      `Fagpersoner skal beskrive rolle, erfaring, virksomhed, sessionstyper og pris sandfærdigt. Den faste ${CONTRIBUTION_PERCENT}/${PLATFORM_SHARE_PERCENT}/${PROFESSIONAL_SHARE_PERCENT}-fordeling kan ikke ændres af fagpersonen. LinkedIn-oplysninger bruges til gennemgang og vises ikke offentligt, medmindre det oplyses særskilt.`,
+      `Fagpersoner skal beskrive rolle, erfaring, virksomhed, sessionstyper og pris sandfærdigt. Grundfordelingen er ${CONTRIBUTION_PERCENT}/${PLATFORM_SHARE_PERCENT}/${PROFESSIONAL_SHARE_PERCENT}. Fagpersonen kan alene vælge, om egen ${PROFESSIONAL_SHARE_PERCENT}%-andel skal udbetales eller også afsættes til Kræftens Bekæmpelse. LinkedIn-oplysninger bruges til gennemgang og vises ikke offentligt, medmindre det oplyses særskilt.`,
       'Naetwork gennemgår de indsendte profiloplysninger og kan sammenholde dem med det LinkedIn-link, den professionelle har angivet. Gennemgangen er en rimelig kvalitetskontrol, men er ikke en baggrundsundersøgelse, autorisation eller garanti for den professionelles udsagn eller resultater.',
       'Naetwork kan afvise, skjule eller kræve ændringer til en profil, hvis erfaring ikke kan sandsynliggøres, teksten er vildledende, eller profilen ikke lever op til platformens kvalitets- og adfærdsstandarder.',
       'Professionelle må ikke love intern adgang, dele arbejdsgiveres fortrolige oplysninger eller give indtryk af at repræsentere en virksomhed uden bemyndigelse.',
       'En professionel deltager i eget navn. En arbejdsgiver, tidligere arbejdsgiver eller nævnt virksomhed er ikke part i sessionen og har ikke godkendt profilen, medmindre det fremgår udtrykkeligt.',
-      `Den forventede udbetaling vises før publicering og udgør ${PROFESSIONAL_SHARE_PERCENT}% af sessionsprisen eksklusive moms. Fagpersonen er selv ansvarlig for egne skattemæssige forhold, medmindre ufravigelig lovgivning eller den endelige betalingsstruktur medfører andet.`,
+      `Den forventede udbetaling vises før publicering og udgør normalt ${PROFESSIONAL_SHARE_PERCENT}% af sessionsprisen eksklusive moms. Hvis fagpersonen vælger ekstra bidrag, er den forventede udbetaling nul for nye bookinger, der oprettes under dette valg. Fagpersonen er selv ansvarlig for egne skattemæssige forhold, medmindre ufravigelig lovgivning eller den endelige betalingsstruktur medfører andet.`,
     ],
   },
   {
@@ -104,6 +105,7 @@ const sections: LegalSection[] = [
     title: '9. Bidrag til Kræftens Bekæmpelse',
     body: [
       `For hver gennemført og betalt session afsættes ${CONTRIBUTION_PERCENT}% af sessionsprisen eksklusive moms til støtte for Kræftens Bekæmpelse. Det konkrete beløb i kroner vises på fagpersonens profil og før en betalingspligtig bestilling.`,
+      `En fagperson kan vælge også at afsætte sin egen ${PROFESSIONAL_SHARE_PERCENT}%-andel. Når dette valg gælder for bookingen, er det samlede bidrag ${CONTRIBUTION_PERCENT + PROFESSIONAL_SHARE_PERCENT}% af nettoprisen. Valget gemmes på den enkelte booking, så en senere profilændring ikke ændrer en eksisterende bookings fordeling.`,
       'Kun gennemførte og betalte sessioner tæller. Anmodede, aflyste, tilbageførte eller refunderede sessioner tæller ikke som gennemførte bidrag.',
       'Naetwork er et uafhængigt initiativ og er ikke officielt tilknyttet eller godkendt af Kræftens Bekæmpelse, medmindre det fremgår udtrykkeligt. Bidragsoplysninger er ikke personlig skatte- eller fradragsrådgivning.',
       'Før betaling aktiveres, skal Naetwork have afklaret de nødvendige aftaler, tilladelser, regnskabsprocesser og dokumentationskrav for støtte knyttet til salg. Den aktive checkout og de gældende vilkår vil beskrive den endelige model.',

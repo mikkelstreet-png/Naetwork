@@ -7,7 +7,11 @@ import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { normalizeCategoryAreas } from '@/lib/categories';
 import { safeInternalPath } from '@/lib/navigation';
 import {
-  CONTRIBUTION_PERCENT,
+  charityAmount,
+  charitySharePercent,
+  normalizePayoutPreference,
+} from '@/lib/payoutPreference';
+import {
   PLATFORM_SHARE_PERCENT,
   PROFESSIONAL_SHARE_PERCENT,
   normalizeLinkedInUrl,
@@ -80,6 +84,7 @@ export async function GET(request: NextRequest) {
           if (profile?.id) {
             const submittedAreas = stringArray(metadata.areas);
             const legacyCategoryValue = text(metadata.industry);
+            const payoutPreference = normalizePayoutPreference(metadata.payoutPreference);
             await supabase
               .from('profiles')
               .update({ name: text(metadata.name) ?? user.email })
@@ -94,6 +99,7 @@ export async function GET(request: NextRequest) {
               focus_areas: stringArray(metadata.sessionTypes),
               price_dkk: price(metadata.priceDkk),
               linkedin_url: normalizeLinkedInUrl(metadata.linkedin),
+              payout_preference: payoutPreference,
               review_status: 'pending',
               visibility: 'hidden',
             }, { onConflict: 'profile_id' });
@@ -104,6 +110,7 @@ export async function GET(request: NextRequest) {
           const isProfessional = metadata.role === 'professional';
           const sessionPrice = price(metadata.priceDkk);
           const economics = sessionEconomics(sessionPrice);
+          const payoutPreference = normalizePayoutPreference(metadata.payoutPreference);
           const { data: deliveryProfile } = await supabase
             .from('profiles')
             .select('id')
@@ -123,8 +130,16 @@ export async function GET(request: NextRequest) {
               { label: 'Session', value: '60 minutter' },
               { label: 'Pris inkl. moms', value: `DKK ${sessionPrice.toLocaleString('da-DK')}` },
               { label: 'Naetwork', value: `${PLATFORM_SHARE_PERCENT}% / DKK ${economics.platformShare.toLocaleString('da-DK')}` },
-              { label: 'Kræftens Bekæmpelse', value: `${CONTRIBUTION_PERCENT}% / DKK ${economics.contribution.toLocaleString('da-DK')}` },
-              { label: 'Din andel', value: `${PROFESSIONAL_SHARE_PERCENT}% / DKK ${economics.professionalPayout.toLocaleString('da-DK')} før skat` },
+              {
+                label: 'Kræftens Bekæmpelse',
+                value: `${charitySharePercent(payoutPreference)}% / DKK ${charityAmount(sessionPrice, payoutPreference).toLocaleString('da-DK')}`,
+              },
+              {
+                label: 'Din andel',
+                value: payoutPreference === 'donate'
+                  ? `${PROFESSIONAL_SHARE_PERCENT}% / DKK ${economics.professionalPayout.toLocaleString('da-DK')} doneres også`
+                  : `${PROFESSIONAL_SHARE_PERCENT}% / DKK ${economics.professionalPayout.toLocaleString('da-DK')} før skat`,
+              },
             ] : undefined,
             note: 'Betaling er ikke aktiveret endnu. Der trækkes ikke noget beløb ved bookinganmodninger.',
             cta: {

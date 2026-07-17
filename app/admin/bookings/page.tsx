@@ -17,6 +17,8 @@ interface Booking {
   session_type: string | null
   price_dkk: number | null
   contribution_dkk: number | null
+  payout_preference: 'receive' | 'donate'
+  professional_donation_dkk: number | null
   platform_fee_dkk: number | null
   professional_payout_dkk: number | null
   candidate_profile_id: string | null
@@ -40,7 +42,7 @@ export default function BookingsPage() {
     const supabase = createClient()
     async function load() {
       setLoading(true)
-      const { data, error: bookingError } = await supabase.from('bookings').select('id, starts_at, status, session_type, price_dkk, contribution_dkk, platform_fee_dkk, professional_payout_dkk, candidate_profile_id, professional_profile_id').order('starts_at', { ascending: false })
+      const { data, error: bookingError } = await supabase.from('bookings').select('id, starts_at, status, session_type, price_dkk, contribution_dkk, payout_preference, professional_donation_dkk, platform_fee_dkk, professional_payout_dkk, candidate_profile_id, professional_profile_id').order('starts_at', { ascending: false })
       if (!active) return
       if (bookingError) {
         setError('Bookingerne kunne ikke indlæses. Kontrollér systemstatus og prøv igen.')
@@ -84,8 +86,8 @@ export default function BookingsPage() {
       <AdminTableFrame>
         {loading ? <AdminEmptyState title="Indlæser bookinger..." /> : filtered.length === 0 ? <AdminEmptyState title="Ingen bookinger i denne visning" body="Bookinger vises her, når kandidater sender anmodninger." /> : (
           <table className="min-w-[1140px] w-full border-collapse">
-            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Kandidat</th><th className="px-4 py-3">Professionel</th><th className="px-4 py-3">Session</th><th className="px-4 py-3">Tidspunkt</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Pris inkl. moms</th><th className="px-4 py-3 text-right">Kræftsagen · 10%</th><th className="px-4 py-3 text-right">Naetwork · 20%</th><th className="px-4 py-3 text-right">Professionel · 70%</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">{filtered.map((booking) => <tr key={booking.id} className="hover:bg-gray-50/70"><td className="px-4 py-4 text-sm font-black text-gray-950">{booking.candidateName}</td><td className="px-4 py-4 text-sm font-semibold text-gray-700">{booking.professionalName}</td><td className="px-4 py-4 text-xs font-semibold text-gray-600">{booking.session_type && isSessionTypeId(booking.session_type) ? sessionType(booking.session_type).title.da : '—'}</td><td className="px-4 py-4 text-sm tabular-nums text-gray-600">{formatSessionDate(booking.starts_at)}</td><td className="px-4 py-4"><StatusBadge status={booking.status} /></td><td className="px-4 py-4 text-right text-sm font-black tabular-nums text-gray-950">{booking.price_dkk == null ? '—' : formatDkk(booking.price_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.contribution_dkk == null ? '—' : formatDkk(booking.contribution_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.platform_fee_dkk == null ? '—' : formatDkk(booking.platform_fee_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.professional_payout_dkk == null ? '—' : formatDkk(booking.professional_payout_dkk)}</td></tr>)}</tbody>
+            <thead><tr className="border-b border-gray-200 bg-[#f7f7f4] text-left text-[11px] font-black uppercase text-gray-400"><th className="px-4 py-3">Kandidat</th><th className="px-4 py-3">Professionel</th><th className="px-4 py-3">Session</th><th className="px-4 py-3">Tidspunkt</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Pris inkl. moms</th><th className="px-4 py-3 text-right">Kræftens Bekæmpelse</th><th className="px-4 py-3 text-right">Naetwork · 20%</th><th className="px-4 py-3 text-right">Professionel</th></tr></thead>
+            <tbody className="divide-y divide-gray-100">{filtered.map((booking) => <tr key={booking.id} className="hover:bg-gray-50/70"><td className="px-4 py-4 text-sm font-black text-gray-950">{booking.candidateName}</td><td className="px-4 py-4 text-sm font-semibold text-gray-700">{booking.professionalName}</td><td className="px-4 py-4 text-xs font-semibold text-gray-600">{booking.session_type && isSessionTypeId(booking.session_type) ? sessionType(booking.session_type).title.da : '—'}</td><td className="px-4 py-4 text-sm tabular-nums text-gray-600">{formatSessionDate(booking.starts_at)}</td><td className="px-4 py-4"><StatusBadge status={booking.status} /></td><td className="px-4 py-4 text-right text-sm font-black tabular-nums text-gray-950">{booking.price_dkk == null ? '—' : formatDkk(booking.price_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.contribution_dkk == null ? '—' : <><span className="block">{formatDkk(booking.contribution_dkk)}</span><small className="text-[10px] font-bold text-gray-400">{booking.payout_preference === 'donate' ? '80% af netto' : '10% af netto'}</small></>}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.platform_fee_dkk == null ? '—' : formatDkk(booking.platform_fee_dkk)}</td><td className="px-4 py-4 text-right text-sm tabular-nums text-gray-600">{booking.professional_payout_dkk == null ? '—' : <><span className="block">{formatDkk(booking.professional_payout_dkk)}</span>{booking.payout_preference === 'donate' && <small className="text-[10px] font-bold text-emerald-700">70% doneret</small>}</>}</td></tr>)}</tbody>
           </table>
         )}
       </AdminTableFrame>

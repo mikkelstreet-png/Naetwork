@@ -5,6 +5,7 @@ import { claimAuthEmailRequest, markAuthEmailSent } from '@/lib/server/authEmail
 import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { areasBelongToCategory, isCategoryArea, isCategoryId } from '@/lib/categories';
 import { FOCUS_AREAS, PRICE_OPTIONS, normalizeLinkedInUrl } from '@/lib/platform';
+import { normalizePayoutPreference } from '@/lib/payoutPreference';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 const FOCUS_IDS = new Set<string>(FOCUS_AREAS.map((focus) => focus.id));
@@ -48,13 +49,14 @@ export async function POST(request: Request) {
       const bio = clean(body.bio, 500);
       const linkedin = normalizeLinkedInUrl(body.linkedin);
       const priceDkk = Number(body.priceDkk);
+      const payoutPreference = normalizePayoutPreference(body.payoutPreference);
       const sessionTypes = Array.isArray(body.sessionTypes)
         ? Array.from(new Set(body.sessionTypes.filter((item: unknown): item is string => typeof item === 'string' && FOCUS_IDS.has(item))))
         : [];
       if (!title || !company || !isCategoryId(category) || !areasBelongToCategory(category, areas) || !linkedin || !PRICES.has(priceDkk) || sessionTypes.length === 0) {
         return NextResponse.json({ error: 'Den professionelle profil mangler obligatoriske eller gyldige oplysninger.' }, { status: 400 });
       }
-      Object.assign(metadata, { title, company, category, areas, bio, linkedin, sessionTypes, priceDkk });
+      Object.assign(metadata, { title, company, category, areas, bio, linkedin, sessionTypes, priceDkk, payoutPreference });
     }
 
     const requestId = await claimAuthEmailRequest(email, 'signup');

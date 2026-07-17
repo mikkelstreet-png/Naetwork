@@ -24,10 +24,9 @@ export function ImpactMarker({ price, locale = 'da', tone = 'light', compact = f
       </div>
       <p>
         {isDa
-          ? `${CONTRIBUTION_PERCENT}% af en gennemført og betalt session på ${formatDkk(price)} går til Kræftens Bekæmpelse.`
-          : `${CONTRIBUTION_PERCENT}% of a completed and paid ${formatDkk(price)} session goes to Kræftens Bekæmpelse.`}
+          ? `${CONTRIBUTION_PERCENT}% af nettoprisen for en gennemført og betalt session på ${formatDkk(price)} inkl. moms går til Kræftens Bekæmpelse.`
+          : `${CONTRIBUTION_PERCENT}% of the net price for a completed and paid ${formatDkk(price)} session incl. VAT goes to Kræftens Bekæmpelse.`}
       </p>
     </div>
   )
 }
-

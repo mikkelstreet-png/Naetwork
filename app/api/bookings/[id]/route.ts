@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { formatSessionDate } from '@/lib/dateTime';
 import { appUrl, cancelScheduledBookingEmails, sendTransactionalEmail } from '@/lib/server/email';
 import { isSameSiteRequest } from '@/lib/server/requestSecurity';
+import { recordProductEvent } from '@/lib/server/productAnalytics';
 import { focusLabel } from '@/lib/platform';
 import { isSessionTypeId, sessionType } from '@/lib/sessionTypes';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -71,6 +72,13 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       event_type: status,
       triggered_by: actor.id,
       notes: isProfessional ? 'Updated by professional.' : 'Cancelled by candidate.',
+    });
+    await recordProductEvent(admin, {
+      eventName: `booking_${status}`,
+      profileId: booking.candidate_profile_id,
+      professionalProfileId: booking.professional_profile_id,
+      bookingId: id,
+      properties: { actorRole: isProfessional ? 'professional' : 'candidate' },
     });
 
     if (action === 'cancel' && booking.slot_id && new Date(booking.starts_at).getTime() > Date.now()) {

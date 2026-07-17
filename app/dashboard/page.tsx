@@ -5,6 +5,7 @@ import { ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CareerWorkspace } from '@/components/CareerWorkspace';
 import { MemberNav } from '@/components/MemberNav';
 import { StatusBadge } from '@/components/StatusBadge';
 import { createClient } from '@/lib/supabase';
@@ -32,6 +33,7 @@ interface Booking {
   price_dkk: number | null;
   counterpart_name: string;
   counterpart_title: string;
+  outcome: { id: string } | null;
 }
 
 const ACTIVE_STATUSES = ['requested', 'pending', 'confirmed', 'rescheduled'];
@@ -104,9 +106,9 @@ export default function DashboardPage() {
 
   const isProfessional = profile?.role === 'professional';
   const displayName = (profile?.name || user?.email || 'der').split(' ')[0];
-  const relevantBookings = bookings.filter((booking) => !['cancelled', 'no_show', 'refunded'].includes(booking.status));
   const upcoming = bookings.filter((booking) => ACTIVE_STATUSES.includes(booking.status) && new Date(booking.starts_at).getTime() > Date.now()).length;
-  const totalValue = relevantBookings.reduce((sum, booking) => sum + (booking.price_dkk ?? 0), 0);
+  const pendingRequests = bookings.filter((booking) => ['requested', 'pending'].includes(booking.status)).length;
+  const outcomeCount = bookings.filter((booking) => booking.outcome).length;
   const proChecklist = [
     { label: 'Profiltekst', done: Boolean(professional?.bio?.trim()) },
     { label: 'Fokusområder', done: Boolean(professional?.focus_areas?.length) },
@@ -115,12 +117,6 @@ export default function DashboardPage() {
     { label: 'Sendt til gennemgang', done: professional?.visibility === 'published' },
   ];
   const proCompletion = proChecklist.filter((item) => item.done).length;
-
-  const candidateActions = [
-    { number: '01', title: 'Start med situationen', body: 'Fortæl, hvilken beslutning eller proces du står overfor.', href: '/start', cta: 'Start her', accent: 'bg-cyan-300' },
-    { number: '02', title: 'Se relevant erfaring', body: 'Forstå hvorfor en professionels erfaring er relevant for dit behov.', href: '/professionals', cta: 'Se profiler', accent: 'bg-blue-300' },
-    { number: '03', title: 'Følg dine bookinger', body: 'Se anmodninger, bekræftelser og kommende sessioner.', href: '/profil/bookings', cta: 'Se status', accent: 'bg-lime-300' },
-  ];
 
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
@@ -144,26 +140,7 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 md:py-14">
         {loadError && <p role="alert" className="mb-8 border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{loadError}</p>}
 
-        {!isProfessional && (
-          <section className="mb-12">
-            <div className="mb-5 flex items-end justify-between gap-4">
-              <div>
-                <p className="text-xs font-black uppercase text-gray-400">Næste skridt</p>
-                <h2 className="mt-2 text-2xl font-black text-gray-950">Fra spørgsmål til session.</h2>
-              </div>
-            </div>
-            <div className="border-t border-gray-300 bg-white">
-              {candidateActions.map((item) => (
-                <Link key={item.title} href={item.href} className="group grid gap-4 border-b border-gray-300 px-4 py-5 transition-colors hover:bg-gray-50 sm:grid-cols-[48px_1fr_1fr_auto] sm:items-center">
-                  <div className="flex items-center gap-3"><span className={`h-2 w-8 rounded-full ${item.accent}`} /><span className="text-xs font-black text-gray-300 sm:hidden">{item.number}</span></div>
-                  <div><p className="text-lg font-black text-gray-950">{item.title}</p><p className="mt-1 text-sm leading-relaxed text-gray-500 sm:hidden">{item.body}</p></div>
-                  <p className="hidden text-sm leading-relaxed text-gray-500 sm:block">{item.body}</p>
-                  <span className="inline-flex items-center gap-2 text-sm font-black text-gray-950">{item.cta} <ArrowRight size={15} aria-hidden="true" /></span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {!isProfessional && <CareerWorkspace />}
 
         {isProfessional && (
           <section className="mb-12 bg-gray-950 px-5 py-7 text-white md:px-8">
@@ -190,7 +167,7 @@ export default function DashboardPage() {
             {[
               ['Sessioner', bookings.length.toString()],
               ['Kommende', upcoming.toString()],
-              ['Listet værdi', `DKK ${totalValue.toLocaleString('da-DK')}`],
+              [isProfessional ? 'Afventer svar' : 'Handlingsplaner', (isProfessional ? pendingRequests : outcomeCount).toString()],
             ].map(([label, value]) => (
               <div key={label} className="border-b border-gray-200 px-5 py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
                 <p className="text-xs font-black uppercase text-gray-400">{label}</p>
@@ -198,7 +175,7 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-          <p className="mt-3 text-xs leading-relaxed text-gray-400">Betaling er ikke aktiveret. Listet værdi er sessionernes viste pris, ikke gennemførte betalinger.</p>
+          <p className="mt-3 text-xs leading-relaxed text-gray-400">Betaling er ikke aktiveret. Overblikket viser kun sessionernes status og dine næste handlinger.</p>
         </section>
 
         <div className="grid gap-10 lg:grid-cols-[1fr_280px]">

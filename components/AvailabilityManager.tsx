@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarPlus, Clock3, Trash2 } from 'lucide-react'
+import { CalendarPlus, Clock3, Repeat2, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 interface AvailabilitySlot {
@@ -22,6 +22,7 @@ function localInputMinimum() {
 export function AvailabilityManager() {
   const [slots, setSlots] = useState<AvailabilitySlot[]>([])
   const [startsAt, setStartsAt] = useState('')
+  const [repeatFourWeeks, setRepeatFourWeeks] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -55,11 +56,15 @@ export function AvailabilityManager() {
       const response = await fetch('/api/availability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startsAt: new Date(startsAt).toISOString() }),
+        body: JSON.stringify({
+          startsAt: new Date(startsAt).toISOString(),
+          repeatWeeks: repeatFourWeeks ? 4 : 1,
+        }),
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.error || 'Tiden kunne ikke gemmes.')
-      setSlots((current) => [...current, result.slot].sort((a, b) => a.starts_at.localeCompare(b.starts_at)))
+      const created = Array.isArray(result.slots) ? result.slots : result.slot ? [result.slot] : []
+      setSlots((current) => [...current, ...created].sort((a, b) => a.starts_at.localeCompare(b.starts_at)))
       setStartsAt('')
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : 'Tiden kunne ikke gemmes.')
@@ -96,6 +101,18 @@ export function AvailabilityManager() {
               <CalendarPlus size={16} aria-hidden="true" />{saving ? 'Gemmer...' : 'Tilføj tid'}
             </button>
           </div>
+          <label className="mt-3 flex cursor-pointer items-start gap-3 rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={repeatFourWeeks}
+              onChange={(event) => setRepeatFourWeeks(event.target.checked)}
+              className="mt-0.5 h-4 w-4 accent-gray-950"
+            />
+            <span>
+              <span className="flex items-center gap-2 font-semibold text-gray-950"><Repeat2 size={15} aria-hidden="true" />Gentag ugentligt i 4 uger</span>
+              <span className="mt-1 block text-xs leading-relaxed text-gray-500">Opret samme ugedag og tidspunkt fire uger i træk.</span>
+            </span>
+          </label>
           {error && <p role="alert" className="notice-error mt-4">{error}</p>}
         </div>
 

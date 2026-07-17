@@ -15,6 +15,12 @@ import {
   sessionEconomics,
 } from '@/lib/platform';
 import { SESSION_TYPES } from '@/lib/sessionTypes';
+import {
+  DEFAULT_PAYOUT_PREFERENCE,
+  charityAmount,
+  charitySharePercent,
+  type PayoutPreference,
+} from '@/lib/payoutPreference';
 
 const STEP_LABELS = ['Profil', 'Session', 'Fordeling', 'Bekræft'];
 
@@ -27,6 +33,7 @@ export default function ProfessionalSignupPage() {
     title: '', company: '', category: '', areas: [] as string[],
     bio: '', linkedin: '',
     sessionTypes: [] as string[], priceDkk: 1200,
+    payoutPreference: DEFAULT_PAYOUT_PREFERENCE as PayoutPreference,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -250,6 +257,53 @@ export default function ProfessionalSignupPage() {
                   <p className="mt-2 text-xs leading-relaxed text-gray-500">Kandidatens pris er {formatDkk(economics.candidatePrice)} inkl. moms. De tre andele nedenfor summerer altid til hele nettoprisen.</p>
                 </div>
                 <RevenueSplit price={form.priceDkk} />
+                <fieldset>
+                  <legend className="text-sm font-semibold text-gray-800">Hvad skal der ske med din 70%-andel?</legend>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                    Fordelingen er fortsat 10/20/70. Dit valg bestemmer, om din egen 70%-andel udbetales til dig eller også doneres.
+                  </p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {([
+                      {
+                        value: 'receive' as const,
+                        title: 'Modtag min andel',
+                        amount: `${formatDkk(economics.professionalPayout)} før skat`,
+                        body: `${CONTRIBUTION_PERCENT}% (${formatDkk(economics.contribution)}) går til Kræftens Bekæmpelse.`,
+                      },
+                      {
+                        value: 'donate' as const,
+                        title: 'Donér også min andel',
+                        amount: `${charitySharePercent('donate')}% til Kræftens Bekæmpelse`,
+                        body: `I alt ${formatDkk(charityAmount(form.priceDkk, 'donate'))} af nettoprisen går til Kræftens Bekæmpelse.`,
+                      },
+                    ]).map((option) => {
+                      const selected = form.payoutPreference === option.value;
+                      return (
+                        <label key={option.value} className={`cursor-pointer rounded-lg border p-4 transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-gray-950 focus-within:ring-offset-2 ${selected ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-950'}`}>
+                          <input
+                            type="radio"
+                            name="payout-preference"
+                            value={option.value}
+                            checked={selected}
+                            onChange={() => set('payoutPreference', option.value)}
+                            className="sr-only"
+                          />
+                          <span className="flex items-start justify-between gap-3">
+                            <span className="text-sm font-black">{option.title}</span>
+                            <span aria-hidden="true" className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selected ? 'border-white' : 'border-gray-400'}`}>
+                              {selected && <span className="h-2 w-2 rounded-full bg-white" />}
+                            </span>
+                          </span>
+                          <strong className={`mt-4 block text-lg ${selected ? 'text-white' : 'text-gray-950'}`}>{option.amount}</strong>
+                          <span className={`mt-2 block text-xs leading-relaxed ${selected ? 'text-white/60' : 'text-gray-500'}`}>{option.body}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-4 rounded-md bg-[#f7f7f4] px-4 py-3 text-xs leading-relaxed text-gray-600">
+                    Valget gælder nye bookinger og kan ændres på din profil senere. Betaling og udbetaling er fortsat deaktiveret.
+                  </p>
+                </fieldset>
               </div>
             )}
 
@@ -267,8 +321,12 @@ export default function ProfessionalSignupPage() {
                     ['Fagområder', form.areas.join(', ')],
                     ['Pris', `${formatDkk(form.priceDkk)} inkl. moms / 60 min`],
                     ['Naetwork', `${PLATFORM_SHARE_PERCENT}% / ${formatDkk(economics.platformShare)}`],
-                    ['Kræftens Bekæmpelse', `${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)}`],
-                    ['Din andel', `${PROFESSIONAL_SHARE_PERCENT}% / ${formatDkk(economics.professionalPayout)} før skat`],
+                    ['Kræftens Bekæmpelse', form.payoutPreference === 'donate'
+                      ? `${charitySharePercent('donate')}% i alt / ${formatDkk(charityAmount(form.priceDkk, 'donate'))}`
+                      : `${CONTRIBUTION_PERCENT}% / ${formatDkk(economics.contribution)}`],
+                    ['Din 70%-andel', form.payoutPreference === 'donate'
+                      ? `${formatDkk(economics.professionalPayout)} doneres også`
+                      : `${PROFESSIONAL_SHARE_PERCENT}% / ${formatDkk(economics.professionalPayout)} før skat`],
                     ['Sessionstyper', `${form.sessionTypes.length} valgt`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">

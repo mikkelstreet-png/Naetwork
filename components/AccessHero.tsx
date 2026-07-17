@@ -44,7 +44,7 @@ export function AccessHero() {
 
           <div className="insight-hero__proofline enter-up enter-up-delay">
             <p>{isDa ? 'Ingen introduktion nødvendig. Ét konkret mål. Erfaring, du kan handle på.' : 'No introduction needed. One concrete goal. Experience you can act on.'}</p>
-            <p>{isDa ? '10 % af hver gennemført og betalt session går til Kræftens Bekæmpelse.' : '10% of every completed and paid session goes to Kræftens Bekæmpelse.'}</p>
+            <p>{isDa ? '10 % af nettoprisen for hver gennemført og betalt session går til Kræftens Bekæmpelse.' : '10% of the net price for every completed and paid session goes to Kræftens Bekæmpelse.'}</p>
           </div>
         </div>
       </div>

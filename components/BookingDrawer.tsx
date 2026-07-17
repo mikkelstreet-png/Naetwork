@@ -7,6 +7,7 @@ import { CalendarX2, Check, LockKeyhole, RefreshCw, X } from 'lucide-react'
 import { formatDkk } from '@/lib/platform'
 import { SESSION_TIME_ZONE } from '@/lib/dateTime'
 import { ImpactMarker } from '@/components/ImpactMarker'
+import { charityAmount, type PayoutPreference } from '@/lib/payoutPreference'
 import { isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
 interface Professional {
@@ -16,6 +17,7 @@ interface Professional {
   company: string
   price: number
   focus_areas: string[]
+  payoutPreference?: PayoutPreference
 }
 
 interface BookingDrawerProps {
@@ -341,7 +343,16 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
                 <p className="mt-4 border-t border-gray-200 pt-4 text-xs leading-relaxed text-gray-500">{locale === 'da' ? 'Betaling er ikke aktiveret endnu. Der trækkes ikke noget beløb ved bookinganmodningen.' : 'Payments are not enabled yet. No amount is charged when you send the request.'}</p>
               </div>
 
-              <div className="mb-5"><ImpactMarker price={professional.price} locale={locale} compact /></div>
+              <div className="mb-5">
+                <ImpactMarker price={professional.price} locale={locale} compact />
+                {professional.payoutPreference === 'donate' && (
+                  <p className="mt-2 border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold leading-relaxed text-emerald-900">
+                    {locale === 'da'
+                      ? `Den professionelle donerer også sin 70%-andel. Samlet går 80% af nettoprisen (${formatDkk(charityAmount(professional.price, 'donate'))}) til Kræftens Bekæmpelse.`
+                      : `The professional also donates their 70% share. In total, 80% of the net price (${formatDkk(charityAmount(professional.price, 'donate'))}) goes to Kræftens Bekæmpelse.`}
+                  </p>
+                )}
+              </div>
 
               <fieldset className="mb-5">
                 <legend className="mb-3 block text-sm font-black text-gray-950">{t.focusLabel}</legend>

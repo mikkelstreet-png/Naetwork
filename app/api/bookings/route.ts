@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 import { formatSessionDate } from '@/lib/dateTime';
 import { appUrl, sendTransactionalEmail } from '@/lib/server/email';
 import { isSameSiteRequest } from '@/lib/server/requestSecurity';
+import { recordProductEvent } from '@/lib/server/productAnalytics';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import { sessionEconomics } from '@/lib/platform';
+import { normalizePayoutPreference } from '@/lib/payoutPreference';
 import { isSessionTypeId, sessionType, sessionTypesForFocusAreas } from '@/lib/sessionTypes';
 
 function cleanText(value: unknown, maxLength: number) {
@@ -31,17 +33,21 @@ export async function GET() {
 
     const { data: bookings, error } = await admin
       .from('bookings')
-      .select('id, candidate_profile_id, professional_profile_id, starts_at, ends_at, status, payment_status, refund_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, contribution_dkk, platform_share_percent, platform_fee_dkk, professional_share_percent, professional_payout_dkk, session_type, focus_area, goal, material_url, time_zone, meeting_mode, meeting_url, message_to_professional, created_at')
+      .select('id, candidate_profile_id, professional_profile_id, starts_at, ends_at, status, payment_status, refund_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, contribution_dkk, minimum_contribution_dkk, professional_donation_dkk, payout_preference, platform_share_percent, platform_fee_dkk, professional_share_percent, professional_payout_dkk, session_type, focus_area, goal, material_url, time_zone, meeting_mode, meeting_url, message_to_professional, created_at')
       .or(filters.join(','))
       .order('starts_at', { ascending: false });
     if (error) throw error;
 
     const rows = bookings ?? [];
     const bookingIds = rows.map((row) => row.id);
-    const { data: reviews } = bookingIds.length
-      ? await admin.from('reviews').select('booking_id').in('booking_id', bookingIds)
-      : { data: [] };
+    const [{ data: reviews }, { data: outcomes }] = bookingIds.length
+      ? await Promise.all([
+          admin.from('reviews').select('booking_id').in('booking_id', bookingIds),
+          admin.from('session_outcomes').select('id, booking_id, summary, priorities, next_action, next_action_due_at, candidate_completed_at, updated_at').in('booking_id', bookingIds),
+        ])
+      : [{ data: [] }, { data: [] }];
     const reviewedBookingIds = new Set((reviews ?? []).map((review) => review.booking_id));
+    const outcomeMap = new Map((outcomes ?? []).map((outcome) => [outcome.booking_id, outcome]));
     const candidateIds = Array.from(new Set(rows.map((row) => row.candidate_profile_id).filter(Boolean)));
     const professionalIds = Array.from(new Set(rows.map((row) => row.professional_profile_id).filter(Boolean)));
     const [{ data: candidates }, { data: professionals }] = await Promise.all([
@@ -72,6 +78,7 @@ export async function GET() {
             ? [professional?.title, professional?.company].filter(Boolean).join(' · ')
             : 'Kandidat',
           reviewed: reviewedBookingIds.has(booking.id),
+          outcome: outcomeMap.get(booking.id) ?? null,
         };
       }),
     });
@@ -127,7 +134,7 @@ export async function POST(request: Request) {
 
     const { data: professional, error: professionalError } = await admin
       .from('professional_profiles')
-      .select('id, profile_id, title, company, price_dkk, focus_areas, visibility, review_status')
+      .select('id, profile_id, title, company, price_dkk, focus_areas, payout_preference, visibility, review_status')
       .eq('id', professionalId)
       .eq('visibility', 'published')
       .eq('review_status', 'approved')
@@ -196,6 +203,10 @@ export async function POST(request: Request) {
     ].filter(Boolean).join('\n');
 
     const economics = sessionEconomics(professional.price_dkk);
+    const payoutPreference = normalizePayoutPreference(professional.payout_preference);
+    const professionalDonation = payoutPreference === 'donate' ? economics.professionalPayout : 0;
+    const totalContribution = economics.contribution + professionalDonation;
+    const professionalPayout = payoutPreference === 'donate' ? 0 : economics.professionalPayout;
 
     const { data: booking, error: bookingError } = await admin
       .from('bookings')
@@ -208,9 +219,12 @@ export async function POST(request: Request) {
         price_dkk: economics.candidatePrice,
         price_ex_vat_dkk: economics.netPrice,
         vat_dkk: economics.vat,
-        contribution_dkk: economics.contribution,
+        contribution_dkk: totalContribution,
+        minimum_contribution_dkk: economics.contribution,
+        professional_donation_dkk: professionalDonation,
+        payout_preference: payoutPreference,
         platform_fee_dkk: economics.platformShare,
-        professional_payout_dkk: economics.professionalPayout,
+        professional_payout_dkk: professionalPayout,
         contribution_percent: economics.contributionPercent,
         platform_share_percent: economics.platformSharePercent,
         professional_share_percent: economics.professionalSharePercent,
@@ -240,6 +254,13 @@ export async function POST(request: Request) {
       triggered_by: candidate.id,
       notes: 'Booking request created. Payment is not active.',
     });
+    await recordProductEvent(admin, {
+      eventName: 'booking_requested',
+      profileId: candidate.id,
+      professionalProfileId: professional.id,
+      bookingId: booking.id,
+      properties: { sessionType: selectedSession.id },
+    });
 
     const formattedDate = formatSessionDate(startsAt);
     const professionalName = owner.name || professional.title || 'din professionelle';
@@ -261,8 +282,8 @@ export async function POST(request: Request) {
           { label: 'Sessionstype', value: selectedSessionLabel },
           { label: 'Pris inkl. moms', value: `DKK ${economics.candidatePrice.toLocaleString('da-DK')}` },
           { label: 'Naetwork', value: `DKK ${economics.platformShare.toLocaleString('da-DK')} (${economics.platformSharePercent}% af nettoprisen)` },
-          { label: 'Kræftens Bekæmpelse', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}% af nettoprisen)` },
-          { label: 'Den professionelle', value: `DKK ${economics.professionalPayout.toLocaleString('da-DK')} (${economics.professionalSharePercent}% af nettoprisen)` },
+          { label: 'Kræftens Bekæmpelse', value: `DKK ${totalContribution.toLocaleString('da-DK')} (${payoutPreference === 'donate' ? 80 : economics.contributionPercent}% af nettoprisen)` },
+          { label: 'Den professionelle', value: payoutPreference === 'donate' ? 'DKK 0 · 70%-andelen doneres' : `DKK ${professionalPayout.toLocaleString('da-DK')} (${economics.professionalSharePercent}% af nettoprisen)` },
         ],
         note: 'Betaling er ikke aktiveret endnu, og der trækkes ikke noget beløb ved bookinganmodningen.',
         cta: { label: 'Se mine bookinger', href: appUrl('/profil/bookings') },
@@ -280,8 +301,8 @@ export async function POST(request: Request) {
           { label: 'Ønsket tidspunkt', value: formattedDate },
           { label: 'Sessionstype', value: selectedSessionLabel },
           { label: 'Sessionpris inkl. moms', value: `DKK ${economics.candidatePrice.toLocaleString('da-DK')}` },
-          { label: 'Kræftens Bekæmpelse', value: `DKK ${economics.contribution.toLocaleString('da-DK')} (${economics.contributionPercent}%)` },
-          { label: 'Forventet udbetaling', value: `DKK ${economics.professionalPayout.toLocaleString('da-DK')} før skat` },
+          { label: 'Kræftens Bekæmpelse', value: `DKK ${totalContribution.toLocaleString('da-DK')} (${payoutPreference === 'donate' ? 80 : economics.contributionPercent}% af nettoprisen)` },
+          { label: 'Forventet udbetaling', value: payoutPreference === 'donate' ? 'DKK 0 · din 70%-andel doneres' : `DKK ${professionalPayout.toLocaleString('da-DK')} før skat` },
         ],
         note: goal || 'Kandidaten har ikke tilføjet et ekstra mål.',
         cta: { label: 'Behandl anmodningen', href: appUrl('/profil/bookings') },

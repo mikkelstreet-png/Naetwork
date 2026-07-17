@@ -49,21 +49,6 @@ const NEEDS = [
   },
 ] as const
 
-const PROGRESSION = [
-  {
-    title: { da: 'Forstå det indefra', en: 'Understand it from within' },
-    body: { da: 'Få det perspektiv, du ikke finder i jobopslag, virksomhedspræsentationer eller generiske karriereguides.', en: 'Get the perspective you will not find in job posts, company presentations or generic career guides.' },
-  },
-  {
-    title: { da: 'Forbered dig skarpere', en: 'Prepare with more precision' },
-    body: { da: 'Brug direkte relevant erfaring til at styrke dit CV, din ansøgning, din case eller din jobsamtale.', en: 'Use directly relevant experience to strengthen your CV, application, case or interview.' },
-  },
-  {
-    title: { da: 'Tag næste skridt', en: 'Take the next step' },
-    body: { da: 'Omsæt sessionen til en stærkere beslutning, konkrete forbedringer og tydelige næste handlinger.', en: 'Turn the session into a stronger decision, concrete improvements and clear next actions.' },
-  },
-] as const
-
 const SESSION_FLOW = [
   {
     label: { da: 'Før sessionen', en: 'Before the session' },
@@ -151,29 +136,6 @@ export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
         </div>
       </section>
 
-      <section className="home-section home-section--paper access-progression">
-        <div className="home-shell">
-          <Reveal>
-            <div className="section-heading section-heading--focused">
-              <p className="section-eyebrow">{isDa ? 'Forstå. Forbered. Ryk.' : 'Understand. Prepare. Move.'}</p>
-              <h2>{isDa ? 'Fra adgang til handling.' : 'From access to action.'}</h2>
-              <p>{isDa ? 'Værdien er ikke samtalen i sig selv. Værdien er det, erfaringen gør dig i stand til at se og gøre bagefter.' : 'The value is not the conversation itself. It is what the experience enables you to see and do afterwards.'}</p>
-            </div>
-          </Reveal>
-          <div className="progress-grid" role="list">
-            {PROGRESSION.map((step, index) => (
-              <Reveal key={step.title.da} delay={index * 80}>
-                <article role="listitem">
-                  <span>0{index + 1}</span>
-                  <h3>{step.title[lang]}</h3>
-                  <p>{step.body[lang]}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="home-section home-section--white" id="needs">
         <div className="home-shell">
           <Reveal>
@@ -247,7 +209,7 @@ export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
             {[isDa ? 'Direkte relevant erfaring' : 'Directly relevant experience', isDa ? 'Indsigt i virkeligheden bag rollen' : 'Insight into the reality behind the role', isDa ? 'Konkrete og ærlige perspektiver' : 'Concrete and honest perspectives'].map((item) => <p key={item}><Check size={15} aria-hidden="true" />{item}</p>)}
           </div>
 
-          {featuredProfessionals.length > 0 && (
+          {featuredProfessionals.length >= 3 && (
             <div className="featured-professionals">
               {featuredProfessionals.slice(0, 3).map((professional) => {
                 const sessions = professionalSessionTypes(professional).slice(0, 2)
@@ -280,12 +242,12 @@ export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
             <div>
               <p className="section-eyebrow">{isDa ? 'Fremskridt, der rækker videre' : 'Progress that reaches further'}</p>
               <h2>{isDa ? 'Dit næste skridt kan også gøre en forskel.' : 'Your next step can also make a difference.'}</h2>
-              <p>{isDa ? `${CONTRIBUTION_PERCENT} % af hver gennemført og betalt session går til Kræftens Bekæmpelse. Den sociale dimension er en del af modellen – uden at overskygge den professionelle værdi.` : `${CONTRIBUTION_PERCENT}% of every completed and paid session goes to Kræftens Bekæmpelse. The social dimension is part of the model without overshadowing the professional value.`}</p>
+              <p>{isDa ? `${CONTRIBUTION_PERCENT} % af nettoprisen for hver gennemført og betalt session går til Kræftens Bekæmpelse. Den sociale dimension er en del af modellen – uden at overskygge den professionelle værdi.` : `${CONTRIBUTION_PERCENT}% of the net price for every completed and paid session goes to Kræftens Bekæmpelse. The social dimension is part of the model without overshadowing the professional value.`}</p>
             </div>
           </Reveal>
           <Reveal delay={90} className="access-impact__examples">
             {PRICE_OPTIONS.map((price) => <p key={price}><span>{formatDkk(price)}</span><i aria-hidden="true" /><strong>{formatDkk(sessionImpactAmount(price))}</strong></p>)}
-            <small>{isDa ? 'Sessionspris → bidrag til Kræftens Bekæmpelse' : 'Session price → contribution to Kræftens Bekæmpelse'}</small>
+            <small>{isDa ? 'Sessionspris inkl. moms → bidrag (10 % af nettoprisen)' : 'Session price incl. VAT → contribution (10% of net price)'}</small>
           </Reveal>
         </div>
       </section>
@@ -319,7 +281,7 @@ export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
           <div>
             <p>{isDa ? 'Find en professionel med den erfaring, du mangler, og brug 60 minutter på at stå stærkere bagefter.' : 'Find a professional with the experience you need and use 60 minutes to move forward stronger.'}</p>
             <div className="home-final__actions">
-              <Link href="/professionals" className="button-primary button-with-arrow">{isDa ? 'Find den rette erfaring' : 'Find the right experience'}<ArrowRight size={16} aria-hidden="true" /></Link>
+              <Link href="/professionals" className="button-primary button-with-arrow">{isDa ? 'Find den erfaring, du mangler' : 'Find the experience you need'}<ArrowRight size={16} aria-hidden="true" /></Link>
               <Link href="/professional/signup" className="button-secondary">{isDa ? 'Gør din erfaring tilgængelig' : 'Make your experience available'}</Link>
             </div>
           </div>

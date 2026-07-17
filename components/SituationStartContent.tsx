@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { PublicPageHero } from '@/components/PublicPageHero'
 import { useLanguage } from '@/context/LanguageContext'
@@ -15,11 +15,13 @@ function isAccessPathId(value: string | null): value is AccessPathId {
 }
 
 export function SituationStartContent() {
+  const router = useRouter()
   const { lang } = useLanguage()
   const isDa = lang === 'da'
   const [selectedSession, setSelectedSession] = useState<SessionTypeId | null>(null)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [pathFilter, setPathFilter] = useState<AccessPathId | null>(null)
+  const [continuing, setContinuing] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -52,6 +54,31 @@ export function SituationStartContent() {
     setSelectedSession(null)
     setSelectedCategory('')
     window.history.replaceState(null, '', '/start')
+  }
+
+  async function continueToProfiles() {
+    if (!selected || !selectedCategory) return
+    setContinuing(true)
+    const situation = {
+      title: `${selected.title.da} · ${selectedCategory}`,
+      category: selectedCategory,
+      sessionType: selected.id,
+      stage: 'preparing',
+      deadline: '',
+      nextAction: 'Vælg op til tre relevante profiler.',
+    }
+    window.localStorage.setItem('naetwork_active_situation', JSON.stringify(situation))
+    try {
+      const response = await fetch('/api/workspace', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(situation),
+      })
+      if (response.ok) window.localStorage.removeItem('naetwork_active_situation')
+    } catch {
+      // The anonymous situation remains locally and is synced after sign-in.
+    }
+    router.push(profileHref)
   }
 
   return (
@@ -139,9 +166,9 @@ export function SituationStartContent() {
             )}
 
             {completed === 2 ? (
-              <Link href={profileHref} className="button-inverse mt-6 w-full">
-                {isDa ? 'Find relevant erfaring' : 'Find relevant experience'}<ArrowRight size={16} aria-hidden="true" />
-              </Link>
+              <button type="button" onClick={() => void continueToProfiles()} disabled={continuing} className="button-inverse mt-6 w-full disabled:opacity-60">
+                {continuing ? (isDa ? 'Gemmer din situation...' : 'Saving your situation...') : (isDa ? 'Find relevant erfaring' : 'Find relevant experience')}<ArrowRight size={16} aria-hidden="true" />
+              </button>
             ) : (
               <button type="button" disabled className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-[4px] border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/55">
                 {isDa ? 'Vælg session og kategori' : 'Choose session and category'}
