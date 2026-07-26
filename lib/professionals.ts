@@ -19,6 +19,9 @@ export interface PublicProfessionalRow {
   review_count?: number | null
   average_rating?: number | string | null
   payout_preference?: string | null
+  experience_summary?: string | null
+  relevant_situations?: string[] | null
+  expected_outcomes?: string[] | null
 }
 
 export interface ProfessionalCard {
@@ -38,6 +41,9 @@ export interface ProfessionalCard {
   reviewCount: number
   averageRating: number | null
   payoutPreference: PayoutPreference
+  experienceSummary: string
+  relevantSituations: string[]
+  expectedOutcomes: string[]
 }
 
 export function mapPublicProfessionals(data: unknown): ProfessionalCard[] {
@@ -62,5 +68,12 @@ export function mapPublicProfessionals(data: unknown): ProfessionalCard[] {
       ? null
       : Number(profile.average_rating),
     payoutPreference: normalizePayoutPreference(profile.payout_preference),
+    experienceSummary: profile.experience_summary?.trim() ?? '',
+    relevantSituations: Array.isArray(profile.relevant_situations)
+      ? profile.relevant_situations.map((item) => item.trim()).filter(Boolean).slice(0, 3)
+      : [],
+    expectedOutcomes: Array.isArray(profile.expected_outcomes)
+      ? profile.expected_outcomes.map((item) => item.trim()).filter(Boolean).slice(0, 3)
+      : [],
   })).filter((profile) => profile.id && profile.name)
 }

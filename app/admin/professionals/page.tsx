@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AlertCircle,
   Check,
@@ -19,11 +19,12 @@ import { AdminEmptyState, AdminPageHeader } from '@/components/AdminShell'
 import { categoryForAreas } from '@/lib/categories'
 import { focusLabel, sessionEconomics } from '@/lib/platform'
 import { charityAmount, charitySharePercent, normalizePayoutPreference, type PayoutPreference } from '@/lib/payoutPreference'
+import { REVIEW_FEEDBACK_MAX_LENGTH, professionalProfileMissing } from '@/lib/professionalProfile'
 import { createClient } from '@/lib/supabase/client'
 
 type Visibility = 'hidden' | 'published'
 type ReviewStatus = 'pending' | 'approved' | 'rejected'
-type StatusFilter = ReviewStatus | 'all'
+type StatusFilter = ReviewStatus | 'submitted' | 'draft' | 'all'
 type ConfirmAction = { id: string; type: 'reject' | 'hide' } | null
 
 interface Professional {
@@ -33,13 +34,19 @@ interface Professional {
   title: string | null
   company: string | null
   bio: string | null
+  experience_summary: string | null
+  relevant_situations: string[] | null
+  expected_outcomes: string[] | null
   industries: string[] | null
   focus_areas: string[] | null
+  languages: string[] | null
+  years_experience: number | null
   price_dkk: number
   linkedin_url: string | null
   payout_preference: PayoutPreference
   visibility: Visibility
   review_status: ReviewStatus
+  review_feedback: string | null
   created_at: string
   future_slots: number | null
 }
@@ -51,7 +58,8 @@ interface Notice {
 }
 
 const STATUS_TABS: Array<{ label: string; value: StatusFilter }> = [
-  { label: 'Til gennemgang', value: 'pending' },
+  { label: 'Indsendte', value: 'submitted' },
+  { label: 'Kladder', value: 'draft' },
   { label: 'Godkendte', value: 'approved' },
   { label: 'Afviste', value: 'rejected' },
   { label: 'Alle', value: 'all' },
@@ -59,7 +67,7 @@ const STATUS_TABS: Array<{ label: string; value: StatusFilter }> = [
 
 function ReviewBadge({ status, visibility }: { status: ReviewStatus; visibility: Visibility }) {
   const label = status === 'pending'
-    ? 'Afventer gennemgang'
+    ? visibility === 'published' ? 'Indsendt · afventer' : 'Kladde · ikke indsendt'
     : status === 'rejected'
       ? 'Kræver ændringer'
       : visibility === 'published'
@@ -93,20 +101,11 @@ function verifiedLinkedInUrl(value: string | null) {
 }
 
 function profileQuality(profile: Professional) {
-  const checks = [
-    { label: 'navn', complete: profile.name !== 'Navn mangler' },
-    { label: 'titel', complete: Boolean(profile.title?.trim()) },
-    { label: 'virksomhed', complete: Boolean(profile.company?.trim()) },
-    { label: 'bio', complete: Boolean(profile.bio?.trim()) },
-    { label: 'fagområde', complete: Boolean(profile.industries?.length) },
-    { label: 'sessionstyper', complete: Boolean(profile.focus_areas?.length) },
-    { label: 'pris', complete: Number.isFinite(profile.price_dkk) && profile.price_dkk > 0 },
-    { label: 'gyldigt LinkedIn-link', complete: Boolean(verifiedLinkedInUrl(profile.linkedin_url)) },
-  ]
-  const completed = checks.filter((check) => check.complete).length
+  const missing = professionalProfileMissing(profile)
+  const total = 13
   return {
-    percentage: Math.round((completed / checks.length) * 100),
-    missing: checks.filter((check) => !check.complete).map((check) => check.label),
+    percentage: Math.max(0, Math.round(((total - missing.length) / total) * 100)),
+    missing,
   }
 }
 
@@ -123,11 +122,15 @@ function actionError(status: number, serverMessage?: string) {
 
 export default function ProfessionalsPage() {
   const [professionals, setProfessionals] = useState<Professional[]>([])
-  const [filter, setFilter] = useState<StatusFilter>('pending')
+  const [filter, setFilter] = useState<StatusFilter>('submitted')
   const [loading, setLoading] = useState(true)
   const [notice, setNotice] = useState<Notice | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
+  const [reviewFeedback, setReviewFeedback] = useState('')
+  const confirmationDialogRef = useRef<HTMLDivElement | null>(null)
+  const reviewFeedbackRef = useRef<HTMLTextAreaElement | null>(null)
+  const confirmationTriggerRef = useRef<ConfirmAction>(null)
 
   const loadProfessionals = useCallback(async ({ keepNotice = false }: { keepNotice?: boolean } = {}) => {
     setLoading(true)
@@ -135,7 +138,7 @@ export default function ProfessionalsPage() {
     const supabase = createClient()
     const { data, error: loadError } = await supabase
       .from('professional_profiles')
-      .select('id, profile_id, title, company, bio, industries, focus_areas, price_dkk, linkedin_url, payout_preference, visibility, review_status, created_at')
+      .select('id, profile_id, title, company, bio, experience_summary, relevant_situations, expected_outcomes, industries, focus_areas, languages, years_experience, price_dkk, linkedin_url, payout_preference, visibility, review_status, review_feedback, created_at')
       .order('created_at', { ascending: false })
 
     if (loadError) {
@@ -192,7 +195,32 @@ export default function ProfessionalsPage() {
 
   useEffect(() => { void loadProfessionals() }, [loadProfessionals])
 
-  async function updateReview(profile: Professional, reviewStatus: ReviewStatus, visibility: Visibility) {
+  useEffect(() => {
+    if (confirmAction) {
+      window.requestAnimationFrame(() => {
+        if (confirmAction.type === 'reject') reviewFeedbackRef.current?.focus()
+        else confirmationDialogRef.current?.focus()
+      })
+      return
+    }
+
+    const trigger = confirmationTriggerRef.current
+    if (!trigger) return
+    window.requestAnimationFrame(() => {
+      document.querySelector<HTMLButtonElement>(
+        `[data-review-trigger="${trigger.id}:${trigger.type}"]`,
+      )?.focus()
+      confirmationTriggerRef.current = null
+    })
+  }, [confirmAction])
+
+  function openConfirmation(action: Exclude<ConfirmAction, null>) {
+    confirmationTriggerRef.current = action
+    if (action.type === 'reject') setReviewFeedback('')
+    setConfirmAction(action)
+  }
+
+  async function updateReview(profile: Professional, reviewStatus: ReviewStatus, visibility: Visibility, feedback = '') {
     const actionKey = `${profile.id}:${reviewStatus}:${visibility}`
     setActionLoading(actionKey)
     setNotice(null)
@@ -201,7 +229,7 @@ export default function ProfessionalsPage() {
       const response = await fetch(`/api/admin/professionals/${profile.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviewStatus, visibility }),
+        body: JSON.stringify({ reviewStatus, visibility, reviewFeedback: feedback }),
       })
       const result = await response.json().catch(() => ({})) as { error?: string; auditLogged?: boolean; notificationSent?: boolean | null }
 
@@ -212,7 +240,7 @@ export default function ProfessionalsPage() {
       }
 
       const success = reviewStatus === 'rejected'
-        ? { title: `${profile.name} kræver ændringer`, body: 'Profilen er afvist og skjult fra hjemmesiden.' }
+        ? { title: `${profile.name} kræver ændringer`, body: 'Profilen er afvist og skjult. Den konkrete feedback er gemt og sendt til den professionelle.' }
         : visibility === 'hidden'
           ? { title: `${profile.name} er skjult`, body: 'Godkendelsen er bevaret, men profilen vises ikke offentligt.' }
           : profile.review_status === 'approved'
@@ -220,6 +248,7 @@ export default function ProfessionalsPage() {
             : { title: `${profile.name} er godkendt`, body: 'Profilen er godkendt og publiceret på hjemmesiden.' }
 
       setConfirmAction(null)
+      setReviewFeedback('')
       setNotice({
         tone: 'success',
         ...success,
@@ -243,7 +272,8 @@ export default function ProfessionalsPage() {
 
   const counts = useMemo(() => ({
     all: professionals.length,
-    pending: professionals.filter((profile) => profile.review_status === 'pending').length,
+    submitted: professionals.filter((profile) => profile.review_status === 'pending' && profile.visibility === 'published').length,
+    draft: professionals.filter((profile) => profile.review_status === 'pending' && profile.visibility === 'hidden').length,
     approved: professionals.filter((profile) => profile.review_status === 'approved').length,
     published: professionals.filter((profile) => profile.review_status === 'approved' && profile.visibility === 'published').length,
     rejected: professionals.filter((profile) => profile.review_status === 'rejected').length,
@@ -251,14 +281,16 @@ export default function ProfessionalsPage() {
 
   const filtered = useMemo(() => {
     if (filter === 'all') return professionals
+    if (filter === 'submitted') return professionals.filter((profile) => profile.review_status === 'pending' && profile.visibility === 'published')
+    if (filter === 'draft') return professionals.filter((profile) => profile.review_status === 'pending' && profile.visibility === 'hidden')
     return professionals.filter((profile) => profile.review_status === filter)
   }, [filter, professionals])
 
   const summaryCards: Array<{ label: string; value: number; note: string; filter: StatusFilter }> = [
-    { label: 'Til gennemgang', value: counts.pending, note: 'Kræver din beslutning', filter: 'pending' },
+    { label: 'Indsendte', value: counts.submitted, note: 'Klar til beslutning', filter: 'submitted' },
+    { label: 'Kladder', value: counts.draft, note: 'Ikke indsendt endnu', filter: 'draft' },
     { label: 'Godkendte', value: counts.approved, note: `${counts.published} er synlige`, filter: 'approved' },
     { label: 'Kræver ændringer', value: counts.rejected, note: 'Afvist og skjult', filter: 'rejected' },
-    { label: 'Alle profiler', value: counts.all, note: 'Samlet overblik', filter: 'all' },
   ]
 
   return (
@@ -266,7 +298,7 @@ export default function ProfessionalsPage() {
       <AdminPageHeader
         eyebrow="Kvalitet og publicering"
         title="Professionelle"
-        description="Gennemgå profilens relevans og kvalitet. En godkendelse publicerer profilen med det samme; en afvisning eller skjulning fjerner den fra hjemmesiden."
+        description="Kladder er ikke indsendt. Gennemgå kun indsendte profiler, og giv konkret feedback, når noget skal rettes."
       />
 
       <section aria-label="Reviewstatus" className="grid grid-cols-2 gap-2 lg:grid-cols-4">
@@ -292,7 +324,7 @@ export default function ProfessionalsPage() {
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.08em] text-gray-400">Reviewkø</p>
           <h2 className="mt-1 text-xl font-black text-gray-950">
-            {filter === 'pending' ? 'Profiler, der venter på dig' : STATUS_TABS.find((tab) => tab.value === filter)?.label}
+            {filter === 'submitted' ? 'Profiler, der venter på din beslutning' : STATUS_TABS.find((tab) => tab.value === filter)?.label}
           </h2>
         </div>
         <div className="inline-flex w-full flex-wrap rounded-lg border border-gray-200 bg-white p-1 sm:w-auto" role="group" aria-label="Filtrér profiler">
@@ -339,8 +371,8 @@ export default function ProfessionalsPage() {
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-gray-200 bg-white">
             <AdminEmptyState
-              title={filter === 'pending' ? 'Reviewkøen er tom' : 'Ingen profiler i denne visning'}
-              body={filter === 'pending' ? 'Der er ingen professionelle, der afventer godkendelse.' : 'Skift filter for at se profiler med en anden status.'}
+              title={filter === 'submitted' ? 'Reviewkøen er tom' : 'Ingen profiler i denne visning'}
+              body={filter === 'submitted' ? 'Der er ingen indsendte profiler, der afventer godkendelse.' : 'Skift filter for at se profiler med en anden status.'}
             />
           </div>
         ) : filtered.map((profile) => {
@@ -354,7 +386,12 @@ export default function ProfessionalsPage() {
           const payoutPreference = normalizePayoutPreference(profile.payout_preference)
           const economics = sessionEconomics(profile.price_dkk)
           const contribution = charityAmount(profile.price_dkk, payoutPreference)
+          const languageLabels = (profile.languages ?? []).map((language) => language === 'da' ? 'Dansk' : language === 'en' ? 'Engelsk' : language.toUpperCase())
           const confirmation = confirmAction?.id === profile.id ? confirmAction.type : null
+          const isDraft = profile.review_status === 'pending' && profile.visibility === 'hidden'
+          const isSubmitted = profile.review_status === 'pending' && profile.visibility === 'published'
+          const canReject = isSubmitted || profile.review_status === 'approved'
+          const canApprove = isSubmitted || (profile.review_status === 'approved' && profile.visibility === 'hidden')
 
           return (
             <article key={profile.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_1px_0_rgba(17,24,39,0.02)]">
@@ -380,8 +417,8 @@ export default function ProfessionalsPage() {
                       <Eye size={13} aria-hidden="true" /> Åbn profil <ExternalLink size={11} aria-hidden="true" />
                     </Link>
                   ) : (
-                    <span className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-gray-100 bg-gray-50 px-3 text-xs font-bold text-gray-400" title="Profilen kan åbnes, når den er publiceret">
-                      <EyeOff size={13} aria-hidden="true" /> Preview efter publicering
+                    <span className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 text-xs font-bold text-gray-600" title="Alle reviewfelter vises i kortet nedenfor">
+                      <Eye size={13} aria-hidden="true" /> Reviewvisning åben
                     </span>
                   )}
                 </div>
@@ -391,6 +428,10 @@ export default function ProfessionalsPage() {
                 <div className="min-w-0 px-4 py-5 sm:px-5 lg:border-r lg:border-gray-100">
                   <p className="text-[10px] font-black uppercase tracking-[0.09em] text-gray-400">Profil og relevans</p>
                   <p className="mt-3 max-w-3xl text-sm leading-6 text-gray-600">{profile.bio || 'Bio mangler. Bed den professionelle om at beskrive erfaringen og hvornår den er relevant.'}</p>
+                  <div className="mt-5 rounded-lg bg-[#f7f7f4] p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.08em] text-gray-400">Erfaringsgrundlag</p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-gray-800">{profile.experience_summary || 'Mangler. Profilen kan ikke godkendes uden en konkret beskrivelse.'}</p>
+                  </div>
                   <div className="mt-5 grid gap-4 sm:grid-cols-2">
                     <div>
                       <p className="text-xs font-black text-gray-950">{category?.id || 'Kategori mangler'}</p>
@@ -405,12 +446,31 @@ export default function ProfessionalsPage() {
                       </div>
                     </div>
                   </div>
+                  <div className="mt-5 grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-black text-gray-950">Relevant når kandidaten skal</p>
+                      <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-gray-600">
+                        {(profile.relevant_situations?.length ? profile.relevant_situations : ['Konkret situation mangler']).map((item) => <li key={item}>• {item}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-gray-950">Realistisk udbytte</p>
+                      <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-gray-600">
+                        {(profile.expected_outcomes?.length ? profile.expected_outcomes : ['Forventet udbytte mangler']).map((item) => <li key={item}>• {item}</li>)}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="border-t border-gray-100 px-4 py-5 sm:px-5 lg:border-r lg:border-t-0">
                   <p className="text-[10px] font-black uppercase tracking-[0.09em] text-gray-400">Pris og bidrag</p>
                   <p className="mt-3 text-xl font-black text-gray-950">{formatDkk(profile.price_dkk)}</p>
                   <p className="mt-1 text-xs font-semibold text-gray-500">60 minutter</p>
+                  <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                    {profile.years_experience ? `${profile.years_experience} års erfaring` : 'Erfaringsår mangler'}
+                    {' · '}
+                    {languageLabels.length > 0 ? languageLabels.join(' · ') : 'Sessionssprog mangler'}
+                  </p>
                   <div className="mt-4 rounded-lg bg-[#f7f7f4] px-3 py-3">
                     <p className="text-xs font-black text-gray-950">{formatDkk(contribution)} til Kræftens Bekæmpelse</p>
                     <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{charitySharePercent(payoutPreference)} % af nettoprisen ved en gennemført og betalt session.</p>
@@ -442,22 +502,52 @@ export default function ProfessionalsPage() {
                   ) : (
                     <p className="mt-3 text-xs leading-relaxed text-gray-500"><span className="font-black text-gray-700">Mangler:</span> {quality.missing.join(', ')}.</p>
                   )}
+                  {profile.review_feedback && (
+                    <div className="mt-4 rounded-lg border border-red-100 bg-red-50 p-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.08em] text-red-700">Seneste feedback</p>
+                      <p className="mt-1 text-xs leading-relaxed text-red-800">{profile.review_feedback}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {confirmation && (
-                <div className="border-t border-red-100 bg-red-50 px-4 py-4 sm:px-5" role="alertdialog" aria-labelledby={`confirm-${profile.id}`}>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
+                <div
+                  ref={confirmationDialogRef}
+                  tabIndex={-1}
+                  className="border-t border-red-100 bg-red-50 px-4 py-4 outline-none sm:px-5"
+                  role="alertdialog"
+                  aria-modal="false"
+                  aria-labelledby={`confirm-${profile.id}`}
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
                       <p id={`confirm-${profile.id}`} className="text-sm font-black text-red-950">{confirmation === 'reject' ? `Afvis ${profile.name}?` : `Skjul ${profile.name}?`}</p>
                       <p className="mt-1 text-xs leading-relaxed text-red-800">{confirmation === 'reject' ? 'Profilen markeres som “kræver ændringer” og bliver skjult fra hjemmesiden.' : 'Profilen forbliver godkendt, men kan ikke ses eller bookes på hjemmesiden.'}</p>
+                      </div>
+                      <button type="button" onClick={() => { setConfirmAction(null); setReviewFeedback('') }} disabled={isThisProfileLoading} className="min-h-10 rounded-lg border border-red-200 bg-white px-3 text-xs font-black text-red-800 disabled:opacity-50">Annuller</button>
                     </div>
-                    <div className="flex shrink-0 gap-2">
-                      <button type="button" onClick={() => setConfirmAction(null)} disabled={isThisProfileLoading} className="min-h-10 rounded-lg border border-red-200 bg-white px-3 text-xs font-black text-red-800 disabled:opacity-50">Annuller</button>
+                    {confirmation === 'reject' && (
+                      <label className="block">
+                        <span className="text-xs font-black text-red-950">Hvad skal den professionelle konkret rette?</span>
+                        <textarea
+                          ref={reviewFeedbackRef}
+                          value={reviewFeedback}
+                          maxLength={REVIEW_FEEDBACK_MAX_LENGTH}
+                          onChange={(event) => setReviewFeedback(event.target.value)}
+                          rows={3}
+                          className="field-control mt-2 resize-none border-red-200 bg-white text-sm"
+                          placeholder="Fx: Gør de relevante situationer mere konkrete, og beskriv hvilken direkte interview-erfaring din feedback bygger på."
+                        />
+                        <span className="mt-1 block text-[11px] text-red-700">{reviewFeedback.trim().length}/{REVIEW_FEEDBACK_MAX_LENGTH} tegn · minimum 10</span>
+                      </label>
+                    )}
+                    <div className="flex justify-end">
                       <button
                         type="button"
-                        onClick={() => void updateReview(profile, confirmation === 'reject' ? 'rejected' : 'approved', 'hidden')}
-                        disabled={isThisProfileLoading}
+                        onClick={() => void updateReview(profile, confirmation === 'reject' ? 'rejected' : 'approved', 'hidden', confirmation === 'reject' ? reviewFeedback : '')}
+                        disabled={isThisProfileLoading || (confirmation === 'reject' && reviewFeedback.trim().length < 10)}
                         className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-red-700 px-4 text-xs font-black text-white disabled:opacity-50"
                       >
                         {(isRejecting || isHiding) && <LoaderCircle size={14} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />}
@@ -470,10 +560,12 @@ export default function ProfessionalsPage() {
 
               <div className="flex flex-col gap-3 border-t border-gray-100 bg-[#fcfcfa] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                 <p className="max-w-xl text-xs leading-relaxed text-gray-500">
-                  {profile.review_status === 'pending'
-                    ? 'Godkend kun, når erfaring, fokusområder og LinkedIn er verificeret. Profilen bliver synlig med det samme.'
+                  {isDraft
+                    ? 'Dette er en kladde. Vent med review, til den professionelle selv har sendt profilen til gennemgang.'
+                    : isSubmitted
+                      ? 'Godkend kun, når erfaringsgrundlag, konkrete situationer, udbytte og LinkedIn er verificeret.'
                     : profile.review_status === 'rejected'
-                      ? 'Godkend igen, når de nødvendige profilændringer er gennemført.'
+                      ? 'Vent på, at den professionelle retter profilen og sender den ind igen. Feedbacken forbliver synlig indtil genindsendelse.'
                       : profile.visibility === 'published'
                         ? profile.future_slots === 0
                           ? 'Profilen er live, men kan først bookes, når den professionelle har åbnet ledige tider.'
@@ -481,10 +573,11 @@ export default function ProfessionalsPage() {
                         : 'Profilen er godkendt, men ikke synlig for kandidater.'}
                 </p>
                 {!confirmation && <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
-                  {profile.review_status !== 'rejected' && (
+                  {canReject && (
                     <button
                       type="button"
-                      onClick={() => setConfirmAction({ id: profile.id, type: 'reject' })}
+                      onClick={() => openConfirmation({ id: profile.id, type: 'reject' })}
+                      data-review-trigger={`${profile.id}:reject`}
                       disabled={isThisProfileLoading}
                       className="min-h-10 rounded-lg border border-gray-200 bg-white px-3.5 text-xs font-black text-gray-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
                     >
@@ -494,14 +587,15 @@ export default function ProfessionalsPage() {
                   {profile.review_status === 'approved' && profile.visibility === 'published' && (
                     <button
                       type="button"
-                      onClick={() => setConfirmAction({ id: profile.id, type: 'hide' })}
+                      onClick={() => openConfirmation({ id: profile.id, type: 'hide' })}
+                      data-review-trigger={`${profile.id}:hide`}
                       disabled={isThisProfileLoading}
                       className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 text-xs font-black text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-950 disabled:opacity-50"
                     >
                       <EyeOff size={13} aria-hidden="true" /> Skjul profil
                     </button>
                   )}
-                  {(profile.review_status !== 'approved' || profile.visibility !== 'published') && (
+                  {canApprove && (
                     <button
                       type="button"
                       onClick={() => void updateReview(profile, 'approved', 'published')}

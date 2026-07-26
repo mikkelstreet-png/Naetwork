@@ -25,9 +25,35 @@ export async function GET() {
       .maybeSingle();
     const { data: bookings } = await admin
       .from('bookings')
-      .select('id, starts_at, ends_at, status, payment_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, minimum_contribution_dkk, professional_donation_dkk, contribution_dkk, payout_preference, platform_fee_dkk, professional_payout_dkk, focus_area, goal, material_url, time_zone, meeting_mode, created_at, updated_at')
+      .select('id, candidate_profile_id, professional_profile_id, starts_at, ends_at, status, payment_status, price_dkk, price_ex_vat_dkk, vat_dkk, contribution_percent, minimum_contribution_dkk, professional_donation_dkk, contribution_dkk, payout_preference, platform_fee_dkk, professional_payout_dkk, focus_area, goal, material_url, time_zone, meeting_mode, created_at, updated_at')
       .or(`candidate_profile_id.eq.${profile.id}${professional ? `,professional_profile_id.eq.${professional.id}` : ''}`)
       .order('created_at', { ascending: false });
+    const bookingRows = bookings ?? [];
+    const bookingIds = bookingRows.map((booking) => booking.id);
+    const [{ data: sessionPlans }, { data: outcomeRows }] = bookingIds.length
+      ? await Promise.all([
+          admin
+            .from('session_plans')
+            .select('booking_id, problem, context, desired_outcome, definition_of_done, key_questions, anything_else, preparation_status, prepared_at, created_at, updated_at')
+            .in('booking_id', bookingIds),
+          admin
+            .from('session_outcomes')
+            .select('id, booking_id, candidate_profile_id, professional_profile_id, summary, recommendation, decisions, definition_of_done_status, open_questions, result_status, result_schema_version, published_at, created_at, updated_at')
+            .in('booking_id', bookingIds),
+        ])
+      : [{ data: [] }, { data: [] }];
+    const visibleOutcomes = (outcomeRows ?? []).filter((outcome) => (
+      (outcome.candidate_profile_id === profile.id && outcome.result_status === 'published')
+      || (professional?.id && outcome.professional_profile_id === professional.id)
+    ));
+    const outcomeIds = visibleOutcomes.map((outcome) => outcome.id);
+    const { data: nextMoves } = outcomeIds.length
+      ? await admin
+          .from('session_plan_next_moves')
+          .select('session_outcome_id, position, action, responsible, due_at, status, completed_at, created_at, updated_at')
+          .in('session_outcome_id', outcomeIds)
+          .order('position', { ascending: true })
+      : { data: [] };
     const { data: consentEvents } = await admin
       .from('marketing_consent_events')
       .select('granted, occurred_at')
@@ -39,7 +65,10 @@ export async function GET() {
       service: 'Naetwork',
       account: profile,
       professionalProfile: professional,
-      bookings: bookings ?? [],
+      bookings: bookingRows,
+      sessionPlans: sessionPlans ?? [],
+      sessionOutcomes: visibleOutcomes,
+      sessionNextMoves: nextMoves ?? [],
       marketingConsentHistory: consentEvents ?? [],
     };
     return new NextResponse(JSON.stringify(exportData, null, 2), {

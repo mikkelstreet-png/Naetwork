@@ -27,6 +27,10 @@ export function professionalSessionTypes(professional: ProfessionalCard) {
 }
 
 export function professionalBestFor(professional: ProfessionalCard, isDa: boolean) {
+  if (professional.relevantSituations.length > 0) {
+    return professional.relevantSituations.slice(0, 2).join(' · ')
+  }
+
   const locale = isDa ? 'da' : 'en'
   const labels = professionalSessionTypes(professional)
     .slice(0, 2)
@@ -35,6 +39,8 @@ export function professionalBestFor(professional: ProfessionalCard, isDa: boolea
 }
 
 export function professionalPrimaryOutput(professional: ProfessionalCard, isDa: boolean) {
+  if (professional.expectedOutcomes.length > 0) return professional.expectedOutcomes[0]
+
   const locale = isDa ? 'da' : 'en'
   return professionalSessionTypes(professional)[0]?.outcome[locale]
     ?? (isDa ? 'Et konkret og prioriteret næste skridt.' : 'A concrete and prioritized next step.')
@@ -65,17 +71,9 @@ export function professionalExperienceFacts(professional: ProfessionalCard, isDa
   return facts
 }
 
-export function professionalResponseLabel(hours: number | null, isDa: boolean) {
-  if (hours === null) return null
-  if (hours < 24) return isDa ? `Svarer normalt inden for ${hours} timer` : `Usually responds within ${hours} hours`
-
-  const days = Math.max(1, Math.round(hours / 24))
-  return isDa
-    ? `Svarer normalt inden for ${days} ${days === 1 ? 'dag' : 'dage'}`
-    : `Usually responds within ${days} ${days === 1 ? 'day' : 'days'}`
-}
-
 export function professionalExperienceLead(professional: ProfessionalCard, isDa: boolean) {
+  if (professional.experienceSummary.trim()) return professional.experienceSummary.trim()
+
   const bio = professional.bio.trim()
   if (bio) {
     const firstSentence = bio.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim()

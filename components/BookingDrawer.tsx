@@ -7,6 +7,8 @@ import { CalendarX2, Check, LockKeyhole, RefreshCw, X } from 'lucide-react'
 import { formatDkk } from '@/lib/platform'
 import { SESSION_TIME_ZONE } from '@/lib/dateTime'
 import { ImpactMarker } from '@/components/ImpactMarker'
+import { SessionPlanPreview } from '@/components/SessionPlanPreview'
+import { recordClientProductEvent } from '@/lib/clientProductAnalytics'
 import { charityAmount, type PayoutPreference } from '@/lib/payoutPreference'
 import { isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
@@ -48,7 +50,9 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   const [error, setError] = useState<string | null>(null)
   const [authState, setAuthState] = useState<'checking' | 'signed_in' | 'signed_out' | 'error'>('checking')
   const [notificationSent, setNotificationSent] = useState(true)
+  const [bookingId, setBookingId] = useState<string | null>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
+  const bookingStartRecordedRef = useRef(false)
 
   const availableSessionTypes = sessionTypesForFocusAreas(professional.focus_areas ?? [])
   const selectedSession = sessionTypeId ? sessionType(sessionTypeId) : null
@@ -60,7 +64,17 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
   }, {})
 
   useEffect(() => {
-    if (open) return
+    if (open) {
+      if (!bookingStartRecordedRef.current) {
+        bookingStartRecordedRef.current = true
+        recordClientProductEvent({
+          eventName: 'booking_started',
+          surface: 'professional_profile',
+        })
+      }
+      return
+    }
+    bookingStartRecordedRef.current = false
     setStep(1)
     setSelectedSlot(null)
     setSlots([])
@@ -71,6 +85,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     setError(null)
     setAuthState('checking')
     setNotificationSent(true)
+    setBookingId(null)
   }, [initialSessionType, open])
 
   useEffect(() => {
@@ -195,6 +210,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
       if (!response.ok) throw new Error(result.error || t.bookingError)
 
       setNotificationSent(result.notificationSent !== false)
+      setBookingId(typeof result.bookingId === 'string' ? result.bookingId : null)
       setStep(3)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t.bookingError)
@@ -212,6 +228,7 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
     setError(null)
     setAuthState('checking')
     setNotificationSent(true)
+    setBookingId(null)
     onClose()
   }
 
@@ -324,6 +341,13 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
           {authState === 'signed_in' && step === 2 && selectedSlot && (
             <div>
               <h3 className="mb-5 text-lg font-semibold text-gray-950">{t.step2Title}</h3>
+              <SessionPlanPreview
+                locale={locale}
+                compact
+                headingLevel="h3"
+                className="mb-5"
+                trackingSurface="booking_drawer"
+              />
               <div className="mb-5 rounded-md border border-gray-200 bg-[#f4f4f0] p-4">
                 {[
                   [t.professional, professional.name],
@@ -415,7 +439,13 @@ export default function BookingDrawer({ professional, open, onClose, locale = 'd
               <h3 className="mb-2 text-2xl font-black text-gray-950">{t.successTitle}</h3>
               <p className="max-w-xs text-sm leading-relaxed text-gray-500">{t.successMsg}</p>
               {!notificationSent && <p className="mt-3 max-w-xs text-xs leading-relaxed text-amber-700">{locale === 'da' ? 'Bookingen er gemt, men e-mailen kunne ikke sendes. Du kan altid se status under Mine bookinger.' : 'The booking is saved, but the email could not be sent. You can always view the status under My bookings.'}</p>}
-              <Link href="/profil/bookings" className="mt-6 inline-flex rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-black text-gray-700 hover:border-gray-950">{locale === 'da' ? 'Se mine bookinger' : 'View my bookings'}</Link>
+              <Link
+                href={bookingId ? `/profil/bookings/${bookingId}` : '/profil/bookings'}
+                className="button-primary mt-6"
+              >
+                {locale === 'da' ? 'Forbered din Session Plan' : 'Prepare your Session Plan'}
+              </Link>
+              <Link href="/profil/bookings" className="mt-3 text-sm font-black text-gray-600 underline decoration-gray-300 underline-offset-4 hover:text-gray-950">{locale === 'da' ? 'Se alle bookinger' : 'View all bookings'}</Link>
             </div>
           )}
         </div>

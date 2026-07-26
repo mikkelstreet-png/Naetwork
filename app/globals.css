@@ -1737,8 +1737,8 @@ time,
   .directory-need-filter button { min-height: 2.2rem; padding: .48rem .68rem; border: 1px solid #d6d7d2; background: #fff; color: #55595c; font-size: .66rem; font-weight: 700; transition: border-color 180ms var(--ease-access), background 180ms var(--ease-access), color 180ms var(--ease-access), transform 180ms var(--ease-access); }
   .directory-need-filter button:hover { border-color: #8e9295; color: var(--ink); transform: translateY(-.08rem); }
   .directory-need-filter button[aria-pressed='true'] { border-color: var(--ink); background: var(--ink); color: #fff; }
-  .directory-filters { display: grid; grid-template-columns: .72fr .62fr 1.2fr auto; border-left: 1px solid var(--line); }
-  .directory-filters > label { min-height: 5.3rem; display: flex; flex-direction: column; justify-content: center; padding: .75rem 1rem; border-right: 1px solid var(--line); }
+  .directory-filters { display: grid; grid-template-columns: .72fr .58fr .78fr .62fr 1.2fr auto; border-left: 1px solid var(--line); }
+  .directory-filters > label { min-width: 0; min-height: 5.3rem; display: flex; flex-direction: column; justify-content: center; padding: .75rem 1rem; border-right: 1px solid var(--line); }
   .directory-filters > label > span:first-child { color: #6d7174; font-size: .64rem; font-weight: 750; text-transform: uppercase; }
   .directory-select, .directory-search { position: relative; display: flex; align-items: center; margin-top: .6rem; }
   .directory-select select, .directory-search input { width: 100%; border: 0; background: transparent; color: var(--ink); font-size: .84rem; font-weight: 700; outline: 0; }
@@ -1779,12 +1779,30 @@ time,
   .profile-card__person small { display: block; margin-top: .35rem; color: #797d80; font-size: .67rem; line-height: 1.45; }
   .profile-card__person .profile-card__credentials { color: #55595c; font-weight: 700; }
   .profile-card__relevance > span, .profile-card__outcome > span { color: #74787b; font-size: .63rem; font-weight: 750; text-transform: uppercase; }
-  .profile-card__relevance h3 { margin-top: .7rem; font-size: 1.08rem; font-weight: 600; line-height: 1.3; }
+  .profile-card__relevance h3 {
+    display: -webkit-box;
+    margin-top: .7rem;
+    overflow: hidden;
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
   .profile-card__tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .9rem; }
   .profile-card__tags span { padding: .34rem .45rem; border: 1px solid var(--line); color: #64686b; font-size: .62rem; font-weight: 650; }
   .profile-card__result { margin-top: 1rem; color: #4f5357; font-size: .72rem; line-height: 1.5; }
   .profile-card__result span { display: block; margin-bottom: .3rem; color: #7a7e81; font-size: .58rem; font-weight: 750; text-transform: uppercase; }
-  .profile-card__outcome p { margin-top: .7rem; color: #4f5357; font-size: .8rem; line-height: 1.6; }
+  .profile-card__outcome p {
+    display: -webkit-box;
+    margin-top: .7rem;
+    overflow: hidden;
+    color: #4f5357;
+    font-size: .8rem;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
   .profile-card__trust { display: flex; flex-direction: column; gap: .65rem; }
   .profile-card__trust span { display: flex; align-items: flex-start; gap: .45rem; color: #65696c; font-size: .66rem; font-weight: 650; line-height: 1.45; }
   .profile-card__trust svg { flex: none; margin-top: .08rem; }
@@ -2048,10 +2066,10 @@ time,
 }
 
 @media (max-width: 1100px) {
-  .directory-filters { grid-template-columns: repeat(2, minmax(0, 1fr)) auto; }
+  .directory-filters { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; }
   .directory-filters > label { min-height: 5.5rem; border-bottom: 1px solid var(--line); }
-  .directory-filters > label:last-of-type { grid-column: 1 / span 2; }
-  .directory-filters > button { grid-column: 3; grid-row: 1 / span 2; }
+  .directory-filters > label:last-of-type { grid-column: 2 / span 2; }
+  .directory-filters > button { grid-column: 4; grid-row: 1 / span 2; }
   .profile-card { grid-template-columns: minmax(13rem, 1fr) minmax(12rem, .9fr) minmax(10rem, .72fr) minmax(8rem, .55fr) auto; gap: 1rem; }
   .profile-session-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

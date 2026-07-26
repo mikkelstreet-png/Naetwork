@@ -66,9 +66,36 @@ test('profile filters remain usable on mobile and desktop', async ({ page, isMob
   } else {
     await expect(searchbox).toBeVisible()
     await expect(page.getByRole('combobox', { name: /Fagområde|Professional area/i })).toBeVisible()
-    await expect(page.getByRole('combobox', { name: /Hvad vil du have hjælp til|What do you need help with/i })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: /Sessionssprog|Session language/i })).toBeVisible()
+    await expect(page.getByRole('combobox', { name: /Tilgængelighed|Availability/i })).toBeVisible()
+    const needFilter = page.getByRole('group', { name: /Hvad vil du have hjælp til|What do you need help with/i })
+    await expect(needFilter).toBeVisible()
+    await expect(needFilter.getByRole('button', { name: /Forbered min jobsamtale|Prepare for my interview/i })).toBeVisible()
     if (isMobile) await expect(page.getByRole('button', { name: /Nulstil filtre|Clear filters/i })).toBeVisible()
   }
+  await expectNoHorizontalOverflow(page)
+})
+
+test('profile matching keeps filter state in the URL', async ({ page }) => {
+  await page.goto('/professionals?session=interview-training&field=Finance&language=en&availability=14-days&price=1200&q=markets')
+  const retryButton = page.getByRole('button', { name: /Prøv igen|Try again/i })
+  if (await retryButton.isVisible()) {
+    await expect(retryButton).toBeVisible()
+    return
+  }
+
+  const needFilter = page.getByRole('group', { name: /Hvad vil du have hjælp til|What do you need help with/i })
+  await expect(needFilter.getByRole('button', { name: /Forbered min jobsamtale|Prepare for my interview/i })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('combobox', { name: /Fagområde|Professional area/i })).toHaveValue('Finance')
+  await expect(page.getByRole('combobox', { name: /Sessionssprog|Session language/i })).toHaveValue('en')
+  await expect(page.getByRole('combobox', { name: /Tilgængelighed|Availability/i })).toHaveValue('14-days')
+  await expect(page.getByRole('combobox', { name: /Maksimal pris|Maximum price/i })).toHaveValue('1200')
+  await expect(page.getByRole('searchbox')).toHaveValue('markets')
+  await expect(page.locator('.directory-results__header')).toContainText(/Dit ønskede resultat|Your intended outcome/i)
+
+  await page.getByRole('combobox', { name: /Tilgængelighed|Availability/i }).selectOption('open')
+  await expect(page).toHaveURL(/availability=open/)
+  await expect(page).not.toHaveURL(/availability=14-days/)
   await expectNoHorizontalOverflow(page)
 })
 
@@ -217,6 +244,10 @@ test('sitemap publishes the career-session information architecture', async ({ p
   const response = await page.goto('/sitemap.xml')
   expect(response?.status()).toBe(200)
   const sitemap = await page.locator('body').innerText()
+  if (process.env.SITE_ACCESS_CODE && process.env.SITE_ACCESS_TOKEN) {
+    expect(sitemap).not.toContain('/start')
+    return
+  }
   for (const route of ['/start', '/how-it-works', '/sessions', '/explore', '/prepare', '/apply', '/perform']) {
     expect(sitemap).toContain(route)
   }
@@ -254,6 +285,10 @@ test('professional application keeps pricing and review expectations concrete', 
 
   await expect(page.getByRole('heading', { name: 'Sessionstyper og pris' })).toBeVisible()
   await page.getByRole('button', { name: /CV-gennemgang/i }).click()
+  await page.getByLabel('Kort bio').fill('Jeg arbejder med rekruttering og udvikling af kandidater i konsulentbranchen.')
+  await page.getByLabel('Hvilken erfaring bygger din feedback på?').fill('Jeg har flere års direkte erfaring med at vurdere CV’er, cases og interviews til konsulentroller.')
+  await page.getByLabel('Relevant situation 1').fill('Når du søger din første rolle i management consulting.')
+  await page.getByLabel('Forventet udbytte 1').fill('En prioriteret liste over de vigtigste forbedringer af din profil.')
   for (const amount of ['DKK 600', 'DKK 900', 'DKK 1.200', 'DKK 1.800']) {
     await expect(page.getByRole('button', { name: amount })).toBeVisible()
   }

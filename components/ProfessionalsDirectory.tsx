@@ -15,7 +15,6 @@ import {
   professionalInitials,
   professionalLanguageLabels,
   professionalPrimaryOutput,
-  professionalResponseLabel,
   professionalSessionTypes,
 } from '@/lib/professionalPresentation'
 import { sessionImpactAmount } from '@/lib/publicExperience'
@@ -23,14 +22,27 @@ import { charityAmount, charitySharePercent } from '@/lib/payoutPreference'
 import { SESSION_TYPES, isSessionTypeId, sessionType, sessionTypesForFocusAreas, type SessionTypeId } from '@/lib/sessionTypes'
 
 type CategoryFilter = 'all' | CategoryId
+type LanguageFilter = 'all' | 'da' | 'en'
+type AvailabilityFilter = 'all' | 'open' | '14-days'
 
 const FILTER_CATEGORIES: CategoryFilter[] = ['all', ...CATEGORIES.map((category) => category.id)]
 const PRICE_OPTIONS = [600, 900, 1200, 1800] as const
+const LANGUAGE_OPTIONS = ['all', 'da', 'en'] as const satisfies readonly LanguageFilter[]
+const AVAILABILITY_OPTIONS = ['all', 'open', '14-days'] as const satisfies readonly AvailabilityFilter[]
 const LEGACY_NEED_SESSION: Record<string, SessionTypeId> = {
   direction: 'career-clarity',
   materials: 'cv-review',
   interview: 'interview-training',
   case: 'case-interview-preparation',
+}
+const MATCHING_NEED_LABELS: Record<SessionTypeId, { da: string; en: string }> = {
+  'cv-review': { da: 'Styrk mit CV til en konkret rolle', en: 'Strengthen my CV for a specific role' },
+  'application-feedback': { da: 'Få feedback på min ansøgning', en: 'Get feedback on my application' },
+  'interview-training': { da: 'Forbered min jobsamtale', en: 'Prepare for my interview' },
+  'case-interview-preparation': { da: 'Træn min case eller technicals', en: 'Practice my case or technicals' },
+  'career-clarity': { da: 'Afklar mit næste karrieretræk', en: 'Clarify my next career move' },
+  'graduate-internship': { da: 'Forbered graduate eller internship', en: 'Prepare for a graduate role or internship' },
+  'industry-company-insight': { da: 'Forstå en branche eller funktion', en: 'Understand an industry or function' },
 }
 
 function categoryLabel(category: CategoryFilter, isDa: boolean) {
@@ -60,19 +72,52 @@ function formatNextAvailability(value: string | null, isDa: boolean) {
   })
 }
 
+function isLanguageFilter(value: string | null): value is LanguageFilter {
+  return LANGUAGE_OPTIONS.includes(value as LanguageFilter)
+}
+
+function isAvailabilityFilter(value: string | null): value is AvailabilityFilter {
+  return AVAILABILITY_OPTIONS.includes(value as AvailabilityFilter)
+}
+
+function matchesAvailability(value: string | null, filter: AvailabilityFilter) {
+  if (filter === 'all') return true
+  if (!value) return false
+  if (filter === 'open') return true
+
+  const startsAt = new Date(value).getTime()
+  const now = Date.now()
+  return Number.isFinite(startsAt)
+    && startsAt >= now
+    && startsAt <= now + (14 * 24 * 60 * 60 * 1000)
+}
+
 interface DirectoryFilterState {
   category: CategoryFilter
   session: SessionTypeId | null
+  language: LanguageFilter
+  availability: AvailabilityFilter
   price: number | null
   query: string
 }
 
-function readFilterState() {
-  const params = new URLSearchParams(window.location.search)
-  const requestedCategory = categoryIdForValue(params.get('field'))
-  const requestedSession = params.get('session')
-  const legacyNeed = params.get('need')
-  const requestedPrice = Number(params.get('price'))
+export interface DirectoryFilterValues {
+  field?: string
+  session?: string
+  need?: string
+  language?: string
+  availability?: string
+  price?: string
+  q?: string
+}
+
+function parseFilterState(values: DirectoryFilterValues) {
+  const requestedCategory = categoryIdForValue(values.field)
+  const requestedSession = values.session
+  const legacyNeed = values.need
+  const requestedLanguage = values.language ?? null
+  const requestedAvailability = values.availability ?? null
+  const requestedPrice = Number(values.price)
 
   return {
     category: requestedCategory ?? 'all',
@@ -81,23 +126,46 @@ function readFilterState() {
       : legacyNeed && LEGACY_NEED_SESSION[legacyNeed]
         ? LEGACY_NEED_SESSION[legacyNeed]
         : null,
+    language: isLanguageFilter(requestedLanguage) ? requestedLanguage : 'all',
+    availability: isAvailabilityFilter(requestedAvailability) ? requestedAvailability : 'all',
     price: PRICE_OPTIONS.includes(requestedPrice as typeof PRICE_OPTIONS[number]) ? requestedPrice : null,
-    query: params.get('q') ?? '',
+    query: values.q ?? '',
   } satisfies DirectoryFilterState
+}
+
+function readFilterState() {
+  const params = new URLSearchParams(window.location.search)
+  return parseFilterState({
+    field: params.get('field') ?? undefined,
+    session: params.get('session') ?? undefined,
+    need: params.get('need') ?? undefined,
+    language: params.get('language') ?? undefined,
+    availability: params.get('availability') ?? undefined,
+    price: params.get('price') ?? undefined,
+    q: params.get('q') ?? undefined,
+  })
 }
 
 interface ProfessionalsDirectoryProps {
   initialProfessionals: ProfessionalCard[]
   initialLoadError?: boolean
+  initialFilterValues?: DirectoryFilterValues
 }
 
-export default function ProfessionalsDirectory({ initialProfessionals, initialLoadError = false }: ProfessionalsDirectoryProps) {
+export default function ProfessionalsDirectory({
+  initialProfessionals,
+  initialLoadError = false,
+  initialFilterValues = {},
+}: ProfessionalsDirectoryProps) {
   const { lang } = useLanguage()
   const isDa = lang === 'da'
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all')
-  const [recommendedSession, setRecommendedSession] = useState<SessionTypeId | null>(null)
-  const [maxPrice, setMaxPrice] = useState<number | null>(null)
-  const [search, setSearch] = useState('')
+  const [initialFilters] = useState(() => parseFilterState(initialFilterValues))
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>(initialFilters.category)
+  const [recommendedSession, setRecommendedSession] = useState<SessionTypeId | null>(initialFilters.session)
+  const [languageFilter, setLanguageFilter] = useState<LanguageFilter>(initialFilters.language)
+  const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>(initialFilters.availability)
+  const [maxPrice, setMaxPrice] = useState<number | null>(initialFilters.price)
+  const [search, setSearch] = useState(initialFilters.query)
   const [dbProfessionals, setDbProfessionals] = useState<ProfessionalCard[]>(initialProfessionals)
   const [loading, setLoading] = useState(false)
   const [loadError, setLoadError] = useState(initialLoadError)
@@ -107,6 +175,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       const filters = readFilterState()
       setCategoryFilter(filters.category)
       setRecommendedSession(filters.session)
+      setLanguageFilter(filters.language)
+      setAvailabilityFilter(filters.availability)
       setMaxPrice(filters.price)
       setSearch(filters.query)
     }
@@ -147,6 +217,9 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
           professional.title,
           professional.company,
           professional.bio,
+          professional.experienceSummary,
+          professional.relevantSituations.join(' '),
+          professional.expectedOutcomes.join(' '),
           primaryCategory,
           professional.industries.join(' '),
           focusText,
@@ -155,6 +228,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         return (categoryFilter === 'all' || primaryCategory === categoryFilter)
           && (!query || searchable.includes(query))
           && (!recommendedSession || relevanceFor(professional, recommendedSession) > 0)
+          && (languageFilter === 'all' || professional.languages.some((language) => language.toLowerCase() === languageFilter))
+          && matchesAvailability(professional.nextAvailableAt, availabilityFilter)
           && (maxPrice === null || professional.price <= maxPrice)
       })
       .sort((a, b) => {
@@ -165,7 +240,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         if (a.reviewCount !== b.reviewCount) return b.reviewCount - a.reviewCount
         return a.name.localeCompare(b.name, isDa ? 'da' : 'en')
       })
-  }, [categoryFilter, dbProfessionals, isDa, maxPrice, recommendedSession, search])
+  }, [availabilityFilter, categoryFilter, dbProfessionals, isDa, languageFilter, maxPrice, recommendedSession, search])
 
   const t = {
     heading: isDa ? 'Find den erfaring, du mangler.' : 'Find the experience you are missing.',
@@ -174,7 +249,7 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
       : 'Start with the situation. Then choose a professional who knows the role, industry or process from within.',
     searchPlaceholder: isDa ? 'Søg rolle, virksomhed eller erfaring' : 'Search role, company or experience',
     noResults: isDa ? 'Ingen profiler matcher dine valg' : 'No profiles match your choices',
-    noResultsBody: isDa ? 'Prøv et andet behov, fagområde eller prisniveau.' : 'Try another need, professional area or price level.',
+    noResultsBody: isDa ? 'Prøv et andet behov, fagområde, sprog, tidspunkt eller prisniveau.' : 'Try another need, professional area, language, availability or price level.',
     clearFilters: isDa ? 'Nulstil filtre' : 'Clear filters',
     viewProfile: isDa ? 'Se profil og tider' : 'View profile and times',
     emptyTitle: isDa ? 'De første professionelle er på vej' : 'The first professionals are on their way',
@@ -187,6 +262,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     const next = {
       category: categoryFilter,
       session: recommendedSession,
+      language: languageFilter,
+      availability: availabilityFilter,
       price: maxPrice,
       query: search,
       ...overrides,
@@ -194,6 +271,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     const params = new URLSearchParams()
     if (next.session) params.set('session', next.session)
     if (next.category !== 'all') params.set('field', next.category)
+    if (next.language !== 'all') params.set('language', next.language)
+    if (next.availability !== 'all') params.set('availability', next.availability)
     if (next.price !== null) params.set('price', String(next.price))
     if (next.query.trim()) params.set('q', next.query.trim())
     const query = params.toString()
@@ -204,6 +283,8 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
     setSearch('')
     setCategoryFilter('all')
     setRecommendedSession(null)
+    setLanguageFilter('all')
+    setAvailabilityFilter('all')
     setMaxPrice(null)
     window.history.replaceState({ ...window.history.state }, '', '/professionals')
   }
@@ -216,6 +297,16 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
   function selectSession(id: SessionTypeId | null) {
     setRecommendedSession(id)
     updateUrl({ session: id })
+  }
+
+  function selectLanguage(language: LanguageFilter) {
+    setLanguageFilter(language)
+    updateUrl({ language })
+  }
+
+  function selectAvailability(availability: AvailabilityFilter) {
+    setAvailabilityFilter(availability)
+    updateUrl({ availability })
   }
 
   function selectPrice(price: number | null) {
@@ -245,12 +336,12 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
             <div className="directory-need-filter">
               <div>
                 <span>{isDa ? 'Start med dit behov' : 'Start with your need'}</span>
-                <p>{isDa ? 'Hvad vil du stå stærkere i?' : 'What do you want to be stronger in?'}</p>
+                <p>{isDa ? 'Hvad vil du have hjælp til?' : 'What do you need help with?'}</p>
               </div>
-              <div role="group" aria-label={isDa ? 'Vælg dit behov' : 'Choose your need'}>
+              <div role="group" aria-label={isDa ? 'Hvad vil du have hjælp til?' : 'What do you need help with?'}>
                 <button type="button" aria-pressed={recommendedSession === null} onClick={() => selectSession(null)}>{isDa ? 'Alle behov' : 'All needs'}</button>
                 {SESSION_TYPES.map((item) => (
-                  <button key={item.id} type="button" aria-pressed={recommendedSession === item.id} onClick={() => selectSession(item.id)}>{item.title[lang]}</button>
+                  <button key={item.id} type="button" aria-pressed={recommendedSession === item.id} onClick={() => selectSession(item.id)}>{MATCHING_NEED_LABELS[item.id][lang]}</button>
                 ))}
               </div>
             </div>
@@ -260,6 +351,28 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                 <span className="directory-select">
                   <select value={categoryFilter} onChange={(event) => selectCategory(event.target.value as CategoryFilter)}>
                     {FILTER_CATEGORIES.map((category) => <option key={category} value={category}>{categoryLabel(category, isDa)}</option>)}
+                  </select>
+                  <ChevronDown size={16} aria-hidden="true" />
+                </span>
+              </label>
+              <label>
+                <span>{isDa ? 'Sessionssprog' : 'Session language'}</span>
+                <span className="directory-select">
+                  <select value={languageFilter} onChange={(event) => selectLanguage(event.target.value as LanguageFilter)}>
+                    <option value="all">{isDa ? 'Alle sprog' : 'All languages'}</option>
+                    <option value="da">{isDa ? 'Dansk' : 'Danish'}</option>
+                    <option value="en">{isDa ? 'Engelsk' : 'English'}</option>
+                  </select>
+                  <ChevronDown size={16} aria-hidden="true" />
+                </span>
+              </label>
+              <label>
+                <span>{isDa ? 'Tilgængelighed' : 'Availability'}</span>
+                <span className="directory-select">
+                  <select value={availabilityFilter} onChange={(event) => selectAvailability(event.target.value as AvailabilityFilter)}>
+                    <option value="all">{isDa ? 'Alle profiler' : 'All profiles'}</option>
+                    <option value="open">{isDa ? 'Har ledige tider' : 'Has open times'}</option>
+                    <option value="14-days">{isDa ? 'Ledig inden for 14 dage' : 'Available within 14 days'}</option>
                   </select>
                   <ChevronDown size={16} aria-hidden="true" />
                 </span>
@@ -291,7 +404,9 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
         {!loadError && (
           <div className="directory-results__header">
             <p aria-live="polite">{loading ? (isDa ? 'Indlæser…' : 'Loading…') : `${filtered.length} ${isDa ? (filtered.length === 1 ? 'fagperson' : 'fagpersoner') : (filtered.length === 1 ? 'professional' : 'professionals')}`}</p>
-            <span>{recommendedSession ? `${isDa ? 'Matcher' : 'Matches'}: ${sessionType(recommendedSession).title[lang]}` : (isDa ? 'Vælg ud fra erfaring, relevans og tilgængelighed' : 'Choose by experience, relevance and availability')}</span>
+            <span>{recommendedSession
+              ? `${isDa ? 'Dit ønskede resultat' : 'Your intended outcome'}: ${sessionType(recommendedSession).outcome[lang]}`
+              : (isDa ? 'Vælg ud fra behov, erfaring, sprog og tilgængelighed' : 'Choose by need, experience, language and availability')}</span>
           </div>
         )}
 
@@ -336,7 +451,6 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
               const sessionTypes = professionalSessionTypes(professional).slice(0, 3)
               const experienceFacts = professionalExperienceFacts(professional, isDa)
               const languageLabels = professionalLanguageLabels(professional.languages, isDa)
-              const responseLabel = professionalResponseLabel(professional.responseTimeHours, isDa)
               const nextAvailable = formatNextAvailability(professional.nextAvailableAt, isDa)
               return (
                 <article key={professional.id} className="profile-card">
@@ -373,7 +487,6 @@ export default function ProfessionalsDirectory({ initialProfessionals, initialLo
                     {professional.reviewCount > 0 && professional.averageRating !== null && (
                       <span><Star size={14} aria-hidden="true" />{professional.averageRating.toLocaleString(isDa ? 'da-DK' : 'en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} · {professional.reviewCount} {isDa ? (professional.reviewCount === 1 ? 'anmeldelse fra gennemført session' : 'anmeldelser fra gennemførte sessioner') : (professional.reviewCount === 1 ? 'review from a completed session' : 'reviews from completed sessions')}</span>
                     )}
-                    {responseLabel && <span>{responseLabel}</span>}
                   </div>
 
                   <div className="profile-card__price">

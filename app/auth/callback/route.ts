@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import type { EmailOtpType } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
@@ -18,6 +19,12 @@ import {
   normalizePrice,
   sessionEconomics,
 } from '@/lib/platform';
+import {
+  EXPERIENCE_SUMMARY_MAX_LENGTH,
+  cleanProfileList,
+  cleanProfileText,
+} from '@/lib/professionalProfile';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 function text(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -29,6 +36,83 @@ function stringArray(value: unknown): string[] {
 
 function price(value: unknown): number {
   return normalizePrice(value);
+}
+
+async function syncVerifiedProfile(user: User) {
+  const metadata = user.user_metadata ?? {};
+  const requestedRole = metadata.role === 'professional' ? 'professional' : 'candidate';
+  const admin = createAdminClient();
+  const { data: existingProfile, error: existingProfileError } = await admin
+    .from('profiles')
+    .select('id, role')
+    .eq('auth_user_id', user.id)
+    .maybeSingle();
+  if (existingProfileError) throw existingProfileError;
+
+  let profile = existingProfile;
+  if (profile) {
+    const { error: nameError } = await admin
+      .from('profiles')
+      .update({ name: text(metadata.name) ?? user.email ?? 'Naetwork-bruger' })
+      .eq('id', profile.id);
+    if (nameError) throw nameError;
+  } else {
+    const { data: insertedProfile, error: insertProfileError } = await admin
+      .from('profiles')
+      .insert({
+        auth_user_id: user.id,
+        name: text(metadata.name) ?? user.email ?? 'Naetwork-bruger',
+        email: user.email ?? null,
+        role: requestedRole,
+      })
+      .select('id, role')
+      .single();
+    if (insertProfileError || !insertedProfile) {
+      throw insertProfileError ?? new Error('The verified profile could not be created.');
+    }
+    profile = insertedProfile;
+  }
+
+  const { data: persistedProfile, error: persistedProfileError } = await admin
+    .from('profiles')
+    .select('id, role')
+    .eq('id', profile.id)
+    .single();
+  if (persistedProfileError || !persistedProfile) throw persistedProfileError ?? new Error('The verified profile could not be loaded.');
+
+  if (persistedProfile.role !== 'professional') return { profileId: persistedProfile.id, isProfessional: false };
+
+  const { data: existingProfessional, error: existingError } = await admin
+    .from('professional_profiles')
+    .select('id')
+    .eq('profile_id', persistedProfile.id)
+    .maybeSingle();
+  if (existingError) throw existingError;
+
+  if (!existingProfessional) {
+    const submittedAreas = stringArray(metadata.areas);
+    const legacyCategoryValue = text(metadata.industry);
+    const experienceSummary = cleanProfileText(metadata.experienceSummary, EXPERIENCE_SUMMARY_MAX_LENGTH);
+    const { error: insertError } = await admin.from('professional_profiles').insert({
+      profile_id: persistedProfile.id,
+      title: text(metadata.title),
+      company: text(metadata.company),
+      bio: text(metadata.bio)?.slice(0, 500) ?? null,
+      industries: normalizeCategoryAreas(submittedAreas.length > 0 ? submittedAreas : legacyCategoryValue ? [legacyCategoryValue] : []),
+      focus_areas: stringArray(metadata.sessionTypes),
+      price_dkk: price(metadata.priceDkk),
+      linkedin_url: normalizeLinkedInUrl(metadata.linkedin),
+      payout_preference: normalizePayoutPreference(metadata.payoutPreference),
+      experience_summary: experienceSummary || null,
+      relevant_situations: cleanProfileList(metadata.relevantSituations),
+      expected_outcomes: cleanProfileList(metadata.expectedOutcomes),
+      review_status: 'pending',
+      visibility: 'hidden',
+    });
+    if (insertError) throw insertError;
+  }
+
+  return { profileId: persistedProfile.id, isProfessional: true };
 }
 
 export async function GET(request: NextRequest) {
@@ -70,56 +154,33 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(new URL(next, origin));
       }
 
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        console.error('[auth:callback-profile-user]', userError);
+        return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+      }
+
+      let syncedProfile: Awaited<ReturnType<typeof syncVerifiedProfile>>;
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        const metadata = user?.user_metadata ?? {};
+        syncedProfile = await syncVerifiedProfile(user);
+      } catch (syncError) {
+        console.error('[auth:callback-profile-sync]', syncError);
+        const recoveryPath = user.user_metadata?.role === 'professional' ? '/profil/professionel' : '/profil';
+        const recoveryUrl = new URL(recoveryPath, origin);
+        recoveryUrl.searchParams.set('sync', 'failed');
+        return NextResponse.redirect(recoveryUrl);
+      }
 
-        if (user && metadata.role === 'professional') {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('auth_user_id', user.id)
-            .maybeSingle();
-
-          if (profile?.id) {
-            const submittedAreas = stringArray(metadata.areas);
-            const legacyCategoryValue = text(metadata.industry);
-            const payoutPreference = normalizePayoutPreference(metadata.payoutPreference);
-            await supabase
-              .from('profiles')
-              .update({ name: text(metadata.name) ?? user.email })
-              .eq('id', profile.id);
-
-            await supabase.from('professional_profiles').upsert({
-              profile_id: profile.id,
-              title: text(metadata.title),
-              company: text(metadata.company),
-              bio: text(metadata.bio)?.slice(0, 500) ?? null,
-              industries: normalizeCategoryAreas(submittedAreas.length > 0 ? submittedAreas : legacyCategoryValue ? [legacyCategoryValue] : []),
-              focus_areas: stringArray(metadata.sessionTypes),
-              price_dkk: price(metadata.priceDkk),
-              linkedin_url: normalizeLinkedInUrl(metadata.linkedin),
-              payout_preference: payoutPreference,
-              review_status: 'pending',
-              visibility: 'hidden',
-            }, { onConflict: 'profile_id' });
-          }
-        }
-
-        if (user?.email) {
-          const isProfessional = metadata.role === 'professional';
+      const metadata = user.user_metadata ?? {};
+      if (user.email) {
+          const isProfessional = syncedProfile.isProfessional;
           const sessionPrice = price(metadata.priceDkk);
           const economics = sessionEconomics(sessionPrice);
           const payoutPreference = normalizePayoutPreference(metadata.payoutPreference);
-          const { data: deliveryProfile } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('auth_user_id', user.id)
-            .maybeSingle();
           await sendTransactionalEmail({
             to: user.email,
             templateKey: isProfessional ? 'professional_application_received' : 'welcome',
-            recipientProfileId: deliveryProfile?.id,
+            recipientProfileId: syncedProfile.profileId,
             dedupeKey: `welcome-${user.id}`,
             subject: isProfessional ? 'Din Naetwork-profil er modtaget' : 'Velkommen til Naetwork',
             title: isProfessional ? 'Din profil er klar til gennemgang' : 'Velkommen til Naetwork',
@@ -146,10 +207,9 @@ export async function GET(request: NextRequest) {
               label: isProfessional ? 'Færdiggør profil' : 'Find en professionel',
               href: appUrl(isProfessional ? '/profil/professionel' : '/professionals'),
             },
-          }).catch(() => undefined);
-        }
-      } catch {
-        // A profile sync failure should not block login after e-mail confirmation.
+          }).catch((emailError) => {
+            console.error('[auth:callback-welcome-email]', emailError);
+          });
       }
 
       return NextResponse.redirect(new URL(next, origin));

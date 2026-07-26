@@ -56,7 +56,7 @@ export async function GET(request: Request) {
         intro: `Hej ${candidate.name || 'der'}. Her er tidspunkt og fokus for din kommende 60-minutters session.`,
         rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: focus }],
         note: booking.meeting_url ? `Mødelink: ${booking.meeting_url}` : 'Mødelinket vises i din booking, når det er tilføjet.',
-        cta: { label: 'Forbered sessionen', href: appUrl('/profil/bookings') },
+        cta: { label: 'Forbered Session Plan', href: appUrl(`/profil/bookings/${booking.id}`) },
       }));
 
       const professionalEmail = professionalUser?.data.user?.email;
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
         intro: `Hej ${owner.name || 'der'}. Du har en session med ${candidate?.name || 'en kandidat'} på det angivne tidspunkt.`,
         rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: focus }],
         note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
-        cta: { label: 'Se kandidatens brief', href: appUrl('/profil/bookings') },
+        cta: { label: 'Se kandidatens Session Plan', href: appUrl(`/profil/bookings/${booking.id}`) },
       }));
 
       const results = await Promise.allSettled(deliveries);

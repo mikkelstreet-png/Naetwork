@@ -30,12 +30,27 @@ interface SavedProfessional {
 interface Outcome {
   id: string
   booking_id: string
+  professional_profile_id: string
   summary: string
   priorities: string[]
   next_action: string
   next_action_due_at: string | null
   candidate_completed_at: string | null
+  definition_of_done_status: 'achieved' | 'partially_achieved' | 'not_achieved_yet' | null
+  open_questions: string[]
+  result_schema_version: 1 | 2
+  next_moves: WorkspaceNextMove[]
   professional: ProfessionalCard | null
+}
+
+interface WorkspaceNextMove {
+  id: string
+  position: number
+  action: string
+  responsible: 'candidate' | 'professional' | 'shared'
+  due_at: string | null
+  status: 'pending' | 'completed'
+  completed_at: string | null
 }
 
 interface WorkspaceData {
@@ -76,12 +91,38 @@ function formatDate(date: string) {
   return new Date(`${date}T12:00:00`).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function firstCandidateNextMove(outcome: Outcome) {
+  return outcome.next_moves.find((move) => (
+    move.status === 'pending'
+    && (move.responsible === 'candidate' || move.responsible === 'shared')
+  )) ?? null
+}
+
+function contextualFollowUpReason(outcome: Outcome) {
+  if (
+    outcome.next_moves.length === 0
+    || outcome.next_moves.some((move) => move.status !== 'completed')
+  ) {
+    return null
+  }
+  const openQuestion = outcome.open_questions.find((question) => question.trim())
+  if (openQuestion) return `Afklar det åbne spørgsmål: ${openQuestion}`
+  if (outcome.definition_of_done_status === 'partially_achieved') {
+    return 'Vurdér, om dine gennemførte ændringer har bragt dig helt i mål.'
+  }
+  if (outcome.definition_of_done_status === 'not_achieved_yet') {
+    return 'Følg op på det oprindelige mål efter de første gennemførte handlinger.'
+  }
+  return null
+}
+
 export function CareerWorkspace() {
   const [workspace, setWorkspace] = useState<WorkspaceData | null>(null)
   const [draft, setDraft] = useState<SituationDraft | null>(null)
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [updatingMoveId, setUpdatingMoveId] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -163,6 +204,31 @@ export function CareerWorkspace() {
     } : current)
   }
 
+  async function completeNextMove(bookingId: string, moveId: string) {
+    setUpdatingMoveId(moveId)
+    setError('')
+    try {
+      const response = await fetch(`/api/bookings/${bookingId}/session-plan/next-moves/${moveId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: true }),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.error || 'Handlingen kunne ikke opdateres.')
+      setWorkspace((current) => current ? {
+        ...current,
+        outcomes: current.outcomes.map((outcome) => outcome.booking_id === bookingId ? {
+          ...outcome,
+          next_moves: outcome.next_moves.map((move) => move.id === moveId ? result.nextMove : move),
+        } : outcome),
+      } : current)
+    } catch (moveError) {
+      setError(moveError instanceof Error ? moveError.message : 'Handlingen kunne ikke opdateres.')
+    } finally {
+      setUpdatingMoveId(null)
+    }
+  }
+
   if (loading) {
     return <section className="mb-12 border-y border-gray-300 bg-white px-5 py-8 text-sm text-gray-400">Indlæser din aktive situation...</section>
   }
@@ -172,10 +238,81 @@ export function CareerWorkspace() {
   }
 
   const situation = workspace.situation
+  const primaryOutcome = workspace.outcomes.find((outcome) => firstCandidateNextMove(outcome)) ?? null
+  const primaryNextMove = primaryOutcome ? firstCandidateNextMove(primaryOutcome) : null
+  const awaitingProfessionalOutcome = primaryOutcome
+    ? null
+    : workspace.outcomes.find((outcome) => (
+        outcome.next_moves.some((move) => move.status === 'pending' && move.responsible === 'professional')
+      )) ?? null
+  const awaitingProfessionalMove = awaitingProfessionalOutcome
+    ? awaitingProfessionalOutcome.next_moves.find((move) => (
+        move.status === 'pending' && move.responsible === 'professional'
+      )) ?? null
+    : null
+  const followUpOutcome = primaryOutcome || awaitingProfessionalOutcome
+    ? null
+    : workspace.outcomes.find((outcome) => contextualFollowUpReason(outcome) && outcome.professional) ?? null
+  const followUpReason = followUpOutcome ? contextualFollowUpReason(followUpOutcome) : null
 
   return (
     <div className="mb-14 space-y-12">
       {error && <p role="alert" className="border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{error}</p>}
+
+      {primaryOutcome && primaryNextMove && (
+        <section className="overflow-hidden border-y border-gray-300 bg-gray-950 text-white" aria-labelledby="workspace-primary-action">
+          <div className="grid gap-6 px-5 py-7 md:grid-cols-[1fr_auto] md:items-end md:px-8">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-white/45">Dit vigtigste næste træk</p>
+              <h2 id="workspace-primary-action" className="mt-3 max-w-3xl text-2xl font-black leading-tight md:text-3xl">{primaryNextMove.action}</h2>
+              <p className="mt-3 text-sm text-white/55">
+                Fra sessionen med {primaryOutcome.professional?.name || 'din professionelle'}
+                {primaryNextMove.due_at ? ` · senest ${formatDate(primaryNextMove.due_at)}` : ''}
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={updatingMoveId !== null}
+              onClick={() => void completeNextMove(primaryOutcome.booking_id, primaryNextMove.id)}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[4px] bg-white px-5 py-3 text-sm font-black text-gray-950 transition-colors hover:bg-gray-100 disabled:opacity-50"
+            >
+              <Check size={16} aria-hidden="true" />
+              {updatingMoveId === primaryNextMove.id ? 'Gemmer…' : 'Markér som udført'}
+            </button>
+          </div>
+          <div className="border-t border-white/15 px-5 py-4 md:px-8">
+            <Link href={`/profil/bookings/${primaryOutcome.booking_id}`} className="inline-flex items-center gap-2 text-sm font-black text-white/70 transition-colors hover:text-white">
+              Se konteksten i Session Plan <ArrowRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {!primaryOutcome && awaitingProfessionalOutcome && awaitingProfessionalMove && (
+        <section className="grid gap-5 border-y border-gray-300 bg-white px-5 py-6 md:grid-cols-[1fr_auto] md:items-center md:px-8" aria-labelledby="workspace-professional-follow-up">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">Næste i forløbet</p>
+            <h2 id="workspace-professional-follow-up" className="mt-2 text-xl font-black text-gray-950">Den professionelle følger op.</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{awaitingProfessionalMove.action}</p>
+          </div>
+          <Link href={`/profil/bookings/${awaitingProfessionalOutcome.booking_id}`} className="button-secondary inline-flex min-h-12 items-center gap-2">
+            Se status i Session Plan <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        </section>
+      )}
+
+      {!primaryOutcome && !awaitingProfessionalOutcome && followUpOutcome?.professional && followUpReason && (
+        <section className="grid gap-5 border-y border-gray-300 bg-white px-5 py-6 md:grid-cols-[1fr_auto] md:items-center md:px-8" aria-labelledby="workspace-contextual-follow-up">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">Når dine handlinger er gennemført</p>
+            <h2 id="workspace-contextual-follow-up" className="mt-2 text-xl font-black text-gray-950">En opfølgning har kun værdi med et nyt konkret mål.</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{followUpReason}</p>
+          </div>
+          <Link href={`/professionals/${followUpOutcome.professional.id}`} className="button-secondary inline-flex min-h-12 items-center gap-2">
+            Åbn profilen hos {followUpOutcome.professional.name} <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        </section>
+      )}
 
       <section aria-labelledby="career-situation-title">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
@@ -292,23 +429,34 @@ export function CareerWorkspace() {
         <section aria-labelledby="plans-title">
           <div className="mb-5">
             <p className="text-xs font-black uppercase text-gray-400">Efter sessionen</p>
-            <h2 id="plans-title" className="mt-2 text-2xl font-black text-gray-950">Dine næste handlinger.</h2>
+            <h2 id="plans-title" className="mt-2 text-2xl font-black text-gray-950">Dine dokumenterede resultater.</h2>
           </div>
           <div className="border-t border-gray-300 bg-white">
-            {workspace.outcomes.slice(0, 3).map((outcome) => (
-              <article key={outcome.id} className="grid gap-4 border-b border-gray-300 px-5 py-5 md:grid-cols-[1fr_260px_auto] md:items-center">
-                <div>
-                  <p className="text-sm font-black text-gray-950">{outcome.professional?.name || 'Din session'}</p>
-                  <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-gray-500">{outcome.summary}</p>
-                </div>
-                <div className={outcome.candidate_completed_at ? 'text-emerald-700' : 'text-gray-950'}>
-                  <p className="text-[10px] font-black uppercase text-gray-400">Næste handling</p>
-                  <p className="mt-1 text-sm font-black">{outcome.next_action}</p>
-                  {outcome.next_action_due_at && <p className="mt-1 text-xs text-gray-400">Senest {formatDate(outcome.next_action_due_at)}</p>}
-                </div>
-                <Link href="/profil/bookings?view=past" className="inline-flex items-center gap-2 text-sm font-black text-gray-950">{outcome.candidate_completed_at ? <Check size={15} aria-hidden="true" /> : <CalendarDays size={15} aria-hidden="true" />} Åbn plan</Link>
-              </article>
-            ))}
+            {workspace.outcomes.slice(0, 3).map((outcome) => {
+              const completedMoves = outcome.next_moves.filter((move) => move.status === 'completed').length
+              const allMovesCompleted = outcome.next_moves.length > 0 && completedMoves === outcome.next_moves.length
+              return (
+                <article key={outcome.id} className="grid gap-4 border-b border-gray-300 px-5 py-5 md:grid-cols-[1fr_220px_auto] md:items-center">
+                  <div>
+                    <p className="text-sm font-black text-gray-950">{outcome.professional?.name || 'Din session'}</p>
+                    <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-gray-500">{outcome.summary}</p>
+                  </div>
+                  <div className={allMovesCompleted ? 'text-emerald-700' : 'text-gray-950'}>
+                    <p className="text-[10px] font-black uppercase text-gray-400">Fremdrift</p>
+                    <p className="mt-1 text-sm font-black">
+                      {outcome.next_moves.length > 0
+                        ? `${completedMoves} af ${outcome.next_moves.length} næste træk udført`
+                        : outcome.candidate_completed_at
+                          ? 'Næste handling udført'
+                          : 'Resultatet er klar'}
+                    </p>
+                  </div>
+                  <Link href={`/profil/bookings/${outcome.booking_id}`} className="inline-flex items-center gap-2 text-sm font-black text-gray-950">
+                    {allMovesCompleted ? <Check size={15} aria-hidden="true" /> : <CalendarDays size={15} aria-hidden="true" />} Åbn Session Plan
+                  </Link>
+                </article>
+              )
+            })}
           </div>
         </section>
       )}

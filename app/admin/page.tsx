@@ -12,6 +12,9 @@ interface Stats {
   bookingsToday: number | null
   legalBlockers: number | null
   contactMessages: number | null
+  profilesAwaitingReview: number | null
+  bookingRequests: number | null
+  reviewsAwaitingModeration: number | null
 }
 
 interface AuditEntry {
@@ -22,7 +25,16 @@ interface AuditEntry {
   created_at: string
 }
 
-const EMPTY_STATS: Stats = { users: null, professionals: null, bookingsToday: null, legalBlockers: null, contactMessages: null }
+const EMPTY_STATS: Stats = {
+  users: null,
+  professionals: null,
+  bookingsToday: null,
+  legalBlockers: null,
+  contactMessages: null,
+  profilesAwaitingReview: null,
+  bookingRequests: null,
+  reviewsAwaitingModeration: null,
+}
 
 export default function AdminPage() {
   const [stats, setStats] = useState<Stats>(EMPTY_STATS)
@@ -43,11 +55,14 @@ export default function AdminPage() {
       startOfTomorrow.setDate(startOfTomorrow.getDate() + 1)
 
       const results = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'active'),
         supabase.from('professional_profiles').select('*', { count: 'exact', head: true }).eq('review_status', 'approved').eq('visibility', 'published'),
         supabase.from('bookings').select('*', { count: 'exact', head: true }).gte('starts_at', startOfToday.toISOString()).lt('starts_at', startOfTomorrow.toISOString()),
         supabase.from('legal_blockers').select('*', { count: 'exact', head: true }).eq('status', 'open'),
-        supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
+        supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('status', 'new'),
+        supabase.from('professional_profiles').select('*', { count: 'exact', head: true }).eq('review_status', 'pending').eq('visibility', 'published'),
+        supabase.from('bookings').select('*', { count: 'exact', head: true }).in('status', ['requested', 'pending']),
+        supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('moderation_status', 'pending'),
         supabase.from('admin_audit_log').select('id, action, target_table, notes, created_at').order('created_at', { ascending: false }).limit(6),
       ])
 
@@ -60,8 +75,11 @@ export default function AdminPage() {
         bookingsToday: results[2].count,
         legalBlockers: results[3].count,
         contactMessages: results[4].count,
+        profilesAwaitingReview: results[5].count,
+        bookingRequests: results[6].count,
+        reviewsAwaitingModeration: results[7].count,
       })
-      setAuditLog((results[5].data as AuditEntry[] | null) ?? [])
+      setAuditLog((results[8].data as AuditEntry[] | null) ?? [])
       setLoading(false)
     }
 
@@ -74,7 +92,34 @@ export default function AdminPage() {
     { label: 'Publicerede profiler', value: stats.professionals, note: 'Godkendte og synlige' },
     { label: 'Sessioner i dag', value: stats.bookingsToday, note: 'Alle aktuelle statusser' },
     { label: 'Juridiske blokkere', value: stats.legalBlockers, note: 'Skal være 0 før betaling' },
-    { label: 'Kontaktbeskeder', value: stats.contactMessages, note: 'Samlet i indbakken' },
+    { label: 'Nye beskeder', value: stats.contactMessages, note: 'Afventer læsning' },
+  ]
+
+  const workQueues = [
+    {
+      label: 'Profiler til gennemgang',
+      value: stats.profilesAwaitingReview,
+      note: 'Indsendte professionelle profiler, der kræver en beslutning.',
+      href: '/admin/professionals',
+    },
+    {
+      label: 'Bookinganmodninger',
+      value: stats.bookingRequests,
+      note: 'Anmodninger, hvor den professionelle endnu ikke har svaret.',
+      href: '/admin/bookings',
+    },
+    {
+      label: 'Anmeldelser til moderation',
+      value: stats.reviewsAwaitingModeration,
+      note: 'Verificeret feedback, der endnu ikke er publiceret eller skjult.',
+      href: '/admin/reviews',
+    },
+    {
+      label: 'Nye kontaktbeskeder',
+      value: stats.contactMessages,
+      note: 'Henvendelser, der endnu ikke er markeret som læst.',
+      href: '/admin/contact',
+    },
   ]
 
   return (
@@ -91,6 +136,29 @@ export default function AdminPage() {
             <p className="mt-2 text-xs leading-relaxed text-gray-500">{card.note}</p>
           </div>
         ))}
+      </section>
+
+      <section className="mt-8" aria-labelledby="admin-work-queues">
+        <div className="mb-3">
+          <p className="text-[11px] font-black uppercase text-gray-400">Kræver handling</p>
+          <h2 id="admin-work-queues" className="mt-1 text-xl font-black text-gray-950">Arbejdskøer</h2>
+        </div>
+        <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+          {workQueues.map((queue) => (
+            <Link
+              key={queue.label}
+              href={queue.href}
+              className="group min-h-40 rounded-lg border border-gray-200 bg-white p-5 transition-colors hover:border-gray-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-950"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <p className="text-sm font-black text-gray-950">{queue.label}</p>
+                <ArrowRight size={16} className="shrink-0 text-gray-300 transition-transform group-hover:translate-x-0.5 group-hover:text-gray-950" aria-hidden="true" />
+              </div>
+              <p className="mt-5 text-3xl font-black tabular-nums text-gray-950">{loading || queue.value === null ? '—' : queue.value}</p>
+              <p className="mt-2 text-xs leading-relaxed text-gray-500">{queue.note}</p>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="mt-8">

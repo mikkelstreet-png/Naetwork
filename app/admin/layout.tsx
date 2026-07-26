@@ -12,7 +12,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .from('profiles')
     .select('role, is_admin')
     .eq('auth_user_id', user.id)
-    .single();
+    .eq('status', 'active')
+    .maybeSingle();
 
   if (!profile || (profile.role !== 'admin' && !profile.is_admin)) redirect('/');
 

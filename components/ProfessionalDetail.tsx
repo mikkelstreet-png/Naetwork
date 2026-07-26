@@ -6,7 +6,9 @@ import { ArrowRight, Check, CheckCircle2, Clock3, RefreshCw, Star } from 'lucide
 import BookingDrawer from '@/components/BookingDrawer'
 import { ImpactMarker } from '@/components/ImpactMarker'
 import { ProfileWorkspaceActions } from '@/components/ProfileWorkspaceActions'
+import { SessionPlanPreview } from '@/components/SessionPlanPreview'
 import { useLanguage } from '@/context/LanguageContext'
+import { recordClientProductEvent } from '@/lib/clientProductAnalytics'
 import { createClient } from '@/lib/supabase/client'
 import { categoryAccent, categoryForAreas } from '@/lib/categories'
 import { formatDkk, SESSION_MINUTES } from '@/lib/platform'
@@ -16,7 +18,6 @@ import {
   professionalExperienceLead,
   professionalInitials,
   professionalLanguageLabels,
-  professionalResponseLabel,
   professionalSessionTypes,
 } from '@/lib/professionalPresentation'
 import { sessionImpactAmount } from '@/lib/publicExperience'
@@ -71,8 +72,14 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
     }
   }, [id])
 
-  function openBooking(sessionId?: SessionTypeId) {
+  function openBooking(sessionId?: SessionTypeId, fromSessionPlan = false) {
     if (!professional?.nextAvailableAt) return
+    if (fromSessionPlan) {
+      recordClientProductEvent({
+        eventName: 'session_plan_booking_clicked',
+        surface: 'professional_profile',
+      })
+    }
     setSelectedSessionType(sessionId)
     setDrawerOpen(true)
   }
@@ -108,12 +115,15 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
   const nextAvailable = professional.nextAvailableAt
     ? new Date(professional.nextAvailableAt).toLocaleString(isDa ? 'da-DK' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' })
     : isDa ? 'Ingen åbne tider' : 'No open times'
-  const relevance = supportedSessions.slice(0, 5).map((session) => RELEVANCE_COPY[session.id][lang])
-  const outcomes = Array.from(new Set(supportedSessions.flatMap((session) => session.deliverables[lang]))).slice(0, 5)
+  const relevance = professional.relevantSituations.length > 0
+    ? professional.relevantSituations
+    : supportedSessions.slice(0, 5).map((session) => RELEVANCE_COPY[session.id][lang])
+  const outcomes = professional.expectedOutcomes.length > 0
+    ? professional.expectedOutcomes
+    : Array.from(new Set(supportedSessions.flatMap((session) => session.deliverables[lang]))).slice(0, 5)
   const category = categoryForAreas(professional.industries)?.id
   const experienceFacts = professionalExperienceFacts(professional, isDa)
   const languageLabels = professionalLanguageLabels(professional.languages, isDa)
-  const responseLabel = professionalResponseLabel(professional.responseTimeHours, isDa)
   const experienceLead = professionalExperienceLead(professional, isDa)
 
   return (
@@ -154,7 +164,6 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
               )}
               <dl>
                 <div><dt>{isDa ? 'Næste ledige tid' : 'Next available time'}</dt><dd>{nextAvailable}</dd></div>
-                {responseLabel && <div><dt>{isDa ? 'Svartid' : 'Response time'}</dt><dd>{responseLabel}</dd></div>}
                 <div><dt>{isDa ? 'Bekræftelse' : 'Confirmation'}</dt><dd>{isDa ? 'Når fagpersonen accepterer' : 'When the professional accepts'}</dd></div>
               </dl>
               {hasOpenTimes ? (
@@ -187,7 +196,10 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
                 {languageLabels.length > 0 && <span>{languageLabels.join(' · ')}</span>}
               </div>
             )}
-            <p className="profile-experience__bio">{professional.bio || experienceLead}</p>
+            <p className="profile-experience__bio">{professional.experienceSummary || professional.bio || experienceLead}</p>
+            {professional.experienceSummary && professional.bio && professional.bio !== professional.experienceSummary && (
+              <p className="profile-experience__bio">{professional.bio}</p>
+            )}
             <div className="profile-experience__areas">
               {professional.industries.map((area) => <span key={area}>{area}</span>)}
             </div>
@@ -221,6 +233,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
             <h2>{isDa ? 'Vælg, hvad erfaringen skal bruges til.' : 'Choose what the experience should be used for.'}</h2>
             <p>{isDa ? 'Hver session tager udgangspunkt i din konkrete situation, dit materiale og dit ønskede resultat.' : 'Every session starts with your situation, material and intended outcome.'}</p>
           </div>
+          <SessionPlanPreview locale={lang} headingLevel="h3" className="mt-10" trackingSurface="professional_profile" />
           <div className="profile-session-grid">
             {supportedSessions.map((session, index) => (
               <article key={session.id}>
@@ -229,7 +242,7 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
                 <p>{session.description[lang]}</p>
                 <div><span>{isDa ? 'Forventet resultat' : 'Expected result'}</span><strong>{session.outcome[lang]}</strong></div>
                 {hasOpenTimes ? (
-                  <button type="button" onClick={() => openBooking(session.id)}>
+                  <button type="button" onClick={() => openBooking(session.id, true)}>
                     {isDa ? 'Vælg denne session' : 'Choose this session'}<ArrowRight size={15} aria-hidden="true" />
                   </button>
                 ) : (
@@ -245,7 +258,12 @@ export default function ProfessionalDetail({ id, initialProfessional, initialLoa
         <div className="professional-mobile-booking">
           <div>
             <strong>{formatDkk(professional.price)} · {SESSION_MINUTES} min</strong>
-            <span>{hasOpenTimes ? `${formatDkk(professional.payoutPreference === 'donate' ? charityAmount(professional.price, 'donate') : sessionImpactAmount(professional.price))} ${isDa ? 'til Kræftens Bekæmpelse' : 'to Kræftens Bekæmpelse'}` : (isDa ? 'Ingen åbne tider' : 'No open times')}</span>
+            <span>
+              {professional.payoutPreference === 'donate'
+                ? `${isDa ? 'Donerer også sin egen 70%-andel' : 'Also donates their own 70% share'} · ${formatDkk(charityAmount(professional.price, 'donate'))} ${isDa ? 'til Kræftens Bekæmpelse' : 'to Kræftens Bekæmpelse'}`
+                : `${formatDkk(sessionImpactAmount(professional.price))} ${isDa ? 'til Kræftens Bekæmpelse' : 'to Kræftens Bekæmpelse'}`}
+              {!hasOpenTimes ? ` · ${isDa ? 'Ingen åbne tider' : 'No open times'}` : ''}
+            </span>
           </div>
           {hasOpenTimes ? (
             <button type="button" onClick={() => openBooking()} className="button-primary">{isDa ? 'Book sessionen' : 'Book session'}</button>

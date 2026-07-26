@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
 import { AccessHero } from '@/components/AccessHero'
 import { Reveal } from '@/components/Reveal'
+import { SessionPlanPreview } from '@/components/SessionPlanPreview'
 import { useLanguage } from '@/context/LanguageContext'
+import { recordClientProductEvent } from '@/lib/clientProductAnalytics'
 import { CATEGORIES, categoryAccent, categoryForAreas } from '@/lib/categories'
 import { CONTRIBUTION_PERCENT, PRICE_OPTIONS, SESSION_MINUTES, formatDkk } from '@/lib/platform'
 import { professionalBestFor, professionalInitials, professionalSessionTypes } from '@/lib/professionalPresentation'
@@ -192,6 +194,9 @@ export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
             ))}
           </div>
           <p className="booking-disclosure booking-disclosure--dark"><Check size={15} aria-hidden="true" />{isDa ? 'Bookinganmodningen er først bekræftet, når den professionelle har accepteret tidspunktet.' : 'The booking request is only confirmed when the professional has accepted the time.'}</p>
+          <Reveal delay={120} className="mt-12">
+            <SessionPlanPreview locale={lang} tone="dark" headingLevel="h3" trackingSurface="home" />
+          </Reveal>
         </div>
       </section>
 
@@ -232,7 +237,16 @@ export function HomeContent({ featuredProfessionals = [] }: HomeContentProps) {
             </div>
           )}
 
-          <Link href="/professionals" className="button-secondary button-with-arrow access-professionals__cta">{isDa ? 'Find den erfaring, du mangler' : 'Find the experience you need'}<ArrowRight size={16} aria-hidden="true" /></Link>
+          <Link
+            href="/professionals"
+            className="button-secondary button-with-arrow access-professionals__cta"
+            onClick={() => recordClientProductEvent({
+              eventName: 'session_plan_booking_clicked',
+              surface: 'home',
+            })}
+          >
+            {isDa ? 'Find den erfaring, du mangler' : 'Find the experience you need'}<ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </section>
 

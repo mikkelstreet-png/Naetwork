@@ -9,7 +9,12 @@ async function professionalForRequest() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const admin = createAdminClient()
-  const { data: profile } = await admin.from('profiles').select('id, role, name').eq('auth_user_id', user.id).maybeSingle()
+  const { data: profile } = await admin
+    .from('profiles')
+    .select('id, role, name')
+    .eq('auth_user_id', user.id)
+    .eq('status', 'active')
+    .maybeSingle()
   if (!profile || profile.role !== 'professional') return null
   const { data: professional } = await admin
     .from('professional_profiles')

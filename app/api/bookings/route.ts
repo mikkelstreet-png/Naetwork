@@ -20,7 +20,12 @@ export async function GET() {
     if (!user) return NextResponse.json({ error: 'Log ind for at se bookinger.' }, { status: 401 });
 
     const admin = createAdminClient();
-    const { data: actor } = await admin.from('profiles').select('id, role').eq('auth_user_id', user.id).single();
+    const { data: actor } = await admin
+      .from('profiles')
+      .select('id, role')
+      .eq('auth_user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle();
     if (!actor) return NextResponse.json({ bookings: [] });
 
     const { data: ownProfessional } = await admin
@@ -40,14 +45,19 @@ export async function GET() {
 
     const rows = bookings ?? [];
     const bookingIds = rows.map((row) => row.id);
-    const [{ data: reviews }, { data: outcomes }] = bookingIds.length
+    const [{ data: reviews }, { data: outcomes }, { data: plans }] = bookingIds.length
       ? await Promise.all([
           admin.from('reviews').select('booking_id').in('booking_id', bookingIds),
-          admin.from('session_outcomes').select('id, booking_id, summary, priorities, next_action, next_action_due_at, candidate_completed_at, updated_at').in('booking_id', bookingIds),
+          admin.from('session_outcomes').select('id, booking_id, summary, priorities, next_action, next_action_due_at, candidate_completed_at, result_status, published_at, updated_at').in('booking_id', bookingIds),
+          admin
+            .from('session_plans')
+            .select('booking_id, problem, desired_outcome, definition_of_done, preparation_status, prepared_at, updated_at')
+            .in('booking_id', bookingIds),
         ])
-      : [{ data: [] }, { data: [] }];
+      : [{ data: [] }, { data: [] }, { data: [] }];
     const reviewedBookingIds = new Set((reviews ?? []).map((review) => review.booking_id));
     const outcomeMap = new Map((outcomes ?? []).map((outcome) => [outcome.booking_id, outcome]));
+    const planMap = new Map((plans ?? []).map((plan) => [plan.booking_id, plan]));
     const candidateIds = Array.from(new Set(rows.map((row) => row.candidate_profile_id).filter(Boolean)));
     const professionalIds = Array.from(new Set(rows.map((row) => row.professional_profile_id).filter(Boolean)));
     const [{ data: candidates }, { data: professionals }] = await Promise.all([
@@ -68,6 +78,7 @@ export async function GET() {
       bookings: rows.map((booking) => {
         const viewerRole = booking.candidate_profile_id === actor.id ? 'candidate' : 'professional';
         const professional = professionalMap.get(booking.professional_profile_id);
+        const outcome = outcomeMap.get(booking.id) ?? null;
         return {
           ...booking,
           viewer_role: viewerRole,
@@ -78,7 +89,8 @@ export async function GET() {
             ? [professional?.title, professional?.company].filter(Boolean).join(' · ')
             : 'Kandidat',
           reviewed: reviewedBookingIds.has(booking.id),
-          outcome: outcomeMap.get(booking.id) ?? null,
+          session_plan: planMap.get(booking.id) ?? null,
+          outcome: viewerRole === 'candidate' && outcome?.result_status !== 'published' ? null : outcome,
         };
       }),
     });
@@ -127,7 +139,8 @@ export async function POST(request: Request) {
       .from('profiles')
       .select('id, name')
       .eq('auth_user_id', user.id)
-      .single();
+      .eq('status', 'active')
+      .maybeSingle();
     if (candidateError || !candidate) {
       return NextResponse.json({ error: 'Din kandidatprofil kunne ikke findes.' }, { status: 409 });
     }
@@ -141,6 +154,9 @@ export async function POST(request: Request) {
       .single();
     if (professionalError || !professional) {
       return NextResponse.json({ error: 'Profilen er ikke tilgængelig for booking.' }, { status: 404 });
+    }
+    if (professional.profile_id === candidate.id) {
+      return NextResponse.json({ error: 'Du kan ikke booke en session hos dig selv.' }, { status: 400 });
     }
     if (!sessionTypesForFocusAreas(professional.focus_areas ?? []).some((session) => session.id === requestedSessionType)) {
       return NextResponse.json({ error: 'Fagpersonen tilbyder ikke den valgte sessionstype.' }, { status: 400 });
@@ -188,7 +204,8 @@ export async function POST(request: Request) {
       .from('profiles')
       .select('id, auth_user_id, name')
       .eq('id', professional.profile_id)
-      .single();
+      .eq('status', 'active')
+      .maybeSingle();
     if (ownerError || !owner) {
       return NextResponse.json({ error: 'Den professionelle konto kunne ikke findes.' }, { status: 409 });
     }
@@ -286,7 +303,7 @@ export async function POST(request: Request) {
           { label: 'Den professionelle', value: payoutPreference === 'donate' ? 'DKK 0 · 70%-andelen doneres' : `DKK ${professionalPayout.toLocaleString('da-DK')} (${economics.professionalSharePercent}% af nettoprisen)` },
         ],
         note: 'Betaling er ikke aktiveret endnu, og der trækkes ikke noget beløb ved bookinganmodningen.',
-        cta: { label: 'Se mine bookinger', href: appUrl('/profil/bookings') },
+        cta: { label: 'Forbered din Session Plan', href: appUrl(`/profil/bookings/${booking.id}`) },
       }) : Promise.resolve(),
       professionalUser.user?.email ? sendTransactionalEmail({
         to: professionalUser.user.email,
@@ -305,7 +322,7 @@ export async function POST(request: Request) {
           { label: 'Forventet udbetaling', value: payoutPreference === 'donate' ? 'DKK 0 · din 70%-andel doneres' : `DKK ${professionalPayout.toLocaleString('da-DK')} før skat` },
         ],
         note: goal || 'Kandidaten har ikke tilføjet et ekstra mål.',
-        cta: { label: 'Behandl anmodningen', href: appUrl('/profil/bookings') },
+        cta: { label: 'Se booking og Session Plan', href: appUrl(`/profil/bookings/${booking.id}`) },
       }) : Promise.resolve(),
     ]);
 

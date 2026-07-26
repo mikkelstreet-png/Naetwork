@@ -23,6 +23,13 @@ import {
   normalizePayoutPreference,
   type PayoutPreference,
 } from '@/lib/payoutPreference';
+import {
+  EXPERIENCE_SUMMARY_MAX_LENGTH,
+  PROFILE_LIST_ITEM_MAX_LENGTH,
+  cleanProfileList,
+  cleanProfileText,
+  professionalProfileMissing,
+} from '@/lib/professionalProfile';
 
 export default function ProfessionalProfilePage() {
   const [category, setCategory] = useState<CategoryId>('Consulting');
@@ -30,6 +37,9 @@ export default function ProfessionalProfilePage() {
     title: '',
     company: '',
     bio: '',
+    experience_summary: '',
+    relevant_situations: [] as string[],
+    expected_outcomes: [] as string[],
     industries: [] as string[],
     focus_areas: [] as string[],
     languages: ['da', 'en'] as string[],
@@ -40,6 +50,7 @@ export default function ProfessionalProfilePage() {
     payout_preference: DEFAULT_PAYOUT_PREFERENCE as PayoutPreference,
     visibility: 'hidden',
     review_status: 'pending',
+    review_feedback: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -50,6 +61,9 @@ export default function ProfessionalProfilePage() {
 
   useEffect(() => {
     async function load() {
+      if (new URLSearchParams(window.location.search).get('sync') === 'failed') {
+        setError('Din konto er bekræftet, men profiloplysningerne kunne ikke synkroniseres automatisk. Kontrollér felterne og gem profilen igen.');
+      }
       const supabase = createClient();
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError) {
@@ -92,6 +106,9 @@ export default function ProfessionalProfilePage() {
           title: prof.title || '',
           company: prof.company || '',
           bio: prof.bio || '',
+          experience_summary: prof.experience_summary || '',
+          relevant_situations: cleanProfileList(prof.relevant_situations),
+          expected_outcomes: cleanProfileList(prof.expected_outcomes),
           industries: normalizedAreas,
           focus_areas: prof.focus_areas || [],
           languages: prof.languages || ['da', 'en'],
@@ -102,6 +119,7 @@ export default function ProfessionalProfilePage() {
           payout_preference: normalizePayoutPreference(prof.payout_preference),
           visibility: prof.visibility || 'hidden',
           review_status: prof.review_status || 'pending',
+          review_feedback: prof.review_feedback || '',
         });
       }
       setLoading(false);
@@ -114,33 +132,69 @@ export default function ProfessionalProfilePage() {
     return arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
   }
 
+  function updateProfileList(key: 'relevant_situations' | 'expected_outcomes', index: number, value: string) {
+    setData((current) => {
+      const next = [...current[key]];
+      next[index] = value.slice(0, PROFILE_LIST_ITEM_MAX_LENGTH);
+      return { ...current, [key]: next };
+    });
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    if (!data.title.trim() || !data.company.trim() || !data.bio.trim() || !data.linkedin_url.trim() || data.industries.length === 0 || data.focus_areas.length === 0 || data.languages.length === 0) {
-      setError('Udfyld titel, virksomhed, bio, LinkedIn, kategori, mindst ét fagområde, én sessionstype og ét sessionssprog.');
-      return;
-    }
-    const linkedinUrl = normalizeLinkedInUrl(data.linkedin_url);
-    if (!linkedinUrl) {
+    const linkedinUrl = data.linkedin_url.trim() ? normalizeLinkedInUrl(data.linkedin_url) : null;
+    if (data.linkedin_url.trim() && !linkedinUrl) {
       setError('Indtast et gyldigt LinkedIn-link, der starter med https://.');
       return;
     }
+    const editableProfile = {
+      title: cleanProfileText(data.title, 100),
+      company: cleanProfileText(data.company, 100),
+      bio: cleanProfileText(data.bio, 500),
+      experience_summary: cleanProfileText(data.experience_summary, EXPERIENCE_SUMMARY_MAX_LENGTH),
+      relevant_situations: cleanProfileList(data.relevant_situations),
+      expected_outcomes: cleanProfileList(data.expected_outcomes),
+      industries: data.industries,
+      focus_areas: data.focus_areas,
+      languages: data.languages,
+      seniority: data.seniority,
+      years_experience: data.years_experience,
+      price_dkk: normalizePrice(data.price_dkk),
+      linkedin_url: linkedinUrl,
+      payout_preference: data.payout_preference,
+      visibility: data.visibility,
+    };
+    if (editableProfile.visibility === 'published') {
+      const missing = professionalProfileMissing(editableProfile);
+      if (missing.length > 0) {
+        setError(`Profilen kan ikke sendes endnu. Udfyld: ${missing.join(', ')}.`);
+        return;
+      }
+    }
+
     setSaving(true);
     const supabase = createClient();
-    const { data: { user: u } } = await supabase.auth.getUser();
-    const { data: profile } = await supabase
+    const { data: { user: u }, error: userError } = await supabase.auth.getUser();
+    if (userError || !u) {
+      setSaving(false);
+      setError('Din session er udløbet. Log ind igen og gentag.');
+      return;
+    }
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id')
-      .eq('auth_user_id', u?.id)
+      .eq('auth_user_id', u.id)
       .single();
+    if (profileError || !profile) {
+      setSaving(false);
+      setError('Din konto kunne ikke indlæses. Prøv igen.');
+      return;
+    }
     const { data: savedProfile, error: saveError } = await supabase.from('professional_profiles').upsert({
-      profile_id: profile?.id,
-      ...data,
-      linkedin_url: linkedinUrl,
-      price_dkk: normalizePrice(data.price_dkk),
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'profile_id' }).select('review_status, visibility').single();
+      profile_id: profile.id,
+      ...editableProfile,
+    }, { onConflict: 'profile_id' }).select('review_status, visibility, review_feedback').single();
     setSaving(false);
     if (saveError) {
       setError('Profilen kunne ikke gemmes. Prøv igen.');
@@ -148,8 +202,11 @@ export default function ProfessionalProfilePage() {
     }
     setData((current) => ({
       ...current,
+      ...editableProfile,
+      linkedin_url: editableProfile.linkedin_url || '',
       review_status: savedProfile?.review_status || current.review_status,
       visibility: savedProfile?.visibility || current.visibility,
+      review_feedback: savedProfile?.review_feedback || '',
     }));
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -164,6 +221,14 @@ export default function ProfessionalProfilePage() {
   }
 
   const economics = sessionEconomics(data.price_dkk);
+  const profileStateLabel = data.review_status === 'approved'
+    ? data.visibility === 'published' ? 'Godkendt og synlig' : 'Godkendt, men skjult'
+    : data.review_status === 'rejected'
+      ? 'Kræver ændringer'
+      : data.visibility === 'published'
+        ? 'Indsendt · afventer gennemgang'
+        : 'Kladde · ikke indsendt';
+  const readyMissing = professionalProfileMissing(data);
 
   return (
     <main className="min-h-screen bg-[#f7f7f4]">
@@ -189,7 +254,7 @@ export default function ProfessionalProfilePage() {
               ['Kategori', category],
               ['Fast fordeling', `${CONTRIBUTION_PERCENT} · ${PLATFORM_SHARE_PERCENT} · ${PROFESSIONAL_SHARE_PERCENT}%`],
               ['Din 70%-andel', data.payout_preference === 'donate' ? 'Doneres også' : 'Udbetales til dig'],
-              ['Gennemgang', data.review_status === 'approved' ? 'Godkendt' : data.review_status === 'rejected' ? 'Afvist' : 'Afventer'],
+              ['Profilstatus', profileStateLabel],
             ].map(([label, value]) => (
               <div key={label} className="border-b border-white/15 py-4">
                 <p className="text-xs text-white/45">{label}</p>
@@ -203,7 +268,22 @@ export default function ProfessionalProfilePage() {
           <div className="mb-8">
             <p className="text-xs font-semibold uppercase text-gray-400">Rediger profil</p>
             <h2 className="mt-2 text-2xl font-black text-gray-950 sm:text-3xl">Profiloplysninger</h2>
-            <p className="mt-2 text-sm leading-relaxed text-gray-500">Denne profil er synlig for kandidater, når du publicerer den og Naetwork har godkendt den.</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">Gem løbende som kladde. Når profilen er komplet, sender du den til Naetworks gennemgang.</p>
+          </div>
+
+          <div className={`mb-7 rounded-lg border px-4 py-4 ${data.review_status === 'rejected' ? 'border-red-200 bg-red-50' : data.review_status === 'approved' ? 'border-emerald-200 bg-emerald-50' : data.visibility === 'published' ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-[#f7f7f4]'}`}>
+            <p className="text-xs font-black uppercase tracking-[0.08em] text-gray-500">Status</p>
+            <p className="mt-1 text-base font-black text-gray-950">{profileStateLabel}</p>
+            {data.review_feedback && (
+              <div className="mt-4 border-t border-red-200 pt-4">
+                <p className="text-xs font-black text-red-900">Feedback fra Naetwork</p>
+                <p className="mt-1 text-sm leading-relaxed text-red-800">{data.review_feedback}</p>
+                <p className="mt-2 text-xs leading-relaxed text-red-700">Ret profilen, vælg “Send til gennemgang” og gem. Feedbacken ryddes, når profilen er indsendt igen.</p>
+              </div>
+            )}
+            {data.review_status === 'pending' && data.visibility === 'hidden' && readyMissing.length > 0 && (
+              <p className="mt-2 text-xs leading-relaxed text-gray-600">Før indsendelse mangler: {readyMissing.join(', ')}.</p>
+            )}
           </div>
 
           <form onSubmit={handleSave} className="space-y-7">
@@ -220,8 +300,63 @@ export default function ProfessionalProfilePage() {
 
             <div>
               <label htmlFor="profile-bio" className="form-label">Bio <span className="font-normal text-gray-500">({data.bio.length}/500)</span></label>
-              <textarea id="profile-bio" value={data.bio} onChange={e => setData(d => ({ ...d, bio: e.target.value.slice(0, 500) }))} rows={5} className="field-control resize-none" placeholder="Beskriv din baggrund og hvad du kan hjælpe kandidater med i en 60-minutters session..." />
+              <textarea id="profile-bio" value={data.bio} onChange={e => setData(d => ({ ...d, bio: e.target.value.slice(0, 500) }))} rows={4} className="field-control resize-none" placeholder="Præsentér kort din professionelle baggrund og dit nuværende arbejdsfelt." />
             </div>
+
+            <section className="border-y border-gray-200 py-7" aria-labelledby="profile-relevance-heading">
+              <p className="text-xs font-black uppercase tracking-[0.08em] text-gray-400">Relevans før CV</p>
+              <h3 id="profile-relevance-heading" className="mt-2 text-xl font-black text-gray-950">Gør det tydeligt, hvornår din erfaring er den rette.</h3>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-500">Kandidaten skal kunne forstå problemet, din direkte erfaring og et realistisk udbytte, før de ser din titel.</p>
+
+              <div className="mt-6">
+                <label htmlFor="profile-experience-summary" className="form-label">Hvilken erfaring bygger din feedback på? <span className="font-normal text-gray-500">({data.experience_summary.length}/{EXPERIENCE_SUMMARY_MAX_LENGTH})</span></label>
+                <textarea
+                  id="profile-experience-summary"
+                  value={data.experience_summary}
+                  onChange={(event) => setData((current) => ({ ...current, experience_summary: event.target.value.slice(0, EXPERIENCE_SUMMARY_MAX_LENGTH) }))}
+                  rows={4}
+                  className="field-control resize-none"
+                  placeholder="Beskriv den direkte rolle-, branche- eller proceserfaring, kandidaten får adgang til."
+                />
+                <p className="form-help">Minimum 40 tegn ved indsendelse. Undgå brede formuleringer som “jeg hjælper med karriere”.</p>
+              </div>
+
+              <fieldset className="mt-6">
+                <legend className="text-sm font-semibold text-gray-700">Relevant når kandidaten skal…</legend>
+                <p className="mt-1 text-xs leading-relaxed text-gray-500">Op til tre konkrete situationer. Tomme felter gemmes ikke.</p>
+                <div className="mt-3 space-y-2">
+                  {[0, 1, 2].map((index) => (
+                    <input
+                      key={`profile-situation-${index}`}
+                      aria-label={`Relevant situation ${index + 1}`}
+                      value={data.relevant_situations[index] || ''}
+                      maxLength={PROFILE_LIST_ITEM_MAX_LENGTH}
+                      onChange={(event) => updateProfileList('relevant_situations', index, event.target.value)}
+                      className="field-control"
+                      placeholder={index === 0 ? 'Fx forberede et caseinterview i management consulting' : 'Tilføj en anden konkret situation (valgfri)'}
+                    />
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset className="mt-6">
+                <legend className="text-sm font-semibold text-gray-700">Kandidaten kan realistisk gå derfra med…</legend>
+                <p className="mt-1 text-xs leading-relaxed text-gray-500">Op til tre konkrete resultater. Lov ikke et job eller et bestemt udfald.</p>
+                <div className="mt-3 space-y-2">
+                  {[0, 1, 2].map((index) => (
+                    <input
+                      key={`profile-outcome-${index}`}
+                      aria-label={`Forventet udbytte ${index + 1}`}
+                      value={data.expected_outcomes[index] || ''}
+                      maxLength={PROFILE_LIST_ITEM_MAX_LENGTH}
+                      onChange={(event) => updateProfileList('expected_outcomes', index, event.target.value)}
+                      className="field-control"
+                      placeholder={index === 0 ? 'Fx tre prioriterede forbedringer til CV’et' : 'Tilføj et andet realistisk udbytte (valgfrit)'}
+                    />
+                  ))}
+                </div>
+              </fieldset>
+            </section>
 
             <div>
               <label htmlFor="profile-linkedin" className="form-label">LinkedIn</label>
@@ -348,18 +483,22 @@ export default function ProfessionalProfilePage() {
             </fieldset>
 
             <div>
-              <label className="mb-3 block text-sm font-semibold text-gray-700">Publiceringsvalg</label>
+              <p className="mb-3 block text-sm font-semibold text-gray-700">Hvad vil du gøre nu?</p>
               <div className="grid grid-cols-2 gap-3">
-                <button type="button" aria-pressed={data.visibility === 'hidden'} onClick={() => setData(d => ({ ...d, visibility: 'hidden' }))} className={`rounded-lg border py-3 text-sm font-semibold transition-colors ${data.visibility === 'hidden' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Gem som kladde</button>
-                <button type="button" aria-pressed={data.visibility === 'published'} onClick={() => setData(d => ({ ...d, visibility: 'published' }))} className={`rounded-lg border py-3 text-sm font-semibold transition-colors ${data.visibility === 'published' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Send til gennemgang</button>
+                <button type="button" aria-pressed={data.visibility === 'hidden'} onClick={() => setData(d => ({ ...d, visibility: 'hidden' }))} className={`rounded-lg border px-3 py-3 text-sm font-semibold transition-colors ${data.visibility === 'hidden' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Behold som kladde</button>
+                <button type="button" aria-pressed={data.visibility === 'published'} onClick={() => setData(d => ({ ...d, visibility: 'published' }))} className={`rounded-lg border px-3 py-3 text-sm font-semibold transition-colors ${data.visibility === 'published' ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}>Send til gennemgang</button>
               </div>
-              <p className="mt-2 text-xs leading-relaxed text-gray-400">Profilen bliver først synlig, når den både er sendt til gennemgang og godkendt af Naetwork. Ændringer kræver en ny gennemgang.</p>
+              <p className="mt-2 text-xs leading-relaxed text-gray-400">En kladde vises ikke i admin-reviewkøen. En indsendt profil bliver først offentlig, når Naetwork har godkendt den. Offentlige profilændringer kræver en ny gennemgang.</p>
             </div>
 
             {error && <p role="alert" className="notice-error">{error}</p>}
 
             <button type="submit" disabled={saving} className="button-primary w-full disabled:opacity-50" aria-live="polite">
-              {saved ? 'Gemt' : saving ? 'Gemmer...' : 'Gem profil'}
+              {saved
+                ? data.visibility === 'published' ? 'Indsendt' : 'Kladde gemt'
+                : saving
+                  ? 'Gemmer...'
+                  : data.visibility === 'published' ? 'Gem og send til gennemgang' : 'Gem kladde'}
             </button>
           </form>
           <AvailabilityManager />

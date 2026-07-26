@@ -30,7 +30,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       .from('profiles')
       .select('id, name')
       .eq('auth_user_id', user.id)
-      .single();
+      .eq('status', 'active')
+      .maybeSingle();
     if (!actor) return NextResponse.json({ error: 'Profilen blev ikke fundet.' }, { status: 403 });
 
     const { data: booking } = await admin
@@ -124,7 +125,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         intro: `Hej ${candidate?.name || 'der'}. ${actorName} har bekræftet jeres 60-minutters session.`,
         rows,
         note: 'Betaling er ikke aktiveret endnu. Ingen beløb er trukket.',
-        cta: { label: 'Se sessionen', href: appUrl('/profil/bookings') },
+        cta: { label: 'Forbered din Session Plan', href: appUrl(`/profil/bookings/${id}`) },
       }));
       if (professionalEmail) notifications.push(sendTransactionalEmail({
         to: professionalEmail,
@@ -137,7 +138,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         intro: `Hej ${owner?.name || 'der'}. Bookingen med ${candidate?.name || 'kandidaten'} er nu bekræftet.`,
         rows,
         note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
-        cta: { label: 'Se sessionen', href: appUrl('/profil/bookings') },
+        cta: { label: 'Se booking og Session Plan', href: appUrl(`/profil/bookings/${id}`) },
       }));
 
       const reminderAt = new Date(new Date(booking.starts_at).getTime() - 24 * 60 * 60 * 1000);
@@ -155,7 +156,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         intro: `Hej ${candidate.name || 'der'}. Her er tidspunkt og fokus for din kommende 60-minutters session.`,
         rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: sessionLabel }],
         note: booking.meeting_url ? `Mødelink: ${booking.meeting_url}` : 'Mødelinket vises i din booking, når det er tilføjet.',
-        cta: { label: 'Forbered sessionen', href: appUrl('/profil/bookings') },
+        cta: { label: 'Forbered Session Plan', href: appUrl(`/profil/bookings/${id}`) },
       }));
       if (canScheduleNow && professionalEmail && owner?.notification_booking_reminders) notifications.push(sendTransactionalEmail({
         to: professionalEmail,
@@ -169,7 +170,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         intro: `Hej ${owner.name || 'der'}. Du har en session med ${candidate?.name || 'en kandidat'} på det angivne tidspunkt.`,
         rows: [{ label: 'Tidspunkt', value: sessionDate }, { label: 'Sessionstype', value: sessionLabel }],
         note: booking.message_to_professional || 'Kandidaten har ikke tilføjet et ekstra brief.',
-        cta: { label: 'Se kandidatens brief', href: appUrl('/profil/bookings') },
+        cta: { label: 'Se kandidatens Session Plan', href: appUrl(`/profil/bookings/${id}`) },
       }));
     } else if (status === 'completed' && candidateEmail) {
       notifications.push(sendTransactionalEmail({

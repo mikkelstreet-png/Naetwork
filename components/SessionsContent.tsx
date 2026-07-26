@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { ArrowRight, Check, Clock3 } from 'lucide-react'
 import { PublicPageHero } from '@/components/PublicPageHero'
 import { RevenueSplit } from '@/components/RevenueSplit'
+import { SessionPlanPreview } from '@/components/SessionPlanPreview'
 import { useLanguage } from '@/context/LanguageContext'
 import { localized } from '@/lib/brand'
+import { recordClientProductEvent } from '@/lib/clientProductAnalytics'
 import { CATEGORIES } from '@/lib/categories'
 import { PRICE_OPTIONS, SESSION_MINUTES } from '@/lib/platform'
 import { SESSION_TYPES } from '@/lib/sessionTypes'
@@ -46,6 +48,8 @@ export function SessionsContent() {
             ))}
           </div>
 
+          <SessionPlanPreview locale={lang} headingLevel="h3" className="mb-12" trackingSurface="sessions" />
+
           <div className="session-catalog">
             {SESSION_TYPES.map((session, index) => (
               <article key={session.id} id={session.id}>
@@ -67,7 +71,14 @@ export function SessionsContent() {
                 </div>
                 <div className="session-catalog__action">
                   <span><Clock3 size={14} aria-hidden="true" />{SESSION_MINUTES} min</span>
-                  <Link href={`/start?session=${session.id}`} aria-label={`${isDa ? 'Vælg' : 'Choose'} ${localized(session.title, lang)}`}>
+                  <Link
+                    href={`/start?session=${session.id}`}
+                    aria-label={`${isDa ? 'Vælg' : 'Choose'} ${localized(session.title, lang)}`}
+                    onClick={() => recordClientProductEvent({
+                      eventName: 'session_plan_booking_clicked',
+                      surface: 'sessions',
+                    })}
+                  >
                     {isDa ? 'Vælg' : 'Choose'}<ArrowRight size={15} aria-hidden="true" />
                   </Link>
                 </div>

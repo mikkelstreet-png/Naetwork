@@ -36,12 +36,173 @@ async function actorContext() {
   return profile ? { admin, profile } : null
 }
 
+async function professionalWorkspace(
+  context: NonNullable<Awaited<ReturnType<typeof actorContext>>>,
+) {
+  const { data: professional, error: professionalError } = await context.admin
+    .from('professional_profiles')
+    .select('id, title, company, bio, experience_summary, relevant_situations, expected_outcomes, focus_areas, industries, languages, years_experience, price_dkk, linkedin_url, visibility, review_status')
+    .eq('profile_id', context.profile.id)
+    .maybeSingle()
+  if (professionalError) throw professionalError
+
+  if (!professional) {
+    return {
+      professional: null,
+      requests: [],
+      upcomingSessions: [],
+      missingResults: [],
+      availability: { openCount: 0, nextAvailableAt: null },
+      quality: { completedSessionCount: 0, publishedReviewCount: 0, averageRating: null },
+    }
+  }
+
+  const now = new Date().toISOString()
+  const [
+    { data: bookings, error: bookingsError },
+    { data: slots, error: slotsError, count: openSlotCount },
+    { data: reviews, error: reviewsError },
+  ] = await Promise.all([
+    context.admin
+      .from('bookings')
+      .select('id, candidate_profile_id, starts_at, ends_at, status, created_at')
+      .eq('professional_profile_id', professional.id)
+      .order('starts_at', { ascending: true }),
+    context.admin
+      .from('availability_slots')
+      .select('id, starts_at', { count: 'exact' })
+      .eq('professional_profile_id', professional.id)
+      .eq('is_available', true)
+      .gte('starts_at', now)
+      .order('starts_at', { ascending: true })
+      .limit(1),
+    context.admin
+      .from('reviews')
+      .select('rating')
+      .eq('professional_profile_id', professional.id)
+      .eq('moderation_status', 'published'),
+  ])
+  if (bookingsError || slotsError || reviewsError) {
+    throw bookingsError ?? slotsError ?? reviewsError
+  }
+
+  const bookingRows = bookings ?? []
+  const bookingIds = bookingRows.map((booking) => booking.id)
+  const candidateIds = Array.from(new Set(
+    bookingRows
+      .map((booking) => booking.candidate_profile_id)
+      .filter((candidateId): candidateId is string => Boolean(candidateId)),
+  ))
+  const [
+    { data: plans, error: plansError },
+    { data: outcomes, error: outcomesError },
+    { data: candidates, error: candidatesError },
+  ] = bookingIds.length
+    ? await Promise.all([
+        context.admin
+          .from('session_plans')
+          .select('booking_id, preparation_status')
+          .in('booking_id', bookingIds),
+        context.admin
+          .from('session_outcomes')
+          .select('booking_id, result_status')
+          .in('booking_id', bookingIds),
+        candidateIds.length
+          ? context.admin.from('profiles').select('id, name').in('id', candidateIds)
+          : Promise.resolve({ data: [], error: null }),
+      ])
+    : [
+        { data: [], error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ]
+  if (plansError || outcomesError || candidatesError) {
+    throw plansError ?? outcomesError ?? candidatesError
+  }
+
+  const candidateNames = new Map((candidates ?? []).map((candidate) => [
+    candidate.id,
+    candidate.name?.trim() || 'Kandidat',
+  ]))
+  const planStatus = new Map((plans ?? []).map((plan) => [
+    plan.booking_id,
+    plan.preparation_status === 'ready' ? 'ready' as const : 'incomplete' as const,
+  ]))
+  const publishedOutcomeIds = new Set(
+    (outcomes ?? [])
+      .filter((outcome) => outcome.result_status === 'published')
+      .map((outcome) => outcome.booking_id),
+  )
+  const actionBooking = (booking: typeof bookingRows[number]) => ({
+    bookingId: booking.id,
+    candidateName: candidateNames.get(booking.candidate_profile_id) ?? 'Kandidat',
+    startsAt: booking.starts_at,
+    endsAt: booking.ends_at,
+  })
+  const requests = bookingRows
+    .filter((booking) => ['requested', 'pending'].includes(booking.status))
+    .map(actionBooking)
+  const upcomingSessions = bookingRows
+    .filter((booking) => (
+      ['confirmed', 'rescheduled'].includes(booking.status)
+      && booking.starts_at > now
+    ))
+    .map((booking) => ({
+      ...actionBooking(booking),
+      preparationStatus: planStatus.get(booking.id) ?? 'incomplete',
+    }))
+  const missingResults = bookingRows
+    .filter((booking) => booking.status === 'completed' && !publishedOutcomeIds.has(booking.id))
+    .map(actionBooking)
+    .reverse()
+  const publishedRatings = (reviews ?? [])
+    .map((review) => Number(review.rating))
+    .filter((rating) => Number.isFinite(rating))
+  const averageRating = publishedRatings.length > 0
+    ? publishedRatings.reduce((sum, rating) => sum + rating, 0) / publishedRatings.length
+    : null
+
+  return {
+    professional,
+    requests,
+    upcomingSessions,
+    missingResults,
+    availability: {
+      openCount: openSlotCount ?? 0,
+      nextAvailableAt: slots?.[0]?.starts_at ?? null,
+    },
+    quality: {
+      completedSessionCount: bookingRows.filter((booking) => booking.status === 'completed').length,
+      publishedReviewCount: publishedRatings.length,
+      averageRating,
+    },
+  }
+}
+
 export async function GET() {
   try {
     const context = await actorContext()
     if (!context) return NextResponse.json({ error: 'Log ind for at se dit arbejdsrum.' }, { status: 401 })
 
-    const [{ data: situation }, { data: savedRows }, { data: alertRows }, { data: outcomes }] = await Promise.all([
+    if (context.profile.role === 'professional') {
+      const workspace = await professionalWorkspace(context)
+      return NextResponse.json({
+        accountRole: context.profile.role,
+        professionalWorkspace: workspace,
+        situation: null,
+        savedProfessionals: [],
+        savedProfessionalIds: [],
+        availabilityAlertIds: [],
+        outcomes: [],
+      })
+    }
+
+    const [
+      { data: situation, error: situationError },
+      { data: savedRows, error: savedRowsError },
+      { data: alertRows, error: alertRowsError },
+      { data: outcomes, error: outcomesError },
+    ] = await Promise.all([
       context.admin
         .from('career_situations')
         .select('id, title, category, session_type, stage, deadline, next_action, is_active, updated_at')
@@ -61,11 +222,31 @@ export async function GET() {
         .eq('is_active', true),
       context.admin
         .from('session_outcomes')
-        .select('id, booking_id, professional_profile_id, summary, priorities, next_action, next_action_due_at, candidate_completed_at, updated_at')
+        .select('id, booking_id, professional_profile_id, summary, priorities, next_action, next_action_due_at, candidate_completed_at, definition_of_done_status, open_questions, result_schema_version, updated_at')
         .eq('candidate_profile_id', context.profile.id)
+        .eq('result_status', 'published')
         .order('updated_at', { ascending: false })
         .limit(8),
     ])
+    if (situationError || savedRowsError || alertRowsError || outcomesError) {
+      throw situationError ?? savedRowsError ?? alertRowsError ?? outcomesError
+    }
+
+    const outcomeIds = (outcomes ?? []).map((outcome) => outcome.id)
+    const { data: nextMoves, error: nextMovesError } = outcomeIds.length > 0
+      ? await context.admin
+          .from('session_plan_next_moves')
+          .select('id, session_outcome_id, position, action, responsible, due_at, status, completed_at')
+          .in('session_outcome_id', outcomeIds)
+          .order('position', { ascending: true })
+      : { data: [], error: null }
+    if (nextMovesError) throw nextMovesError
+    const nextMovesByOutcome = new Map<string, typeof nextMoves>()
+    for (const move of nextMoves ?? []) {
+      const current = nextMovesByOutcome.get(move.session_outcome_id) ?? []
+      current.push(move)
+      nextMovesByOutcome.set(move.session_outcome_id, current)
+    }
 
     const savedIds = new Set((savedRows ?? []).map((row) => row.professional_profile_id))
     const outcomeProfessionalIds = new Set((outcomes ?? []).map((row) => row.professional_profile_id))
@@ -91,6 +272,7 @@ export async function GET() {
       availabilityAlertIds: (alertRows ?? []).map((row) => row.professional_profile_id),
       outcomes: (outcomes ?? []).map((outcome) => ({
         ...outcome,
+        next_moves: nextMovesByOutcome.get(outcome.id) ?? [],
         professional: professionalMap.get(outcome.professional_profile_id) ?? null,
       })),
     })

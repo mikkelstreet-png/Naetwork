@@ -1,22 +1,20 @@
 'use client';
 
-import { ArrowRight, CalendarDays, Check, ListChecks, Star } from 'lucide-react';
+import { ArrowRight, CalendarDays, FileText, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MemberNav } from '@/components/MemberNav';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useLanguage } from '@/context/LanguageContext';
 import { CONTRIBUTION_PERCENT, focusLabel } from '@/lib/platform';
+import type { GoalAchievement } from '@/lib/sessionFeedback';
 import { isSessionTypeId, sessionType } from '@/lib/sessionTypes';
 
 interface SessionOutcome {
   id: string;
   booking_id: string;
-  summary: string;
-  priorities: string[];
-  next_action: string;
-  next_action_due_at: string | null;
-  candidate_completed_at: string | null;
+  result_status: 'draft' | 'published';
+  published_at: string | null;
   updated_at: string;
 }
 
@@ -43,25 +41,29 @@ interface Booking {
   counterpart_name: string;
   counterpart_title: string;
   reviewed: boolean;
+  session_plan: {
+    problem: string | null;
+    desired_outcome: string | null;
+    definition_of_done: string | null;
+    preparation_status: 'draft' | 'ready';
+    prepared_at: string | null;
+    updated_at: string;
+  } | null;
   outcome: SessionOutcome | null;
 }
 
-interface OutcomeDraft {
-  summary: string;
-  priorities: [string, string, string];
-  nextAction: string;
-  nextActionDueAt: string;
-}
-
-const EMPTY_OUTCOME: OutcomeDraft = {
-  summary: '',
-  priorities: ['', '', ''],
-  nextAction: '',
-  nextActionDueAt: '',
-};
-
 type View = 'upcoming' | 'past' | 'all';
+type FeedbackScoreKey = 'professionalRelevance' | 'professionalPreparedness' | 'greaterClarity' | 'concreteNextSteps' | 'overallExperience';
+type FeedbackScores = Record<FeedbackScoreKey, number>;
+
 const ACTIVE_STATUSES = ['requested', 'pending', 'confirmed', 'rescheduled'];
+const EMPTY_FEEDBACK_SCORES: FeedbackScores = {
+  professionalRelevance: 0,
+  professionalPreparedness: 0,
+  greaterClarity: 0,
+  concreteNextSteps: 0,
+  overallExperience: 0,
+};
 
 export default function BookingsPage() {
   const { lang } = useLanguage();
@@ -74,10 +76,10 @@ export default function BookingsPage() {
   const [actionError, setActionError] = useState('');
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [reviewBookingId, setReviewBookingId] = useState<string | null>(null);
-  const [rating, setRating] = useState(0);
-  const [feedback, setFeedback] = useState('');
-  const [outcomeBookingId, setOutcomeBookingId] = useState<string | null>(null);
-  const [outcomeDraft, setOutcomeDraft] = useState<OutcomeDraft>(EMPTY_OUTCOME);
+  const [reviewSuccessBookingId, setReviewSuccessBookingId] = useState<string | null>(null);
+  const [goalAchieved, setGoalAchieved] = useState<GoalAchievement | ''>('');
+  const [feedbackScores, setFeedbackScores] = useState<FeedbackScores>(EMPTY_FEEDBACK_SCORES);
+  const [feedbackComment, setFeedbackComment] = useState('');
 
   useEffect(() => {
     const requestedView = new URLSearchParams(window.location.search).get('view');
@@ -117,11 +119,21 @@ export default function BookingsPage() {
   const upcomingCount = bookings.filter((booking) => ACTIVE_STATUSES.includes(booking.status) && new Date(booking.starts_at).getTime() > now).length;
   const pastCount = bookings.filter((booking) => !ACTIVE_STATUSES.includes(booking.status) || new Date(booking.starts_at).getTime() <= now).length;
   const outcomeCount = bookings.filter((booking) => booking.outcome).length;
+  const hasCompletedCandidateSession = bookings.some((booking) => (
+    booking.viewer_role === 'candidate' && booking.status === 'completed'
+  ));
   const visibleBookings = bookings.filter((booking) => {
     const upcoming = ACTIVE_STATUSES.includes(booking.status) && new Date(booking.starts_at).getTime() > now;
     if (view === 'upcoming') return upcoming;
     if (view === 'past') return !upcoming;
     return true;
+  }).sort((first, second) => {
+    const firstUpcoming = ACTIVE_STATUSES.includes(first.status) && new Date(first.starts_at).getTime() > now;
+    const secondUpcoming = ACTIVE_STATUSES.includes(second.status) && new Date(second.starts_at).getTime() > now;
+    if (firstUpcoming !== secondUpcoming) return firstUpcoming ? -1 : 1;
+    return firstUpcoming
+      ? new Date(first.starts_at).getTime() - new Date(second.starts_at).getTime()
+      : new Date(second.starts_at).getTime() - new Date(first.starts_at).getTime();
   });
 
   async function updateBooking(bookingId: string, action: 'confirm' | 'cancel' | 'complete') {
@@ -152,80 +164,56 @@ export default function BookingsPage() {
   }
 
   async function submitReview(bookingId: string) {
-    if (rating < 1) { setActionError(isDa ? 'Vælg en rating.' : 'Choose a rating.'); return; }
+    if (!goalAchieved) {
+      setActionError(isDa ? 'Vælg, om sessionens mål blev opnået.' : 'Choose whether the session goal was achieved.');
+      return;
+    }
+    if (Object.values(feedbackScores).some((score) => score < 1 || score > 5)) {
+      setActionError(isDa ? 'Besvar alle fem spørgsmål på skalaen fra 1 til 5.' : 'Answer all five questions on the scale from 1 to 5.');
+      return;
+    }
     setActionLoading(`${bookingId}:review`);
     setActionError('');
     try {
-      const response = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId, rating, feedback }) });
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingId,
+          goalAchieved,
+          ...feedbackScores,
+          comment: feedbackComment || null,
+        }),
+      });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error);
       setBookings((current) => current.map((booking) => booking.id === bookingId ? { ...booking, reviewed: true } : booking));
-      setReviewBookingId(null); setRating(0); setFeedback('');
+      setReviewBookingId(null);
+      setReviewSuccessBookingId(bookingId);
+      setGoalAchieved('');
+      setFeedbackScores(EMPTY_FEEDBACK_SCORES);
+      setFeedbackComment('');
     } catch (reviewError) {
       setActionError(reviewError instanceof Error ? reviewError.message : (isDa ? 'Vurderingen kunne ikke gemmes.' : 'The review could not be saved.'));
     } finally { setActionLoading(null); }
   }
 
-  function editOutcome(booking: Booking) {
-    const priorities = booking.outcome?.priorities ?? [];
-    setOutcomeDraft({
-      summary: booking.outcome?.summary ?? '',
-      priorities: [priorities[0] ?? '', priorities[1] ?? '', priorities[2] ?? ''],
-      nextAction: booking.outcome?.next_action ?? '',
-      nextActionDueAt: booking.outcome?.next_action_due_at ?? '',
-    });
-    setOutcomeBookingId(booking.id);
+  function toggleReview(bookingId: string) {
     setActionError('');
+    setReviewSuccessBookingId(null);
+    setGoalAchieved('');
+    setFeedbackScores(EMPTY_FEEDBACK_SCORES);
+    setFeedbackComment('');
+    setReviewBookingId((current) => current === bookingId ? null : bookingId);
   }
 
-  async function saveOutcome(bookingId: string) {
-    setActionLoading(`${bookingId}:outcome`);
-    setActionError('');
-    try {
-      const response = await fetch(`/api/bookings/${bookingId}/outcome`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          summary: outcomeDraft.summary,
-          priorities: outcomeDraft.priorities,
-          nextAction: outcomeDraft.nextAction,
-          nextActionDueAt: outcomeDraft.nextActionDueAt,
-        }),
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error);
-      setBookings((current) => current.map((booking) => booking.id === bookingId ? { ...booking, outcome: result.outcome } : booking));
-      setOutcomeBookingId(null);
-      setOutcomeDraft(EMPTY_OUTCOME);
-    } catch (outcomeError) {
-      setActionError(outcomeError instanceof Error ? outcomeError.message : (isDa ? 'Sessionsresultatet kunne ikke gemmes.' : 'The session outcome could not be saved.'));
-    } finally {
-      setActionLoading(null);
-    }
-  }
-
-  async function updateNextAction(booking: Booking) {
-    if (!booking.outcome) return;
-    const completed = !booking.outcome.candidate_completed_at;
-    setActionLoading(`${booking.id}:next-action`);
-    setActionError('');
-    try {
-      const response = await fetch(`/api/bookings/${booking.id}/outcome`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed }),
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error);
-      setBookings((current) => current.map((item) => item.id === booking.id && item.outcome
-        ? { ...item, outcome: { ...item.outcome, candidate_completed_at: result.outcome.candidate_completed_at } }
-        : item));
-    } catch (outcomeError) {
-      setActionError(outcomeError instanceof Error ? outcomeError.message : (isDa ? 'Næste skridt kunne ikke opdateres.' : 'The next step could not be updated.'));
-    } finally {
-      setActionLoading(null);
-    }
-  }
+  const feedbackQuestions: Array<{ key: FeedbackScoreKey; da: string; en: string }> = [
+    { key: 'professionalRelevance', da: 'Hvor relevant var den professionelles erfaring?', en: 'How relevant was the professional’s experience?' },
+    { key: 'professionalPreparedness', da: 'Hvor velforberedt var den professionelle?', en: 'How well prepared was the professional?' },
+    { key: 'greaterClarity', da: 'Hvor meget større klarhed fik du?', en: 'How much greater clarity did you gain?' },
+    { key: 'concreteNextSteps', da: 'Hvor konkrete blev dine næste skridt?', en: 'How concrete did your next steps become?' },
+    { key: 'overallExperience', da: 'Hvordan var den samlede oplevelse?', en: 'How was the overall experience?' },
+  ];
 
   const views: Array<{ id: View; label: string; count: number }> = [
     { id: 'upcoming', label: isDa ? 'Kommende' : 'Upcoming', count: upcomingCount },
@@ -242,9 +230,17 @@ export default function BookingsPage() {
             <h1 className="mt-3 text-4xl font-black leading-none text-gray-950 md:text-6xl">{isDa ? 'Dine bookinger.' : 'Your bookings.'}</h1>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-600 md:text-base">{isDa ? 'Anmodninger, bekræftede tider og tidligere 60-minutters sessioner.' : 'Requests, confirmed times and previous 60-minute sessions.'}</p>
           </div>
-          <Link href="/professionals" className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800">
-            {isDa ? 'Book ny session' : 'Book new session'} <ArrowRight size={16} aria-hidden="true" />
-          </Link>
+          {!loading && accountRole !== 'professional' && (
+            <Link
+              href={hasCompletedCandidateSession ? '/dashboard' : '/professionals'}
+              className="inline-flex w-fit items-center gap-2 rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white hover:bg-gray-800"
+            >
+              {hasCompletedCandidateSession
+                ? (isDa ? 'Fortsæt med dit næste træk' : 'Continue with your next move')
+                : (isDa ? 'Find relevant erfaring' : 'Find relevant experience')}
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          )}
         </div>
       </section>
 
@@ -284,8 +280,19 @@ export default function BookingsPage() {
           <div className="border-y border-gray-300 bg-white px-5 py-12 text-center">
             <CalendarDays size={22} className="mx-auto text-gray-300" aria-hidden="true" />
             <h2 className="mt-5 text-xl font-black text-gray-950">{view === 'upcoming' ? (isDa ? 'Ingen kommende bookinger' : 'No upcoming bookings') : (isDa ? 'Ingen bookinger i denne visning' : 'No bookings in this view')}</h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">{isDa ? 'Find en professionel og book 60 minutter med fokus på dit næste karriereskridt.' : 'Find a professional and book 60 minutes focused on your next career move.'}</p>
-            <Link href="/professionals" className="mt-6 inline-flex rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white">{isDa ? 'Se profiler' : 'Browse profiles'}</Link>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">
+              {hasCompletedCandidateSession
+                ? (isDa ? 'Brug først resultatet fra din seneste Session Plan og gennemfør dit vigtigste næste træk.' : 'Use the result from your latest Session Plan and complete your most important next move first.')
+                : (isDa ? 'Find en professionel og book 60 minutter med fokus på dit næste karriereskridt.' : 'Find a professional and book 60 minutes focused on your next career move.')}
+            </p>
+            <Link
+              href={hasCompletedCandidateSession ? '/dashboard' : '/professionals'}
+              className="mt-6 inline-flex rounded-lg bg-gray-950 px-5 py-3 text-sm font-black text-white"
+            >
+              {hasCompletedCandidateSession
+                ? (isDa ? 'Se dit næste træk' : 'View your next move')
+                : (isDa ? 'Se profiler' : 'Browse profiles')}
+            </Link>
           </div>
         ) : (
           <div className="border-t border-gray-300 bg-white">
@@ -309,18 +316,73 @@ export default function BookingsPage() {
                     </>
                   )}
                   {booking.viewer_role === 'professional' && ['confirmed', 'rescheduled'].includes(booking.status) && new Date(booking.ends_at).getTime() <= now && <button onClick={() => updateBooking(booking.id, 'complete')} disabled={actionLoading !== null} className="rounded-[4px] bg-gray-950 px-3 py-2 text-xs font-black text-white disabled:opacity-50">{isDa ? 'Markér gennemført' : 'Mark completed'}</button>}
-                  {booking.viewer_role === 'professional' && booking.status === 'completed' && <button onClick={() => editOutcome(booking)} disabled={actionLoading !== null} className="rounded-[4px] border border-gray-300 px-3 py-2 text-xs font-black text-gray-700 disabled:opacity-50">{booking.outcome ? (isDa ? 'Rediger handlingsplan' : 'Edit action plan') : (isDa ? 'Tilføj handlingsplan' : 'Add action plan')}</button>}
-                  {booking.viewer_role === 'candidate' && booking.status === 'completed' && !booking.reviewed && <button onClick={() => setReviewBookingId(reviewBookingId === booking.id ? null : booking.id)} className="rounded-[4px] border border-gray-300 px-3 py-2 text-xs font-black text-gray-700">{isDa ? 'Vurdér session' : 'Review session'}</button>}
+                  {booking.viewer_role === 'candidate' && booking.status === 'completed' && !booking.reviewed && (
+                    <button
+                      type="button"
+                      onClick={() => toggleReview(booking.id)}
+                      aria-expanded={reviewBookingId === booking.id}
+                      aria-controls={`session-feedback-${booking.id}`}
+                      className="rounded-[4px] border border-gray-300 px-3 py-2 text-xs font-black text-gray-700"
+                    >
+                      {isDa ? 'Vurdér session' : 'Review session'}
+                    </button>
+                  )}
                   {booking.viewer_role === 'candidate' && ACTIVE_STATUSES.includes(booking.status) && (
                     <button onClick={() => updateBooking(booking.id, 'cancel')} onBlur={() => confirmCancelId === booking.id && setConfirmCancelId(null)} disabled={actionLoading !== null} className={`rounded-lg px-3 py-2 text-xs font-black disabled:opacity-50 ${confirmCancelId === booking.id ? 'bg-red-600 text-white' : 'border border-gray-300 text-gray-700'}`}>{actionLoading === `${booking.id}:cancel` ? '...' : confirmCancelId === booking.id ? (isDa ? 'Bekræft aflysning' : 'Confirm cancellation') : (isDa ? 'Aflys' : 'Cancel')}</button>
                   )}
+                  <Link href={`/profil/bookings/${booking.id}`} className="rounded-[4px] border border-gray-300 px-3 py-2 text-xs font-black text-gray-700 transition-colors hover:border-gray-950 hover:text-gray-950">
+                    {booking.viewer_role === 'candidate' && ACTIVE_STATUSES.includes(booking.status)
+                      ? (isDa ? 'Forbered Session Plan' : 'Prepare Session Plan')
+                      : (isDa ? 'Åbn Session Plan' : 'Open Session Plan')}
+                  </Link>
                 </div>
                 </div>
-                {(booking.goal || booking.material_url || (booking.status === 'confirmed' && booking.meeting_url)) && (
+                {booking.viewer_role === 'professional' && (
+                  <section className="mt-5 border-t border-gray-200 pt-5" aria-label={isDa ? 'Kandidatens Session Plan-brief' : 'Candidate Session Plan brief'}>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.1em] text-gray-400">{isDa ? 'Kandidatens brief' : 'Candidate brief'}</p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          {booking.session_plan?.preparation_status === 'ready'
+                            ? (isDa ? 'Markeret klar til sessionen' : 'Marked ready for the session')
+                            : (isDa ? 'Forberedelsen er stadig i gang' : 'Preparation is still in progress')}
+                        </p>
+                      </div>
+                      <Link href={`/profil/bookings/${booking.id}`} className="inline-flex min-h-10 items-center text-xs font-black text-gray-950 underline decoration-gray-300 underline-offset-4">
+                        {isDa ? 'Gennemgå hele planen' : 'Review full plan'} <ArrowRight size={13} className="ml-1" aria-hidden="true" />
+                      </Link>
+                    </div>
+                    <div className="mt-4 grid gap-px overflow-hidden rounded-[4px] bg-gray-200 md:grid-cols-3">
+                      {[
+                        [
+                          isDa ? 'Problem' : 'Problem',
+                          booking.session_plan?.problem,
+                          isDa ? 'Kandidaten har ikke beskrevet problemet endnu.' : 'The candidate has not described the problem yet.',
+                        ],
+                        [
+                          isDa ? 'Ønsket resultat' : 'Desired outcome',
+                          booking.session_plan?.desired_outcome || booking.goal,
+                          isDa ? 'Det ønskede resultat er ikke beskrevet endnu.' : 'The desired outcome has not been described yet.',
+                        ],
+                        [
+                          'Definition of Done',
+                          booking.session_plan?.definition_of_done,
+                          isDa ? 'Succeskriteriet er ikke defineret endnu.' : 'The success criterion has not been defined yet.',
+                        ],
+                      ].map(([label, value, fallback]) => (
+                        <div key={label} className="bg-[#f7f7f4] px-4 py-4">
+                          <p className="text-[10px] font-black uppercase tracking-[0.08em] text-gray-400">{label}</p>
+                          <p className={`mt-2 text-sm leading-relaxed ${value ? 'font-semibold text-gray-800' : 'text-gray-400'}`}>{value || fallback}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+                {((booking.viewer_role === 'candidate' && booking.goal) || booking.material_url || (booking.status === 'confirmed' && booking.meeting_url)) && (
                   <div className="mt-5 grid gap-4 border-t border-gray-200 pt-4 sm:grid-cols-[1fr_auto] sm:items-start">
                     <div>
                       <p className="text-[10px] font-black uppercase text-gray-400">{isDa ? 'Forberedelse' : 'Preparation'}</p>
-                      {booking.goal && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{booking.goal}</p>}
+                      {booking.viewer_role === 'candidate' && booking.goal && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">{booking.goal}</p>}
                       <div className="mt-3 flex flex-wrap gap-4 text-xs font-bold">
                         {booking.material_url && <a href={booking.material_url} target="_blank" rel="noreferrer" className="text-gray-950 underline decoration-gray-300 underline-offset-4">{isDa ? 'Åbn delt materiale' : 'Open shared material'}</a>}
                         {booking.status === 'confirmed' && booking.meeting_url && <a href={booking.meeting_url} target="_blank" rel="noreferrer" className="text-gray-950 underline decoration-gray-300 underline-offset-4">{isDa ? 'Åbn videolink' : 'Open video link'}</a>}
@@ -329,82 +391,129 @@ export default function BookingsPage() {
                     <p className="text-xs leading-relaxed text-gray-400 sm:max-w-56 sm:text-right">{booking.payment_status === 'paid' ? (isDa ? 'Betalt' : 'Paid') : (isDa ? 'Betaling ikke gennemført' : 'Payment not completed')} · {isDa ? 'Aflys senest 24 timer før for fuld refundering, når betaling aktiveres.' : 'Cancel at least 24 hours before for a full refund when payments launch.'}</p>
                   </div>
                 )}
-                {booking.outcome && outcomeBookingId !== booking.id && (
-                  <section className="mt-5 border-t border-gray-200 pt-5" aria-labelledby={`outcome-${booking.id}`}>
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                      <div className="max-w-3xl">
-                        <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] text-gray-400"><ListChecks size={14} aria-hidden="true" /> {isDa ? 'Din handlingsplan' : 'Your action plan'}</p>
-                        <h3 id={`outcome-${booking.id}`} className="mt-3 text-lg font-black text-gray-950">{isDa ? 'Det vigtigste fra sessionen' : 'The essentials from the session'}</h3>
-                        <p className="mt-2 text-sm leading-relaxed text-gray-600">{booking.outcome.summary}</p>
-                        <ol className="mt-4 grid gap-2 sm:grid-cols-3">
-                          {booking.outcome.priorities.map((priority, index) => (
-                            <li key={`${booking.outcome?.id}-${index}`} className="border-l-2 border-gray-950 pl-3 text-sm leading-relaxed text-gray-700">
-                              <span className="mb-1 block text-[10px] font-black uppercase text-gray-400">{isDa ? `Prioritet ${index + 1}` : `Priority ${index + 1}`}</span>
-                              {priority}
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                      <div className={`min-w-56 border px-4 py-4 ${booking.outcome.candidate_completed_at ? 'border-emerald-200 bg-emerald-50' : 'border-gray-300 bg-[#f7f7f4]'}`}>
-                        <p className="text-[10px] font-black uppercase text-gray-400">{isDa ? 'Næste handling' : 'Next action'}</p>
-                        <p className="mt-2 text-sm font-black leading-snug text-gray-950">{booking.outcome.next_action}</p>
-                        {booking.outcome.next_action_due_at && <p className="mt-2 text-xs text-gray-500">{isDa ? 'Senest' : 'Due'} {new Date(`${booking.outcome.next_action_due_at}T12:00:00`).toLocaleDateString(isDa ? 'da-DK' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>}
-                        {booking.viewer_role === 'candidate' && (
-                          <button type="button" onClick={() => void updateNextAction(booking)} disabled={actionLoading !== null} className={`mt-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[4px] px-3 py-2 text-xs font-black disabled:opacity-50 ${booking.outcome.candidate_completed_at ? 'border border-emerald-300 bg-white text-emerald-800' : 'bg-gray-950 text-white'}`}>
-                            {booking.outcome.candidate_completed_at && <Check size={14} aria-hidden="true" />}
-                            {actionLoading === `${booking.id}:next-action` ? '...' : booking.outcome.candidate_completed_at ? (isDa ? 'Markeret som udført' : 'Marked as done') : (isDa ? 'Markér som udført' : 'Mark as done')}
-                          </button>
-                        )}
-                      </div>
+                <section className="mt-5 flex flex-col gap-4 border-t border-gray-200 pt-5 sm:flex-row sm:items-center sm:justify-between" aria-label={isDa ? 'Session Plan-status' : 'Session Plan status'}>
+                  <div className="flex items-start gap-3">
+                    <FileText size={18} className="mt-0.5 shrink-0 text-gray-400" aria-hidden="true" />
+                    <div>
+                      <p className="text-xs font-black text-gray-950">Naetwork Session Plan</p>
+                      <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                        {booking.outcome?.result_status === 'published'
+                          ? (isDa ? 'Resultatet og dine næste træk er klar.' : 'The result and your next moves are ready.')
+                          : booking.status === 'completed'
+                            ? (booking.viewer_role === 'professional'
+                                ? (isDa ? 'Færdiggør og publicér kandidatens resultat.' : 'Complete and publish the candidate result.')
+                                : (isDa ? 'Den professionelle færdiggør resultatet.' : 'The professional is completing the result.'))
+                            : booking.session_plan?.preparation_status === 'ready'
+                              ? (isDa ? 'Forberedelsen er markeret som klar.' : 'The preparation is marked as ready.')
+                              : (isDa ? 'Forbered problemet, succeskriteriet og dine vigtigste spørgsmål.' : 'Prepare the problem, success criteria and key questions.')}
+                      </p>
                     </div>
-                  </section>
+                  </div>
+                  <Link href={`/profil/bookings/${booking.id}`} className="button-secondary min-h-10 shrink-0 py-2">
+                    {isDa ? 'Åbn planen' : 'Open the plan'} <ArrowRight size={14} aria-hidden="true" />
+                  </Link>
+                </section>
+                {reviewSuccessBookingId === booking.id && (
+                  <p role="status" className="mt-5 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+                    {isDa ? 'Tak. Din feedback er gemt og hjælper Naetwork med at følge den reelle sessionskvalitet.' : 'Thank you. Your feedback is saved and helps Naetwork monitor real session quality.'}
+                  </p>
                 )}
-                {outcomeBookingId === booking.id && (
-                  <section className="mt-5 border-t border-gray-200 pt-5" aria-labelledby={`outcome-form-${booking.id}`}>
-                    <div className="max-w-3xl">
-                      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">{isDa ? 'Struktureret sessionsresultat' : 'Structured session outcome'}</p>
-                      <h3 id={`outcome-form-${booking.id}`} className="mt-2 text-lg font-black text-gray-950">{isDa ? 'Giv kandidaten en konkret plan' : 'Give the candidate a concrete plan'}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-gray-500">{isDa ? 'Opsummér din vurdering, prioritér højst tre forbedringer og aftal én næste handling.' : 'Summarise your assessment, prioritise up to three improvements and agree on one next action.'}</p>
-                      <label className="mt-5 block text-xs font-black text-gray-700">
-                        {isDa ? 'Kort opsummering' : 'Short summary'}
-                        <textarea value={outcomeDraft.summary} onChange={(event) => setOutcomeDraft((current) => ({ ...current, summary: event.target.value.slice(0, 1000) }))} rows={3} className="field-control mt-2 resize-none text-sm" placeholder={isDa ? 'Hvad blev tydeligere, og hvor står kandidaten nu?' : 'What became clearer, and where does the candidate stand now?'} />
-                      </label>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                        {outcomeDraft.priorities.map((priority, index) => (
-                          <label key={index} className="block text-xs font-black text-gray-700">
-                            {isDa ? `Prioritet ${index + 1}${index > 0 ? ' (valgfri)' : ''}` : `Priority ${index + 1}${index > 0 ? ' (optional)' : ''}`}
-                            <textarea value={priority} onChange={(event) => setOutcomeDraft((current) => {
-                              const priorities: OutcomeDraft['priorities'] = [...current.priorities];
-                              priorities[index] = event.target.value.slice(0, 240);
-                              return { ...current, priorities };
-                            })} rows={3} className="field-control mt-2 resize-none text-sm" />
+                {reviewBookingId === booking.id && (
+                  <form
+                    id={`session-feedback-${booking.id}`}
+                    className="mt-5 border-t border-gray-200 pt-5"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      void submitReview(booking.id);
+                    }}
+                  >
+                    <div className="max-w-2xl">
+                      <p className="text-sm font-black text-gray-950">{isDa ? 'Hjalp sessionen dig videre?' : 'Did the session help you move forward?'}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                        {isDa ? 'Seks korte svar giver et mere retvisende kvalitetsbillede end én samlet stjernebedømmelse.' : 'Six short answers give a more accurate quality picture than a single star rating.'}
+                      </p>
+                    </div>
+
+                    <fieldset className="mt-5">
+                      <legend className="text-xs font-black text-gray-800">{isDa ? 'Blev sessionens mål opnået?' : 'Was the session goal achieved?'}</legend>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {([
+                          ['achieved', isDa ? 'Ja' : 'Yes'],
+                          ['partially_achieved', isDa ? 'Delvist' : 'Partly'],
+                          ['not_achieved', isDa ? 'Ikke endnu' : 'Not yet'],
+                        ] as Array<[GoalAchievement, string]>).map(([value, label]) => (
+                          <label key={value} className={`inline-flex min-h-11 cursor-pointer items-center rounded-[4px] border px-4 text-xs font-black transition-colors ${goalAchieved === value ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-300 bg-white text-gray-700 hover:border-gray-950'}`}>
+                            <input
+                              type="radio"
+                              name={`goal-achieved-${booking.id}`}
+                              value={value}
+                              checked={goalAchieved === value}
+                              onChange={() => setGoalAchieved(value)}
+                              aria-label={`${isDa ? 'Blev sessionens mål opnået?' : 'Was the session goal achieved?'} ${label}`}
+                              className="sr-only"
+                            />
+                            {label}
                           </label>
                         ))}
                       </div>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px]">
-                        <label className="block text-xs font-black text-gray-700">
-                          {isDa ? 'Næste handling' : 'Next action'}
-                          <input value={outcomeDraft.nextAction} onChange={(event) => setOutcomeDraft((current) => ({ ...current, nextAction: event.target.value.slice(0, 300) }))} className="field-control mt-2 text-sm" placeholder={isDa ? 'Fx omskriv profilteksten og send den fredag' : 'E.g. rewrite the profile text and send it Friday'} />
-                        </label>
-                        <label className="block text-xs font-black text-gray-700">
-                          {isDa ? 'Deadline (valgfri)' : 'Deadline (optional)'}
-                          <input type="date" value={outcomeDraft.nextActionDueAt} onChange={(event) => setOutcomeDraft((current) => ({ ...current, nextActionDueAt: event.target.value }))} className="field-control mt-2 text-sm" />
-                        </label>
-                      </div>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <button type="button" onClick={() => void saveOutcome(booking.id)} disabled={actionLoading !== null} className="button-primary min-h-10 py-2">{actionLoading === `${booking.id}:outcome` ? (isDa ? 'Gemmer...' : 'Saving...') : (isDa ? 'Gem handlingsplan' : 'Save action plan')}</button>
-                        <button type="button" onClick={() => setOutcomeBookingId(null)} disabled={actionLoading !== null} className="button-secondary min-h-10 py-2">{isDa ? 'Annuller' : 'Cancel'}</button>
-                      </div>
+                    </fieldset>
+
+                    <div className="mt-6 grid gap-5 md:grid-cols-2">
+                      {feedbackQuestions.map((question) => (
+                        <fieldset key={question.key}>
+                          <legend className="min-h-10 text-xs font-black leading-relaxed text-gray-800">{isDa ? question.da : question.en}</legend>
+                          <div className="mt-2 flex gap-1" role="radiogroup">
+                            {[1, 2, 3, 4, 5].map((value) => (
+                              <label
+                                key={value}
+                                className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-[4px] border transition-colors ${feedbackScores[question.key] === value ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-300 bg-white text-gray-500 hover:border-gray-950 hover:text-gray-950'}`}
+                                aria-label={`${value} ${isDa ? 'ud af 5' : 'out of 5'}`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`${question.key}-${booking.id}`}
+                                  value={value}
+                                  checked={feedbackScores[question.key] === value}
+                                  onChange={() => setFeedbackScores((current) => ({ ...current, [question.key]: value }))}
+                                  aria-label={`${isDa ? question.da : question.en} ${value} ${isDa ? 'ud af 5' : 'out of 5'}`}
+                                  className="sr-only"
+                                />
+                                {question.key === 'overallExperience'
+                                  ? <Star size={15} fill={feedbackScores[question.key] >= value ? 'currentColor' : 'none'} aria-hidden="true" />
+                                  : <span className="text-xs font-black">{value}</span>}
+                              </label>
+                            ))}
+                          </div>
+                          <p className="mt-1 text-[10px] text-gray-400">{isDa ? '1 = lav · 5 = høj' : '1 = low · 5 = high'}</p>
+                        </fieldset>
+                      ))}
                     </div>
-                  </section>
-                )}
-                {reviewBookingId === booking.id && (
-                  <div className="mt-5 border-t border-gray-200 pt-5">
-                    <p className="text-sm font-black text-gray-950">{isDa ? 'Hvordan var sessionen?' : 'How was the session?'}</p>
-                    <div className="mt-3 flex gap-1" role="radiogroup" aria-label={isDa ? 'Rating' : 'Rating'}>{[1, 2, 3, 4, 5].map((value) => <button key={value} type="button" role="radio" aria-checked={rating === value} onClick={() => setRating(value)} className={`flex h-10 w-10 items-center justify-center rounded-[4px] border ${rating >= value ? 'border-gray-950 bg-gray-950 text-white' : 'border-gray-300 bg-white text-gray-400'}`} aria-label={`${value} ${isDa ? 'ud af 5' : 'out of 5'}`}><Star size={16} fill={rating >= value ? 'currentColor' : 'none'} aria-hidden="true" /></button>)}</div>
-                    <textarea value={feedback} onChange={(event) => setFeedback(event.target.value.slice(0, 1000))} rows={3} className="field-control mt-3 resize-none text-sm" placeholder={isDa ? 'Valgfrit: Hvad fungerede godt, og hvad kunne være bedre?' : 'Optional: What worked well, and what could be better?'} />
-                    <div className="mt-3 flex gap-2"><button type="button" onClick={() => void submitReview(booking.id)} disabled={actionLoading !== null} className="button-primary min-h-10 py-2">{isDa ? 'Send vurdering' : 'Submit review'}</button><button type="button" onClick={() => setReviewBookingId(null)} className="button-secondary min-h-10 py-2">{isDa ? 'Annuller' : 'Cancel'}</button></div>
-                  </div>
+
+                    <label className="mt-6 block text-xs font-black text-gray-800" htmlFor={`feedback-comment-${booking.id}`}>
+                      {isDa ? 'Valgfri kommentar' : 'Optional comment'}
+                    </label>
+                    <textarea
+                      id={`feedback-comment-${booking.id}`}
+                      value={feedbackComment}
+                      onChange={(event) => setFeedbackComment(event.target.value.slice(0, 1000))}
+                      rows={3}
+                      maxLength={1000}
+                      className="field-control mt-2 resize-none text-sm"
+                      placeholder={isDa ? 'Hvad fungerede godt, og hvad kunne være bedre?' : 'What worked well, and what could be better?'}
+                    />
+                    <p className="mt-1 text-right text-[10px] text-gray-400">{feedbackComment.length}/1000</p>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button type="submit" disabled={actionLoading !== null} className="button-primary min-h-11 py-2 disabled:opacity-50">
+                        {actionLoading === `${booking.id}:review`
+                          ? (isDa ? 'Gemmer…' : 'Saving…')
+                          : (isDa ? 'Send vurdering' : 'Submit review')}
+                      </button>
+                      <button type="button" onClick={() => toggleReview(booking.id)} disabled={actionLoading !== null} className="button-secondary min-h-11 py-2 disabled:opacity-50">
+                        {isDa ? 'Annuller' : 'Cancel'}
+                      </button>
+                    </div>
+                  </form>
                 )}
               </article>
             ))}

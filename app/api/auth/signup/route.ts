@@ -6,6 +6,11 @@ import { isSameSiteRequest } from '@/lib/server/requestSecurity';
 import { areasBelongToCategory, isCategoryArea, isCategoryId } from '@/lib/categories';
 import { FOCUS_AREAS, PRICE_OPTIONS, normalizeLinkedInUrl } from '@/lib/platform';
 import { normalizePayoutPreference } from '@/lib/payoutPreference';
+import {
+  EXPERIENCE_SUMMARY_MAX_LENGTH,
+  cleanProfileList,
+  cleanProfileText,
+} from '@/lib/professionalProfile';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 const FOCUS_IDS = new Set<string>(FOCUS_AREAS.map((focus) => focus.id));
@@ -53,10 +58,38 @@ export async function POST(request: Request) {
       const sessionTypes = Array.isArray(body.sessionTypes)
         ? Array.from(new Set(body.sessionTypes.filter((item: unknown): item is string => typeof item === 'string' && FOCUS_IDS.has(item))))
         : [];
-      if (!title || !company || !isCategoryId(category) || !areasBelongToCategory(category, areas) || !linkedin || !PRICES.has(priceDkk) || sessionTypes.length === 0) {
+      const experienceSummary = cleanProfileText(body.experienceSummary, EXPERIENCE_SUMMARY_MAX_LENGTH);
+      const relevantSituations = cleanProfileList(body.relevantSituations);
+      const expectedOutcomes = cleanProfileList(body.expectedOutcomes);
+      if (
+        !title
+        || !company
+        || !bio
+        || !isCategoryId(category)
+        || !areasBelongToCategory(category, areas)
+        || !linkedin
+        || !PRICES.has(priceDkk)
+        || sessionTypes.length === 0
+        || experienceSummary.length < 40
+        || relevantSituations.length === 0
+        || expectedOutcomes.length === 0
+      ) {
         return NextResponse.json({ error: 'Den professionelle profil mangler obligatoriske eller gyldige oplysninger.' }, { status: 400 });
       }
-      Object.assign(metadata, { title, company, category, areas, bio, linkedin, sessionTypes, priceDkk, payoutPreference });
+      Object.assign(metadata, {
+        title,
+        company,
+        category,
+        areas,
+        bio,
+        linkedin,
+        sessionTypes,
+        priceDkk,
+        payoutPreference,
+        experienceSummary,
+        relevantSituations,
+        expectedOutcomes,
+      });
     }
 
     const requestId = await claimAuthEmailRequest(email, 'signup');

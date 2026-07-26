@@ -21,7 +21,7 @@ export function MemberNav({ isProfessional = false }: MemberNavProps) {
     <nav aria-label="Konto" className="border-y border-gray-200 bg-white">
       <div className="no-scrollbar mx-auto flex max-w-6xl gap-1 overflow-x-auto px-5 sm:px-8">
         {links.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href;
+          const active = pathname === href || (href === '/profil/bookings' && pathname.startsWith('/profil/bookings/'));
           return (
             <Link
               key={href}

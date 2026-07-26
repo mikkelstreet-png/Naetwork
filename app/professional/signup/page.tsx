@@ -21,6 +21,12 @@ import {
   charitySharePercent,
   type PayoutPreference,
 } from '@/lib/payoutPreference';
+import {
+  EXPERIENCE_SUMMARY_MAX_LENGTH,
+  PROFILE_LIST_ITEM_MAX_LENGTH,
+  PROFILE_LIST_MAX_ITEMS,
+  cleanProfileList,
+} from '@/lib/professionalProfile';
 
 const STEP_LABELS = ['Profil', 'Session', 'Fordeling', 'Bekræft'];
 
@@ -32,6 +38,9 @@ export default function ProfessionalSignupPage() {
     name: '', email: '', password: '',
     title: '', company: '', category: '', areas: [] as string[],
     bio: '', linkedin: '',
+    experienceSummary: '',
+    relevantSituations: [''] as string[],
+    expectedOutcomes: [''] as string[],
     sessionTypes: [] as string[], priceDkk: 1200,
     payoutPreference: DEFAULT_PAYOUT_PREFERENCE as PayoutPreference,
   });
@@ -49,6 +58,18 @@ export default function ProfessionalSignupPage() {
     set('sessionTypes', form.sessionTypes.includes(t) ? form.sessionTypes.filter(x => x !== t) : [...form.sessionTypes, t]);
   const toggleArea = (area: string) =>
     set('areas', form.areas.includes(area) ? form.areas.filter((value) => value !== area) : [...form.areas, area]);
+  const updateListItem = (key: 'relevantSituations' | 'expectedOutcomes', index: number, value: string) => {
+    const next = [...form[key]];
+    next[index] = value.slice(0, PROFILE_LIST_ITEM_MAX_LENGTH);
+    set(key, next);
+  };
+  const addListItem = (key: 'relevantSituations' | 'expectedOutcomes') => {
+    if (form[key].length < PROFILE_LIST_MAX_ITEMS) set(key, [...form[key], '']);
+  };
+  const removeListItem = (key: 'relevantSituations' | 'expectedOutcomes', index: number) => {
+    const next = form[key].filter((_, itemIndex) => itemIndex !== index);
+    set(key, next.length > 0 ? next : ['']);
+  };
 
   function validateStep(nextStep = step): boolean {
     if (nextStep === 1) {
@@ -57,9 +78,17 @@ export default function ProfessionalSignupPage() {
         return false;
       }
     }
-    if (nextStep === 2 && form.sessionTypes.length === 0) {
-      setError('Vælg mindst ét fokusområde.');
-      return false;
+    if (nextStep === 2) {
+      if (
+        form.sessionTypes.length === 0
+        || !form.bio.trim()
+        || form.experienceSummary.trim().length < 40
+        || cleanProfileList(form.relevantSituations).length === 0
+        || cleanProfileList(form.expectedOutcomes).length === 0
+      ) {
+        setError('Vælg mindst én sessionstype, og beskriv din erfaring, en konkret relevant situation og et realistisk udbytte.');
+        return false;
+      }
     }
     setError('');
     return true;
@@ -104,7 +133,7 @@ export default function ProfessionalSignupPage() {
           </div>
           <h1 className="mb-3 text-2xl font-black text-gray-950">Bekræft din e-mail</h1>
           <p className="leading-relaxed text-gray-500">
-            Vi har sendt en bekræftelsesmail til <strong>{form.email}</strong>. Når kontoen er bekræftet, gennemgår vi profilen, før den kan publiceres.
+            Vi har sendt en bekræftelsesmail til <strong>{form.email}</strong>. Når kontoen er bekræftet, kan du gennemgå profilen og sende den til Naetworks godkendelse.
           </p>
           <Link href="/login" className="mt-8 inline-flex rounded-lg bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800">Tilbage til log ind</Link>
         </div>
@@ -239,9 +268,72 @@ export default function ProfessionalSignupPage() {
                   <p className="mt-3 text-xs leading-relaxed text-gray-500">DKK 1.800 kræver særskilt godkendelse som del af profilgennemgangen.</p>
                 </fieldset>
                 <div>
-                  <label htmlFor="professional-bio" className="mb-1 block text-sm font-semibold text-gray-700">Bio (valgfri)</label>
-                  <textarea id="professional-bio" value={form.bio} maxLength={500} onChange={e => set('bio', e.target.value)} rows={4} className="field-control resize-none text-sm" placeholder="Fortæl konkret, hvad du kan hjælpe med i en 60-minutters session..." />
+                  <label htmlFor="professional-bio" className="mb-1 block text-sm font-semibold text-gray-700">Kort bio</label>
+                  <textarea id="professional-bio" required aria-required="true" value={form.bio} maxLength={500} onChange={e => set('bio', e.target.value)} rows={4} className="field-control resize-none text-sm" placeholder="Præsentér kort din professionelle baggrund og dit nuværende arbejdsfelt." />
                 </div>
+                <div>
+                  <label htmlFor="professional-experience-summary" className="mb-1 block text-sm font-semibold text-gray-700">Hvilken erfaring bygger din feedback på?</label>
+                  <textarea
+                    id="professional-experience-summary"
+                    required
+                    aria-required="true"
+                    value={form.experienceSummary}
+                    maxLength={EXPERIENCE_SUMMARY_MAX_LENGTH}
+                    onChange={(event) => set('experienceSummary', event.target.value)}
+                    rows={4}
+                    className="field-control resize-none text-sm"
+                    placeholder="Beskriv den direkte rolle-, branche- eller proceserfaring, kandidaten får adgang til."
+                  />
+                  <p className="mt-1 text-xs text-gray-400">Vær konkret om ansvar, processer og perspektiver. Minimum 40 tegn.</p>
+                </div>
+                <fieldset>
+                  <legend className="text-sm font-semibold text-gray-700">Hvornår er din erfaring mest relevant?</legend>
+                  <p className="mt-1 text-xs leading-relaxed text-gray-400">Tilføj op til tre konkrete situationer. Eksempel: “Når du skal forberede et caseinterview i management consulting”.</p>
+                  <div className="mt-3 space-y-2">
+                    {form.relevantSituations.map((value, index) => (
+                      <div key={`situation-${index}`} className="flex gap-2">
+                        <input
+                          aria-label={`Relevant situation ${index + 1}`}
+                          value={value}
+                          maxLength={PROFILE_LIST_ITEM_MAX_LENGTH}
+                          onChange={(event) => updateListItem('relevantSituations', index, event.target.value)}
+                          className="field-control text-sm"
+                          placeholder="Beskriv en konkret situation"
+                        />
+                        {form.relevantSituations.length > 1 && (
+                          <button type="button" onClick={() => removeListItem('relevantSituations', index)} className="min-h-11 rounded-lg border border-gray-200 px-3 text-xs font-black text-gray-500 hover:border-gray-400 hover:text-gray-950" aria-label={`Fjern relevant situation ${index + 1}`}>Fjern</button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {form.relevantSituations.length < PROFILE_LIST_MAX_ITEMS && (
+                    <button type="button" onClick={() => addListItem('relevantSituations')} className="mt-3 text-xs font-black text-gray-700 underline underline-offset-4">Tilføj situation</button>
+                  )}
+                </fieldset>
+                <fieldset>
+                  <legend className="text-sm font-semibold text-gray-700">Hvad kan kandidaten realistisk gå derfra med?</legend>
+                  <p className="mt-1 text-xs leading-relaxed text-gray-400">Tilføj op til tre konkrete resultater uden at love et job eller et bestemt udfald.</p>
+                  <div className="mt-3 space-y-2">
+                    {form.expectedOutcomes.map((value, index) => (
+                      <div key={`outcome-${index}`} className="flex gap-2">
+                        <input
+                          aria-label={`Forventet udbytte ${index + 1}`}
+                          value={value}
+                          maxLength={PROFILE_LIST_ITEM_MAX_LENGTH}
+                          onChange={(event) => updateListItem('expectedOutcomes', index, event.target.value)}
+                          className="field-control text-sm"
+                          placeholder="Fx tre prioriterede forbedringer til CV'et"
+                        />
+                        {form.expectedOutcomes.length > 1 && (
+                          <button type="button" onClick={() => removeListItem('expectedOutcomes', index)} className="min-h-11 rounded-lg border border-gray-200 px-3 text-xs font-black text-gray-500 hover:border-gray-400 hover:text-gray-950" aria-label={`Fjern forventet udbytte ${index + 1}`}>Fjern</button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {form.expectedOutcomes.length < PROFILE_LIST_MAX_ITEMS && (
+                    <button type="button" onClick={() => addListItem('expectedOutcomes')} className="mt-3 text-xs font-black text-gray-700 underline underline-offset-4">Tilføj udbytte</button>
+                  )}
+                </fieldset>
               </div>
             )}
 
@@ -328,6 +420,8 @@ export default function ProfessionalSignupPage() {
                       ? `${formatDkk(economics.professionalPayout)} doneres også`
                       : `${PROFESSIONAL_SHARE_PERCENT}% / ${formatDkk(economics.professionalPayout)} før skat`],
                     ['Sessionstyper', `${form.sessionTypes.length} valgt`],
+                    ['Relevante situationer', `${cleanProfileList(form.relevantSituations).length} beskrevet`],
+                    ['Konkrete resultater', `${cleanProfileList(form.expectedOutcomes).length} beskrevet`],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between gap-5 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0">
                       <span className="text-gray-500">{label}</span>
